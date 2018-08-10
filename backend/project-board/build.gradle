@@ -1,6 +1,7 @@
 buildscript {
 	ext {
 		springBootVersion = '2.0.4.RELEASE'
+		lombokVersion = '1.18.2'
 	}
 	repositories {
 		mavenCentral()
@@ -25,9 +26,15 @@ repositories {
 
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-actuator')
-	compile('org.springframework.boot:spring-boot-starter-data-jpa')
-	compile('org.springframework.boot:spring-boot-starter-web')
+
+	compile(
+			[group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: "${springBootVersion}"],
+			[group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: "${springBootVersion}"],
+			[group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: "${springBootVersion}"]
+	)
+
+	compileOnly(group: 'org.projectlombok', name: 'lombok', version: "${lombokVersion}")
+
 	runtime('org.springframework.boot:spring-boot-devtools')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
