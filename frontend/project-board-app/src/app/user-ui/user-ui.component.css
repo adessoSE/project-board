@@ -1,0 +1,8 @@
+.details {
+  width: 60%;
+}
+
+.sticky {
+  top: 5rem;
+  position: sticky;
+}

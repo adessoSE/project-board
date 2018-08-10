@@ -1,9 +1,7 @@
-.page-header {
-  text-align: center;
-}
 h4 {
   margin-bottom: 2rem;
 }
+
 .sticky {
   top: 5rem;
   position: sticky;

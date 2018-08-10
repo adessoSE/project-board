@@ -1,0 +1,39 @@
+<h1 class="display-3 mt-4">Mitarbeiter UI</h1>
+<div class="row">
+  <div class="col-6">
+    <h4>Projekte</h4>
+    <div class="list-group">
+      <button (click)="selectedProject = p" type="button" *ngFor="let p of projects" class="list-group-item list-group-item-action">
+        {{p.title}}
+      </button>
+    </div>
+  </div>
+  <div class="col-6">
+    <div class="sticky">
+      <h4>Projekt-Details</h4>
+      <div *ngIf="selectedProject" class="details">
+        <div class="row">
+          <div class="col-3">Titel:</div>
+          <div class="col">{{selectedProject.title}}</div>
+        </div>
+        <div class="row">
+          <div class="col-3">Detail 2:</div>
+          <div class="col"></div>
+        </div>
+        <div class="row">
+          <div class="col-3">Detail 3:</div>
+          <div class="col"></div>
+        </div>
+        <div class="row">
+          <div class="col-3">Detail 4:</div>
+          <div class="col"></div>
+        </div>
+
+        <div class="mt-5">
+          <button class="btn btn-primary"> Projekt anfragen</button>
+        </div>
+      </div>
+      <p *ngIf="!selectedProject">Kein Projekt ausgewählt.</p>
+    </div>
+  </div>
+</div>

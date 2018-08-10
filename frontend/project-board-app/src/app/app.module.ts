@@ -9,12 +9,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { EmployeeService } from './employee.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { UserUiComponent } from './user-ui/user-ui.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     AdminUiComponent,
-    PageNotFoundComponent
+    PageNotFoundComponent,
+    UserUiComponent
   ],
   imports: [
     BrowserModule,
