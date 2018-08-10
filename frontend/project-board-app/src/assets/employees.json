@@ -1,0 +1,102 @@
+[
+  {
+    "enabled": true,
+    "duration": 11,
+    "name": {
+      "first": "Lottie",
+      "last": "Jacobs"
+    },
+    "fullName": "Lottie Jacobs",
+    "email": "lottie.jacobs@adesso.de"
+  },
+  {
+    "enabled": true,
+    "duration": 9,
+    "name": {
+      "first": "Knapp",
+      "last": "Good"
+    },
+    "fullName": "Knapp Good",
+    "email": "knapp.good@adesso.de"
+  },
+  {
+    "enabled": false,
+    "duration": null,
+    "name": {
+      "first": "Willie",
+      "last": "Holt"
+    },
+    "fullName": "Willie Holt",
+    "email": "willie.holt@adesso.de"
+  },
+  {
+    "enabled": false,
+    "duration": null,
+    "name": {
+      "first": "Viola",
+      "last": "Roy"
+    },
+    "fullName": "Viola Roy",
+    "email": "viola.roy@adesso.de"
+  },
+  {
+    "enabled": false,
+    "duration": null,
+    "name": {
+      "first": "Leta",
+      "last": "Lambert"
+    },
+    "fullName": "Leta Lambert",
+    "email": "leta.lambert@adesso.de"
+  },
+  {
+    "enabled": true,
+    "duration": 12,
+    "name": {
+      "first": "Shannon",
+      "last": "Hoffman"
+    },
+    "fullName": "Shannon Hoffman",
+    "email": "shannon.hoffman@adesso.de"
+  },
+  {
+    "enabled": true,
+    "duration": 5,
+    "name": {
+      "first": "Rosanna",
+      "last": "Key"
+    },
+    "fullName": "Rosanna Key",
+    "email": "rosanna.key@adesso.de"
+  },
+  {
+    "enabled": true,
+    "duration": 7,
+    "name": {
+      "first": "Jimenez",
+      "last": "Wiley"
+    },
+    "fullName": "Jimenez Wiley",
+    "email": "jimenez.wiley@adesso.de"
+  },
+  {
+    "enabled": false,
+    "duration": null,
+    "name": {
+      "first": "Carmela",
+      "last": "Clements"
+    },
+    "fullName": "Carmela Clements",
+    "email": "carmela.clements@adesso.de"
+  },
+  {
+    "enabled": false,
+    "duration": null,
+    "name": {
+      "first": "Alexandria",
+      "last": "Cox"
+    },
+    "fullName": "Alexandria Cox",
+    "email": "alexandria.cox@adesso.de"
+  }
+]

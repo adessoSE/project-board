@@ -1,0 +1,44 @@
+.page-header {
+  text-align: center;
+}
+h4 {
+  margin-bottom: 2rem;
+}
+.sticky {
+  top: 5rem;
+  position: sticky;
+}
+
+.disabled {
+  color: lightgrey;
+}
+
+.badge-width {
+  width: 1.5rem;
+}
+
+.badge-red {
+  color: #dc3545;
+}
+
+.details {
+  width: 60%;
+}
+
+.details p {
+  display: inline-block;
+}
+
+.right {
+  display: inline-block;
+  float: right;
+}
+
+.select {
+  display: inline-block;
+  width: auto;
+}
+
+.select-label {
+  display: block;
+}

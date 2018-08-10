@@ -1,0 +1,54 @@
+<div class="container pt-5 background-inner">
+  <h1 class="display-1 page-header">Project-Board</h1>
+  <h1 class="display-3 mt-4">Führungkräfte UI</h1>
+  <div class="row mt-4">
+    <div class="col-6">
+      <h4>Liste mit Personen</h4>
+      <div class="list-group">
+        <button (click)="selectedEmployee = e" type="button" *ngFor="let e of employees" class="list-group-item list-group-item-action">
+          <span [ngClass]="{'badge badge-width': true, 'badge-success': e.enabled, 'badge-danger badge-red': !e.enabled}">{{e.duration || '0'}}</span>
+          {{e.fullName}}
+        </button>
+      </div>
+    </div>
+    <div class="col-6">
+      <div *ngIf="selectedEmployee" class="sticky">
+        <div class="details">
+          <h4>Details</h4>
+          <div class="row">
+            <div class="col-4">Name:</div>
+            <div class="col right">{{selectedEmployee.fullName}}</div>
+            <br>
+          </div>
+          <div class="row">
+            <div class="col-4">Status:</div>
+            <div class="col right">{{selectedEmployee.enabled ? 'Aktiviert' : 'Deaktiviert'}}</div>
+            <br>
+          </div>
+          <div [ngClass]="{'row': true, 'disabled': !selectedEmployee.enabled}">
+            <div class="col-4">Dauer der Freischaltung:</div>
+            <div class="col right">{{selectedEmployee.duration ? selectedEmployee.duration + ' Tag(e)' : '-'}}</div>
+          </div>
+          <div class="row">
+            <div class="col-4">Email:</div>
+            <div class="col right">{{selectedEmployee.email}}</div>
+          </div>
+
+          <div class="mt-5">
+            <form *ngIf="!selectedEmployee.enabled">
+              <div class="form-group">
+                <label class="select-label" for="durationSelect">Dauer der Freischaltung</label>
+                <select #duration required class="select form-control" id="durationSelect">
+                  <option *ngFor="let option of options">{{option}}</option>
+                </select>
+                <button (click)="activate(duration)" class="btn btn-primary right">Zugang aktivieren</button>
+              </div>
+              <!--<input class="form-control" ([ngModel])="duration" required pattern="(0*2[0-8])|(0*1?\d)" formnovalidate placeholder="max. 28 Tage">-->
+            </form>
+            <button (click)="deactivate()" *ngIf="selectedEmployee.enabled" class="btn btn-danger">Zugang deaktivieren</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

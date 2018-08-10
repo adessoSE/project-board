@@ -1,1 +1,5 @@
-/* You can add global styles to this file, and also import other style files */
+.background-inner {
+  background: white;
+  box-shadow: 5px 5px 5px grey;
+  min-height: 100vh;
+}
