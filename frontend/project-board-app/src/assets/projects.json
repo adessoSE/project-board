@@ -1,0 +1,228 @@
+[
+  {
+    "id": "STF-2244",
+    "type": "Staffinganfrage",
+    "tags": "",
+    "job": "Duis irure in aliqua in id irure adipisicing excepteur veniam enim. Consequat eiusmod adipisicing minim ut cillum ullamco elit. Non ipsum quis eu sunt amet cupidatat elit ea.",
+    "lob": "LOB Insurance",
+    "skills": [
+      "Kommunikation",
+      "Java",
+      "C++",
+      "Datenbanken",
+      "Angular",
+      "Excel"
+    ],
+    "client": "ING-Diba",
+    "location": "Düsseldorf",
+    "begin": "2019-06-13T18:43:40.706Z",
+    "end": "2019-10-04T21:16:32.087Z",
+    "elongation": true,
+    "effort": 985
+  },
+  {
+    "id": "STF-2798",
+    "type": "Staffinganfrage",
+    "tags": "",
+    "job": "Amet voluptate pariatur anim proident non in ea pariatur aute dolore commodo. Amet enim pariatur ut deserunt ipsum labore ut fugiat anim consectetur et minim. Mollit ullamco consectetur adipisicing incididunt in commodo enim do sunt ut qui in.",
+    "lob": "LOB Insurance",
+    "skills": [
+      "Spring",
+      "Excel"
+    ],
+    "client": "ING-Diba",
+    "location": "Dortmund",
+    "begin": "2019-08-13T12:22:50.165Z",
+    "end": "2019-12-26T17:13:18.460Z",
+    "elongation": true,
+    "effort": 966
+  },
+  {
+    "id": "STF-2187",
+    "type": "Staffinganfrage",
+    "tags": "",
+    "job": "Sit magna dolore Lorem eu qui dolor pariatur officia commodo officia officia. Ullamco non Lorem aute amet nisi sit. Excepteur tempor eu do non veniam esse ea excepteur ea consectetur.",
+    "lob": "LOB Microsoft",
+    "skills": [
+      "Java",
+      "C++",
+      "Datenbanken",
+      "Angular",
+      "Spring",
+      "Excel"
+    ],
+    "client": "ista",
+    "location": "Düsseldorf",
+    "begin": "2019-08-13T03:19:44.808Z",
+    "end": "2019-09-14T05:38:24.703Z",
+    "elongation": true,
+    "effort": 975
+  },
+  {
+    "id": "STF-1656",
+    "type": "Staffinganfrage",
+    "tags": "",
+    "job": "Dolore duis dolor nisi officia aliquip magna elit aute mollit. Irure sunt sint labore ipsum in ullamco nisi deserunt amet proident. Enim mollit in nostrud sint non aliqua tempor pariatur id magna.",
+    "lob": "LOB Banking",
+    "skills": [
+      "Kommunikation",
+      "Python",
+      "Angular",
+      "Spring"
+    ],
+    "client": "ista",
+    "location": "Münster",
+    "begin": "2019-09-25T13:48:30.281Z",
+    "end": "2019-11-11T00:51:33.381Z",
+    "elongation": true,
+    "effort": 891
+  },
+  {
+    "id": "STF-2696",
+    "type": "Staffinganfrage",
+    "tags": "",
+    "job": "Ut quis cillum incididunt ullamco ad ipsum ea. Do ad id esse voluptate ex Lorem ad Lorem aliquip. Et irure nostrud pariatur in.",
+    "lob": "LOB Insurance",
+    "skills": [
+      "Datenbanken",
+      "Angular",
+      "Spring"
+    ],
+    "client": "ista",
+    "location": "Dortmund",
+    "begin": "2019-07-29T01:46:36.830Z",
+    "end": "2019-10-24T11:11:52.628Z",
+    "elongation": false,
+    "effort": 644
+  },
+  {
+    "id": "STF-2811",
+    "type": "Staffinganfrage",
+    "tags": "",
+    "job": "Aute laborum elit aliquip eiusmod sit ullamco aute id. Ut incididunt anim aliqua irure est aute minim proident dolor adipisicing deserunt cillum esse non. Ea voluptate sit minim duis nisi.",
+    "lob": "LOB Banking",
+    "skills": [
+      "Datenbanken",
+      "Spring"
+    ],
+    "client": "ING-Diba",
+    "location": "Münster",
+    "begin": "2019-06-06T14:58:20.962Z",
+    "end": "2019-12-21T07:42:53.156Z",
+    "elongation": false,
+    "effort": 985
+  },
+  {
+    "id": "STF-2304",
+    "type": "Staffinganfrage",
+    "tags": "",
+    "job": "Excepteur esse nostrud proident fugiat fugiat laborum nostrud sunt. In sint mollit magna nisi ea quis ullamco irure irure Lorem reprehenderit. Exercitation ut aute ut voluptate ad.",
+    "lob": "LOB Health",
+    "skills": [
+      "Java",
+      "C++",
+      "Datenbanken",
+      "Angular"
+    ],
+    "client": "ista",
+    "location": "Münster",
+    "begin": "2018-08-29T04:45:55.401Z",
+    "end": "2018-10-01T11:16:07.966Z",
+    "elongation": true,
+    "effort": 315
+  },
+  {
+    "id": "STF-2845",
+    "type": "Staffinganfrage",
+    "tags": "",
+    "job": "Laboris labore est ex irure. Adipisicing aute esse eu eu cillum est enim do est voluptate. Minim dolore labore eu ut laborum id consequat ut magna consequat nostrud sunt.",
+    "lob": "LOB Insurance",
+    "skills": [
+      "Kommunikation",
+      "C++",
+      "Spring"
+    ],
+    "client": "ING-Diba",
+    "location": "Dortmund",
+    "begin": "2019-04-21T16:01:54.064Z",
+    "end": "2019-06-12T23:04:31.875Z",
+    "elongation": true,
+    "effort": 435
+  },
+  {
+    "id": "STF-3420",
+    "type": "Staffinganfrage",
+    "tags": "",
+    "job": "Nulla officia adipisicing in excepteur cupidatat. Quis consectetur anim sint in sint ut est. Id mollit minim reprehenderit nulla occaecat labore amet.",
+    "lob": "LOB Banking",
+    "skills": [
+      "Kommunikation",
+      "Java",
+      "Python",
+      "Datenbanken",
+      "Excel"
+    ],
+    "client": "ista",
+    "location": "München",
+    "begin": "2018-09-02T12:23:48.541Z",
+    "end": "2018-10-04T20:50:54.906Z",
+    "elongation": true,
+    "effort": 932
+  },
+  {
+    "id": "STF-1718",
+    "type": "Staffinganfrage",
+    "tags": "",
+    "job": "Dolor laboris quis irure aute ad amet dolore est duis sunt. Commodo exercitation cupidatat ad quis adipisicing tempor consequat veniam. Sit excepteur voluptate occaecat velit cillum excepteur aliqua nostrud Lorem.",
+    "lob": "LOB Insurance",
+    "skills": [
+      "Kommunikation",
+      "Java",
+      "Spring",
+      "Excel"
+    ],
+    "client": "Audi",
+    "location": "München",
+    "begin": "2018-08-14T06:14:31.988Z",
+    "end": "2019-04-30T03:14:19.298Z",
+    "elongation": true,
+    "effort": 865
+  },
+  {
+    "id": "STF-1671",
+    "type": "Staffinganfrage",
+    "tags": "",
+    "job": "Sit reprehenderit commodo Lorem eu consectetur ut deserunt irure est et excepteur ullamco nisi tempor. Sint laboris magna velit esse incididunt ex reprehenderit aliquip laborum. Dolore ipsum ad veniam ipsum reprehenderit in et deserunt.",
+    "lob": "LOB Banking",
+    "skills": [
+      "Kommunikation",
+      "C++",
+      "Datenbanken",
+      "Spring",
+      "Excel"
+    ],
+    "client": "ING-Diba",
+    "location": "Essen",
+    "begin": "2019-11-11T12:47:53.798Z",
+    "end": "2019-12-07T23:25:00.699Z",
+    "elongation": true,
+    "effort": 446
+  },
+  {
+    "id": "STF-2909",
+    "type": "Staffinganfrage",
+    "tags": "",
+    "job": "In non sint proident do enim incididunt nisi. Aliqua proident pariatur voluptate Lorem amet reprehenderit. Cillum in esse elit mollit et dolor commodo nisi incididunt nulla dolore labore exercitation.",
+    "lob": "LOB Insurance",
+    "skills": [
+      "Datenbanken",
+      "Excel"
+    ],
+    "client": "comdirect",
+    "location": "Essen",
+    "begin": "2019-03-05T01:23:35.090Z",
+    "end": "2019-06-07T20:27:07.770Z",
+    "elongation": true,
+    "effort": 901
+  }
+]
