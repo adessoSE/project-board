@@ -7,8 +7,10 @@ import { AdminUiComponent } from './admin-ui/admin-ui.component';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { EmployeeService } from './employee.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { EmployeeService } from './services/employee.service';
+import { ProjectResolverService } from './services/project-resolver.service';
+import { ProjectService } from './services/project.service';
 import { UserUiComponent } from './user-ui/user-ui.component';
 
 @NgModule({
@@ -26,7 +28,8 @@ import { UserUiComponent } from './user-ui/user-ui.component';
     HttpClientModule
   ],
   providers: [
-    EmployeeService
+    EmployeeService,
+    ProjectService
   ],
   bootstrap: [AppComponent]
 })

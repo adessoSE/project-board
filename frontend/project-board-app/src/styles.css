@@ -1,5 +1,5 @@
 .background-inner {
   background: white;
-  box-shadow: 5px 5px 5px grey;
+  box-shadow: 0 0 10px 3px grey;
   min-height: 100vh;
 }

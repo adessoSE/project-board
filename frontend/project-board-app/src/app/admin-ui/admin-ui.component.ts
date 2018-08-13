@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { EmployeeService } from '../employee.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Employee, EmployeeService } from '../services/employee.service';
 
 @Component({
   selector: 'app-admin-ui',
@@ -7,16 +8,22 @@ import { EmployeeService } from '../employee.service';
   styleUrls: ['./admin-ui.component.css']
 })
 export class AdminUiComponent implements OnInit {
-  // duration = 0;
-  employees = [];
+  employees: Employee[] = [];
   options = [];
 
-  selectedEmployee: any;
+  selectedEmployee: Employee;
 
-  constructor(private employeeService: EmployeeService) { }
+  constructor(private employeeService: EmployeeService, private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
-    this.loadEmployees();
+    this.route.data.subscribe((data: { employees: Employee[] }) => {
+      this.employees = data.employees;
+      this.route.params.subscribe(params => {
+        if (params.id) {
+          this.setSelectedEmployee(params.id);
+        }
+      });
+    });
     for (let i = 1; i < 29; i++)
       this.options.push(i);
   }
@@ -31,7 +38,18 @@ export class AdminUiComponent implements OnInit {
     this.selectedEmployee.duration = null;
   }
 
-  private loadEmployees() {
-    this.employeeService.getEmployees().subscribe(e => {this.employees = e;});
+  private setSelectedEmployee(employeeId) {
+    for (let e of this.employees) {
+      if (e.id == employeeId) {
+        this.selectedEmployee = e;
+        return;
+      }
+    }
+    this.selectedEmployee = null;
+  }
+
+  employeeClicked(e) {
+    this.selectedEmployee = e;
+    this.router.navigate([`/admin/${e.id}`]);
   }
 }

@@ -3,7 +3,7 @@
   <div class="col-6">
     <h4>Liste mit Personen</h4>
     <div class="list-group">
-      <button (click)="selectedEmployee = e" type="button" *ngFor="let e of employees" class="list-group-item list-group-item-action">
+      <button (click)="employeeClicked(e)" type="button" *ngFor="let e of employees" [ngClass]="{'list-group-item list-group-item-action': true, 'active': e.id == selectedEmployee?.id}">
         <span [ngClass]="{'badge badge-width': true, 'badge-success': e.enabled, 'badge-danger badge-red': !e.enabled}">{{e.duration || '0'}}</span>
         {{e.fullName}}
       </button>
