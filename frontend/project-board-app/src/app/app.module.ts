@@ -12,13 +12,15 @@ import { EmployeeService } from './services/employee.service';
 import { ProjectResolverService } from './services/project-resolver.service';
 import { ProjectService } from './services/project.service';
 import { UserUiComponent } from './user-ui/user-ui.component';
+import { LoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     AdminUiComponent,
     PageNotFoundComponent,
-    UserUiComponent
+    UserUiComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
