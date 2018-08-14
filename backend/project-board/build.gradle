@@ -33,7 +33,12 @@ dependencies {
 			[group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: "${springBootVersion}"]
 	)
 
-	compileOnly(group: 'org.projectlombok', name: 'lombok', version: "${lombokVersion}")
+	compileOnly(
+			[group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: "${springBootVersion}"],
+			[group: 'org.projectlombok', name: 'lombok', version: "${lombokVersion}"]
+	)
+
+	annotationProcessor(group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: "${springBootVersion}")
 
 	runtime('org.springframework.boot:spring-boot-devtools')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
