@@ -40,6 +40,10 @@ dependencies {
 
 	annotationProcessor(group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: "${springBootVersion}")
 
-	runtime('org.springframework.boot:spring-boot-devtools')
+	runtime(
+			[group: 'org.springframework.boot', name: 'spring-boot-devtools', version: "{$springBootVersion}"],
+			[group: 'org.hsqldb', name: 'hsqldb', version: '2.4.1'],
+	)
+
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
