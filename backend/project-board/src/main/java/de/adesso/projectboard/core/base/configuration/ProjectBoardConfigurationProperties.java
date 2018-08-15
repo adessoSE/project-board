@@ -1,5 +1,7 @@
-package de.adesso.projectboard.core.configuration;
+package de.adesso.projectboard.core.base.configuration;
 
+import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
+import de.adesso.projectboard.core.project.persistence.JiraProject;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -16,5 +18,12 @@ public class ProjectBoardConfigurationProperties {
      * minutes.
      */
     private long refreshInterval = 30L;
+
+    /**
+     * The maximum number of days to update.
+     */
+    private long maxUpdateDays = 30L;
+
+    private Class<? extends AbstractProject> projectClass = JiraProject.class;
 
 }

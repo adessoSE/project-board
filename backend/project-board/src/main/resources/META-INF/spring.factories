@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  de.adesso.projectboard.core.configuration.ProjectBoardAutoConfiguration
+  de.adesso.projectboard.core.base.configuration.ProjectBoardAutoConfiguration

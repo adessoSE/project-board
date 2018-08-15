@@ -1,9 +1,8 @@
-package de.adesso.projectboard.core.base.project;
+package de.adesso.projectboard.core.base.project.persistence;
 
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
@@ -16,8 +15,5 @@ public abstract class AbstractProject {
     @Id
     @GeneratedValue
     private long id;
-
-    @Column(name = "TITLE")
-    private String title;
 
 }

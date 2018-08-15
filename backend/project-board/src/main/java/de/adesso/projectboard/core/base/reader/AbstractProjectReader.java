@@ -1,14 +1,12 @@
 package de.adesso.projectboard.core.base.reader;
 
-import de.adesso.projectboard.core.base.project.AbstractProject;
+import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public abstract class AbstractProjectReader {
+public interface AbstractProjectReader {
 
-    public abstract List<?extends AbstractProject> getUpdatedProjectsSince(LocalDateTime dateTime);
-
-    public abstract List<? extends AbstractProjectReader> getAllProjectsSince(LocalDateTime dateTime);
+    List<? extends AbstractProject> getAllProjectsSince(LocalDateTime dateTime) throws Exception;
 
 }
