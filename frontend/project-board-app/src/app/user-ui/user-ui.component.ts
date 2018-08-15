@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Project, ProjectService } from '../services/project.service';
+import { Project, ProjectService } from '../_services/project.service';
 
 @Component({
   selector: 'app-user-ui',

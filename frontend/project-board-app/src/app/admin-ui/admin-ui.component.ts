@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Employee, EmployeeService } from '../services/employee.service';
+import { Employee, EmployeeService } from '../_services/employee.service';
 
 @Component({
   selector: 'app-admin-ui',
