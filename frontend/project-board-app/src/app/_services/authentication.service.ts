@@ -27,11 +27,11 @@ export class AuthenticationService {
   // }
 
   login(username: string, password: string) {
-    // this.oAuthService.initImplicitFlow();
     console.log('name pwd', username, password);
-    this.oAuthService.fetchTokenUsingPasswordFlow(username, password).then(() => {
+    return from(this.oAuthService.fetchTokenUsingPasswordFlow(username, password).then(() => {
       console.log('load profile');
       // Loading data about the user
+      this.oAuthService.oidc = false;
       return this.oAuthService.loadUserProfile();
     }).then((profile) => {
       console.log('profile', profile);
@@ -39,20 +39,7 @@ export class AuthenticationService {
       let claims: any = this.oAuthService.getIdentityClaims();
       if (claims) console.log('identity claims: given_name', claims.given_name);
       return profile;
-    });
-    // // this.oAuthService.initImplicitFlow();
-    // console.log('name pwd', username, password);
-    // return from(this.oAuthService.fetchTokenUsingPasswordFlow(username, password).then(() => {
-    //   console.log('load profile');
-    //   // Loading data about the user
-    //   return this.oAuthService.loadUserProfile();
-    // }).then((profile) => {
-    //   console.log('profile', profile);
-    //   // Using the loaded user data
-    //   let claims: any = this.oAuthService.getIdentityClaims();
-    //   if (claims) console.log('identity claims: given_name', claims.given_name);
-    //   return profile;
-    // }));
+    }));
   }
 
   logout() {

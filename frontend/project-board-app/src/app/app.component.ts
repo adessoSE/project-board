@@ -28,8 +28,10 @@ export class AppComponent {
     this.oauthService.setStorage(sessionStorage);
 
     // Discovery Document of your AuthServer as defined by OIDC
+    // let url = 'http://localhost:8080/auth/realms/adesso/.well-known/openid-configuration';
     let url = 'http://172.20.22.47:8180/auth/realms/adesso/.well-known/openid-configuration';
 
+    // this.oauthService.issuer = 'http://localhost:8080/auth/realms/adesso';
     this.oauthService.issuer = 'http://172.20.22.47:8180/auth/realms/adesso';
 
     // Load Discovery Document and then try to login the user
