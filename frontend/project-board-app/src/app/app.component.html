@@ -13,6 +13,9 @@
         <li class="nav-item">
           <a class="nav-link" routerLink="/admin">Führungskräfte-UI</a>
         </li>
+        <li *ngIf="showLogout()" class="nav-item">
+          <a class="nav-link" routerLink="/login" (click)="logout()">Logout</a>
+        </li>
       </ul>
     </div>
   </nav>

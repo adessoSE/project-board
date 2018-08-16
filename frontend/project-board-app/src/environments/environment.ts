@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  authUrl: 'http://172.20.22.47:8180'
+  authHost: 'http://localhost:8080'
 };
 
 /*

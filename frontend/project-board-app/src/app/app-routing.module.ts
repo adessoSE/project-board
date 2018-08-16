@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AuthGuard } from './_guards/auth.guard';
 import { AdminUiComponent } from './admin-ui/admin-ui.component';
 import { LoginComponent } from './login/login.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
@@ -17,28 +18,32 @@ const routes: Routes = [
     component: AdminUiComponent,
     resolve: {
       employees: EmployeeResolverService
-    }
+    },
+    canActivate: [AuthGuard]
   },
   {
     path: 'admin',
     component: AdminUiComponent,
     resolve: {
       employees: EmployeeResolverService
-    }
+    },
+    canActivate: [AuthGuard]
   },
   {
     path: 'projects/:id',
     component: UserUiComponent,
     resolve: {
       projects: ProjectResolverService
-    }
+    },
+    canActivate: [AuthGuard]
   },
   {
     path: 'projects',
     component: UserUiComponent,
     resolve: {
       projects: ProjectResolverService
-    }
+    },
+    canActivate: [AuthGuard]
   },
   {
     path: '',
