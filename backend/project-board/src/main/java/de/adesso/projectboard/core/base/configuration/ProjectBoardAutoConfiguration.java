@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ProjectBoardAutoConfiguration {
 
-    @Bean
+    @Bean(name = "projectReaderBean")
     @ConditionalOnMissingBean(AbstractProjectReader.class)
     @Autowired
     public JiraProjectReader restReader(RestTemplateBuilder builder, JiraProjectReaderConfigurationProperties properties) {
