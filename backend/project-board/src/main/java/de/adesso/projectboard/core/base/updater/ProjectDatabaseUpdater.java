@@ -16,6 +16,9 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/**
+ * The central {@link Service} to update the projects in the database.
+ */
 @Service
 public class ProjectDatabaseUpdater {
 
@@ -40,12 +43,17 @@ public class ProjectDatabaseUpdater {
         this.projectRepository = projectRepository;
         this.projectReader = projectReader;
 
-        this.refreshIntervalDuration = Duration.ofSeconds(properties.getRefreshInterval());
+        this.refreshIntervalDuration = Duration.ofMinutes(properties.getRefreshInterval());
         this.maxUpdateDuration = Duration.ofDays(properties.getMaxUpdateDays());
 
         this.logger = LoggerFactory.getLogger(getClass());
     }
 
+    /**
+     * Refreshes the project database by using a {@link AbstractProjectReader}.
+     *
+     * @see #shouldUpdate(ProjectDatabaseUpdaterInfo)
+     */
     @Scheduled(fixedDelay = 10000L)
     public void refreshProjectDatabase() {
         ProjectDatabaseUpdaterInfo lastSuccessfulUpdate = infoRepository.findFirstByStatusOrderByTimeDesc(ProjectDatabaseUpdaterInfo.Status.SUCCESS);
@@ -68,6 +76,17 @@ public class ProjectDatabaseUpdater {
 
     }
 
+    /**
+     *
+     * @param lastUpdate
+     *          The {@link ProjectDatabaseUpdaterInfo} object of the last successful update.
+     *
+     * @return
+     *          <i>true</i> if {@code lastUpdate} is {@literal null} or the difference between
+     *          {@link LocalDateTime#now() now} and {@link ProjectDatabaseUpdaterInfo#getTime()}
+     *          is longer than {@link ProjectBoardConfigurationProperties#getRefreshInterval()}
+     *          minutes.
+     */
     private boolean shouldUpdate(ProjectDatabaseUpdaterInfo lastUpdate) {
         if(lastUpdate == null) {
             return true;
@@ -78,6 +97,19 @@ public class ProjectDatabaseUpdater {
         return refreshIntervalDuration.compareTo(lastUpdateDeltaDuration) <= 0;
     }
 
+    /**
+     *
+     * @param lastUpdate
+     *          The {@link ProjectDatabaseUpdaterInfo} object of the last successful update.
+     *
+     * @return
+     *          The {@link LocalDateTime} of when the last update was performed. Either the
+     *          {@link ProjectDatabaseUpdaterInfo#getTime() time} of the {@code lastUpdate}
+     *          object or the current time minus the
+     *          {@link ProjectBoardConfigurationProperties#getMaxUpdateDays() max amount of days}
+     *          when {@code lastUpdate} is {@literal null} or the {@link ProjectDatabaseUpdaterInfo#getTime() time}
+     *          is more than {@link ProjectBoardConfigurationProperties#getMaxUpdateDays()} away.
+     */
     private LocalDateTime getLastUpdateTime(ProjectDatabaseUpdaterInfo lastUpdate) {
         if(lastUpdate != null) {
             Duration updateDelta = Duration.between(LocalDateTime.now(), lastUpdate.getTime());

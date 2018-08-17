@@ -6,6 +6,12 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * A info object for the {@link de.adesso.projectboard.core.base.updater.ProjectDatabaseUpdater}
+ * to persist information about the project database updates.
+ *
+ * @see ProjectDatabaseUpdaterInfoRepository
+ */
 @Table(name = "PROJECT_DATABASE_UPDATER_INFO")
 @Entity
 @Getter
@@ -23,7 +29,7 @@ public class ProjectDatabaseUpdaterInfo {
     private Status status;
 
     protected ProjectDatabaseUpdaterInfo() {
-        // no-arg constructor for JPA
+        // protected no-arg constructor for JPA
     }
 
     public ProjectDatabaseUpdaterInfo(LocalDateTime time, Status status) {

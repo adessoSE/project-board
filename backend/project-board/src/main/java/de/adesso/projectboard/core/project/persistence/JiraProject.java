@@ -5,16 +5,19 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
 import de.adesso.projectboard.core.project.deserializer.date.CreatedUpdatedDateDeserializer;
-import de.adesso.projectboard.core.project.deserializer.date.StartEndDateDeserializer;
 import de.adesso.projectboard.core.project.deserializer.field.ObjectNameDeserializer;
 import de.adesso.projectboard.core.project.deserializer.field.ObjectValueDeserializer;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * A {@link AbstractProject} that is used by the {@link de.adesso.projectboard.core.reader.JiraProjectReader}.
+ *
+ * @see de.adesso.projectboard.core.reader.JiraProjectReader
+ */
 @Entity
 @Table(name = "JIRA_PROJECT")
 @Getter
@@ -52,13 +55,11 @@ public class JiraProject extends AbstractProject {
     @JsonAlias("customfield_10297")
     private String location;
 
-    @JsonDeserialize(using = StartEndDateDeserializer.class)
     @JsonAlias("customfield_10293")
-    private LocalDate operationStart;
+    private String operationStart;
 
-    @JsonDeserialize(using = StartEndDateDeserializer.class)
     @JsonAlias("customfield_10294")
-    private LocalDate operationEnd;
+    private String operationEnd;
 
     @JsonAlias("customfield_10284")
     private String work;

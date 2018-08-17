@@ -4,11 +4,16 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
-import de.adesso.projectboard.core.project.deserializer.date.DateDeserializer;
 
 import java.io.IOException;
 import java.time.LocalDate;
 
+/**
+ * A {@link DateDeserializer} that uses a {@value DATE_PATTERN} pattern to parse
+ * a {@link LocalDate} from a string.
+ *
+ * @see de.adesso.projectboard.core.project.persistence.JiraProject
+ */
 public class StartEndDateDeserializer extends DateDeserializer<LocalDate> {
 
     private static final String DATE_PATTERN = "dd.MM.yy";

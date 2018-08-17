@@ -5,6 +5,11 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * The configuration properties for the {@link JiraProjectReader}.
+ *
+ * @see JiraProjectReader
+ */
 @ConfigurationProperties(prefix = "jira")
 @Configuration
 @Getter
@@ -12,17 +17,18 @@ import org.springframework.context.annotation.Configuration;
 public class JiraProjectReaderConfigurationProperties {
 
     /**
-     *
+     * The request URL for jira. The JQL query gets appended
+     * to this URL.
      */
-    private String jiraRequestURL = "";
+    private String jiraRequestUrl = "";
 
     /**
-     * The username to use in the requests.
+     * The username to use for authorization.
      */
     private String username = "";
 
     /**
-     * The password to use in the requests.
+     * The password to use for authorization.
      */
     private String password = "";
 

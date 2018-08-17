@@ -12,7 +12,8 @@ public enum JqlComparator {
     LESS_OR_EQUAL("<="),
     EQUAL("="),
     GREATER_OR_EQUAL(">="),
-    GREATER(">");
+    GREATER(">"),
+    IN("IN");
 
     private final String stringValue;
 

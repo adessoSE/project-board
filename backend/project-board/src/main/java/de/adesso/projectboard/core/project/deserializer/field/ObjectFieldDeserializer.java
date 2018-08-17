@@ -8,6 +8,11 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 
 import java.io.IOException;
 
+/**
+ * A {@link StdDeserializer} that returns a string value of a field inside a json object.
+ *
+ * @see de.adesso.projectboard.core.project.persistence.JiraProject
+ */
 public abstract class ObjectFieldDeserializer extends StdDeserializer<String> {
 
     private final String fieldName;
