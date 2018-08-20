@@ -19,6 +19,7 @@ import { LoginComponent } from './login/login.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { UserUiComponent } from './user-ui/user-ui.component';
 import { YesOrNoPipe } from './_pipes/yes-or-no.pipe';
+import { ProjectDetailsComponent } from './project-details/project-details.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { YesOrNoPipe } from './_pipes/yes-or-no.pipe';
     UserUiComponent,
     LoginComponent,
     AlertComponent,
-    YesOrNoPipe
+    YesOrNoPipe,
+    ProjectDetailsComponent
   ],
   imports: [
     BrowserModule,

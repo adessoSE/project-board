@@ -1,6 +1,7 @@
 import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { $ } from 'jquery';
 import { Project, ProjectService } from '../_services/project.service';
 
 @Component({
@@ -11,10 +12,13 @@ import { Project, ProjectService } from '../_services/project.service';
 export class UserUiComponent implements OnInit {
   projects: Project[] = [];
   selectedProject: Project;
+  mobile = false;
 
   constructor(private projectsService: ProjectService, private route: ActivatedRoute, private router: Router, private location: Location) { }
 
   ngOnInit() {
+    this.mobile = window.screen.width <= 425;
+
     this.route.data.subscribe((data: { projects: Project[] }) => {
       this.projects = data.projects;
       this.route.params.subscribe(params => {
@@ -35,9 +39,14 @@ export class UserUiComponent implements OnInit {
     this.selectedProject = null;
   }
 
-  projectClicked(project) {
+  projectClicked(project, btn: HTMLButtonElement) {
     this.selectedProject = project;
     // this.router.navigate([`/projects/${project.id}`]);
     this.location.replaceState(`/projects/${project.id}`);
+    console.log(btn);
+    if(this.mobile) {
+      btn.scrollIntoView(true);
+      // btn.scrollIntoView({block: 'start', behavior: 'smooth'});
+    }
   }
 }

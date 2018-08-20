@@ -6,25 +6,19 @@ h4 {
   margin-bottom: 2rem;
 }
 
-button,
-button span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .sticky {
   top: 5rem;
   position: sticky;
 }
 
 @include media-breakpoint-down(md) {
+
 }
 
 @include media-breakpoint-down(sm) {
   .sticky {
-    margin: 1rem -15px 0;
     padding: 15px;
+    border: none;
     border-top: 2px solid darkgrey;
     background-color: lightgrey;
   }
