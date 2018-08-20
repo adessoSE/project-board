@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Project, ProjectService } from '../_services/project.service';
@@ -5,13 +6,13 @@ import { Project, ProjectService } from '../_services/project.service';
 @Component({
   selector: 'app-user-ui',
   templateUrl: './user-ui.component.html',
-  styleUrls: ['./user-ui.component.css']
+  styleUrls: ['./user-ui.component.scss']
 })
 export class UserUiComponent implements OnInit {
   projects: Project[] = [];
   selectedProject: Project;
 
-  constructor(private projectsService: ProjectService, private route: ActivatedRoute, private router: Router) { }
+  constructor(private projectsService: ProjectService, private route: ActivatedRoute, private router: Router, private location: Location) { }
 
   ngOnInit() {
     this.route.data.subscribe((data: { projects: Project[] }) => {
@@ -36,6 +37,7 @@ export class UserUiComponent implements OnInit {
 
   projectClicked(project) {
     this.selectedProject = project;
-    this.router.navigate([`/projects/${project.id}`]);
+    // this.router.navigate([`/projects/${project.id}`]);
+    this.location.replaceState(`/projects/${project.id}`);
   }
 }

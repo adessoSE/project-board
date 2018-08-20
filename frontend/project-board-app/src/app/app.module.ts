@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { OAuthModule } from 'angular-oauth2-oidc';
 import { AlertComponent } from './_directives/alert/alert.component';
 import { AuthGuard } from './_guards/auth.guard';
@@ -34,7 +33,6 @@ import { YesOrNoPipe } from './_pipes/yes-or-no.pipe';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    NgbModule.forRoot(),
     FontAwesomeModule,
     HttpClientModule,
     FormsModule,

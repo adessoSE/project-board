@@ -1,0 +1,33 @@
+@import './variables';
+@import './mixins';
+@import 'functions';
+@import '../../../node_modules/bootstrap/scss/variables';
+@import '../../../node_modules/bootstrap/scss/mixins';
+
+@include media-breakpoint-down(md) {
+  .display-1 {
+    font-size: 4rem;
+    color: red;
+  }
+  .display-3 {
+    font-size: 2.5rem;
+    color: red;
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  .display-1 {
+    font-size: 3rem;
+    color: green;
+  }
+  .display-3 {
+    font-size: 2rem;
+    color: green;
+  }
+}
+
+.background-inner {
+  background: white;
+  box-shadow: 0 0 10px 3px grey;
+  min-height: 100vh;
+}

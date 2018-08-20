@@ -1,3 +1,4 @@
+import { Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Employee, EmployeeService } from '../_services/employee.service';
@@ -5,7 +6,7 @@ import { Employee, EmployeeService } from '../_services/employee.service';
 @Component({
   selector: 'app-admin-ui',
   templateUrl: './admin-ui.component.html',
-  styleUrls: ['./admin-ui.component.css']
+  styleUrls: ['./admin-ui.component.scss']
 })
 export class AdminUiComponent implements OnInit {
   employees: Employee[] = [];
@@ -13,7 +14,7 @@ export class AdminUiComponent implements OnInit {
 
   selectedEmployee: Employee;
 
-  constructor(private employeeService: EmployeeService, private route: ActivatedRoute, private router: Router) { }
+  constructor(private employeeService: EmployeeService, private route: ActivatedRoute, private router: Router, private location: Location) { }
 
   ngOnInit() {
     this.route.data.subscribe((data: { employees: Employee[] }) => {
@@ -50,6 +51,7 @@ export class AdminUiComponent implements OnInit {
 
   employeeClicked(e) {
     this.selectedEmployee = e;
-    this.router.navigate([`/admin/${e.id}`]);
+    // this.router.navigate([`/admin/${e.id}`]);
+    this.location.replaceState(`/admin/${e.id}`);
   }
 }
