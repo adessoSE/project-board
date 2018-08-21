@@ -12,3 +12,13 @@ button span {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+@include media-breakpoint-down(sm) {
+  h4 {
+    padding-left: 15px;
+  }
+
+  .col-md-6 {
+    padding: 0;
+  }
+}

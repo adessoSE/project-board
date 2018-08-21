@@ -2,7 +2,7 @@
 <div class="row mt-4">
   <div class="col-md-6">
     <h4>Projekte</h4>
-    <div class="list-group pb-3">
+    <div class="list-group">
       <ng-container *ngFor="let p of projects" >
         <button #btn id="{{p.id}}" (click)="projectClicked(p)" type="button" [ngClass]="{'list-group-item list-group-item-action': true, 'active': p.id == selectedProject?.id}">
           <span><b>{{p.id}}:</b> {{p.job}}</span>
