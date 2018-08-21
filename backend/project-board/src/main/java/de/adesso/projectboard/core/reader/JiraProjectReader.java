@@ -56,7 +56,7 @@ public class JiraProjectReader implements AbstractProjectReader {
      *          A List of {@link JiraProject}s that were created/modified since {@code dateTime}.
      *
      * @throws Exception
-     *          When a exception occurs.
+     *          When a failureReason occurs.
      */
     @Override
     public List<? extends AbstractProject> getAllProjectsSince(LocalDateTime dateTime) throws Exception {
@@ -66,8 +66,7 @@ public class JiraProjectReader implements AbstractProjectReader {
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(requestUrl, String.class);
 
         if(!responseEntity.getStatusCode().is2xxSuccessful()) {
-            // TODO: throw appropriate exception
-            throw new IllegalStateException(String.format("Status code was %d", responseEntity.getStatusCode().value()));
+            throw new IllegalStateException(String.format("Request status code was %d", responseEntity.getStatusCode().value()));
         }
 
         ObjectMapper mapper = new ObjectMapper();
