@@ -9,8 +9,7 @@ export class AuthenticationService {
   }
 
   login(username: string, password: string) {
-    console.log('name pwd', username, password);
-    return from(this.oAuthService.fetchTokenUsingPasswordFlow(username, password).then((xyz) => {
+    return from(this.oAuthService.fetchTokenUsingPasswordFlow(username, password).then(() => {
       // Loading data about the user
       return this.oAuthService.loadUserProfile();
     }));
