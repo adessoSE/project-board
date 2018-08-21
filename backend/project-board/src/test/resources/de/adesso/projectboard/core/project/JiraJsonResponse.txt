@@ -32,6 +32,7 @@
         "updated": "2018-01-02T13:37:00.000+0200",
         "description": "Testdescription 1",
         "summary": "Testsummary 1",
+        "customfield_10304": "Testother 1",
         "customfield_unknown": "Fail"
       }
     },
@@ -63,6 +64,7 @@
         "updated": "2018-01-02T13:37:00.000+0200",
         "description": "Testdescription 2",
         "summary": "Testsummary 2",
+        "customfield_10304": "Testother 2",
         "customfield_unknown": "Fail"
       }
     }

@@ -1,4 +1,4 @@
-package de.adesso.projectboard;
+package de.adesso.projectboard.core.project;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -50,31 +50,33 @@ public class JiraIssueJsonSerializationTests {
         assertEquals(LocalDateTime.of(2018, 1, 1, 13, 37, 0), firstProject.getCreated());
         assertEquals(LocalDateTime.of(2018, 1, 2, 13, 37, 0), firstProject.getUpdated());
         assertEquals("Testfreelancer 1", firstProject.getFreelancer());
+        assertEquals("Testother 1", firstProject.getOther());
 
 
-        JiraProject second = projectList.get(1);
+        JiraProject secondProject = projectList.get(1);
 
-        assertEquals(2L, second.getId());
-        assertEquals("Teststatus 2", second.getStatus());
-        assertEquals("Testissuetype 2", second.getIssuetype());
-        assertEquals("Testkey 2", second.getKey());
-        assertEquals("Testsummary 2", second.getTitle());
-        assertEquals("Testexcercise 2", second.getExercise());
-        assertEquals("Testskills 2", second.getSkills());
-        assertEquals("Testdescription 2", second.getDescription());
-        assertEquals("Testlob 2", second.getLob());
-        assertEquals("Testcustomer 2", second.getCustomer());
-        assertEquals("Testlocation 2", second.getLocation());
-        assertEquals("02.01.2018", second.getOperationStart());
-        assertEquals("02.02.2018", second.getOperationEnd());
-        assertEquals("Testwork 2", second.getWork());
-        assertEquals(LocalDateTime.of(2018, 1, 1, 13, 37, 0), second.getCreated());
-        assertEquals(LocalDateTime.of(2018, 1, 2, 13, 37, 0), second.getUpdated());
-        assertEquals("Testfreelancer 2", second.getFreelancer());
+        assertEquals(2L, secondProject.getId());
+        assertEquals("Teststatus 2", secondProject.getStatus());
+        assertEquals("Testissuetype 2", secondProject.getIssuetype());
+        assertEquals("Testkey 2", secondProject.getKey());
+        assertEquals("Testsummary 2", secondProject.getTitle());
+        assertEquals("Testexcercise 2", secondProject.getExercise());
+        assertEquals("Testskills 2", secondProject.getSkills());
+        assertEquals("Testdescription 2", secondProject.getDescription());
+        assertEquals("Testlob 2", secondProject.getLob());
+        assertEquals("Testcustomer 2", secondProject.getCustomer());
+        assertEquals("Testlocation 2", secondProject.getLocation());
+        assertEquals("02.01.2018", secondProject.getOperationStart());
+        assertEquals("02.02.2018", secondProject.getOperationEnd());
+        assertEquals("Testwork 2", secondProject.getWork());
+        assertEquals(LocalDateTime.of(2018, 1, 1, 13, 37, 0), secondProject.getCreated());
+        assertEquals(LocalDateTime.of(2018, 1, 2, 13, 37, 0), secondProject.getUpdated());
+        assertEquals("Testfreelancer 2", secondProject.getFreelancer());
+        assertEquals("Testother 2", secondProject.getOther());
     }
 
     private List<JiraProjectReader.JiraIssue> getIssueListFromFile() throws IOException {
-        URL url = this.getClass().getResource("/JiraJsonResponse.txt");
+        URL url = this.getClass().getResource("/de/adesso/projectboard/core/project/JiraJsonResponse.txt");
         File testJsonFile = new File(url.getFile());
 
         String text = new String(Files.readAllBytes(testJsonFile.toPath()), StandardCharsets.UTF_8);

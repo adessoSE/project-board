@@ -79,4 +79,7 @@ public class JiraProject extends AbstractProject {
     @JsonAlias("customfield_10290")
     private String freelancer;
 
+    @JsonAlias("customfield_10304")
+    private String other;
+
 }
