@@ -1,0 +1,72 @@
+{
+  "expand": "schema,names",
+  "startAt": 0,
+  "maxResults": 3,
+  "total": 10,
+  "issues": [
+    {
+      "id": "1",
+      "key": "Testkey 1",
+      "fields": {
+        "labels": [],
+        "status": {
+          "name": "Teststatus 1"
+        },
+        "customfield_10290": {
+          "value": "Testfreelancer 1"
+        },
+        "customfield_10292": {
+          "value": "Testlob 1"
+        },
+        "customfield_10293": "01.01.2018",
+        "customfield_10294": "01.02.2018",
+        "customfield_10296": "Testskills 1",
+        "customfield_10297": "Testlocation 1",
+        "customfield_10284": "Testwork 1",
+        "customfield_10288": "Testexcercise 1",
+        "issuetype": {
+          "name": "Testissuetype 1"
+        },
+        "customfield_10279": "Testcustomer 1",
+        "created": "2018-01-01T13:37:00.000+0200",
+        "updated": "2018-01-02T13:37:00.000+0200",
+        "description": "Testdescription 1",
+        "summary": "Testsummary 1",
+        "customfield_10304": "Testother 1",
+        "customfield_unknown": "Fail"
+      }
+    },
+    {
+      "id": "2",
+      "key": "Testkey 2",
+      "fields": {
+        "labels": [],
+        "status": {
+          "name": "Teststatus 2"
+        },
+        "customfield_10290": {
+          "value": "Testfreelancer 2"
+        },
+        "customfield_10292": {
+          "value": "Testlob 2"
+        },
+        "customfield_10293": "02.01.2018",
+        "customfield_10294": "02.02.2018",
+        "customfield_10296": "Testskills 2",
+        "customfield_10297": "Testlocation 2",
+        "customfield_10284": "Testwork 2",
+        "customfield_10288": "Testexcercise 2",
+        "issuetype": {
+          "name": "Testissuetype 2"
+        },
+        "customfield_10279": "Testcustomer 2",
+        "created": "2018-01-01T13:37:00.000+0200",
+        "updated": "2018-01-02T13:37:00.000+0200",
+        "description": "Testdescription 2",
+        "summary": "Testsummary 2",
+        "customfield_10304": "Testother 2",
+        "customfield_unknown": "Fail"
+      }
+    }
+  ]
+}
