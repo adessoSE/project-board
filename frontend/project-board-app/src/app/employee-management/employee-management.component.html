@@ -1,0 +1,39 @@
+<div class="sticky">
+  <h4>Details</h4>
+  <div *ngIf="selectedEmployee" class="details">
+    <div class="row">
+      <div class="col-4">Name:</div>
+      <div class="col right">{{selectedEmployee.fullName}}</div>
+      <br>
+    </div>
+    <div class="row">
+      <div class="col-4">Status:</div>
+      <div class="col right">{{selectedEmployee.enabled ? 'Aktiviert' : 'Deaktiviert'}}</div>
+      <br>
+    </div>
+    <div [ngClass]="{'row': true, 'disabled': !selectedEmployee.enabled}">
+      <div class="col-4">Dauer der Freischaltung:</div>
+      <div class="col right">{{selectedEmployee.duration ? selectedEmployee.duration + ' Tag(e)' : '-'}}</div>
+    </div>
+    <div class="row">
+      <div class="col-4">Email:</div>
+      <div class="col right">{{selectedEmployee.email}}</div>
+    </div>
+
+    <div class="mt-2 pt-1 border-top">
+      <form *ngIf="!selectedEmployee.enabled">
+        <div class="form-group">
+          <label class="select-label" for="durationSelect">Dauer der Freischaltung</label>
+          <select #duration required class="select form-control" id="durationSelect">
+            <option *ngFor="let option of options">{{option}}</option>
+          </select>
+          <button (click)="activate(duration)" class="btn btn-primary btn-activate">Zugang aktivieren</button>
+        </div>
+      </form>
+      <div>
+        <button (click)="deactivate()" *ngIf="selectedEmployee.enabled" class="btn btn-danger btn-deactivate">Zugang deaktivieren</button>
+      </div>
+    </div>
+  </div>
+  <p *ngIf="!selectedEmployee">Kein Mitarbeiter ausgewählt.</p>
+</div>

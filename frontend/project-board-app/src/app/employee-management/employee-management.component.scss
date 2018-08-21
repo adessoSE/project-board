@@ -1,0 +1,52 @@
+@import 'functions';
+@import '../../../node_modules/bootstrap/scss/variables';
+@import '../../../node_modules/bootstrap/scss/mixins';
+
+h4 {
+  margin-bottom: 2rem;
+}
+
+.sticky {
+  top: 5rem;
+  position: sticky;
+}
+
+.disabled {
+  color: lightgrey;
+}
+
+.details p {
+  display: inline-block;
+}
+
+.btn-activate {
+  display: inline-block;
+  vertical-align: top;
+  margin-left: 1rem;
+}
+
+.btn-deactivate {
+  margin-top: 32px;
+}
+
+.select {
+  display: inline-block;
+  width: auto;
+}
+
+.form-group {
+  margin: 0;
+}
+
+.select-label {
+  display: block;
+}
+
+@include media-breakpoint-down(sm) {
+  .sticky {
+    top: 0;
+    position: relative;
+    padding: 15px;
+    box-shadow: 2px 2px 2px 2px grey inset;
+  }
+}
