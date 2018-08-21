@@ -72,7 +72,11 @@ public class ProjectDatabaseUpdater {
         } catch (Exception e) {
             logger.error("Error updating project database!", e);
 
-            infoRepository.save(new ProjectDatabaseUpdaterInfo(LocalDateTime.now(), ProjectDatabaseUpdaterInfo.Status.FAILURE));
+            ProjectDatabaseUpdaterInfo info = new ProjectDatabaseUpdaterInfo(LocalDateTime.now(),
+                    ProjectDatabaseUpdaterInfo.Status.FAILURE,
+                    e);
+
+            infoRepository.save(info);
         }
 
     }

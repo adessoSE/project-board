@@ -1,5 +1,6 @@
 package de.adesso.projectboard.core.base.updater.persistence;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,21 +13,24 @@ import java.time.LocalDateTime;
  *
  * @see ProjectDatabaseUpdaterInfoRepository
  */
-@Table(name = "PROJECT_DATABASE_UPDATER_INFO")
 @Entity
+@Table(name = "PROJECT_DATABASE_UPDATER_INFO")
 @Getter
 @Setter
+@AllArgsConstructor
 public class ProjectDatabaseUpdaterInfo {
 
     @Id
     @GeneratedValue
     private long id;
 
-    @Column(name = "time", nullable = false)
+    @Column(nullable = false)
     private LocalDateTime time;
 
-    @Column(name = "status", nullable = false)
+    @Column(nullable = false)
     private Status status;
+
+    private String failureReason;
 
     protected ProjectDatabaseUpdaterInfo() {
         // protected no-arg constructor for JPA
@@ -35,6 +39,12 @@ public class ProjectDatabaseUpdaterInfo {
     public ProjectDatabaseUpdaterInfo(LocalDateTime time, Status status) {
         this.time = time;
         this.status = status;
+    }
+
+    public ProjectDatabaseUpdaterInfo(LocalDateTime time, Status status, Exception exception) {
+        this.time = time;
+        this.status = status;
+        this.failureReason = exception != null ? exception.toString() : null;
     }
 
     public enum Status {

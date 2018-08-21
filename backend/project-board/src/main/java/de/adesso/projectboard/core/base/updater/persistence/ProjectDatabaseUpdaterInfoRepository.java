@@ -1,6 +1,9 @@
 package de.adesso.projectboard.core.base.updater.persistence;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+
+import java.util.Optional;
 
 /**
  * The corresponding {@link CrudRepository} to persist {@link ProjectDatabaseUpdaterInfo} in a database.
@@ -10,5 +13,8 @@ import org.springframework.data.repository.CrudRepository;
 public interface ProjectDatabaseUpdaterInfoRepository extends CrudRepository<ProjectDatabaseUpdaterInfo, Long> {
 
     ProjectDatabaseUpdaterInfo findFirstByStatusOrderByTimeDesc(ProjectDatabaseUpdaterInfo.Status status);
+
+    @Query("SELECT p FROM ProjectDatabaseUpdaterInfo AS p WHERE p.time = (SELECT MAX(p.time) FROM ProjectDatabaseUpdaterInfo p)")
+    Optional<ProjectDatabaseUpdaterInfo> findLatest();
 
 }
