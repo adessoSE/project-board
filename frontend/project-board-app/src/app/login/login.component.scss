@@ -1,0 +1,9 @@
+@import 'functions';
+@import '../../../node_modules/bootstrap/scss/variables';
+@import '../../../node_modules/bootstrap/scss/mixins';
+
+@include media-breakpoint-down(sm) {
+  .login-div {
+    padding: 30px 30px 0;
+  }
+}
