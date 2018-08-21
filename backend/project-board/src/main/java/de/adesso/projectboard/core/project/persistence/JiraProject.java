@@ -25,12 +25,13 @@ import java.time.LocalDateTime;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JiraProject extends AbstractProject {
 
-    @Column(name = "status")
     @JsonDeserialize(using = ObjectNameDeserializer.class)
     private String status;
 
     @JsonDeserialize(using = ObjectNameDeserializer.class)
     private String issuetype;
+
+    private String key;
 
     @JsonAlias("summary")
     private String title;
