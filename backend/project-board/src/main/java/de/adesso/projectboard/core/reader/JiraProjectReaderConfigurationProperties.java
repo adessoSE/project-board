@@ -17,10 +17,16 @@ import org.springframework.context.annotation.Configuration;
 public class JiraProjectReaderConfigurationProperties {
 
     /**
-     * The request URL for jira. The placeholder
-     * is replaced with the actual JQL query.
+     * The request URL for JIRA. It must contain a java string
+     * placeholder. The string placeholder is replaced
+     * with the actual JQL query.
      */
     private String jiraRequestUrl = "";
+
+    /**
+     * The request URL of the serverInfo API endpoint.
+     */
+    private String jiraServerInfoUrl = "";
 
     /**
      * The username to use for authorization.

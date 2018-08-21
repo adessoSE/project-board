@@ -1,17 +1,15 @@
 package de.adesso.projectboard.core.reader;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
 import de.adesso.projectboard.core.base.reader.AbstractProjectReader;
+import de.adesso.projectboard.core.project.JiraIssue;
 import de.adesso.projectboard.core.project.persistence.JiraProject;
 import de.adesso.projectboard.core.reader.jql.JqlComparator;
 import de.adesso.projectboard.core.reader.jql.JqlQueryStringBuilder;
-import lombok.Getter;
-import lombok.Setter;
+import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -69,17 +67,46 @@ public class JiraProjectReader implements AbstractProjectReader {
             throw new IllegalStateException(String.format("Request status code was %d", responseEntity.getStatusCode().value()));
         }
 
+        // parse the json in the response body
         ObjectMapper mapper = new ObjectMapper();
         JsonParser parser = mapper.getFactory().createParser(responseEntity.getBody());
         JsonNode parsedNode = mapper.readTree(parser);
         JsonNode issueNode = parsedNode.get("issues");
         String issueNodeText = mapper.writeValueAsString(issueNode);
 
+        // deserialize the json in the "issues" field to a list of JiraIssues
         List<JiraIssue> jiraIssueList = Arrays.asList(mapper.readValue(issueNodeText, JiraIssue[].class));
 
         return jiraIssueList.stream()
                 .map(JiraIssue::getProjectWithIdAndKey)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     *
+     * @return
+     *          The {@link Health} of this reader. Depends on the
+     *          status code of the request.
+     *
+     * @see JiraServerInfo
+     */
+    @Override
+    public Health health() {
+        ResponseEntity<JiraServerInfo> responseEntity
+                = restTemplate.getForEntity(properties.getJiraServerInfoUrl(), JiraServerInfo.class);
+
+        if(responseEntity.getStatusCode().is2xxSuccessful()) {
+            JiraServerInfo serverInfo = responseEntity.getBody();
+
+            return Health.up()
+                    .withDetail("serverTitle", serverInfo.getServerTitle())
+                    .withDetail("serverVersion", serverInfo.getVersion())
+                    .build();
+        } else {
+            return Health.down()
+                    .withDetail("status", responseEntity.getStatusCode())
+                    .build();
+        }
     }
 
     /**
@@ -103,29 +130,5 @@ public class JiraProjectReader implements AbstractProjectReader {
                 .and(orQueryBuilder.build())
                 .build();
     }
-
-
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    @Getter
-    @Setter
-    public static class JiraIssue {
-
-        @JsonAlias("id")
-        private String id;
-
-        private String key;
-
-        @JsonAlias("fields")
-        private JiraProject project;
-
-        public JiraProject getProjectWithIdAndKey() {
-            project.setId(Long.parseLong(id));
-            project.setKey(key);
-
-            return project;
-        }
-
-    }
-
 
 }

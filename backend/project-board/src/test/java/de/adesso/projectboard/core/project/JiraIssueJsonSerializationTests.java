@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.adesso.projectboard.core.project.persistence.JiraProject;
-import de.adesso.projectboard.core.reader.JiraProjectReader;
 import org.junit.Test;
 
 import java.io.File;
@@ -23,12 +22,12 @@ public class JiraIssueJsonSerializationTests {
 
     @Test
     public void testDeserializationFromJson() throws IOException {
-        List<JiraProjectReader.JiraIssue> issueList = getIssueListFromFile();
+        List<JiraIssue> issueList = getIssueListFromFile();
 
         assertEquals(2, issueList.size());
 
         List<JiraProject> projectList = issueList.stream()
-                .map(JiraProjectReader.JiraIssue::getProjectWithIdAndKey)
+                .map(JiraIssue::getProjectWithIdAndKey)
                 .collect(Collectors.toList());
 
         JiraProject firstProject = projectList.get(0);
@@ -75,7 +74,7 @@ public class JiraIssueJsonSerializationTests {
         assertEquals("Testother 2", secondProject.getOther());
     }
 
-    private List<JiraProjectReader.JiraIssue> getIssueListFromFile() throws IOException {
+    private List<JiraIssue> getIssueListFromFile() throws IOException {
         URL url = this.getClass().getResource("/de/adesso/projectboard/core/project/JiraJsonResponse.txt");
         File testJsonFile = new File(url.getFile());
 
@@ -88,7 +87,7 @@ public class JiraIssueJsonSerializationTests {
         JsonNode issueNode = parsedNode.get("issues");
         String issueNodeText = mapper.writeValueAsString(issueNode);
 
-        return Arrays.asList(mapper.readValue(issueNodeText, JiraProjectReader.JiraIssue[].class));
+        return Arrays.asList(mapper.readValue(issueNodeText, JiraIssue[].class));
     }
 
 }
