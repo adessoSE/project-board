@@ -9,6 +9,11 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+/**
+ * A {@link HealthIndicator} implementation for the {@link ProjectDatabaseUpdater}.
+ *
+ * @see ProjectDatabaseUpdater
+ */
 @Component
 public class UpdaterHealthIndicator implements HealthIndicator {
 
@@ -19,6 +24,12 @@ public class UpdaterHealthIndicator implements HealthIndicator {
         this.repository = repository;
     }
 
+    /**
+     *
+     * @return
+     *          The {@link Health} of the {@link ProjectDatabaseUpdater}, gives additional
+     *          details about the status.
+     */
     @Override
     public Health health() {
         Optional<ProjectDatabaseUpdaterInfo> lastInfoOptional = repository.findLatest();
@@ -32,6 +43,7 @@ public class UpdaterHealthIndicator implements HealthIndicator {
                         .build();
             } else {
                 return Health.up()
+                        .withDetail("lastUpdate", lastInfo.getTime())
                         .build();
             }
 
