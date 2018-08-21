@@ -20,7 +20,7 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
   constructor(private projectsService: ProjectService, private route: ActivatedRoute, private router: Router, private location: Location) { }
 
   ngOnInit() {
-    this.mobile = window.screen.width <= 425;
+    this.mobile = window.screen.width < 768;
 
     this.route.data.subscribe((data: { projects: Project[] }) => {
       this.projects = data.projects;

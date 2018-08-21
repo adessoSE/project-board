@@ -1,6 +1,7 @@
 import { Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, HostListener, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import * as $ from 'jquery';
 import { Employee, EmployeeService } from '../_services/employee.service';
 
 @Component({
@@ -8,15 +9,20 @@ import { Employee, EmployeeService } from '../_services/employee.service';
   templateUrl: './admin-ui.component.html',
   styleUrls: ['./admin-ui.component.scss']
 })
-export class AdminUiComponent implements OnInit {
+export class AdminUiComponent implements OnInit, AfterViewChecked {
   employees: Employee[] = [];
-  options = [];
-
   selectedEmployee: Employee;
+  mobile = false;
+  scroll = true;
+
+  @HostListener('window:resize') onResize() {
+    this.mobile = window.screen.width < 768;
+  }
 
   constructor(private employeeService: EmployeeService, private route: ActivatedRoute, private router: Router, private location: Location) { }
 
   ngOnInit() {
+    this.mobile = window.screen.width <= 425;
     this.route.data.subscribe((data: { employees: Employee[] }) => {
       this.employees = data.employees;
       this.route.params.subscribe(params => {
@@ -25,18 +31,6 @@ export class AdminUiComponent implements OnInit {
         }
       });
     });
-    for (let i = 1; i < 29; i++)
-      this.options.push(i);
-  }
-
-  activate(duration) {
-    this.selectedEmployee.enabled = true;
-    this.selectedEmployee.duration = duration.value;
-  }
-
-  deactivate() {
-    this.selectedEmployee.enabled = false;
-    this.selectedEmployee.duration = null;
   }
 
   private setSelectedEmployee(employeeId) {
@@ -49,9 +43,23 @@ export class AdminUiComponent implements OnInit {
     this.selectedEmployee = null;
   }
 
-  employeeClicked(e) {
-    this.selectedEmployee = e;
-    // this.router.navigate([`/admin/${e.id}`]);
-    this.location.replaceState(`/admin/${e.id}`);
+  employeeClicked(employee) {
+    if (this.selectedEmployee == employee) {
+      this.location.replaceState(`/admin`);
+      this.selectedEmployee = null;
+      this.scroll = false;
+    } else {
+      this.location.replaceState(`/admin/${employee.id}`);
+      this.selectedEmployee = employee;
+      this.scroll = true;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.mobile && this.scroll && this.selectedEmployee) {
+      let btn = $(`#${this.selectedEmployee.id}`);
+      $('html, body').animate({scrollTop: $(btn).offset().top}, 'slow');
+      this.scroll = false;
+    }
   }
 }

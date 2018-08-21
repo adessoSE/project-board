@@ -1,14 +1,9 @@
+@import 'functions';
+@import '../../../node_modules/bootstrap/scss/variables';
+@import '../../../node_modules/bootstrap/scss/mixins';
+
 h4 {
   margin-bottom: 2rem;
-}
-
-.sticky {
-  top: 5rem;
-  position: sticky;
-}
-
-.disabled {
-  color: lightgrey;
 }
 
 .badge-width {
@@ -19,24 +14,22 @@ h4 {
   color: #dc3545;
 }
 
-.details {
-  /*width: 60%;*/
-}
+@include media-breakpoint-down(sm) {
+  h4 {
+    padding-left: 15px;
+  }
 
-.details p {
-  display: inline-block;
-}
+  .col-md-6 {
+    padding: 0;
+  }
 
-.right {
-  display: inline-block;
-  float: right;
-}
+  .list-group-item {
+    border-left: 0;
+    border-right: 0;
+  }
 
-.select {
-  display: inline-block;
-  width: auto;
-}
-
-.select-label {
-  display: block;
+  .list-group-item:first-child,
+  .list-group-item:last-child {
+    border-radius: 0;
+  }
 }
