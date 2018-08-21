@@ -70,7 +70,7 @@ public class ProjectDatabaseUpdater {
 
             infoRepository.save(new ProjectDatabaseUpdaterInfo(LocalDateTime.now(), ProjectDatabaseUpdaterInfo.Status.SUCCESS));
         } catch (Exception e) {
-            logger.debug(e.toString());
+            logger.error("Error updating project database!", e);
 
             infoRepository.save(new ProjectDatabaseUpdaterInfo(LocalDateTime.now(), ProjectDatabaseUpdaterInfo.Status.FAILURE));
         }

@@ -61,7 +61,9 @@ public class JiraProjectReader implements AbstractProjectReader {
     @Override
     public List<? extends AbstractProject> getAllProjectsSince(LocalDateTime dateTime) throws Exception {
 
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(properties.getJiraRequestUrl() + getJqlQueryString(dateTime), String.class);
+        String requestUrl = String.format(properties.getJiraRequestUrl(), getJqlQueryString(dateTime));
+
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(requestUrl, String.class);
 
         if(!responseEntity.getStatusCode().is2xxSuccessful()) {
             // TODO: throw appropriate exception
@@ -74,11 +76,10 @@ public class JiraProjectReader implements AbstractProjectReader {
         JsonNode issueNode = parsedNode.get("issues");
         String issueNodeText = mapper.writeValueAsString(issueNode);
 
-        // TODO: only 50 projects retrieved because of JIRA paging limit
         List<JiraIssue> jiraIssueList = Arrays.asList(mapper.readValue(issueNodeText, JiraIssue[].class));
 
         return jiraIssueList.stream()
-                .map(JiraIssue::getProjectWithId)
+                .map(JiraIssue::getProjectWithIdAndKey)
                 .collect(Collectors.toList());
     }
 
@@ -113,21 +114,19 @@ public class JiraProjectReader implements AbstractProjectReader {
         @JsonAlias("id")
         private String id;
 
+        private String key;
+
         @JsonAlias("fields")
         private JiraProject project;
 
-        public JiraProject getProjectWithId() {
+        public JiraProject getProjectWithIdAndKey() {
             project.setId(Long.parseLong(id));
+            project.setKey(key);
+
             return project;
         }
 
     }
 
-    /*String text = new String(Files.readAllBytes(Paths.get("C:/Users/dmeier/Desktop/JIRA-JSON-Response.txt")), StandardCharsets.UTF_8);
 
-        ObjectMapper mapper = new ObjectMapper();
-        JsonParser parser = mapper.getFactory().createParser(text);
-        JsonNode parsedNode = mapper.readTree(parser);
-
-        JsonNode issueNode = parsedNode.get("issues");*/
 }

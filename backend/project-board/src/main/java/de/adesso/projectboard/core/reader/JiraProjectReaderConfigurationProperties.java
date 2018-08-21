@@ -17,8 +17,8 @@ import org.springframework.context.annotation.Configuration;
 public class JiraProjectReaderConfigurationProperties {
 
     /**
-     * The request URL for jira. The JQL query gets appended
-     * to this URL.
+     * The request URL for jira. The placeholder
+     * is replaced with the actual JQL query.
      */
     private String jiraRequestUrl = "";
 
