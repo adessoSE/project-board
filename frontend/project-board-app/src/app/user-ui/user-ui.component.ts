@@ -1,7 +1,7 @@
 import { Location } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, HostListener, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { $ } from 'jquery';
+import * as $ from 'jquery';
 import { Project, ProjectService } from '../_services/project.service';
 
 @Component({
@@ -9,10 +9,13 @@ import { Project, ProjectService } from '../_services/project.service';
   templateUrl: './user-ui.component.html',
   styleUrls: ['./user-ui.component.scss']
 })
-export class UserUiComponent implements OnInit {
+export class UserUiComponent implements OnInit, AfterViewChecked {
   projects: Project[] = [];
   selectedProject: Project;
   mobile = false;
+  scroll = true;
+
+  @HostListener('window:resize') onResize() {this.mobile = window.screen.width <= 425;}
 
   constructor(private projectsService: ProjectService, private route: ActivatedRoute, private router: Router, private location: Location) { }
 
@@ -39,14 +42,23 @@ export class UserUiComponent implements OnInit {
     this.selectedProject = null;
   }
 
-  projectClicked(project, btn: HTMLButtonElement) {
-    this.selectedProject = project;
-    // this.router.navigate([`/projects/${project.id}`]);
-    this.location.replaceState(`/projects/${project.id}`);
-    console.log(btn);
-    if(this.mobile) {
-      btn.scrollIntoView(true);
-      // btn.scrollIntoView({block: 'start', behavior: 'smooth'});
+  projectClicked(project) {
+    if(this.selectedProject == project) {
+      this.location.replaceState(`/projects`);
+      this.selectedProject = null;
+      this.scroll = false;
+    } else {
+      this.location.replaceState(`/projects/${project.id}`);
+      this.selectedProject = project;
+      this.scroll = true;
+    }
+  }
+
+  ngAfterViewChecked() {
+    if (this.mobile && this.scroll && this.selectedProject) {
+      let btn = $(`#${this.selectedProject.id}`);
+      $('html, body').animate({scrollTop: $(btn).offset().top}, 'slow');
+      this.scroll = false;
     }
   }
 }

@@ -2,12 +2,12 @@
 <div class="row mt-4">
   <div class="col-md-6">
     <h4>Projekte</h4>
-    <div class="list-group">
+    <div class="list-group pb-3">
       <ng-container *ngFor="let p of projects" >
-        <button #btn (click)="projectClicked(p, btn)" type="button" [ngClass]="{'list-group-item list-group-item-action': true, 'active': p.id == selectedProject?.id}">
+        <button #btn id="{{p.id}}" (click)="projectClicked(p)" type="button" [ngClass]="{'list-group-item list-group-item-action': true, 'active': p.id == selectedProject?.id}">
           <span><b>{{p.id}}:</b> {{p.job}}</span>
         </button>
-        <app-project-details *ngIf="mobile && p.id == selectedProject.id" [selectedProject]="selectedProject"></app-project-details>
+        <app-project-details *ngIf="mobile && p.id == selectedProject?.id" [selectedProject]="selectedProject"></app-project-details>
       </ng-container>
     </div>
   </div>
