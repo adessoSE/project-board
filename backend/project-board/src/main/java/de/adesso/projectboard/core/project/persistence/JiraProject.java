@@ -12,6 +12,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * A {@link AbstractProject} that is used by the {@link de.adesso.projectboard.core.reader.JiraProjectReader}.
@@ -36,10 +37,13 @@ public class JiraProject extends AbstractProject {
     @JsonAlias("summary")
     private String title;
 
+    @ElementCollection
+    List<String> labels;
+
     @Lob
     @Column(length = 4096)
     @JsonAlias("customfield_10288")
-    private String exercise;
+    private String job;
 
     @Lob
     @Column(length = 4096)
@@ -67,7 +71,7 @@ public class JiraProject extends AbstractProject {
     private String operationEnd;
 
     @JsonAlias("customfield_10284")
-    private String work;
+    private String effort;
 
     @JsonDeserialize(using = CreatedUpdatedDateDeserializer.class)
     private LocalDateTime created;
@@ -78,6 +82,10 @@ public class JiraProject extends AbstractProject {
     @JsonDeserialize(using = ObjectValueDeserializer.class)
     @JsonAlias("customfield_10290")
     private String freelancer;
+
+    @JsonDeserialize(using = ObjectValueDeserializer.class)
+    @JsonAlias("customfield_10306")
+    private String elongation;
 
     @Lob
     @Column(length = 4096)
