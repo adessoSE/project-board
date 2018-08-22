@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The central {@link Service} to update the projects in the database.
@@ -31,8 +32,6 @@ public class ProjectDatabaseUpdater {
 
     private final Duration refreshIntervalDuration;
 
-    private final Duration maxUpdateDuration;
-
     private final Logger logger;
 
     @Autowired
@@ -45,7 +44,6 @@ public class ProjectDatabaseUpdater {
         this.projectReader = projectReader;
 
         this.refreshIntervalDuration = Duration.ofMinutes(properties.getRefreshInterval());
-        this.maxUpdateDuration = Duration.ofDays(properties.getMaxUpdateDays());
 
         this.logger = LoggerFactory.getLogger(getClass());
     }
@@ -57,14 +55,22 @@ public class ProjectDatabaseUpdater {
      */
     @Scheduled(fixedDelay = 10000L)
     public void refreshProjectDatabase() {
-        ProjectDatabaseUpdaterInfo lastSuccessfulUpdate = infoRepository.findFirstByStatusOrderByTimeDesc(ProjectDatabaseUpdaterInfo.Status.SUCCESS);
+        Optional<ProjectDatabaseUpdaterInfo> lastSuccessfulUpdate
+                = infoRepository.findFirstByStatusOrderByTimeDesc(ProjectDatabaseUpdaterInfo.Status.SUCCESS);
 
-        if(!shouldUpdate(lastSuccessfulUpdate)) {
-            return;
-        }
 
         try {
-            List<? extends AbstractProject> projects = projectReader.getAllProjectsSince(getLastUpdateTime(lastSuccessfulUpdate));
+            List<? extends AbstractProject> projects;
+
+            if(lastSuccessfulUpdate.isPresent()) {
+                if(!shouldUpdate(lastSuccessfulUpdate.get())) {
+                    return;
+                }
+
+                projects = projectReader.getAllProjectsSince(lastSuccessfulUpdate.get().getTime());
+            } else {
+                projects = projectReader.getInitialProjects();
+            }
 
             projectRepository.saveAll(projects);
 
@@ -87,44 +93,14 @@ public class ProjectDatabaseUpdater {
      *          The {@link ProjectDatabaseUpdaterInfo} object of the last successful update.
      *
      * @return
-     *          <i>true</i> if {@code lastUpdate} is {@literal null} or the difference between
-     *          {@link LocalDateTime#now() now} and {@link ProjectDatabaseUpdaterInfo#getTime()}
-     *          is longer than {@link ProjectBoardConfigurationProperties#getRefreshInterval()}
-     *          minutes.
+     *          <i>true</i> if the difference between {@link LocalDateTime#now() now} and
+     *          {@link ProjectDatabaseUpdaterInfo#getTime()} is longer than
+     *          {@link ProjectBoardConfigurationProperties#getRefreshInterval()} minutes.
      */
     private boolean shouldUpdate(ProjectDatabaseUpdaterInfo lastUpdate) {
-        if(lastUpdate == null) {
-            return true;
-        }
-
         Duration lastUpdateDeltaDuration = Duration.between(lastUpdate.getTime(), LocalDateTime.now()).abs();
 
         return refreshIntervalDuration.compareTo(lastUpdateDeltaDuration) <= 0;
-    }
-
-    /**
-     *
-     * @param lastUpdate
-     *          The {@link ProjectDatabaseUpdaterInfo} object of the last successful update.
-     *
-     * @return
-     *          The {@link LocalDateTime} of when the last update was performed. Either the
-     *          {@link ProjectDatabaseUpdaterInfo#getTime() time} of the {@code lastUpdate}
-     *          object or the current time minus the
-     *          {@link ProjectBoardConfigurationProperties#getMaxUpdateDays() max amount of days}
-     *          when {@code lastUpdate} is {@literal null} or the {@link ProjectDatabaseUpdaterInfo#getTime() time}
-     *          is more than {@link ProjectBoardConfigurationProperties#getMaxUpdateDays()} away.
-     */
-    private LocalDateTime getLastUpdateTime(ProjectDatabaseUpdaterInfo lastUpdate) {
-        if(lastUpdate != null) {
-            Duration updateDelta = Duration.between(LocalDateTime.now(), lastUpdate.getTime());
-
-            if(updateDelta.compareTo(maxUpdateDuration) <= 0) {
-                return lastUpdate.getTime();
-            }
-        }
-
-        return LocalDateTime.now().minus(maxUpdateDuration);
     }
 
 }

@@ -7,11 +7,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * A functional interface that is used to update the project database.
+ * A specification for a reader that is used in {@link de.adesso.projectboard.core.base.updater.ProjectDatabaseUpdater}.
  *
  * @see de.adesso.projectboard.core.reader.JiraProjectReader
  */
-@FunctionalInterface
 public interface AbstractProjectReader {
 
     /**
@@ -30,6 +29,18 @@ public interface AbstractProjectReader {
      * @see de.adesso.projectboard.core.base.updater.ProjectDatabaseUpdater
      */
     List<? extends AbstractProject> getAllProjectsSince(LocalDateTime dateTime) throws Exception;
+
+    /**
+     * This method gets invoked by the {@link de.adesso.projectboard.core.base.updater.ProjectDatabaseUpdater}
+     * to get the initial list of projects when no successful update was performed before.
+     *
+     * @return
+     *         A list of {@link AbstractProject}s.
+     *
+     * @throws Exception
+     *          When a error occurrs.
+     */
+    List<? extends AbstractProject> getInitialProjects() throws Exception;
 
     /**
      * This method is invoked by the {@link ReaderHealthIndicator} to get

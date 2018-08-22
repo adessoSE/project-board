@@ -12,7 +12,7 @@ import java.util.Optional;
  */
 public interface ProjectDatabaseUpdaterInfoRepository extends CrudRepository<ProjectDatabaseUpdaterInfo, Long> {
 
-    ProjectDatabaseUpdaterInfo findFirstByStatusOrderByTimeDesc(ProjectDatabaseUpdaterInfo.Status status);
+    Optional<ProjectDatabaseUpdaterInfo> findFirstByStatusOrderByTimeDesc(ProjectDatabaseUpdaterInfo.Status status);
 
     @Query("SELECT p FROM ProjectDatabaseUpdaterInfo AS p WHERE p.time = (SELECT MAX(p.time) FROM ProjectDatabaseUpdaterInfo p)")
     Optional<ProjectDatabaseUpdaterInfo> findLatest();

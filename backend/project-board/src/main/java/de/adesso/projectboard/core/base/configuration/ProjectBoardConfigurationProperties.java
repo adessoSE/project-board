@@ -26,11 +26,8 @@ public class ProjectBoardConfigurationProperties {
     private long refreshInterval = 30L;
 
     /**
-     * The maximum number of days to update.
+     * The project class.
      */
-    @Min(1L)
-    private long maxUpdateDays = 30L;
-
     @NotNull
     private Class<? extends AbstractProject> projectClass = JiraProject.class;
 
