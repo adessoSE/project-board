@@ -13,8 +13,8 @@ import javax.persistence.criteria.*;
 import java.util.*;
 
 @RestController
-@RequestMapping("/projects/")
-public class ProjectBoardRestController {
+@RequestMapping("/projects")
+public class ProjectController {
 
     private final RestProjectAttributeScanner scanner;
 
@@ -25,10 +25,10 @@ public class ProjectBoardRestController {
     private final EntityManager entityManager;
 
     @Autowired
-    public ProjectBoardRestController(RestProjectAttributeScanner scanner,
-                                      ProjectRepository projectRepository,
-                                      ProjectBoardConfigurationProperties properties,
-                                      EntityManager entityManager) {
+    public ProjectController(RestProjectAttributeScanner scanner,
+                             ProjectRepository projectRepository,
+                             ProjectBoardConfigurationProperties properties,
+                             EntityManager entityManager) {
         this.scanner = scanner;
         this.projectRepository = projectRepository;
         this.properties = properties;
@@ -46,12 +46,12 @@ public class ProjectBoardRestController {
         }
     }
 
-    @GetMapping("/")
+    @GetMapping
     public Iterable<? extends AbstractProject> getAll() {
         return projectRepository.findAll();
     }
 
-    @GetMapping("/search/")
+    @GetMapping("/search")
     @SuppressWarnings("unchecked")
     public Iterable<? extends AbstractProject> search(@RequestParam Map<String,String> requestParams) {
         Map<String, String> fieldParamValueMap = new LinkedHashMap<>();
