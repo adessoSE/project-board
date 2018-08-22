@@ -17,4 +17,6 @@ public interface ProjectDatabaseUpdaterInfoRepository extends CrudRepository<Pro
     @Query("SELECT p FROM ProjectDatabaseUpdaterInfo AS p WHERE p.time = (SELECT MAX(p.time) FROM ProjectDatabaseUpdaterInfo p)")
     Optional<ProjectDatabaseUpdaterInfo> findLatest();
 
+    long countByStatus(ProjectDatabaseUpdaterInfo.Status status);
+
 }

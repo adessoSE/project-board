@@ -17,11 +17,11 @@ import java.util.Optional;
 @Component
 public class UpdaterHealthIndicator implements HealthIndicator {
 
-    private final ProjectDatabaseUpdaterInfoRepository repository;
+    private final ProjectDatabaseUpdaterInfoRepository updaterRepository;
 
     @Autowired
     public UpdaterHealthIndicator(ProjectDatabaseUpdaterInfoRepository repository) {
-        this.repository = repository;
+        this.updaterRepository = repository;
     }
 
     /**
@@ -32,7 +32,7 @@ public class UpdaterHealthIndicator implements HealthIndicator {
      */
     @Override
     public Health health() {
-        Optional<ProjectDatabaseUpdaterInfo> lastInfoOptional = repository.findLatest();
+        Optional<ProjectDatabaseUpdaterInfo> lastInfoOptional = updaterRepository.findLatest();
 
         if(lastInfoOptional.isPresent()) {
             ProjectDatabaseUpdaterInfo lastInfo = lastInfoOptional.get();
@@ -44,6 +44,8 @@ public class UpdaterHealthIndicator implements HealthIndicator {
             } else {
                 return Health.up()
                         .withDetail("lastUpdate", lastInfo.getTime())
+                        .withDetail("totalUpdates", updaterRepository.count())
+                        .withDetail("successfulUpdates", updaterRepository.countByStatus(ProjectDatabaseUpdaterInfo.Status.SUCCESS))
                         .build();
             }
 
