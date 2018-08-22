@@ -57,7 +57,8 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
   ngAfterViewChecked() {
     if (this.mobile && this.scroll && this.selectedProject) {
       let btn = $(`#${this.selectedProject.id}`);
-      $('html, body').animate({scrollTop: $(btn).offset().top}, 'slow');
+      // navbar has 56 pixels height
+      $('html, body').animate({scrollTop: $(btn).offset().top - 56}, 'slow');
       this.scroll = false;
     }
   }
