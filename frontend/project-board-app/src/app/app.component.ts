@@ -59,7 +59,6 @@ export class AppComponent {
   }
 
   isUserAuthenticated() {
-    console.log(this.authenticationService.name);
     return this.authenticationService.name != null;
   }
 }
