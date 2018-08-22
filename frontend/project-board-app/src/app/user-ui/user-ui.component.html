@@ -4,10 +4,10 @@
     <h4>Projekte</h4>
     <div class="list-group">
       <ng-container *ngFor="let p of projects" >
-        <button #btn id="{{p.id}}" (click)="projectClicked(p)" type="button" [ngClass]="{'list-group-item list-group-item-action': true, 'active': p.id == selectedProject?.id}">
-          <span><b>{{p.id}}:</b> {{p.job}}</span>
+        <button #btn id="{{p.key}}" (click)="projectClicked(p)" type="button" [ngClass]="{'list-group-item list-group-item-action': true, 'active': p.key == selectedProject?.key}">
+          <span><b>{{p.key}}:</b> {{p.title}}</span>
         </button>
-        <app-project-details *ngIf="mobile && p.id == selectedProject?.id" [selectedProject]="selectedProject"></app-project-details>
+        <app-project-details *ngIf="mobile && p.key == selectedProject?.key" [selectedProject]="selectedProject"></app-project-details>
       </ng-container>
     </div>
   </div>

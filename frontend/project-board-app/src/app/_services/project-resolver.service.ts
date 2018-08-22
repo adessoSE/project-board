@@ -11,6 +11,6 @@ export class ProjectResolverService implements Resolve<Project> {
   constructor(private projectService: ProjectService) { }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Project> {
-    return this.projectService.getProjectWithID(route.params.id);
+    return this.projectService.getProjectWithID(route.params.key);
   }
 }

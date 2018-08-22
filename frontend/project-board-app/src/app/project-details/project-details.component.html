@@ -2,16 +2,20 @@
   <h4>Projekt-Details</h4>
   <div *ngIf="selectedProject" class="details">
     <div class="row">
+      <div class="col-sm-3 left-side">Schlüssel:</div>
+      <div class="col-sm right-side">{{selectedProject.key}}</div>
+    </div>
+    <div class="row">
       <div class="col-sm-3 left-side">Titel:</div>
-      <div class="col-sm right-side">{{selectedProject.id}}</div>
+      <div class="col-sm right-side">{{selectedProject.title}}</div>
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Typ:</div>
-      <div class="col-sm right-side">{{selectedProject.type}}</div>
+      <div class="col-sm right-side">{{selectedProject.issuetype}}</div>
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Stichwörter:</div>
-      <div class="col-sm right-side">{{selectedProject.tags}}</div>
+      <div class="col-sm right-side">{{selectedProject.labels}}</div>
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Aufgabe:</div>
@@ -27,7 +31,7 @@
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Kunde:</div>
-      <div class="col-sm right-side">{{selectedProject.client}}</div>
+      <div class="col-sm right-side">{{selectedProject.customer}}</div>
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Einsatzort:</div>
@@ -35,19 +39,23 @@
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Beginn Einsatz:</div>
-      <div class="col-sm right-side">{{(selectedProject.begin | date:'dd.MM.yyyy')}}</div>
+      <div class="col-sm right-side">{{(selectedProject.operationStart)}}</div>
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Ende Einsatz:</div>
-      <div class="col-sm right-side">{{selectedProject.end | date:'dd.MM.yyyy'}}</div>
+      <div class="col-sm right-side">{{selectedProject.operationEnd}}</div>
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Option auf Verlängerung:</div>
-      <div class="col-sm right-side">{{selectedProject.elongation | yesOrNo}}</div>
+      <div class="col-sm right-side">{{selectedProject.elongation}}</div>
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Aufwand:</div>
       <div class="col-sm right-side">{{selectedProject.effort}}</div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3 left-side">Beschreibung:</div>
+      <div class="col-sm right-side">{{selectedProject.description}}</div>
     </div>
 
     <div class="mt-3">
