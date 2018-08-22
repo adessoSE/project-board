@@ -13,7 +13,6 @@ export class ProjectService {
   }
 
   getProjectWithID(key) {
-    console.log('requested id: ', key);
     return this.http.get('./assets/real_projects.json').pipe(map((res: Project[]) => res.find((p) => p.key == key)));
   }
 }

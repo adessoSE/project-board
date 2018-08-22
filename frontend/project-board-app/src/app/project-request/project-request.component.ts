@@ -14,7 +14,6 @@ export class ProjectRequestComponent implements OnInit {
 
   ngOnInit() {
     this.route.data.subscribe((data: { project: Project }) => {
-      console.log(data);
       this.project = data.project;
     });
   }
