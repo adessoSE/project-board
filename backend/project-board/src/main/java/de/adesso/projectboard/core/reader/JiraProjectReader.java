@@ -14,8 +14,10 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,32 +56,24 @@ public class JiraProjectReader implements AbstractProjectReader {
      *          A List of {@link JiraProject}s that were created/modified since {@code dateTime}.
      *
      * @throws Exception
-     *          When a exception occurs.
+     *          When a error occurs.
      */
     @Override
     public List<? extends AbstractProject> getAllProjectsSince(LocalDateTime dateTime) throws Exception {
+        return getProjectsByQuery(getJqlUpdateQueryString(dateTime));
+    }
 
-        String requestUrl = String.format(properties.getJiraRequestUrl(), getJqlQueryString(dateTime));
-
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(requestUrl, String.class);
-
-        if(!responseEntity.getStatusCode().is2xxSuccessful()) {
-            throw new IllegalStateException(String.format("Request status code was %d", responseEntity.getStatusCode().value()));
-        }
-
-        // parse the json in the response body
-        ObjectMapper mapper = new ObjectMapper();
-        JsonParser parser = mapper.getFactory().createParser(responseEntity.getBody());
-        JsonNode parsedNode = mapper.readTree(parser);
-        JsonNode issueNode = parsedNode.get("issues");
-        String issueNodeText = mapper.writeValueAsString(issueNode);
-
-        // deserialize the json in the "issues" field to a list of JiraIssues
-        List<JiraIssue> jiraIssueList = Arrays.asList(mapper.readValue(issueNodeText, JiraIssue[].class));
-
-        return jiraIssueList.stream()
-                .map(JiraIssue::getProjectWithIdAndKey)
-                .collect(Collectors.toList());
+    /**
+     *
+     * @return
+     *          A List of {@link JiraProject}s.
+     *
+     * @throws Exception
+     *          When a error occurs.
+     */
+    @Override
+    public List<? extends AbstractProject> getInitialProjects() throws Exception {
+        return getProjectsByQuery(getJqlInitialQueryString());
     }
 
     /**
@@ -111,19 +105,66 @@ public class JiraProjectReader implements AbstractProjectReader {
 
     /**
      *
+     * @param jqlQuery
+     *          The JQL query to execute.
+     *
+     * @return
+     *          A list of {@link JiraProject}s.
+     *
+     * @throws IOException
+     *          When error occurs when desirializing the response body.
+     */
+    private List<JiraProject> getProjectsByQuery(String jqlQuery) throws IOException {
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(properties.getJiraRequestUrl(), String.class, jqlQuery);
+
+        if(!responseEntity.getStatusCode().is2xxSuccessful()) {
+            throw new IllegalStateException(String.format("Request status code was %d.", responseEntity.getStatusCode().value()));
+        }
+
+        // parse the json in the response body
+        ObjectMapper mapper = new ObjectMapper();
+        JsonParser parser = mapper.getFactory().createParser(responseEntity.getBody());
+        JsonNode parsedNode = mapper.readTree(parser);
+        JsonNode issueNode = parsedNode.get("issues");
+        String issueNodeText = mapper.writeValueAsString(issueNode);
+
+        // deserialize the json in the "issues" field to a list of JiraIssues
+        List<JiraIssue> jiraIssueList = Arrays.asList(mapper.readValue(issueNodeText, JiraIssue[].class));
+
+        return jiraIssueList.stream()
+                .map(JiraIssue::getProjectWithIdAndKey)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     *
      * @param dateTime
      *          The {@link LocalDateTime} supplied by {@link #getAllProjectsSince(LocalDateTime)}.
      * @return
      *          The JQL query to get all modified/created projects since {@code dateTime}.
      */
-    private String getJqlQueryString(LocalDateTime dateTime) {
+    private String getJqlUpdateQueryString(LocalDateTime dateTime) {
         JqlQueryStringBuilder andQueryBuilder = new JqlQueryStringBuilder();
         JqlQueryStringBuilder orQueryBuilder = new JqlQueryStringBuilder();
 
         orQueryBuilder
                 .newQuery("updated", JqlComparator.GREATER_OR_EQUAL, dateTime)
-                .or("created", JqlComparator.GREATER_OR_EQUAL, dateTime)
-                .or("status", JqlComparator.EQUAL, "eskaliert")
+                .or("created", JqlComparator.GREATER_OR_EQUAL, dateTime);
+
+        return andQueryBuilder
+                .newQuery("issuetype", JqlComparator.EQUAL, "Staffinganfrage")
+                .and("project", JqlComparator.EQUAL, "STF")
+                .and(orQueryBuilder.build())
+                .build();
+    }
+
+    private String getJqlInitialQueryString() {
+        JqlQueryStringBuilder orQueryBuilder = new JqlQueryStringBuilder();
+        JqlQueryStringBuilder andQueryBuilder = new JqlQueryStringBuilder();
+
+
+        orQueryBuilder
+                .newQuery("status", JqlComparator.EQUAL, "eskaliert")
                 .or("status", JqlComparator.EQUAL, "Offen");
 
         return andQueryBuilder
