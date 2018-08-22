@@ -1,0 +1,35 @@
+@import 'functions';
+@import '../../../node_modules/bootstrap/scss/variables';
+@import '../../../node_modules/bootstrap/scss/mixins';
+
+h4 {
+  margin-bottom: 2rem;
+}
+
+.sticky {
+  top: 5rem;
+  position: sticky;
+}
+
+@include media-breakpoint-down(md) {
+
+}
+
+@include media-breakpoint-down(sm) {
+  .sticky {
+    top: 0;
+    position: relative;
+    padding: 15px;
+    box-shadow: 2px 2px 2px 2px grey inset;
+    background-color: lightgrey;
+  }
+
+  .left-side {
+    font-weight: 500;
+  }
+
+  .right-side {
+    padding-left: 20px;
+    padding-bottom: 0.5rem;
+  }
+}

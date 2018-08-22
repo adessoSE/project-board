@@ -1,0 +1,23 @@
+@import 'functions';
+@import '../../../node_modules/bootstrap/scss/variables';
+@import '../../../node_modules/bootstrap/scss/mixins';
+
+#brand-logo {
+  margin: -22px -10px -13px;
+}
+
+.project-board-header {
+  text-align: center;
+}
+
+.custom-navbar {
+  margin-left: -15px;
+  margin-right: -15px;
+  background-color: #e3f2fd;
+}
+
+@include media-breakpoint-down(sm) {
+  .project-board-header {
+    text-align: left;
+  }
+}

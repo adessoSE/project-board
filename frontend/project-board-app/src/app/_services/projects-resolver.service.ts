@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { Project, ProjectService } from './project.service';
 
 @Injectable()
-export class ProjectResolverService implements Resolve<Project[]> {
+export class ProjectsResolverService implements Resolve<Project[]> {
 
   constructor(private projectService: ProjectService) { }
 

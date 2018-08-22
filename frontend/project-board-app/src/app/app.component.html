@@ -1,21 +1,25 @@
 <div class="container background-inner">
-  <nav class="navbar navbar-expand-lg navbar-light bg-light custom-navbar">
-    <a class="navbar-brand" routerLink="/">Project-Board</a>
+  <nav class="navbar navbar-expand-lg navbar-light custom-navbar sticky-top">
+    <a class="navbar-brand" routerLink="/"><img id="brand-logo" src="/assets/Adesso_AG_logo.png"></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
+      <ul *ngIf="isUserAuthenticated()" class="navbar-nav mr-auto">
         <li class="nav-item">
           <a class="nav-link" routerLink="/projects">Mitarbeiter-UI</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" routerLink="/admin">Führungskräfte-UI</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/login" (click)="logout()">Logout</a>
+        </li>
       </ul>
     </div>
   </nav>
+  <alert></alert>
   <h1 class="display-1 project-board-header">Project-Board</h1>
   <router-outlet></router-outlet>
 </div>

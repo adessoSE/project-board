@@ -1,71 +1,17 @@
-<h1 class="display-3 mt-4">Mitarbeiter UI</h1>
+<h1 class="display-3">Mitarbeiter UI</h1>
 <div class="row mt-4">
-  <div class="col-6">
+  <div class="col-md-6">
     <h4>Projekte</h4>
     <div class="list-group">
-      <button (click)="projectClicked(p)" type="button" *ngFor="let p of projects" [ngClass]="{'list-group-item list-group-item-action': true, 'active': p.id == selectedProject?.id}">
-        <span><b>{{p.id}}:</b> {{p.job}}</span>
-      </button>
+      <ng-container *ngFor="let p of projects" >
+        <button #btn id="{{p.id}}" (click)="projectClicked(p)" type="button" [ngClass]="{'list-group-item list-group-item-action': true, 'active': p.id == selectedProject?.id}">
+          <span><b>{{p.id}}:</b> {{p.job}}</span>
+        </button>
+        <app-project-details *ngIf="mobile && p.id == selectedProject?.id" [selectedProject]="selectedProject"></app-project-details>
+      </ng-container>
     </div>
   </div>
-  <div class="col-6">
-    <div class="sticky">
-      <h4>Projekt-Details</h4>
-      <div *ngIf="selectedProject" class="details">
-        <div class="row">
-          <div class="col-3">Titel:</div>
-          <div class="col">{{selectedProject.id}}</div>
-        </div>
-        <div class="row">
-          <div class="col-3">Typ:</div>
-          <div class="col">{{selectedProject.type}}</div>
-        </div>
-        <div class="row">
-          <div class="col-3">Stichwörter:</div>
-          <div class="col">{{selectedProject.tags}}</div>
-        </div>
-        <div class="row">
-          <div class="col-3">Aufgabe:</div>
-          <div class="col">{{selectedProject.job}}</div>
-        </div>
-        <div class="row">
-          <div class="col-3">Zuständige LOB:</div>
-          <div class="col">{{selectedProject.lob}}</div>
-        </div>
-        <div class="row">
-          <div class="col-3">Skills:</div>
-          <div class="col">{{selectedProject.skills}}</div>
-        </div>
-        <div class="row">
-          <div class="col-3">Kunde:</div>
-          <div class="col">{{selectedProject.client}}</div>
-        </div>
-        <div class="row">
-          <div class="col-3">Einsatzort:</div>
-          <div class="col">{{selectedProject.location}}</div>
-        </div>
-        <div class="row">
-          <div class="col-3">Beginn Einsatz:</div>
-          <div class="col">{{(selectedProject.begin | date:'dd.MM.yyyy')}}</div>
-        </div>
-        <div class="row">
-          <div class="col-3">Ende Einsatz:</div>
-          <div class="col">{{selectedProject.end | date:'dd.MM.yyyy'}}</div>
-        </div>
-        <div class="row">
-          <div class="col-3">Option auf Verlängerung:</div>
-          <div class="col">{{selectedProject.elongation}}</div>
-        </div>
-        <div class="row">
-          <div class="col-3">Aufwand:</div>
-          <div class="col">{{selectedProject.effort}}</div>
-        </div>
-
-        <div class="mt-5">
-          <button class="btn btn-primary"> Projekt anfragen</button>
-        </div>
-      </div>
-      <p *ngIf="!selectedProject">Kein Projekt ausgewählt.</p>
-    </div>
+  <div *ngIf="!mobile" class="col-md-6">
+        <app-project-details [selectedProject]="selectedProject">test test</app-project-details>
   </div>
 </div>
