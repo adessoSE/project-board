@@ -58,7 +58,8 @@ export class AppComponent {
     this.alertService.success('Du wurdest erfolgreich ausgeloggt.');
   }
 
-  showLogout() {
+  isUserAuthenticated() {
+    console.log(this.authenticationService.name);
     return this.authenticationService.name != null;
   }
 }
