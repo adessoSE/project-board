@@ -11,6 +11,33 @@ h4 {
   position: sticky;
 }
 
+.clip {
+  max-height: $line-height-base * 8rem;
+  overflow-y: auto;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #e3f2fd;
+  border-radius: 2px;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: $primary;
+  border-radius: 2px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: darken($primary, 10);
+}
+
 @include media-breakpoint-down(md) {
 
 }
@@ -31,5 +58,10 @@ h4 {
   .right-side {
     padding-left: 20px;
     padding-bottom: 0.5rem;
+  }
+
+  .clip {
+    max-height: 100%;
+    overflow: auto;
   }
 }
