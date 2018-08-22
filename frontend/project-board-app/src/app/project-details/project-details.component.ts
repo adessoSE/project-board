@@ -1,4 +1,6 @@
+import { Location } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Project } from '../_services/project.service';
 
 @Component({
@@ -9,8 +11,12 @@ import { Project } from '../_services/project.service';
 export class ProjectDetailsComponent implements OnInit {
   @Input() selectedProject: Project;
 
-  constructor() { }
+  constructor(private router: Router, private location: Location) { }
 
   ngOnInit() {
+  }
+
+  requestProject() {
+    this.router.navigate([`${this.location.path()}/request`]);
   }
 }

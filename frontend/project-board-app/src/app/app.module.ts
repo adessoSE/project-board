@@ -21,6 +21,7 @@ import { UserUiComponent } from './user-ui/user-ui.component';
 import { YesOrNoPipe } from './_pipes/yes-or-no.pipe';
 import { ProjectDetailsComponent } from './project-details/project-details.component';
 import { EmployeeManagementComponent } from './employee-management/employee-management.component';
+import { ProjectRequestComponent } from './project-request/project-request.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { EmployeeManagementComponent } from './employee-management/employee-mana
     AlertComponent,
     YesOrNoPipe,
     ProjectDetailsComponent,
-    EmployeeManagementComponent
+    EmployeeManagementComponent,
+    ProjectRequestComponent
   ],
   imports: [
     BrowserModule,

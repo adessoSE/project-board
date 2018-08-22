@@ -1,0 +1,9 @@
+<div *ngIf="project">
+  <p>Möchtest du folgendes Projekt wirklich anfragen?</p>
+  <p>{{project.id}}</p>
+  <p>{{project.job}}</p>
+</div>
+<div *ngIf="!project">
+  Dieses Projekt ist leider nicht verfügbar.
+</div>
+<button class="btn btn-primary">Projekt anfragen</button>
