@@ -54,7 +54,7 @@ public class JiraProjectReader implements AbstractProjectReader {
      *          A List of {@link JiraProject}s that were created/modified since {@code dateTime}.
      *
      * @throws Exception
-     *          When a failureReason occurs.
+     *          When a exception occurs.
      */
     @Override
     public List<? extends AbstractProject> getAllProjectsSince(LocalDateTime dateTime) throws Exception {
@@ -122,7 +122,9 @@ public class JiraProjectReader implements AbstractProjectReader {
 
         orQueryBuilder
                 .newQuery("updated", JqlComparator.GREATER_OR_EQUAL, dateTime)
-                .or("created", JqlComparator.GREATER_OR_EQUAL, dateTime);
+                .or("created", JqlComparator.GREATER_OR_EQUAL, dateTime)
+                .or("status", JqlComparator.EQUAL, "eskaliert")
+                .or("status", JqlComparator.EQUAL, "Offen");
 
         return andQueryBuilder
                 .newQuery("issuetype", JqlComparator.EQUAL, "Staffinganfrage")

@@ -29,7 +29,7 @@ public class ProjectBoardConfigurationProperties {
      * The maximum number of days to update.
      */
     @Min(1L)
-    private long maxUpdateDays = 30L;
+    private long maxUpdateDays = 5L;
 
     @NotNull
     private Class<? extends AbstractProject> projectClass = JiraProject.class;
