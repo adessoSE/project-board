@@ -37,7 +37,10 @@ public class JiraIssueJsonSerializationTests {
         assertEquals("Testissuetype 1", firstProject.getIssuetype());
         assertEquals("Testkey 1", firstProject.getKey());
         assertEquals("Testsummary 1", firstProject.getTitle());
-        assertEquals("Testexcercise 1", firstProject.getExercise());
+        assertEquals(2, firstProject.getLabels().size());
+        assertEquals("Testlabel 1", firstProject.getLabels().get(0));
+        assertEquals("Testlabel 2", firstProject.getLabels().get(1));
+        assertEquals("Testjob 1", firstProject.getJob());
         assertEquals("Testskills 1", firstProject.getSkills());
         assertEquals("Testdescription 1", firstProject.getDescription());
         assertEquals("Testlob 1", firstProject.getLob());
@@ -45,10 +48,11 @@ public class JiraIssueJsonSerializationTests {
         assertEquals("Testlocation 1", firstProject.getLocation());
         assertEquals("01.01.2018", firstProject.getOperationStart());
         assertEquals("01.02.2018", firstProject.getOperationEnd());
-        assertEquals("Testwork 1", firstProject.getWork());
+        assertEquals("Testeffort 1", firstProject.getEffort());
         assertEquals(LocalDateTime.of(2018, 1, 1, 13, 37, 0), firstProject.getCreated());
         assertEquals(LocalDateTime.of(2018, 1, 2, 13, 37, 0), firstProject.getUpdated());
         assertEquals("Testfreelancer 1", firstProject.getFreelancer());
+        assertEquals("Testelongation 1", firstProject.getElongation());
         assertEquals("Testother 1", firstProject.getOther());
 
 
@@ -59,7 +63,8 @@ public class JiraIssueJsonSerializationTests {
         assertEquals("Testissuetype 2", secondProject.getIssuetype());
         assertEquals("Testkey 2", secondProject.getKey());
         assertEquals("Testsummary 2", secondProject.getTitle());
-        assertEquals("Testexcercise 2", secondProject.getExercise());
+        assertEquals(0, secondProject.getLabels().size());
+        assertEquals("Testjob 2", secondProject.getJob());
         assertEquals("Testskills 2", secondProject.getSkills());
         assertEquals("Testdescription 2", secondProject.getDescription());
         assertEquals("Testlob 2", secondProject.getLob());
@@ -67,10 +72,11 @@ public class JiraIssueJsonSerializationTests {
         assertEquals("Testlocation 2", secondProject.getLocation());
         assertEquals("02.01.2018", secondProject.getOperationStart());
         assertEquals("02.02.2018", secondProject.getOperationEnd());
-        assertEquals("Testwork 2", secondProject.getWork());
+        assertEquals("Testeffort 2", secondProject.getEffort());
         assertEquals(LocalDateTime.of(2018, 1, 1, 13, 37, 0), secondProject.getCreated());
         assertEquals(LocalDateTime.of(2018, 1, 2, 13, 37, 0), secondProject.getUpdated());
         assertEquals("Testfreelancer 2", secondProject.getFreelancer());
+        assertEquals("Testelongation 2", secondProject.getElongation());
         assertEquals("Testother 2", secondProject.getOther());
     }
 

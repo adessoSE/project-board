@@ -8,7 +8,7 @@
       "id": "1",
       "key": "Testkey 1",
       "fields": {
-        "labels": [],
+        "labels": ["Testlabel 1", "Testlabel 2"],
         "status": {
           "name": "Teststatus 1"
         },
@@ -22,10 +22,13 @@
         "customfield_10294": "01.02.2018",
         "customfield_10296": "Testskills 1",
         "customfield_10297": "Testlocation 1",
-        "customfield_10284": "Testwork 1",
-        "customfield_10288": "Testexcercise 1",
+        "customfield_10284": "Testeffort 1",
+        "customfield_10288": "Testjob 1",
         "issuetype": {
           "name": "Testissuetype 1"
+        },
+        "customfield_10306": {
+            "value": "Testelongation 1"
         },
         "customfield_10279": "Testcustomer 1",
         "created": "2018-01-01T13:37:00.000+0200",
@@ -54,10 +57,13 @@
         "customfield_10294": "02.02.2018",
         "customfield_10296": "Testskills 2",
         "customfield_10297": "Testlocation 2",
-        "customfield_10284": "Testwork 2",
-        "customfield_10288": "Testexcercise 2",
+        "customfield_10284": "Testeffort 2",
+        "customfield_10288": "Testjob 2",
         "issuetype": {
           "name": "Testissuetype 2"
+        },
+        "customfield_10306": {
+            "value": "Testelongation 2"
         },
         "customfield_10279": "Testcustomer 2",
         "created": "2018-01-01T13:37:00.000+0200",
