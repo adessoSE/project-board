@@ -25,8 +25,8 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
     this.route.data.subscribe((data: { projects: Project[] }) => {
       this.projects = data.projects;
       this.route.params.subscribe(params => {
-        if (params.id) {
-          this.setSelectedProject(params.id);
+        if (params.key) {
+          this.setSelectedProject(params.key);
         }
       });
     });
@@ -34,7 +34,7 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
 
   private setSelectedProject(projectId: string) {
     for (let p of this.projects) {
-      if (p.id == projectId) {
+      if (p.key == projectId) {
         this.selectedProject = p;
         return;
       }
@@ -48,7 +48,7 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
       this.selectedProject = null;
       this.scroll = false;
     } else {
-      this.location.replaceState(`/projects/${project.id}`);
+      this.location.replaceState(`/projects/${project.key}`);
       this.selectedProject = project;
       this.scroll = true;
     }
@@ -56,7 +56,7 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
 
   ngAfterViewChecked() {
     if (this.mobile && this.scroll && this.selectedProject) {
-      let btn = $(`#${this.selectedProject.id}`);
+      let btn = $(`#${this.selectedProject.key}`);
       // navbar has 56 pixels height
       $('html, body').animate({scrollTop: $(btn).offset().top - 56}, 'slow');
       this.scroll = false;

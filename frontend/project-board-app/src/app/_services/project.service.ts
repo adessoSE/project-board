@@ -9,26 +9,36 @@ export class ProjectService {
   constructor(private http: HttpClient) { }
 
   getProjects() {
-    return this.http.get<Project[]>('./assets/projects.json');
+    return this.http.get<Project[]>('./assets/real_projects.json');
   }
 
-  getProjectWithID(id) {
-    console.log('requested id: ', id);
-    return this.http.get('./assets/projects.json').pipe(map((res: Project[]) => res.find((p) => p.id == id)));
+  getProjectWithID(key) {
+    return this.http.get('./assets/real_projects.json').pipe(map((res: Project[]) => res.find((p) => p.key == key)));
   }
 }
 
 export interface Project {
-  id,
-  type,
-  job,
-  lob,
-  client,
-  location,
-  begin,
-  end,
-  elongation: string;
-  tags,
-  skills: string[];
+  id: number;
   effort: number;
+
+  labels: string[];
+
+  description: string;
+  title: string;
+  key: string;
+  issuetype: string;
+  job: string;
+  lob: string;
+  customer: string;
+  location: string;
+  operationStart: string;
+  operationEnd: string;
+  skills: string;
+  status: string;
+  elongation: string;
+  freelancer: string;
+  other: string;
+
+  created: Date;
+  updated: Date;
 }
