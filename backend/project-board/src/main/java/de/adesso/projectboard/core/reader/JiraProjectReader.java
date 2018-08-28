@@ -9,9 +9,12 @@ import de.adesso.projectboard.core.project.JiraIssue;
 import de.adesso.projectboard.core.project.persistence.JiraProject;
 import de.adesso.projectboard.core.reader.jql.JqlComparator;
 import de.adesso.projectboard.core.reader.jql.JqlQueryStringBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -32,12 +35,15 @@ import java.util.stream.Collectors;
  *
  * @see de.adesso.projectboard.core.base.updater.ProjectDatabaseUpdater
  */
+@Profile("adesso-jira")
+@Service
 public class JiraProjectReader implements AbstractProjectReader {
 
     private final RestTemplate restTemplate;
 
     private final JiraProjectReaderConfigurationProperties properties;
 
+    @Autowired
     public JiraProjectReader(RestTemplateBuilder builder, JiraProjectReaderConfigurationProperties properties) {
         this.restTemplate = builder
                 .basicAuthorization(properties.getUsername(), properties.getPassword())

@@ -4,14 +4,21 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.validation.annotation.Validated;
+
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 
 /**
  * The configuration properties for the {@link JiraProjectReader}.
  *
  * @see JiraProjectReader
  */
+@Profile("adesso-jira")
 @ConfigurationProperties(prefix = "jira")
 @Configuration
+@Validated
 @Getter
 @Setter
 public class JiraProjectReaderConfigurationProperties {
@@ -21,12 +28,15 @@ public class JiraProjectReaderConfigurationProperties {
      * like <i>{jqlQuery}</i>. The string placeholder is replaced
      * with the actual JQL query.
      */
-    private String jiraRequestUrl = "";
+    @Pattern(regexp = ".*jql=\\{.+\\}.*", message = "The JIRA URL must contain a placeholder for the JQL query!")
+    @NotEmpty
+    private String jiraRequestUrl;
 
     /**
      * The request URL of the serverInfo API endpoint.
      */
-    private String jiraServerInfoUrl = "";
+    @NotEmpty
+    private String jiraServerInfoUrl;
 
     /**
      * The username to use for authorization.

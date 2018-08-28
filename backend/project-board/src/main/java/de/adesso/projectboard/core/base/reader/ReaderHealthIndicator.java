@@ -16,7 +16,7 @@ public class ReaderHealthIndicator implements HealthIndicator {
 
     private final AbstractProjectReader projectReader;
 
-    public ReaderHealthIndicator(@Qualifier("projectReaderBean") AbstractProjectReader projectReader) {
+    public ReaderHealthIndicator(AbstractProjectReader projectReader) {
         this.projectReader = projectReader;
     }
 

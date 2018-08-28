@@ -1,5 +1,2 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  de.adesso.projectboard.core.base.configuration.ProjectBoardAutoConfiguration
-
 org.springframework.boot.diagnostics.FailureAnalyzer=\
   de.adesso.projectboard.core.base.rest.scanner.ProjectScannerFailureAnalyzer

@@ -8,10 +8,18 @@ import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException
 import de.adesso.projectboard.core.mail.ApplicationTemplateMessage;
 import de.adesso.projectboard.core.mail.MailService;
 import de.adesso.projectboard.core.project.persistence.JiraProject;
+import org.keycloak.KeycloakPrincipal;
+import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
+import org.springframework.context.annotation.Profile;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Optional;
 
+@Profile("adesso-jira")
+@Service
 public class JiraProjectApplicationHandler implements ProjectApplicationHandler {
 
     private final ProjectRepository projectRepository;
@@ -30,10 +38,14 @@ public class JiraProjectApplicationHandler implements ProjectApplicationHandler 
         if(optionalProject.isPresent()) {
             JiraProject jiraProject = (JiraProject) optionalProject.get();
 
-            SimpleMailMessage message = new ApplicationTemplateMessage(jiraProject, application.getComment());
+            KeycloakAuthenticationToken auth = (KeycloakAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+            KeycloakPrincipal principal = (KeycloakPrincipal) auth.getPrincipal();
+            Map<String, Object> otherClaims = principal.getKeycloakSecurityContext().getToken().getOtherClaims();
 
+            SimpleMailMessage message = new ApplicationTemplateMessage(jiraProject, application.getComment(), "Testuser");
+            message.setTo("daniel.meier@adesso.de");
 
-            mailService.sendMessage(message);
+            //mailService.sendMessage(message);
         } else {
             throw new ProjectNotFoundException();
         }

@@ -9,7 +9,6 @@ import de.adesso.projectboard.core.base.updater.persistence.ProjectDatabaseUpdat
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +36,7 @@ public class ProjectDatabaseUpdater {
     @Autowired
     public ProjectDatabaseUpdater(ProjectDatabaseUpdaterInfoRepository infoRepository,
                                   ProjectRepository projectRepository,
-                                  @Qualifier("projectReaderBean") AbstractProjectReader projectReader,
+                                  AbstractProjectReader projectReader,
                                   ProjectBoardConfigurationProperties properties) {
         this.infoRepository = infoRepository;
         this.projectRepository = projectRepository;
