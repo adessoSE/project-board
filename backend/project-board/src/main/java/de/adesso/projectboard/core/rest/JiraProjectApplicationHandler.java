@@ -9,6 +9,7 @@ import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException
 import de.adesso.projectboard.core.mail.ApplicationTemplateMessage;
 import de.adesso.projectboard.core.mail.MailService;
 import de.adesso.projectboard.core.project.persistence.JiraProject;
+import de.adesso.projectboard.core.security.KeycloakAuthorizationInfo;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.springframework.context.annotation.Profile;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.Optional;
 
-@Profile("adesso-jira")
+@Profile({"adesso-jira", "adesso-keycloak"})
 @Service
 public class JiraProjectApplicationHandler implements ProjectApplicationHandler {
 
@@ -27,9 +28,12 @@ public class JiraProjectApplicationHandler implements ProjectApplicationHandler 
 
     private final MailService mailService;
 
-    public JiraProjectApplicationHandler(ProjectRepository projectRepository, MailService mailService) {
+    private final KeycloakAuthorizationInfo info;
+
+    public JiraProjectApplicationHandler(ProjectRepository projectRepository, MailService mailService, KeycloakAuthorizationInfo info) {
         this.projectRepository = projectRepository;
         this.mailService = mailService;
+        this.info = info;
     }
 
     @Override
@@ -43,12 +47,13 @@ public class JiraProjectApplicationHandler implements ProjectApplicationHandler 
             KeycloakPrincipal principal = (KeycloakPrincipal) auth.getPrincipal();
             Map<String, Object> otherClaims = principal.getKeycloakSecurityContext().getToken().getOtherClaims();
 
-            SimpleMailMessage message = new ApplicationTemplateMessage(jiraProject, application.getComment(), "Testuser");
-            message.setTo("daniel.meier@adesso.de");
+            SimpleMailMessage message = new ApplicationTemplateMessage(jiraProject, application.getComment(), info.getName());
+            message.setTo(info.getManagerEmail());
+            message.setCc(info.getEmail());
 
-            //mailService.sendMessage(message);
+            mailService.sendMessage(message);
 
-            return new ProjectApplicationLog(principal.getName(), application);
+            return new ProjectApplicationLog(auth.getName(), application);
         } else {
             throw new ProjectNotFoundException();
         }

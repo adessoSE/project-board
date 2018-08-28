@@ -19,7 +19,7 @@ import org.springframework.security.core.authority.mapping.SimpleAuthorityMapper
 import org.springframework.security.web.authentication.session.NullAuthenticatedSessionStrategy;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 
-@Profile("keycloak")
+@Profile("adesso-keycloak")
 @KeycloakConfiguration
 public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter {
 
@@ -50,7 +50,7 @@ public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter 
                     .sessionAuthenticationStrategy(sessionAuthenticationStrategy())
                 .and()
                 .authorizeRequests()
-                    .antMatchers("/application*", "/projects*").hasRole("user")
+                    .antMatchers("/projects/**", "/projects*").hasRole("user")
                     .antMatchers("/actuator/**", "/actuator*").hasRole("admin")
                 .anyRequest()
                     .permitAll();
