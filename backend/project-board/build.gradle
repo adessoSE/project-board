@@ -55,7 +55,9 @@ dependencies {
 			[group: 'org.hsqldb', name: 'hsqldb', version: "${hsqlVersion}"],
 	)
 
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+	testCompile(
+			[group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: "${springBootVersion}"]
+	)
 
 	apt(group: 'org.projectlombok', name: 'lombok', version: "${lombokVersion}")
 }
