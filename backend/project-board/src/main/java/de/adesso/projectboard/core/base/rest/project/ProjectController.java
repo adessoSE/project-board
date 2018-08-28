@@ -1,4 +1,4 @@
-package de.adesso.projectboard.core.base.rest;
+package de.adesso.projectboard.core.base.rest.project;
 
 import de.adesso.projectboard.core.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
@@ -66,6 +66,7 @@ public class ProjectController {
         CriteriaQuery query = builder.createQuery(properties.getProjectClass());
         Root root = query.from(properties.getProjectClass());
 
+
         List<Predicate> predicates = new ArrayList<>();
 
         for(Map.Entry<String, String> queryEntry : fieldParamValueMap.entrySet()) {
@@ -76,7 +77,7 @@ public class ProjectController {
         }
 
         Predicate[] predicatesArr = new Predicate[predicates.size()];
-        query.where(predicates.toArray(predicatesArr));
+        query.where(builder.or(predicates.toArray(predicatesArr)));
 
         return entityManager.createQuery(query.select(root)).getResultList();
     }
