@@ -1,10 +1,19 @@
-package de.adesso.projectboard.core.project;
+package de.adesso.projectboard.core.reader;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
 import de.adesso.projectboard.core.project.persistence.JiraProject;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.RestClientException;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,25 +21,42 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
-public class JiraIssueJsonSerializationTests {
+@ActiveProfiles("adesso-jira")
+@RunWith(SpringRunner.class)
+@RestClientTest(JiraProjectReader.class)
+public class JiraProjectReaderTest {
+
+    @MockBean
+    private JiraProjectReaderConfigurationProperties properties;
+
+    @Autowired
+    private JiraProjectReader reader;
+
+    @Autowired
+    private MockRestServiceServer server;
+
+    @Before
+    public void init() throws IOException {
+        given(properties.getJiraRequestUrl()).willReturn("/test");
+    }
 
     @Test
-    public void testDeserializationFromJson() throws IOException {
-        List<JiraIssue> issueList = getIssueListFromFile();
+    public void getProjects() throws Exception {
+        server.expect(requestTo("/test"))
+                .andRespond(withSuccess(getJiraJsonResponse(), MediaType.APPLICATION_JSON));
 
-        assertEquals(2, issueList.size());
+        List<? extends AbstractProject> projectList = reader.getInitialProjects();
 
-        List<JiraProject> projectList = issueList.stream()
-                .map(JiraIssue::getProjectWithIdAndKey)
-                .collect(Collectors.toList());
+        assertEquals(2, projectList.size());
 
-        JiraProject firstProject = projectList.get(0);
+        JiraProject firstProject = (JiraProject) projectList.get(0);
 
         assertEquals(1L, firstProject.getId());
         assertEquals("Teststatus 1", firstProject.getStatus());
@@ -56,7 +82,7 @@ public class JiraIssueJsonSerializationTests {
         assertEquals("Testother 1", firstProject.getOther());
 
 
-        JiraProject secondProject = projectList.get(1);
+        JiraProject secondProject = (JiraProject) projectList.get(1);
 
         assertEquals(2L, secondProject.getId());
         assertEquals("Teststatus 2", secondProject.getStatus());
@@ -80,20 +106,19 @@ public class JiraIssueJsonSerializationTests {
         assertEquals("Testother 2", secondProject.getOther());
     }
 
-    private List<JiraIssue> getIssueListFromFile() throws IOException {
-        URL url = this.getClass().getResource("/de/adesso/projectboard/core/project/JiraJsonResponse.txt");
+    @Test(expected = RestClientException.class)
+    public void getProjects5xxStatus() throws Exception {
+        server.expect(requestTo("/test"))
+                .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
+
+        reader.getInitialProjects();
+    }
+
+    private String getJiraJsonResponse() throws IOException {
+        URL url = this.getClass().getResource("/de/adesso/projectboard/core/JiraJsonResponse.txt");
         File testJsonFile = new File(url.getFile());
 
-        String text = new String(Files.readAllBytes(testJsonFile.toPath()), StandardCharsets.UTF_8);
-
-        ObjectMapper mapper = new ObjectMapper();
-        JsonParser parser = mapper.getFactory().createParser(text);
-        JsonNode parsedNode = mapper.readTree(parser);
-
-        JsonNode issueNode = parsedNode.get("issues");
-        String issueNodeText = mapper.writeValueAsString(issueNode);
-
-        return Arrays.asList(mapper.readValue(issueNodeText, JiraIssue[].class));
+        return new String(Files.readAllBytes(testJsonFile.toPath()), StandardCharsets.UTF_8);
     }
 
 }

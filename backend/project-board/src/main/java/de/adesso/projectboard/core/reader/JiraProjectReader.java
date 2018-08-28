@@ -20,7 +20,6 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -122,10 +121,6 @@ public class JiraProjectReader implements AbstractProjectReader {
      */
     private List<JiraProject> getProjectsByQuery(String jqlQuery) throws IOException {
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(properties.getJiraRequestUrl(), String.class, jqlQuery);
-
-        if(!responseEntity.getStatusCode().is2xxSuccessful()) {
-            throw new IllegalStateException(String.format("Request status code was %d.", responseEntity.getStatusCode().value()));
-        }
 
         // parse the json in the response body
         ObjectMapper mapper = new ObjectMapper();
