@@ -10,14 +10,10 @@ import de.adesso.projectboard.core.mail.ApplicationTemplateMessage;
 import de.adesso.projectboard.core.mail.MailService;
 import de.adesso.projectboard.core.project.persistence.JiraProject;
 import de.adesso.projectboard.core.security.KeycloakAuthorizationInfo;
-import org.keycloak.KeycloakPrincipal;
-import org.keycloak.adapters.springsecurity.token.KeycloakAuthenticationToken;
 import org.springframework.context.annotation.Profile;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
 import java.util.Optional;
 
 @Profile({"adesso-jira", "adesso-keycloak"})
@@ -28,12 +24,12 @@ public class JiraProjectApplicationHandler implements ProjectApplicationHandler 
 
     private final MailService mailService;
 
-    private final KeycloakAuthorizationInfo info;
+    private final KeycloakAuthorizationInfo authInfo;
 
-    public JiraProjectApplicationHandler(ProjectRepository projectRepository, MailService mailService, KeycloakAuthorizationInfo info) {
+    public JiraProjectApplicationHandler(ProjectRepository projectRepository, MailService mailService, KeycloakAuthorizationInfo authInfo) {
         this.projectRepository = projectRepository;
         this.mailService = mailService;
-        this.info = info;
+        this.authInfo = authInfo;
     }
 
     @Override
@@ -43,17 +39,13 @@ public class JiraProjectApplicationHandler implements ProjectApplicationHandler 
         if(optionalProject.isPresent()) {
             JiraProject jiraProject = (JiraProject) optionalProject.get();
 
-            KeycloakAuthenticationToken auth = (KeycloakAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
-            KeycloakPrincipal principal = (KeycloakPrincipal) auth.getPrincipal();
-            Map<String, Object> otherClaims = principal.getKeycloakSecurityContext().getToken().getOtherClaims();
-
-            SimpleMailMessage message = new ApplicationTemplateMessage(jiraProject, application.getComment(), info.getName());
-            message.setTo(info.getManagerEmail());
-            message.setCc(info.getEmail());
+            SimpleMailMessage message = new ApplicationTemplateMessage(jiraProject, application.getComment(), authInfo.getName());
+            message.setTo(authInfo.getManagerEmail());
+            message.setCc(authInfo.getEmail());
 
             mailService.sendMessage(message);
 
-            return new ProjectApplicationLog(auth.getName(), application);
+            return new ProjectApplicationLog(authInfo.getUsername(), application);
         } else {
             throw new ProjectNotFoundException();
         }
