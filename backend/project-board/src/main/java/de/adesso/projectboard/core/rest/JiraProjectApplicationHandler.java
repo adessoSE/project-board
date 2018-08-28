@@ -2,8 +2,9 @@ package de.adesso.projectboard.core.rest;
 
 import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
 import de.adesso.projectboard.core.base.project.persistence.ProjectRepository;
-import de.adesso.projectboard.core.base.rest.ProjectApplication;
-import de.adesso.projectboard.core.base.rest.ProjectApplicationHandler;
+import de.adesso.projectboard.core.base.rest.application.ProjectApplication;
+import de.adesso.projectboard.core.base.rest.application.ProjectApplicationHandler;
+import de.adesso.projectboard.core.base.rest.application.persistence.ProjectApplicationLog;
 import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.core.mail.ApplicationTemplateMessage;
 import de.adesso.projectboard.core.mail.MailService;
@@ -32,7 +33,7 @@ public class JiraProjectApplicationHandler implements ProjectApplicationHandler 
     }
 
     @Override
-    public void onApplicationReceived(ProjectApplication application) {
+    public ProjectApplicationLog onApplicationReceived(ProjectApplication application) {
         Optional<AbstractProject> optionalProject = projectRepository.findById(application.getProjectId());
 
         if(optionalProject.isPresent()) {
@@ -46,6 +47,8 @@ public class JiraProjectApplicationHandler implements ProjectApplicationHandler 
             message.setTo("daniel.meier@adesso.de");
 
             //mailService.sendMessage(message);
+
+            return new ProjectApplicationLog(principal.getName(), application);
         } else {
             throw new ProjectNotFoundException();
         }
