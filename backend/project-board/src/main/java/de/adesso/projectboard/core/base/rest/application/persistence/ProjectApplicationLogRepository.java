@@ -4,4 +4,6 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface ProjectApplicationLogRepository extends CrudRepository<ProjectApplicationLog, Long> {
 
+    Iterable<ProjectApplicationLog> findAllByUserId(String userId);
+
 }

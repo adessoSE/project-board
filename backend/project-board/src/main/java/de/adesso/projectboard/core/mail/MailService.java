@@ -22,8 +22,8 @@ public class MailService {
 
     @Async
     public void sendMessage(SimpleMailMessage message) {
-        mailSender.send(message);
-        //logger.error("Sent email!");
+        //mailSender.send(message);
+        logger.debug("Sent email!");
     }
 
 }

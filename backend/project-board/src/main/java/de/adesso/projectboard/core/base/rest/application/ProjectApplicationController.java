@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/application")
+@RequestMapping("/projects/applications")
 public class ProjectApplicationController {
 
     private final ProjectApplicationHandler applicationHandler;
@@ -21,7 +21,7 @@ public class ProjectApplicationController {
         this.logRepository = logRepository;
     }
 
-    @PostMapping(path= "/", consumes = "application/json", produces = "application/json")
+    @PostMapping(path = "/", consumes = "application/json", produces = "application/json")
     public void applyForProject(@RequestBody ProjectApplication projectApplication) {
         logRepository.save(applicationHandler.onApplicationReceived(projectApplication));
     }
