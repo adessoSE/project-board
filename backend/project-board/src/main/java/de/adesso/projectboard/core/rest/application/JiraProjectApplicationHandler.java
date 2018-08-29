@@ -16,6 +16,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * A {@link ProjectApplicationHandler} implementation that sends out a mail to the
+ * supervisor of the applicant.
+ *
+ * @see MailService
+ * @see ApplicationTemplateMessage
+ * @see KeycloakAuthorizationInfo
+ */
 @Profile({"adesso-jira", "adesso-keycloak"})
 @Service
 public class JiraProjectApplicationHandler implements ProjectApplicationHandler {
