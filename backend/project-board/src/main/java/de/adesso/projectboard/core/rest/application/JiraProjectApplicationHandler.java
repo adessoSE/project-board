@@ -1,4 +1,4 @@
-package de.adesso.projectboard.core.rest;
+package de.adesso.projectboard.core.rest.application;
 
 import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
 import de.adesso.projectboard.core.base.project.persistence.ProjectRepository;
