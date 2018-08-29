@@ -26,11 +26,12 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-@ActiveProfiles("adesso-jira")
 @RunWith(SpringRunner.class)
 @RestClientTest(JiraProjectReader.class)
+@ActiveProfiles("adesso-jira")
 public class JiraProjectReaderTest {
 
     @MockBean
@@ -43,12 +44,12 @@ public class JiraProjectReaderTest {
     private MockRestServiceServer server;
 
     @Before
-    public void init() throws IOException {
+    public void setUp() {
         given(properties.getJiraRequestUrl()).willReturn("/test");
     }
 
     @Test
-    public void getProjects() throws Exception {
+    public void testGetProjects_Success() throws Exception {
         server.expect(requestTo("/test"))
                 .andRespond(withSuccess(getJiraJsonResponse(), MediaType.APPLICATION_JSON));
 
@@ -107,7 +108,7 @@ public class JiraProjectReaderTest {
     }
 
     @Test(expected = RestClientException.class)
-    public void getProjects5xxStatus() throws Exception {
+    public void testGetProjects_5xxStatus() throws Exception {
         server.expect(requestTo("/test"))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
