@@ -6,12 +6,14 @@ import de.adesso.projectboard.core.base.project.persistence.ProjectRepository;
 import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.core.base.rest.scanner.RestProjectAttributeScanner;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.*;
 import java.util.*;
 
+@PreAuthorize("hasAccessToProjects()")
 @RestController
 @RequestMapping("/projects")
 public class ProjectController {
@@ -54,6 +56,7 @@ public class ProjectController {
     @GetMapping("/search")
     @SuppressWarnings("unchecked")
     public Iterable<? extends AbstractProject> search(@RequestParam Map<String,String> requestParams) {
+        // map the query params to the corresponding field name
         Map<String, String> fieldParamValueMap = new LinkedHashMap<>();
 
         for(Map.Entry<String, String> entry : requestParams.entrySet()) {
@@ -66,9 +69,9 @@ public class ProjectController {
         CriteriaQuery query = builder.createQuery(properties.getProjectClass());
         Root root = query.from(properties.getProjectClass());
 
-
         List<Predicate> predicates = new ArrayList<>();
 
+        // create a predicate for each query param
         for(Map.Entry<String, String> queryEntry : fieldParamValueMap.entrySet()) {
             Expression<String> actual = builder.lower(root.get(queryEntry.getKey()));
             String pattern = '%' + queryEntry.getValue().toLowerCase() + '%';
@@ -76,6 +79,7 @@ public class ProjectController {
             predicates.add(builder.like(actual, pattern));
         }
 
+        // create a disjunction of all predicates
         Predicate[] predicatesArr = new Predicate[predicates.size()];
         query.where(builder.or(predicates.toArray(predicatesArr)));
 
