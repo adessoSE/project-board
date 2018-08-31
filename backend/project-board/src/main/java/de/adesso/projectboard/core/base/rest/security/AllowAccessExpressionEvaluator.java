@@ -23,4 +23,17 @@ public class AllowAccessExpressionEvaluator implements ExpressionEvaluator {
         return true;
     }
 
+    /**
+     *
+     * @param authentication
+     *          The {@link Authentication} object.
+     *
+     * @return
+     *          <i>true</i>
+     */
+    @Override
+    public boolean hasPermissionToApply(Authentication authentication) {
+        return false;
+    }
+
 }

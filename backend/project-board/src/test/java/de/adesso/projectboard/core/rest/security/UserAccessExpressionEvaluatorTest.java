@@ -1,7 +1,7 @@
 package de.adesso.projectboard.core.rest.security;
 
-import de.adesso.projectboard.core.rest.security.persistence.UserProjectsAccessInfo;
-import de.adesso.projectboard.core.rest.security.persistence.UserProjectsAccessInfoRepository;
+import de.adesso.projectboard.core.rest.security.persistence.UserAccessInfo;
+import de.adesso.projectboard.core.rest.security.persistence.UserAccessInfoRepository;
 import de.adesso.projectboard.core.security.KeycloakAuthorizationInfo;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,7 +26,7 @@ public class UserAccessExpressionEvaluatorTest {
     private KeycloakAuthorizationInfo authInfo;
 
     @Mock
-    private UserProjectsAccessInfoRepository accessInfoRepo;
+    private UserAccessInfoRepository accessInfoRepo;
 
     @InjectMocks
     private UserAccessExpressionEvaluator evaluator;
@@ -38,8 +38,11 @@ public class UserAccessExpressionEvaluatorTest {
 
     @Test
     public void testHasAccessToProjects_HasAccess() {
+        LocalDateTime accessStart = LocalDateTime.now().plus(7L, ChronoUnit.WEEKS);
         LocalDateTime accessEnd = LocalDateTime.now().plus(2L, ChronoUnit.WEEKS);
-        UserProjectsAccessInfo info = new UserProjectsAccessInfo(authInfo.getUsername(), accessEnd);
+
+        UserAccessInfo info = new UserAccessInfo(authInfo.getUsername(), accessEnd);
+        info.setAccessStart(accessStart);
 
         when(accessInfoRepo.findFirstByUserIdOrderByAccessEndDesc(anyString()))
                 .thenReturn(Optional.of(info));
@@ -57,8 +60,11 @@ public class UserAccessExpressionEvaluatorTest {
 
     @Test
     public void testHasAccessToProjects_NoAccess() {
+        LocalDateTime accessStart = LocalDateTime.now().minus(6L, ChronoUnit.DAYS);
         LocalDateTime accessEnd = LocalDateTime.now().minus(1L, ChronoUnit.DAYS);
-        UserProjectsAccessInfo info = new UserProjectsAccessInfo(authInfo.getUsername(), accessEnd);
+
+        UserAccessInfo info = new UserAccessInfo(authInfo.getUsername(), accessEnd);
+        info.setAccessStart(accessStart);
 
         when(accessInfoRepo.findFirstByUserIdOrderByAccessEndDesc(anyString()))
                 .thenReturn(Optional.of(info));

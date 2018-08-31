@@ -12,14 +12,14 @@ import java.time.LocalDateTime;
 /**
  * Entity to persist info about user access to projects.
  *
- * @see UserProjectsAccessInfoRepository
+ * @see UserAccessInfoRepository
  */
 @Table
 @Entity
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UserProjectsAccessInfo {
+public class UserAccessInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,12 +46,12 @@ public class UserProjectsAccessInfo {
      * @param accessEnd
      *          The {@link LocalDateTime} of when the access should end.
      */
-    public UserProjectsAccessInfo(String userId, LocalDateTime accessEnd) {
+    public UserAccessInfo(String userId, LocalDateTime accessEnd) {
         this.userId = userId;
         this.accessEnd = accessEnd;
     }
 
-    protected UserProjectsAccessInfo() {
+    protected UserAccessInfo() {
         // protected no-arg constructor for JPA
     }
 

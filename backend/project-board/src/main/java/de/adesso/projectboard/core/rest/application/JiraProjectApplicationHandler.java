@@ -53,7 +53,7 @@ public class JiraProjectApplicationHandler implements ProjectApplicationHandler 
 
             mailService.sendMessage(message);
 
-            return new ProjectApplicationLog(authInfo.getUsername(), application);
+            return new ProjectApplicationLog(authInfo.getUsername(), application.getComment(), optionalProject.get());
         } else {
             throw new ProjectNotFoundException();
         }

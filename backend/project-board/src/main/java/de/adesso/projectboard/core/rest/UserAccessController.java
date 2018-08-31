@@ -1,32 +1,32 @@
 package de.adesso.projectboard.core.rest;
 
-import de.adesso.projectboard.core.rest.security.persistence.UserProjectsAccessInfo;
-import de.adesso.projectboard.core.rest.security.persistence.UserProjectsAccessInfoRepository;
+import de.adesso.projectboard.core.rest.security.persistence.UserAccessInfo;
+import de.adesso.projectboard.core.rest.security.persistence.UserAccessInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+@PreAuthorize("hasRole('admin')")
 @RestController
 @RequestMapping("/projects/access")
-public class UserProjectsAccessController {
+public class UserAccessController {
 
-    private final UserProjectsAccessInfoRepository accessInfoRepo;
+    private final UserAccessInfoRepository accessInfoRepo;
 
     @Autowired
-    public UserProjectsAccessController(UserProjectsAccessInfoRepository accessInfoRepo) {
+    public UserAccessController(UserAccessInfoRepository accessInfoRepo) {
         this.accessInfoRepo = accessInfoRepo;
     }
 
     @GetMapping("/")
-    public Iterable<UserProjectsAccessInfo> getAll() {
+    public Iterable<UserAccessInfo> getAll() {
         return accessInfoRepo.findAll();
     }
 
-    @PreAuthorize("hasRole('admin')")
     @PostMapping(path = "/", consumes = "application/json", produces = "application/json")
-    public UserProjectsAccessInfo create(@Valid @RequestBody UserProjectsAccessInfo info) {
+    public UserAccessInfo create(@Valid @RequestBody UserAccessInfo info) {
         return accessInfoRepo.save(info);
     }
 

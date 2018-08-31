@@ -77,4 +77,17 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
         return evaluator.hasAccessToProjects(getAuthentication());
     }
 
+    /**
+     *
+     * @return
+     *          <i>true</i>, when the authenticated user is authorized to
+     *          apply for projects, <i>false</i> otherwise.
+     *
+     * @see ExpressionEvaluator#hasPermissionToApply(Authentication)
+     * @see de.adesso.projectboard.core.base.rest.application.ProjectApplicationController
+     */
+    public boolean hasPermissionToApply() {
+        return evaluator.hasPermissionToApply(getAuthentication());
+    }
+
 }

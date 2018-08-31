@@ -1,8 +1,8 @@
 package de.adesso.projectboard.core.rest.security;
 
 import de.adesso.projectboard.core.base.rest.security.ExpressionEvaluator;
-import de.adesso.projectboard.core.rest.security.persistence.UserProjectsAccessInfo;
-import de.adesso.projectboard.core.rest.security.persistence.UserProjectsAccessInfoRepository;
+import de.adesso.projectboard.core.rest.security.persistence.UserAccessInfo;
+import de.adesso.projectboard.core.rest.security.persistence.UserAccessInfoRepository;
 import de.adesso.projectboard.core.security.KeycloakAuthorizationInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -17,7 +17,7 @@ import java.util.Optional;
  * to the REST interface.
  *
  * <p>
- *     Activated via the <i>keyclaok-adesso</i> profile.
+ *     Activated via the <i>adesso-keycloak</i> profile.
  * </p>
  *
  * @see ExpressionEvaluator
@@ -28,10 +28,10 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
 
     private final KeycloakAuthorizationInfo authInfo;
 
-    private final UserProjectsAccessInfoRepository userAccessInfoRepo;
+    private final UserAccessInfoRepository userAccessInfoRepo;
 
     @Autowired
-    public UserAccessExpressionEvaluator(KeycloakAuthorizationInfo authInfo, UserProjectsAccessInfoRepository userAccessInfoRepo) {
+    public UserAccessExpressionEvaluator(KeycloakAuthorizationInfo authInfo, UserAccessInfoRepository userAccessInfoRepo) {
         this.authInfo = authInfo;
         this.userAccessInfoRepo = userAccessInfoRepo;
     }
@@ -43,16 +43,16 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *
      * @return
      *          <i>true</i>, if the username of the currently authenticated user
-     *          is present in the {@link UserProjectsAccessInfoRepository} and the
-     *          {@link UserProjectsAccessInfo#accessEnd access end date} is after
+     *          is present in the {@link UserAccessInfoRepository} and the
+     *          {@link UserAccessInfo#accessEnd access end date} is after
      *          the current {@link LocalDateTime}, <i>false</i> otherwise.
      *
-     * @see UserProjectsAccessInfoRepository#findFirstByUserIdOrderByAccessEndDesc(String)
+     * @see UserAccessInfoRepository#findFirstByUserIdOrderByAccessEndDesc(String)
      * @see KeycloakAuthorizationInfo#getUsername()
      */
     @Override
     public boolean hasAccessToProjects(Authentication authentication) {
-        Optional<UserProjectsAccessInfo> accessInfo =
+        Optional<UserAccessInfo> accessInfo =
                 userAccessInfoRepo.findFirstByUserIdOrderByAccessEndDesc(authInfo.getUsername());
 
         if(accessInfo.isPresent()) {
@@ -62,6 +62,21 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
         }
 
         return false;
+    }
+
+    /**
+     *
+     * @param authentication
+     *          The {@link Authentication} object.
+     *
+     * @return
+     *          The result of {@link #hasAccessToProjects(Authentication)}
+     *
+     * @see #hasAccessToProjects(Authentication)
+     */
+    @Override
+    public boolean hasPermissionToApply(Authentication authentication) {
+        return hasAccessToProjects(authentication);
     }
 
 }

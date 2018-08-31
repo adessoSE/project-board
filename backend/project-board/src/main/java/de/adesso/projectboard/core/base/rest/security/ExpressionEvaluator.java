@@ -24,4 +24,15 @@ public interface ExpressionEvaluator {
      */
     boolean hasAccessToProjects(Authentication authentication);
 
+    /**
+     *
+     * @param authentication
+     *          The {@link Authentication} object.
+     *
+     * @return
+     *          <i>true</i>, if the user has the permission to apply
+     *          for projects, <i>false</i> otherwise.
+     */
+    boolean hasPermissionToApply(Authentication authentication);
+
 }
