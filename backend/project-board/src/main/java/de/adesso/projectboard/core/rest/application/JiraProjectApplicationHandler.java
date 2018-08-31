@@ -1,4 +1,4 @@
-package de.adesso.projectboard.core.rest;
+package de.adesso.projectboard.core.rest.application;
 
 import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
 import de.adesso.projectboard.core.base.project.persistence.ProjectRepository;
@@ -16,6 +16,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * A {@link ProjectApplicationHandler} implementation that sends out a mail to the
+ * supervisor of the applicant.
+ *
+ * @see MailService
+ * @see ApplicationTemplateMessage
+ * @see KeycloakAuthorizationInfo
+ */
 @Profile({"adesso-jira", "adesso-keycloak"})
 @Service
 public class JiraProjectApplicationHandler implements ProjectApplicationHandler {
@@ -45,7 +53,7 @@ public class JiraProjectApplicationHandler implements ProjectApplicationHandler 
 
             mailService.sendMessage(message);
 
-            return new ProjectApplicationLog(authInfo.getUsername(), application);
+            return new ProjectApplicationLog(authInfo.getUsername(), application.getComment(), optionalProject.get());
         } else {
             throw new ProjectNotFoundException();
         }

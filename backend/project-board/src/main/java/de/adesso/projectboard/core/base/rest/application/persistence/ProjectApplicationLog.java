@@ -1,6 +1,6 @@
 package de.adesso.projectboard.core.base.rest.application.persistence;
 
-import de.adesso.projectboard.core.base.rest.application.ProjectApplication;
+import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -29,10 +29,10 @@ public class ProjectApplicationLog {
     private String userId;
 
     /**
-     * The ID of the project the user applied for.
+     * The project the user applied for.
      */
-    @Column(nullable = false)
-    private Long projectId;
+    @ManyToOne(optional = false)
+    private AbstractProject project;
 
     /**
      * The comment of the application.
@@ -46,17 +46,22 @@ public class ProjectApplicationLog {
     private LocalDateTime applicationDate;
 
     /**
+     * Constructs a new instance. The {@link #applicationDate} is set to the
+     * current {@link LocalDateTime} when persisting the entity.
      *
      * @param userId
      *          The ID of the user that applied for the project.
      *
-     * @param projectApplication
-     *          The {@link ProjectApplication} of the project the user applied for.
+     * @param applicationComment
+     *          The comment oof the application.
+     *
+     * @param project
+     *          The {@link AbstractProject} the user applied for.
      */
-    public ProjectApplicationLog(String userId, ProjectApplication projectApplication) {
+    public ProjectApplicationLog(String userId, String applicationComment, AbstractProject project) {
         this.userId = userId;
-        this.applicationComment = projectApplication != null ? projectApplication.getComment() : null;
-        this.projectId = projectApplication != null ? projectApplication.getProjectId() : null;
+        this.applicationComment = applicationComment;
+        this.project = project;
     }
 
     @PrePersist

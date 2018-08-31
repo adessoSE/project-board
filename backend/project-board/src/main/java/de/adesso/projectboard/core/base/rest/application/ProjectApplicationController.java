@@ -1,12 +1,14 @@
 package de.adesso.projectboard.core.base.rest.application;
 
+import de.adesso.projectboard.core.base.rest.application.persistence.ProjectApplicationLog;
 import de.adesso.projectboard.core.base.rest.application.persistence.ProjectApplicationLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
+@PreAuthorize("hasPermissionToApply()")
 @RestController
 @RequestMapping("/projects/applications")
 public class ProjectApplicationController {
@@ -22,8 +24,8 @@ public class ProjectApplicationController {
     }
 
     @PostMapping(path = "/", consumes = "application/json", produces = "application/json")
-    public void applyForProject(@RequestBody ProjectApplication projectApplication) {
-        logRepository.save(applicationHandler.onApplicationReceived(projectApplication));
+    public ProjectApplicationLog applyForProject(@Valid @RequestBody ProjectApplication projectApplication) {
+        return logRepository.save(applicationHandler.onApplicationReceived(projectApplication));
     }
 
 }
