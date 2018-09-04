@@ -45,7 +45,7 @@ public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter 
 
         http
                 .cors()
-                .and()
+                    .disable()
                 .csrf()
                     .disable()
                 .sessionManagement()
