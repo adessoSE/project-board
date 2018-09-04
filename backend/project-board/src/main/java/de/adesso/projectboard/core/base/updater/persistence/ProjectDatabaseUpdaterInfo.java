@@ -44,7 +44,7 @@ public class ProjectDatabaseUpdaterInfo {
     public ProjectDatabaseUpdaterInfo(LocalDateTime time, Status status, Exception exception) {
         this.time = time;
         this.status = status;
-        this.failureReason = exception != null ? exception.toString() : null;
+        this.failureReason = exception != null ? exception.getMessage() : null;
     }
 
     public enum Status {
