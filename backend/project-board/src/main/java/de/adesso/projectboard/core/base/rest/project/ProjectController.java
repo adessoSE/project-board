@@ -13,7 +13,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.criteria.*;
 import java.util.*;
 
-@PreAuthorize("hasAccessToProjects()")
 @RestController
 @RequestMapping("/projects")
 public class ProjectController {
@@ -37,6 +36,7 @@ public class ProjectController {
         this.entityManager = entityManager;
     }
 
+    @PreAuthorize("hasAccessToProject(projectId)")
     @GetMapping("/{projectId}")
     public AbstractProject getById(@PathVariable long projectId) {
         Optional<AbstractProject> projectOptional = projectRepository.findById(projectId);
@@ -48,7 +48,8 @@ public class ProjectController {
         }
     }
 
-    @GetMapping
+    @PreAuthorize("hasAccessToProjects()")
+    @GetMapping("/")
     public Iterable<? extends AbstractProject> getAll() {
         return projectRepository.findAll();
     }

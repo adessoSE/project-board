@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ProjectApplication {
+public class ProjectApplicationDTO {
 
     @NotNull
     private Long projectId;

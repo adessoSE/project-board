@@ -117,7 +117,7 @@ public class JiraProjectReader implements AbstractProjectReader {
      *          A list of {@link JiraProject}s.
      *
      * @throws IOException
-     *          When error occurs when desirializing the response body.
+     *          When error occurs when deserializing the response body.
      */
     private List<JiraProject> getProjectsByQuery(String jqlQuery) throws IOException {
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(properties.getJiraRequestUrl(), String.class, jqlQuery);

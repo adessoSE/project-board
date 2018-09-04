@@ -28,6 +28,23 @@ public class AllowAccessExpressionEvaluator implements ExpressionEvaluator {
      * @param authentication
      *          The {@link Authentication} object.
      *
+     * @param projectId
+     *          The id of the {@link de.adesso.projectboard.core.base.project.persistence.AbstractProject}
+     *          the user wants to access.
+     *
+     * @return
+     *          <i>true</i>
+     */
+    @Override
+    public boolean hasAccessToProject(Authentication authentication, long projectId) {
+        return true;
+    }
+
+    /**
+     *
+     * @param authentication
+     *          The {@link Authentication} object.
+     *
      * @return
      *          <i>true</i>
      */

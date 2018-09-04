@@ -3,7 +3,6 @@ package de.adesso.projectboard.core.rest.security;
 import de.adesso.projectboard.core.base.rest.security.ExpressionEvaluator;
 import de.adesso.projectboard.core.rest.security.persistence.UserAccessInfo;
 import de.adesso.projectboard.core.rest.security.persistence.UserAccessInfoRepository;
-import de.adesso.projectboard.core.security.KeycloakAuthorizationInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
@@ -26,12 +25,12 @@ import java.util.Optional;
 @Service
 public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
 
-    private final KeycloakAuthorizationInfo authInfo;
+    private final KeycloakAuthenticationInfo authInfo;
 
     private final UserAccessInfoRepository userAccessInfoRepo;
 
     @Autowired
-    public UserAccessExpressionEvaluator(KeycloakAuthorizationInfo authInfo, UserAccessInfoRepository userAccessInfoRepo) {
+    public UserAccessExpressionEvaluator(KeycloakAuthenticationInfo authInfo, UserAccessInfoRepository userAccessInfoRepo) {
         this.authInfo = authInfo;
         this.userAccessInfoRepo = userAccessInfoRepo;
     }
@@ -48,7 +47,7 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          the current {@link LocalDateTime}, <i>false</i> otherwise.
      *
      * @see UserAccessInfoRepository#findFirstByUserIdOrderByAccessEndDesc(String)
-     * @see KeycloakAuthorizationInfo#getUsername()
+     * @see KeycloakAuthenticationInfo#getUsername()
      */
     @Override
     public boolean hasAccessToProjects(Authentication authentication) {
@@ -61,6 +60,25 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
             return accessEnd.isAfter(LocalDateTime.now());
         }
 
+        return false;
+    }
+
+    /**
+     *
+     * @param authentication
+     *          The {@link Authentication} object.
+     *
+     * @param projectId
+     *          The id of the {@link de.adesso.projectboard.core.base.project.persistence.AbstractProject}
+     *          the user wants to access.
+     *
+     * @return
+     *          <i>true</i>, if
+     *
+     */
+    @Override
+    public boolean hasAccessToProject(Authentication authentication, long projectId) {
+        // TODO implement
         return false;
     }
 

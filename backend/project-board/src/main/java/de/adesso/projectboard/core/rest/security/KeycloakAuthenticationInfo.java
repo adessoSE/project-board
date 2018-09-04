@@ -1,14 +1,20 @@
-package de.adesso.projectboard.core.security;
+package de.adesso.projectboard.core.rest.security;
 
+import de.adesso.projectboard.core.base.rest.security.AuthenticationInfo;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Profile("adesso-keycloak")
 @Service
-public class KeycloakAuthorizationInfo {
+public class KeycloakAuthenticationInfo implements AuthenticationInfo {
 
     // TODO: implement
     // Note: auth context is set when calling -> SecurityContextHolder.getContext() returns a context
+
+    @Override
+    public String getUserId() {
+        return "user";
+    }
 
     /**
      *
@@ -25,7 +31,7 @@ public class KeycloakAuthorizationInfo {
      *          The <b>unique</b> username of the current user.
      */
     public String getUsername() {
-        return "Username";
+        return getUserId();
     }
 
     /**

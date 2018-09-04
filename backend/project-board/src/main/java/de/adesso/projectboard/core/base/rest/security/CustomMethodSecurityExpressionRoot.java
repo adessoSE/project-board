@@ -79,6 +79,23 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
 
     /**
      *
+     * @param projectId
+     *          The id of the {@link de.adesso.projectboard.core.base.project.persistence.AbstractProject}
+     *          the user wants to access.
+     *
+     * @return
+     *          <i>true</i>, when the authenticated user is authorized to
+     *          view the project, <i>false</i> otherwise.
+     *
+     * @see ExpressionEvaluator#hasAccessToProject(Authentication, long)
+     * @see de.adesso.projectboard.core.base.rest.project.ProjectController
+     */
+    public boolean hasAccessToProject(long projectId) {
+        return evaluator.hasAccessToProject(getAuthentication(), projectId);
+    }
+
+    /**
+     *
      * @return
      *          <i>true</i>, when the authenticated user is authorized to
      *          apply for projects, <i>false</i> otherwise.

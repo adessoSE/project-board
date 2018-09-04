@@ -16,17 +16,11 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ProjectApplicationLog {
+public class ProjectApplication {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    /**
-     * The ID of the user that applied for the project.
-     */
-    @Column(nullable = false)
-    private String userId;
 
     /**
      * The project the user applied for.
@@ -49,17 +43,13 @@ public class ProjectApplicationLog {
      * Constructs a new instance. The {@link #applicationDate} is set to the
      * current {@link LocalDateTime} when persisting the entity.
      *
-     * @param userId
-     *          The ID of the user that applied for the project.
-     *
      * @param applicationComment
      *          The comment oof the application.
      *
      * @param project
      *          The {@link AbstractProject} the user applied for.
      */
-    public ProjectApplicationLog(String userId, String applicationComment, AbstractProject project) {
-        this.userId = userId;
+    public ProjectApplication(String applicationComment, AbstractProject project) {
         this.applicationComment = applicationComment;
         this.project = project;
     }

@@ -2,7 +2,6 @@ package de.adesso.projectboard.core.rest.security;
 
 import de.adesso.projectboard.core.rest.security.persistence.UserAccessInfo;
 import de.adesso.projectboard.core.rest.security.persistence.UserAccessInfoRepository;
-import de.adesso.projectboard.core.security.KeycloakAuthorizationInfo;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,7 +22,7 @@ import static org.mockito.Mockito.when;
 public class UserAccessExpressionEvaluatorTest {
 
     @Mock
-    private KeycloakAuthorizationInfo authInfo;
+    private KeycloakAuthenticationInfo authInfo;
 
     @Mock
     private UserAccessInfoRepository accessInfoRepo;
