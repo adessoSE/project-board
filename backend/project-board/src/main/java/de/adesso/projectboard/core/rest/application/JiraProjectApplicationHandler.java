@@ -20,6 +20,11 @@ import java.util.Optional;
  * A {@link ProjectApplicationHandler} implementation that sends out a mail to the
  * supervisor of the applicant.
  *
+ * <p>
+ *     Activated via the <i>adesso-jira</i> and <i>adesso-keycloak</i>
+ *     profiles.
+ * </p>
+ *
  * @see MailService
  * @see ApplicationTemplateMessage
  * @see KeycloakAuthenticationInfo

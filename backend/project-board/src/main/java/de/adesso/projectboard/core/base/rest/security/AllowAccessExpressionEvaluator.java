@@ -53,4 +53,38 @@ public class AllowAccessExpressionEvaluator implements ExpressionEvaluator {
         return false;
     }
 
+    /**
+     *
+     * @param authentication
+     *          The {@link Authentication} object.
+     *
+     * @param userId
+     *          The id of the {@link de.adesso.projectboard.core.base.rest.user.persistence.User}
+     *          the current user wants to access.
+     *
+     * @return
+     *          <i>true</i>
+     */
+    @Override
+    public boolean hasPermissionToAccessUser(Authentication authentication, String userId) {
+        return false;
+    }
+
+    /**
+     *
+     * @param authentication
+     *          The {@link Authentication} object.
+     *
+     * @param bookmarkId
+     *          The id of the {@link de.adesso.projectboard.core.base.rest.bookmark.persistence.ProjectBookmark}
+     *          the user wants to access.
+     *
+     * @return
+     *          <i>true</i>
+     */
+    @Override
+    public boolean hasPermissionToAccessBookmark(Authentication authentication, long bookmarkId) {
+        return true;
+    }
+
 }

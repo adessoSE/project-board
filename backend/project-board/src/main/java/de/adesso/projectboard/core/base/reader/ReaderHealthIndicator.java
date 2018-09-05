@@ -1,31 +1,30 @@
 package de.adesso.projectboard.core.base.reader;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.stereotype.Component;
 
 /**
- * A {@link HealthIndicator} implementation for the {@link AbstractProjectReader} bean
+ * A {@link HealthIndicator} implementation for the {@link ProjectReader} bean
  * with name "projectReaderBean".
  *
- * @see AbstractProjectReader#health()
+ * @see ProjectReader#health()
  */
 @Component
 public class ReaderHealthIndicator implements HealthIndicator {
 
-    private final AbstractProjectReader projectReader;
+    private final ProjectReader projectReader;
 
-    public ReaderHealthIndicator(AbstractProjectReader projectReader) {
+    public ReaderHealthIndicator(ProjectReader projectReader) {
         this.projectReader = projectReader;
     }
 
     /**
      *
      * @return
-     *          The {@link Health} of the {@link AbstractProjectReader}.
+     *          The {@link Health} of the {@link ProjectReader}.
      *
-     * @see AbstractProjectReader#health()
+     * @see ProjectReader#health()
      */
     @Override
     public Health health() {

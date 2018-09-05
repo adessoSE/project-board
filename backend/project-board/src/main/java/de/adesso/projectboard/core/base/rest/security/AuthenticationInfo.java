@@ -5,7 +5,7 @@ package de.adesso.projectboard.core.base.rest.security;
  *
  * @see de.adesso.projectboard.core.rest.security.KeycloakAuthenticationInfo
  * @see de.adesso.projectboard.core.base.rest.application.ProjectApplicationController
- * @see de.adesso.projectboard.core.base.rest.bookmark.BookmarkController
+ * @see de.adesso.projectboard.core.base.rest.bookmark.ProjectBookmarkController
  */
 public interface AuthenticationInfo {
 

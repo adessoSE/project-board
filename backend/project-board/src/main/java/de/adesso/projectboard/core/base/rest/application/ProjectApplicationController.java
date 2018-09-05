@@ -1,55 +1,58 @@
 package de.adesso.projectboard.core.base.rest.application;
 
 import de.adesso.projectboard.core.base.rest.application.persistence.ProjectApplication;
-import de.adesso.projectboard.core.base.rest.application.persistence.ProjectApplicationRepository;
-import de.adesso.projectboard.core.base.rest.security.AuthenticationInfo;
-import de.adesso.projectboard.core.base.user.persistence.UserRepository;
+import de.adesso.projectboard.core.base.rest.exceptions.UserNotFoundException;
+import de.adesso.projectboard.core.base.rest.user.UserService;
+import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.PostRemove;
 import javax.validation.Valid;
-import java.util.Collections;
+import java.util.Optional;
 
+/**
+ * {@link RestController} for project applications.
+ */
 @RestController
 @RequestMapping("/applications")
 public class ProjectApplicationController {
 
     private final ProjectApplicationHandler applicationHandler;
 
-    private final ProjectApplicationRepository logRepository;
-
-    private final UserRepository userRepository;
-
-    private final AuthenticationInfo authInfo;
+    private final UserService userService;
 
     @Autowired
-    public ProjectApplicationController(ProjectApplicationHandler applicationHandler,
-                                        ProjectApplicationRepository logRepository,
-                                        UserRepository userRepository,
-                                        AuthenticationInfo authInfo) {
+    public ProjectApplicationController(ProjectApplicationHandler applicationHandler, UserService userService) {
         this.applicationHandler = applicationHandler;
-        this.logRepository = logRepository;
-        this.userRepository = userRepository;
-        this.authInfo = authInfo;
+        this.userService = userService;
     }
 
-    @GetMapping(value = "/my/", produces = "application/json")
-    public Iterable<ProjectApplication> getApplicationsForUser() {
-
-        // TODO: return list of application from user(lazy initialization!)
-        return Collections.emptyList();
-
+    @GetMapping(value = "/", produces = "application/json")
+    public Iterable<ProjectApplication> getApplicationsForCurrentUser() {
+        return userService.getCurrentUser().getApplications();
     }
 
-    @PreAuthorize("hasPermissionToApply()")
+    @PreAuthorize("hasRole('admin') || hasPermissionToAccessUser(#userId)")
+    @GetMapping(value = "/{userId}")
+    public Iterable<ProjectApplication> getApplicationsForUser(@PathVariable("userId") String userId) {
+        Optional<User> userOptional = userService.getUserById(userId);
+
+        if(userOptional.isPresent()) {
+            return userOptional.get().getApplications();
+        } else {
+            throw new UserNotFoundException();
+        }
+    }
+
+    @PreAuthorize("hasRole('admin') || hasPermissionToApply()")
     @PostMapping(path = "/", consumes = "application/json", produces = "application/json")
-    public ProjectApplication applyForProject(@Valid @RequestBody ProjectApplicationDTO projectApplicationDTO) {
+    public ProjectApplication createApplication(@Valid @RequestBody ProjectApplicationDTO projectApplicationDTO) {
+        ProjectApplication application
+                = applicationHandler.onApplicationReceived(projectApplicationDTO);
 
-        // TODO: implement
-        // get user by userid (create it if necessary) and add the projectapplication to the users applications
-        return null;
-
+        return userService.addApplicationToUser(userService.getCurrentUser(), application);
     }
 
 }

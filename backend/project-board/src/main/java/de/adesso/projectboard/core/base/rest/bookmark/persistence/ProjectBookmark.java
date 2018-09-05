@@ -17,4 +17,17 @@ public class ProjectBookmark {
     @ManyToOne(optional = false)
     private AbstractProject project;
 
+    /**
+     *
+     * @param project
+     *          The project the bookmark refers to.
+     */
+    public ProjectBookmark(AbstractProject project) {
+        this.project = project;
+    }
+
+    protected ProjectBookmark() {
+        // protected no-arg constructor for JPA
+    }
+
 }

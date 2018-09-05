@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
-import de.adesso.projectboard.core.base.reader.AbstractProjectReader;
+import de.adesso.projectboard.core.base.reader.ProjectReader;
 import de.adesso.projectboard.core.project.JiraIssue;
 import de.adesso.projectboard.core.project.persistence.JiraProject;
 import de.adesso.projectboard.core.reader.jql.JqlComparator;
@@ -24,11 +24,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * A {@link AbstractProjectReader} implementation that reads {@link JiraProject}s from
+ * A {@link ProjectReader} implementation that reads {@link JiraProject}s from
  * a JIRA REST API.
  *
  * <p>
- *     Default implementation that gets created when no other {@link AbstractProjectReader} bean
+ *     Default implementation that gets created when no other {@link ProjectReader} bean
  *     is defined.
  * </p>
  *
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  */
 @Profile("adesso-jira")
 @Service
-public class JiraProjectReader implements AbstractProjectReader {
+public class JiraProjectReader implements ProjectReader {
 
     private final RestTemplate restTemplate;
 
@@ -163,10 +163,9 @@ public class JiraProjectReader implements AbstractProjectReader {
         JqlQueryStringBuilder orQueryBuilder = new JqlQueryStringBuilder();
         JqlQueryStringBuilder andQueryBuilder = new JqlQueryStringBuilder();
 
-
         orQueryBuilder
                 .newQuery("status", JqlComparator.EQUAL, "eskaliert")
-                .or("status", JqlComparator.EQUAL, "Offen");
+                .or("status", JqlComparator.EQUAL, "open");
 
         return andQueryBuilder
                 .newQuery("issuetype", JqlComparator.EQUAL, "Staffinganfrage")

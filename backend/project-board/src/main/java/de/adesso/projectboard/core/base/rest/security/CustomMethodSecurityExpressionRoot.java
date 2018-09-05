@@ -107,4 +107,35 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
         return evaluator.hasPermissionToApply(getAuthentication());
     }
 
+    /**
+     *
+     * @param userId
+     *          The id of the {@link de.adesso.projectboard.core.base.rest.user.persistence.User}
+     *          the current user wants to access.
+     *
+     * @return
+     *          <i>true</i>, when the authenticated user is authorized to access
+     *          the user, <i>false</i> otherwise.
+     *
+     * @see ExpressionEvaluator#hasPermissionToAccessUser(Authentication, String)
+     * @see de.adesso.projectboard.core.base.rest.bookmark.ProjectBookmarkController
+     */
+    public boolean hasPermissionToAccessUser(String userId) {
+        return evaluator.hasPermissionToAccessUser(getAuthentication(), userId);
+    }
+
+    /**
+     *
+     * @param bookmarkId
+     *          The id of the {@link de.adesso.projectboard.core.base.rest.bookmark.persistence.ProjectBookmark}
+     *          the user wants to access.
+     *
+     * @return
+     *          <i>true</i>, when the authenticated user is authorized to access the
+     *          bookmark, <i>false</i> otherwise.
+     */
+    public boolean hasPermissionToAccessBookmark(long bookmarkId) {
+        return evaluator.hasPermissionToAccessBookmark(getAuthentication(), bookmarkId);
+    }
+
 }

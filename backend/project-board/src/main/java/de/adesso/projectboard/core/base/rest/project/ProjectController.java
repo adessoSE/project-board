@@ -36,8 +36,11 @@ public class ProjectController {
         this.entityManager = entityManager;
     }
 
-    @PreAuthorize("hasAccessToProject(projectId)")
-    @GetMapping("/{projectId}")
+
+    @PreAuthorize("hasRole('admin') || hasAccessToProject(#projectId)")
+    @GetMapping(value = "/{projectId}",
+            produces = "application/json"
+    )
     public AbstractProject getById(@PathVariable long projectId) {
         Optional<AbstractProject> projectOptional = projectRepository.findById(projectId);
 
@@ -48,13 +51,20 @@ public class ProjectController {
         }
     }
 
-    @PreAuthorize("hasAccessToProjects()")
-    @GetMapping("/")
+
+    @PreAuthorize("hasRole('admin') || hasAccessToProjects()")
+    @GetMapping(value = "/",
+            produces = "application/json"
+    )
     public Iterable<? extends AbstractProject> getAll() {
         return projectRepository.findAll();
     }
 
-    @GetMapping("/search")
+
+    @PreAuthorize("hasRole('admin') || hasAccessToProjects()")
+    @GetMapping(value = "/search",
+            produces = "application/json"
+    )
     @SuppressWarnings("unchecked")
     public Iterable<? extends AbstractProject> search(@RequestParam Map<String,String> requestParams) {
         // map the query params to the corresponding field name
@@ -65,6 +75,8 @@ public class ProjectController {
                 fieldParamValueMap.put(scanner.getFieldNameByQueryName(entry.getKey()), entry.getValue());
             }
         }
+
+        // TODO: SQL injection possible?
 
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery query = builder.createQuery(properties.getProjectClass());

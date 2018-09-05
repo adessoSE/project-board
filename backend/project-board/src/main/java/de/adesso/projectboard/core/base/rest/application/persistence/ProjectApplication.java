@@ -1,6 +1,7 @@
 package de.adesso.projectboard.core.base.rest.application.persistence;
 
 import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,10 +12,9 @@ import java.time.LocalDateTime;
 /**
  * Entity to persist project application logs.
  */
-@Table(name = "PROJECT_APPLICATION_LOG")
+@Table
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 public class ProjectApplication {
 

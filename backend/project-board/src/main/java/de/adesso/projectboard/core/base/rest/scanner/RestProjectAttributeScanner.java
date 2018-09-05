@@ -11,6 +11,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Used to scan the {@link AbstractProject project class} to map field names
+ * to query names.
+ *
+ * @see QueryName
+ * @see de.adesso.projectboard.core.base.rest.project.ProjectController
+ */
 @Component
 public class RestProjectAttributeScanner {
 
@@ -26,6 +33,13 @@ public class RestProjectAttributeScanner {
         this.scanProjectClassAttributes();
     }
 
+    /**
+     * Build a map that maps the query name of a field
+     * to the real name of the field. Used for searching projects.
+     *
+     * @throws FieldsWithSameQueryNameException
+     *          When a naming conflict occurs.
+     */
     private void scanProjectClassAttributes() throws FieldsWithSameQueryNameException {
         Class<? extends AbstractProject> projectClass = properties.getProjectClass();
 
@@ -49,14 +63,35 @@ public class RestProjectAttributeScanner {
         }
     }
 
+    /**
+     *
+     * @param queryName
+     *          The name of the query parameter.
+     *
+     * @return
+     *          The result of {@link Map#containsKey(Object)}.
+     */
     public boolean canQuery(String queryName) {
         return queryNameAttributeMap.containsKey(queryName);
     }
 
+    /**
+     *
+     * @return
+     *          A set of all valid query parameter names.
+     */
     public Set<String> getQueryNames() {
         return queryNameAttributeMap.keySet();
     }
 
+    /**
+     *
+     * @param queryName
+     *          The query parameter name.
+     *
+     * @return
+     *          The corresponding field's name.
+     */
     public String getFieldNameByQueryName(String queryName) {
         return queryNameAttributeMap.get(queryName);
     }

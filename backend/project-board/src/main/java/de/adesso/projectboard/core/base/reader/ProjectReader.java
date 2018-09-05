@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @see de.adesso.projectboard.core.reader.JiraProjectReader
  */
-public interface AbstractProjectReader {
+public interface ProjectReader {
 
     /**
      * This method gets invoked by the {@link de.adesso.projectboard.core.base.updater.ProjectDatabaseUpdater}
