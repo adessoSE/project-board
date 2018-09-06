@@ -4,6 +4,7 @@ import { AuthGuard } from './_guards/auth.guard';
 import { ProjectResolverService } from './_services/project-resolver.service';
 import { AdminUiComponent } from './admin-ui/admin-ui.component';
 import { LoginComponent } from './login/login.component';
+import { OverviewComponent } from './overview/overview.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { EmployeeResolverService } from './_services/employee-resolver.service';
 import { ProjectsResolverService } from './_services/projects-resolver.service';
@@ -52,6 +53,11 @@ const routes: Routes = [
     resolve: {
       projects: ProjectsResolverService
     },
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'overview',
+    component: OverviewComponent,
     canActivate: [AuthGuard]
   },
   {
