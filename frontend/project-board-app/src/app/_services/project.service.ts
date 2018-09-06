@@ -1,25 +1,33 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AuthenticationService } from './authentication.service';
+import { environment } from '../../environments/environment';
 
 @Injectable()
 export class ProjectService {
-  url = 'https://jira.adesso.de/rest/api/2/search?jql=project=STF&issuetype=Staffinganfrage&status=eskaliert';
+  constructor(private http: HttpClient) { }
 
-  constructor(private http: HttpClient, private authService: AuthenticationService) { }
-
-  getProjects() {
-    return this.http.get<Project[]>('http://localhost:8081/projects'/*, httpOptions*/);
+  getAllProjects() {
+    return this.http.get<Project[]>(`${environment.resourceServer}/projects`);
   }
 
-  getProjectWithID(id) {
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Accept': 'application/json',
-        'Authorization': 'Bearer ' + this.authService.token
-      })
-    };
-    return this.http.get<Project>(`http://localhost:8081/projects/${id}`, httpOptions);
+  getProjectWithID(projectId) {
+    return this.http.get<Project>(`${environment.resourceServer}/projects/${projectId}`);
+  }
+
+  getApplicationsForUser(userId) {
+    return this.http.get<Project[]>(`${environment.resourceServer}/user/${userId}/applications`);
+  }
+
+  getFavorites(userId) {
+    return this.http.get<Project[]>(`${environment.resourceServer}/user/${userId}/bookmarks`);
+  }
+
+  addToFavorites(userId, projectId) {
+    return this.http.post<boolean>(`${environment.resourceServer}/user/${userId}/bookmarks`, {projectId});
+  }
+
+  removeFromFavorites(id) {
+    this.http.delete(`${environment.resourceServer}/${id}`);
   }
 }
 
