@@ -9,6 +9,6 @@ export class ProjectsResolverService implements Resolve<Project[]> {
   constructor(private projectService: ProjectService) { }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Project[]> {
-    return this.projectService.getProjects();
+    return this.projectService.getAllProjects();
   }
 }

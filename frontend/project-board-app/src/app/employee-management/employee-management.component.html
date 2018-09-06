@@ -20,12 +20,12 @@
       <div class="col right">{{selectedEmployee.email}}</div>
     </div>
 
-    <div class="mt-2 pt-1 border-top">
+    <div *ngIf="adminControls" class="mt-2 pt-1 border-top">
       <form *ngIf="!selectedEmployee.enabled">
         <div class="form-group">
           <label class="select-label" for="durationSelect">Dauer der Freischaltung</label>
           <select #duration required class="select form-control" id="durationSelect">
-            <option *ngFor="let option of options">{{option}}</option>
+            <option *ngFor="let option of numberOfDaysSelect">{{option}}</option>
           </select>
           <button (click)="activate(duration)" class="btn btn-primary btn-activate">Zugang aktivieren</button>
         </div>
@@ -35,5 +35,13 @@
       </div>
     </div>
   </div>
+  <ng-container *ngIf="!adminControls">
+    <h4>Favoriten</h4>
+    <div *ngFor="let f of favorites">{{f.title}}</div>
+    <div *ngIf="!favorites || favorites.length === 0">Du hast keine Favoriten markiert.</div>
+  </ng-container>
+  <h4>Bewerbungen</h4>
+  <div *ngFor="let a of applications">{{a.title}}</div>
+  <div *ngIf="!applications || applications.length === 0">Du hast dich auf kein Projekt beworben.</div>
   <p *ngIf="!selectedEmployee">Kein Mitarbeiter ausgewählt.</p>
 </div>

@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Employee } from '../_services/employee.service';
+import { Project, ProjectService } from '../_services/project.service';
 
 @Component({
   selector: 'app-employee-management',
@@ -8,13 +9,20 @@ import { Employee } from '../_services/employee.service';
 })
 export class EmployeeManagementComponent implements OnInit {
   @Input() selectedEmployee: Employee;
-  options = [];
+  @Input() adminControls = true;
+  numberOfDaysSelect = [];
 
-  constructor() { }
+  favorites: Project[];
+  applications: Project[];
+
+  constructor(private projectService: ProjectService) { }
 
   ngOnInit() {
-    for (let i = 1; i < 29; i++)
-      this.options.push(i);
+    for (let i = 1; i < 29; i++) {
+      this.numberOfDaysSelect.push(i);
+    }
+    this.getFavorites();
+    this.getApplications();
   }
 
   activate(duration) {
@@ -25,5 +33,13 @@ export class EmployeeManagementComponent implements OnInit {
   deactivate() {
     this.selectedEmployee.enabled = false;
     this.selectedEmployee.duration = null;
+  }
+
+  getFavorites() {
+    this.projectService.getFavorites(this.selectedEmployee.id).subscribe(fav => this.favorites = fav);
+  }
+
+  getApplications() {
+    this.projectService.getApplicationsForUser(this.selectedEmployee.id).subscribe(appls => this.applications = appls);
   }
 }
