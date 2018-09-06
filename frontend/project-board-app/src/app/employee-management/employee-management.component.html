@@ -40,8 +40,10 @@
     <div *ngFor="let f of favorites">{{f.title}}</div>
     <div *ngIf="!favorites || favorites.length === 0">Du hast keine Favoriten markiert.</div>
   </ng-container>
-  <h4>Bewerbungen</h4>
-  <div *ngFor="let a of applications">{{a.title}}</div>
-  <div *ngIf="!applications || applications.length === 0">Du hast dich auf kein Projekt beworben.</div>
+  <ng-container *ngIf="selectedEmployee">
+    <h4>Anfragen</h4>
+    <div *ngFor="let a of applications">{{a.title}}</div>
+    <div *ngIf="!applications || applications.length === 0">Keine Projektanfragen.</div>
+  </ng-container>
   <p *ngIf="!selectedEmployee">Kein Mitarbeiter ausgewählt.</p>
 </div>

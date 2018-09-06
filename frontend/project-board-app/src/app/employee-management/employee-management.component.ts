@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { Employee } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
 
@@ -7,7 +7,7 @@ import { Project, ProjectService } from '../_services/project.service';
   templateUrl: './employee-management.component.html',
   styleUrls: ['./employee-management.component.scss']
 })
-export class EmployeeManagementComponent implements OnInit {
+export class EmployeeManagementComponent implements OnInit, OnChanges {
   @Input() selectedEmployee: Employee;
   @Input() adminControls = true;
   numberOfDaysSelect = [];
@@ -17,12 +17,25 @@ export class EmployeeManagementComponent implements OnInit {
 
   constructor(private projectService: ProjectService) { }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.selectedEmployee.currentValue) {
+      if (!this.adminControls) {
+        this.getFavorites();
+      }
+      this.getApplications();
+    }
+  }
+
   ngOnInit() {
     for (let i = 1; i < 29; i++) {
       this.numberOfDaysSelect.push(i);
     }
-    this.getFavorites();
-    this.getApplications();
+    if (!this.adminControls) {
+      this.getFavorites();
+    }
+    if (this.selectedEmployee) {
+      this.getApplications();
+    }
   }
 
   activate(duration) {

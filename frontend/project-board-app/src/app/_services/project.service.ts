@@ -15,19 +15,19 @@ export class ProjectService {
   }
 
   getApplicationsForUser(userId) {
-    return this.http.get<Project[]>(`${environment.resourceServer}/user/${userId}/applications`);
+    return this.http.get<Project[]>(`${environment.resourceServer}/users/${userId}/applications`);
   }
 
   getFavorites(userId) {
-    return this.http.get<Project[]>(`${environment.resourceServer}/user/${userId}/bookmarks`);
+    return this.http.get<Project[]>(`${environment.resourceServer}/users/${userId}/bookmarks`);
   }
 
   addToFavorites(userId, projectId) {
-    return this.http.post<boolean>(`${environment.resourceServer}/user/${userId}/bookmarks`, {projectId});
+    return this.http.post<boolean>(`${environment.resourceServer}/users/${userId}/bookmarks`, {projectId});
   }
 
-  removeFromFavorites(id) {
-    this.http.delete(`${environment.resourceServer}/${id}`);
+  removeFromFavorites(userId, projectId) {
+    this.http.delete(`${environment.resourceServer}/users/${userId}/bookmarks/${projectId}`);
   }
 }
 

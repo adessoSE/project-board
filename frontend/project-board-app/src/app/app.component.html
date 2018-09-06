@@ -5,19 +5,19 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <div #menu class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul *ngIf="isUserAuthenticated()" class="navbar-nav mr-auto">
         <li class="nav-item">
-          <a class="nav-link" routerLink="/overview">Übersicht</a>
+          <a class="nav-link" routerLink="/overview" (click)="menu.collapse()">Übersicht</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/projects">Offene Projekte</a>
+          <a class="nav-link" routerLink="/projects" (click)="menu.collapse()">Offene Projekte</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/admin">Führungskräfte-UI</a>
+          <a class="nav-link" routerLink="/admin" (click)="menu.collapse()">Führungskräfte-UI</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/login" (click)="logout()">Logout</a>
+          <a class="nav-link" routerLink="/login" (click)="logout(); menu.collapse();">Logout</a>
         </li>
       </ul>
     </div>
