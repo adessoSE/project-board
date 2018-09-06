@@ -51,7 +51,7 @@ import { ProjectRequestComponent } from './project-request/project-request.compo
     AuthenticationService,
     EmployeeService,
     ProjectService,
-    // { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true }
   ],
   bootstrap: [AppComponent]
 })

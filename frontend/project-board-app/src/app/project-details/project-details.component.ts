@@ -17,6 +17,6 @@ export class ProjectDetailsComponent implements OnInit {
   }
 
   requestProject() {
-    this.router.navigate([`${this.location.path()}/request`]);
+    this.router.navigate([`projects/${this.selectedProject.id}/request`]);
   }
 }

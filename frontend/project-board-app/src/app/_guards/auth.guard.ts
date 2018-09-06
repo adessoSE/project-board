@@ -9,7 +9,7 @@ export class AuthGuard implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    if (this.authenticationService.name) {
+    if (this.authenticationService.hasValidAccessToken()) {
       // logged in so return true
       return true;
     }

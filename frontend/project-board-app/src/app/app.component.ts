@@ -33,7 +33,7 @@ export class AppComponent {
 
     // Discovery Document of your AuthServer as defined by OIDC
     // let url = 'http://localhost:8080/auth/realms/adesso/.well-known/openid-configuration';
-    let url = `${environment.authHost}/auth/realms/adesso/.well-known/openid-configuration`;
+    const url = `${environment.authHost}/auth/realms/adesso/.well-known/openid-configuration`;
 
     // this.oAuthService.issuer = 'http://localhost:8080/auth/realms/adesso';
     this.oAuthService.issuer = `${environment.authHost}/auth/realms/adesso`;
@@ -49,16 +49,19 @@ export class AppComponent {
       // This method just tries to parse the token(s) within the url when
       // the auth-server redirects the user back to the web-app
       // It dosn't send the user the the login page
-      this.oAuthService.tryLogin({});
+      if (this.isUserAuthenticated() && !this.oAuthService.hasValidAccessToken()) {
+        this.oAuthService.refreshToken().then(() => console.log('refreshed'));
+      }
     });
   }
 
   logout() {
     this.authenticationService.logout();
+    sessionStorage.clear();
     this.alertService.success('Du wurdest erfolgreich ausgeloggt.');
   }
 
   isUserAuthenticated() {
-    return this.authenticationService.name != null;
+    return this.oAuthService.hasValidAccessToken();
   }
 }
