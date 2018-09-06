@@ -30,9 +30,5 @@ export class AuthenticationService {
     }
     return claims.name;
   }
-
-  hasValidAccessToken() {
-    return this.oAuthService.hasValidAccessToken();
-  }
 }
 

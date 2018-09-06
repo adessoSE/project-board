@@ -10,7 +10,9 @@ import { AuthenticationService } from './_services/authentication.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
-  constructor(private oAuthService: OAuthService, private authenticationService: AuthenticationService, private alertService: AlertService) {
+  constructor(private oAuthService: OAuthService,
+              private authenticationService: AuthenticationService,
+              private alertService: AlertService) {
 
     // URL of the SPA to redirect the user to after login
     this.oAuthService.redirectUri = window.location.origin + '/index.html';
@@ -25,6 +27,7 @@ export class AppComponent {
     // set to true, to receive also an id_token via OpenId Connect (OIDC) in addition to the
     // OAuth2-based access_token
     this.oAuthService.oidc = true; // ID_Token
+    // this.oAuthService.oidc = false;
     this.oAuthService.skipSubjectCheck = true;
 
     // Use setStorage to use sessionStorage or another implementation of the TS-type Storage
@@ -38,10 +41,8 @@ export class AppComponent {
     // this.oAuthService.issuer = 'http://localhost:8080/auth/realms/adesso';
     this.oAuthService.issuer = `${environment.authHost}/auth/realms/adesso`;
 
-    // this.oAuthService.oidc = false;
-
-    // For DEV-Purposes to establish a https connection to the Keycloak VM on an external server
-    this.oAuthService.requireHttps = false;
+    // For DEV-Purposes to establish a non https connection to the Keycloak VM on an external server
+    // this.oAuthService.requireHttps = false;
 
     // Load Discovery Document and then try to login the user
     this.oAuthService.loadDiscoveryDocument(url).then(() => {
@@ -49,9 +50,7 @@ export class AppComponent {
       // This method just tries to parse the token(s) within the url when
       // the auth-server redirects the user back to the web-app
       // It dosn't send the user the the login page
-      if (this.isUserAuthenticated() && !this.oAuthService.hasValidAccessToken()) {
-        this.oAuthService.refreshToken().then(() => console.log('refreshed'));
-      }
+      this.oAuthService.tryLogin({});
     });
   }
 

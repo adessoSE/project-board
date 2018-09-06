@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { OAuthService } from 'angular-oauth2-oidc';
 import { first } from 'rxjs/operators';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
@@ -21,6 +22,7 @@ export class LoginComponent implements OnInit {
     private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
+    private oAuthService: OAuthService,
     private authenticationService: AuthenticationService,
     private alertService: AlertService) {
   }
@@ -31,8 +33,13 @@ export class LoginComponent implements OnInit {
       password: ['', Validators.required]
     });
 
-    // reset login status
-    this.authenticationService.logout();
+    if (this.oAuthService.hasValidAccessToken()) {
+      this.router.navigate(['/projects']);
+      this.alertService.info('Du bist bereits eingeloggt! Wenn du den Benutzer wechseln möchtest, logge dich erst aus.');
+    }
+    // else if (this.authenticationService.token && !this.oAuthService.hasValidAccessToken()){
+    //   this.alertService.error('Deine Sitzung ist abgelaufen.');
+    // }
 
     // get return url from route parameters or default to '/'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
@@ -59,10 +66,11 @@ export class LoginComponent implements OnInit {
           this.router.navigate([this.returnUrl]);
         },
         error => {
-          if (error.status == 401)
+          if (error.status === 401) {
             this.alertService.error('Benutzername oder Passwort sind falsch');
-          else
+          } else {
             this.alertService.error('Fehler beim Login');
+          }
           this.loading = false;
         });
   }
