@@ -83,7 +83,7 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          The {@link Authentication} object.
      *
      * @param projectId
-     *          The id of the {@link de.adesso.projectboard.core.base.project.persistence.AbstractProject}
+     *          The id of the {@link de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject}
      *          the user wants to access.
      *
      * @return
@@ -121,33 +121,17 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          the current user wants to access.
      *
      * @return
-     *          <i>true</i>, when the given {@code userId} is included in the
-     *          {@link Set} of the current users employees, <i>false</i> otherwise.
+     *          <i>true</i>, when the currently authenticated user has the same {@link User#getId() id}
+     *          or the given {@code userId} is included in the {@link Set} of the current users employees,
+     *          <i>false</i> otherwise.
      *
+     * @see UserService#getCurrentUser()
      * @see KeycloakAuthenticationInfo#getEmployeeSet()
      * @see Set#contains(Object)
      */
     @Override
     public boolean hasPermissionToAccessUser(Authentication authentication, String userId) {
-        return authInfo.getEmployeeSet().contains(userId);
-    }
-
-    /**
-     *
-     * @param authentication
-     *          The {@link Authentication} object.
-     *
-     * @param bookmarkId
-     *          The id of the {@link de.adesso.projectboard.core.base.rest.bookmark.persistence.ProjectBookmark}
-     *          the user wants to access.
-     *
-     * @return
-     *          The result of {@link UserService#userHasBookmark(String, long)} with the
-     *          {@link UserService#getCurrentUserId() current user's user ID} as the first param.
-     */
-    @Override
-    public boolean hasPermissionToAccessBookmark(Authentication authentication, long bookmarkId) {
-        return userService.userHasBookmark(userService.getCurrentUserId(), bookmarkId);
+        return userService.getCurrentUser().getId().equals(userId) || authInfo.getEmployeeSet().contains(userId);
     }
 
 }

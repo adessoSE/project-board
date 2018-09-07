@@ -13,7 +13,6 @@ import javax.validation.Valid;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/access")
 public class UserAccessController {
 
     private final UserAccessInfoRepository accessInfoRepo;
@@ -37,20 +36,22 @@ public class UserAccessController {
     }
 
     @PreAuthorize("hasRole('admin') || hasPermissionToAccessUser(#infoDTO.userId)")
-    @PostMapping(path = "/",
+    @PostMapping(path = "/projects/access",
             consumes = "application/json",
             produces = "application/json"
     )
-    public UserAccessInfo createAccess(@Valid @RequestBody UserAccessInfoDTO infoDTO) {
-        Optional<User> userToGiveAccess = userService.getUserById(infoDTO.getUserId());
+    public UserAccessInfo createAccess(@Valid @RequestBody UserAccessInfoClientDTO infoDTO) throws UserNotFoundException {
+        User userToGiveAccess = userService.getUserById(infoDTO.getUserId());
 
-        if(userToGiveAccess.isPresent()) {
-            User userToGiveAccessTo = userService.getUserById(infoDTO.getUserId()).get();
+        return accessInfoRepo.save(new UserAccessInfo(userToGiveAccess, infoDTO.getAccessEnd()));
+    }
 
-            return accessInfoRepo.save(new UserAccessInfo(userToGiveAccessTo, infoDTO.getAccessEnd()));
-        } else {
-            throw new UserNotFoundException();
-        }
+    @PreAuthorize("hasRole('admin') || hasPermissionToAccessUser(#userId)")
+    @GetMapping(path = "/users/{userId}/access",
+            produces = "application/json"
+    )
+    public UserAccessInfoServerDTO getAccessForUser(@PathVariable("userId") String userId) {
+        return null;
     }
 
 }

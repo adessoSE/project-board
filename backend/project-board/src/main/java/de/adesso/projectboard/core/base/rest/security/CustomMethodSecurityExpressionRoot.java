@@ -1,5 +1,7 @@
 package de.adesso.projectboard.core.base.rest.security;
 
+import de.adesso.projectboard.core.base.rest.user.application.ProjectApplicationController;
+import de.adesso.projectboard.core.base.rest.user.bookmark.ProjectBookmarkController;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
@@ -80,7 +82,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
     /**
      *
      * @param projectId
-     *          The id of the {@link de.adesso.projectboard.core.base.project.persistence.AbstractProject}
+     *          The id of the {@link de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject}
      *          the user wants to access.
      *
      * @return
@@ -101,7 +103,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
      *          apply for projects, <i>false</i> otherwise.
      *
      * @see ExpressionEvaluator#hasPermissionToApply(Authentication)
-     * @see de.adesso.projectboard.core.base.rest.application.ProjectApplicationController
+     * @see ProjectApplicationController
      */
     public boolean hasPermissionToApply() {
         return evaluator.hasPermissionToApply(getAuthentication());
@@ -118,24 +120,10 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
      *          the user, <i>false</i> otherwise.
      *
      * @see ExpressionEvaluator#hasPermissionToAccessUser(Authentication, String)
-     * @see de.adesso.projectboard.core.base.rest.bookmark.ProjectBookmarkController
+     * @see ProjectBookmarkController
      */
     public boolean hasPermissionToAccessUser(String userId) {
         return evaluator.hasPermissionToAccessUser(getAuthentication(), userId);
-    }
-
-    /**
-     *
-     * @param bookmarkId
-     *          The id of the {@link de.adesso.projectboard.core.base.rest.bookmark.persistence.ProjectBookmark}
-     *          the user wants to access.
-     *
-     * @return
-     *          <i>true</i>, when the authenticated user is authorized to access the
-     *          bookmark, <i>false</i> otherwise.
-     */
-    public boolean hasPermissionToAccessBookmark(long bookmarkId) {
-        return evaluator.hasPermissionToAccessBookmark(getAuthentication(), bookmarkId);
     }
 
 }

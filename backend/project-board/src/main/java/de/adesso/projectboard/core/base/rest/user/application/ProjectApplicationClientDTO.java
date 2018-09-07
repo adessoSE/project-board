@@ -1,4 +1,4 @@
-package de.adesso.projectboard.core.base.rest.application;
+package de.adesso.projectboard.core.base.rest.user.application;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ProjectApplicationDTO {
+public class ProjectApplicationClientDTO {
 
     @NotNull
     private Long projectId;

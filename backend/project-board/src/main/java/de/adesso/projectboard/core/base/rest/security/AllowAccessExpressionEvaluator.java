@@ -29,7 +29,7 @@ public class AllowAccessExpressionEvaluator implements ExpressionEvaluator {
      *          The {@link Authentication} object.
      *
      * @param projectId
-     *          The id of the {@link de.adesso.projectboard.core.base.project.persistence.AbstractProject}
+     *          The id of the {@link de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject}
      *          the user wants to access.
      *
      * @return
@@ -68,23 +68,6 @@ public class AllowAccessExpressionEvaluator implements ExpressionEvaluator {
     @Override
     public boolean hasPermissionToAccessUser(Authentication authentication, String userId) {
         return false;
-    }
-
-    /**
-     *
-     * @param authentication
-     *          The {@link Authentication} object.
-     *
-     * @param bookmarkId
-     *          The id of the {@link de.adesso.projectboard.core.base.rest.bookmark.persistence.ProjectBookmark}
-     *          the user wants to access.
-     *
-     * @return
-     *          <i>true</i>
-     */
-    @Override
-    public boolean hasPermissionToAccessBookmark(Authentication authentication, long bookmarkId) {
-        return true;
     }
 
 }

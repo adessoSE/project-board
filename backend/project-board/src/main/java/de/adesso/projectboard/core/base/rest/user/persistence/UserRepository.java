@@ -1,6 +1,6 @@
 package de.adesso.projectboard.core.base.rest.user.persistence;
 
-import de.adesso.projectboard.core.base.rest.bookmark.persistence.ProjectBookmark;
+import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
 import org.springframework.data.repository.CrudRepository;
 
 /**
@@ -12,6 +12,6 @@ public interface UserRepository extends CrudRepository<User, String> {
 
     boolean existsById(String userId);
 
-    boolean existsByIdAndBookmarksContaining(String userId, ProjectBookmark bookmark);
+    boolean existsByIdAndBookmarksContaining(String userId, AbstractProject project);
 
 }

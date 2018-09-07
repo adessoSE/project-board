@@ -3,7 +3,7 @@ package de.adesso.projectboard.core.reader;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
+import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
 import de.adesso.projectboard.core.base.reader.ProjectReader;
 import de.adesso.projectboard.core.project.JiraIssue;
 import de.adesso.projectboard.core.project.persistence.JiraProject;

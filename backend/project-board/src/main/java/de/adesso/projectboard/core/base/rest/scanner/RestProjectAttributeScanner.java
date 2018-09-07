@@ -1,13 +1,12 @@
 package de.adesso.projectboard.core.base.rest.scanner;
 
 import de.adesso.projectboard.core.base.configuration.ProjectBoardConfigurationProperties;
-import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
+import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Field;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 

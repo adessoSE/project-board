@@ -1,10 +1,9 @@
-package de.adesso.projectboard.core.base.rest.application.persistence;
+package de.adesso.projectboard.core.base.rest.user.application.persistence;
 
-import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
+import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
+import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -29,9 +28,15 @@ public class ProjectApplication {
     private AbstractProject project;
 
     /**
+     * The user this application belongs to.
+     */
+    @ManyToOne(optional = false)
+    private User user;
+
+    /**
      * The comment of the application.
      */
-    private String applicationComment;
+    private String comment;
 
     /**
      * The date of the application.
@@ -43,20 +48,24 @@ public class ProjectApplication {
      * Constructs a new instance. The {@link #applicationDate} is set to the
      * current {@link LocalDateTime} when persisting the entity.
      *
-     * @param applicationComment
-     *          The comment oof the application.
-     *
      * @param project
      *          The {@link AbstractProject} the user applied for.
+     *
+     * @param comment
+     *          The comment of the application.
+     *
+     * @param user
+     *          The {@link User} this project belongs to.
      */
-    public ProjectApplication(String applicationComment, AbstractProject project) {
-        this.applicationComment = applicationComment;
+    public ProjectApplication(AbstractProject project, String comment, User user) {
         this.project = project;
+        this.comment = comment;
+        this.user = user;
     }
 
     @PrePersist
     private void setApplicationDate() {
-        applicationDate = LocalDateTime.now();
+        this.applicationDate = LocalDateTime.now();
     }
 
 }

@@ -1,4 +1,4 @@
-package de.adesso.projectboard.core.base.rest.application.persistence;
+package de.adesso.projectboard.core.base.rest.user.application.persistence;
 
 import org.springframework.data.repository.CrudRepository;
 

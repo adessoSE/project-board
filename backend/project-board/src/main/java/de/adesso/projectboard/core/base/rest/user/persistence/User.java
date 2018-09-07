@@ -1,20 +1,18 @@
 package de.adesso.projectboard.core.base.rest.user.persistence;
 
-import de.adesso.projectboard.core.base.rest.application.persistence.ProjectApplication;
-import de.adesso.projectboard.core.base.rest.bookmark.persistence.ProjectBookmark;
+import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
+import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
  * Entity to persist information about users.
  *
- * @see ProjectBookmark
+ * @see AbstractProject
  * @see ProjectApplication
  */
 @Entity
@@ -41,11 +39,11 @@ public class User {
     private String lastName;
 
     /**
-     * The {@link ProjectBookmark bookmarks} of the
+     * The bookmarked {@link AbstractProject projects} of the
      * user.
      */
     @OneToMany(cascade = CascadeType.ALL)
-    Set<ProjectBookmark> bookmarks;
+    Set<AbstractProject> bookmarks;
 
     /**
      * The {@link ProjectApplication applications} of the
@@ -95,13 +93,16 @@ public class User {
 
     /**
      *
-     * @param bookmark
-     *          The {@link ProjectBookmark} to add to this user.
+     * @param project
+     *          The {@link AbstractProject} to add a bookmark for.
+     *
+     * @return
+     *          The result of {@link Set#add(Object)}.
      *
      * @see #addApplication(ProjectApplication)
      */
-    public void addBookmark(ProjectBookmark bookmark) {
-        this.bookmarks.add(bookmark);
+    public boolean addBookmark(AbstractProject project) {
+        return bookmarks.add(project);
     }
 
     /**
@@ -109,22 +110,25 @@ public class User {
      * @param application
      *          The {@link ProjectApplication} to add to this user.
      *
-     * @see #addBookmark(ProjectBookmark)
+     * @return
+     *          The result of {@link Set#add(Object)}.
+     *
+     * @see #addBookmark(AbstractProject)
      */
-    public void addApplication(ProjectApplication application) {
-        this.applications.add(application);
+    public boolean addApplication(ProjectApplication application) {
+        return applications.add(application);
     }
 
     /**
      *
-     * @param bookmark
-     *          The {@link ProjectBookmark} to remove.
+     * @param project
+     *          The {@link AbstractProject} to remove the bookmark for.
      *
      * @return
      *          The result of {@link Set#remove(Object)}.
      */
-    public boolean removeBookmark(ProjectBookmark bookmark) {
-        return this.bookmarks.remove(bookmark);
+    public boolean removeBookmark(AbstractProject project) {
+        return this.bookmarks.remove(project);
     }
 
     /**

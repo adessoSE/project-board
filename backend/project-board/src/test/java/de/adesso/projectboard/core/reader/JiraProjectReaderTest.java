@@ -1,6 +1,6 @@
 package de.adesso.projectboard.core.reader;
 
-import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
+import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
 import de.adesso.projectboard.core.project.persistence.JiraProject;
 import org.junit.Before;
 import org.junit.Test;

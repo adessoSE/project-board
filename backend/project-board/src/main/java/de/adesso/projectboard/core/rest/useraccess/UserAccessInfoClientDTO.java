@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UserAccessInfoDTO {
+public class UserAccessInfoClientDTO {
 
     @NotEmpty
     private String userId;

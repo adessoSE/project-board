@@ -1,8 +1,8 @@
 package de.adesso.projectboard.core.base.rest.project;
 
 import de.adesso.projectboard.core.base.configuration.ProjectBoardConfigurationProperties;
-import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
-import de.adesso.projectboard.core.base.project.persistence.ProjectRepository;
+import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
+import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
 import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.core.base.rest.scanner.RestProjectAttributeScanner;
 import org.springframework.beans.factory.annotation.Autowired;

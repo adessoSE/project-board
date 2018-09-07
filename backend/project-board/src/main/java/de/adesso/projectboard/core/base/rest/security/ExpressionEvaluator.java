@@ -31,7 +31,7 @@ public interface ExpressionEvaluator {
      *          The {@link Authentication} object.
      *
      * @param projectId
-     *          The id of the {@link de.adesso.projectboard.core.base.project.persistence.AbstractProject}
+     *          The id of the {@link de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject}
      *          the user wants to access.
      *
      * @return
@@ -65,20 +65,5 @@ public interface ExpressionEvaluator {
      *          <i>false</i> otherwise.
      */
     boolean hasPermissionToAccessUser(Authentication authentication, String userId);
-
-    /**
-     *
-     * @param authentication
-     *          The {@link Authentication} object.
-     *
-     * @param bookmarkId
-     *          The id of the {@link de.adesso.projectboard.core.base.rest.bookmark.persistence.ProjectBookmark}
-     *          the user wants to access.
-     *
-     * @return
-     *          <i>true</i>, if the user is permitted to access the bookmark,
-     *          <i>false</i> otherwise.
-     */
-    boolean hasPermissionToAccessBookmark(Authentication authentication, long bookmarkId);
 
 }

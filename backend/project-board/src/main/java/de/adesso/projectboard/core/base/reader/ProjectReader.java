@@ -1,6 +1,6 @@
 package de.adesso.projectboard.core.base.reader;
 
-import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
+import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
 import org.springframework.boot.actuate.health.Health;
 
 import java.time.LocalDateTime;
