@@ -3,7 +3,7 @@ package de.adesso.projectboard.core.base.rest.user.application;
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
 
 /**
- * Interface used by {@link ProjectApplicationController} to handle incoming project applications in
+ * Interface used by {@link de.adesso.projectboard.core.base.rest.user.UserService} to handle incoming project applications in
  * a customizable manner.
  *
  * @see de.adesso.projectboard.core.rest.application.JiraProjectApplicationHandler

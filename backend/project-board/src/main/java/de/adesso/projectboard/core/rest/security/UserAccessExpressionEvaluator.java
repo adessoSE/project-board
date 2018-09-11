@@ -134,4 +134,26 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
         return userService.getCurrentUser().getId().equals(userId) || authInfo.getEmployeeSet().contains(userId);
     }
 
+    /**
+     *
+     * @param authentication
+     *          The {@link Authentication} object.
+     *
+     * @param userId
+     *          The id of the {@link de.adesso.projectboard.core.base.rest.user.persistence.User}
+     *          the current user wants to access.
+     *
+     * @return
+     *          <i>true</i>, if the {@code userId} is in the
+     *          {@link KeycloakAuthenticationInfo#getEmployeeSet() authenticated user's employee set},
+     *          <i>false</i>
+     *
+     * @see KeycloakAuthenticationInfo#getEmployeeSet()
+     * @see Set#contains(Object)
+     */
+    @Override
+    public boolean hasElevatedAccessToUser(Authentication authentication, String userId) {
+        return authInfo.getEmployeeSet().contains(userId);
+    }
+
 }

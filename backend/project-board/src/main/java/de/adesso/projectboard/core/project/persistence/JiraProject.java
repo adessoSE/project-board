@@ -41,17 +41,17 @@ public class JiraProject extends AbstractProject {
     List<String> labels;
 
     @Lob
-    @Column(length = 4096)
+    @Column(length = 8192)
     @JsonAlias("customfield_10288")
     private String job;
 
     @Lob
-    @Column(length = 4096)
+    @Column(length = 8192)
     @JsonAlias("customfield_10296")
     private String skills;
 
     @Lob
-    @Column(length = 4096)
+    @Column(length = 8192)
     private String description;
 
     @JsonDeserialize(using = ObjectValueDeserializer.class)
@@ -88,7 +88,7 @@ public class JiraProject extends AbstractProject {
     private String elongation;
 
     @Lob
-    @Column(length = 4096)
+    @Column(length = 8192)
     @JsonAlias("customfield_10304")
     private String other;
 

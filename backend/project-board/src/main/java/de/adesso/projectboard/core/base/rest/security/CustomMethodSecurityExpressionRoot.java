@@ -1,7 +1,5 @@
 package de.adesso.projectboard.core.base.rest.security;
 
-import de.adesso.projectboard.core.base.rest.user.application.ProjectApplicationController;
-import de.adesso.projectboard.core.base.rest.user.bookmark.ProjectBookmarkController;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
@@ -69,7 +67,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
     /**
      *
      * @return
-     *          <i>true</i>, when the authenticated user is authorized to
+     *          <i>true</i>, if the authenticated user is authorized to
      *          view projects, <i>false</i> otherwise
      *
      * @see ExpressionEvaluator#hasAccessToProjects(Authentication)
@@ -86,7 +84,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
      *          the user wants to access.
      *
      * @return
-     *          <i>true</i>, when the authenticated user is authorized to
+     *          <i>true</i>, if the authenticated user is authorized to
      *          view the project, <i>false</i> otherwise.
      *
      * @see ExpressionEvaluator#hasAccessToProject(Authentication, long)
@@ -99,11 +97,11 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
     /**
      *
      * @return
-     *          <i>true</i>, when the authenticated user is authorized to
+     *          <i>true</i>, if the authenticated user is authorized to
      *          apply for projects, <i>false</i> otherwise.
      *
      * @see ExpressionEvaluator#hasPermissionToApply(Authentication)
-     * @see ProjectApplicationController
+     * @see de.adesso.projectboard.core.base.rest.user.UserController
      */
     public boolean hasPermissionToApply() {
         return evaluator.hasPermissionToApply(getAuthentication());
@@ -116,14 +114,31 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
      *          the current user wants to access.
      *
      * @return
-     *          <i>true</i>, when the authenticated user is authorized to access
+     *          <i>true</i>, if the authenticated user is authorized to access
      *          the user, <i>false</i> otherwise.
      *
      * @see ExpressionEvaluator#hasPermissionToAccessUser(Authentication, String)
-     * @see ProjectBookmarkController
+     * @see de.adesso.projectboard.core.base.rest.user.UserController
      */
     public boolean hasPermissionToAccessUser(String userId) {
         return evaluator.hasPermissionToAccessUser(getAuthentication(), userId);
+    }
+
+    /**
+     *
+     * @param userId
+     *          The id of the {@link de.adesso.projectboard.core.base.rest.user.persistence.User}
+     *          the current user wants to access.
+     *
+     * @return
+     *          <i>true</i>, if the authenticated user is authorized to access the
+     *          user with elevated access permissions, <i>false</i> otherwise
+     *
+     * @see ExpressionEvaluator#hasElevatedAccessToUser(Authentication, String)
+     * @see de.adesso.projectboard.core.rest.useraccess.UserAccessController
+     */
+    public boolean hasElevatedAccessToUser(String userId) {
+        return evaluator.hasElevatedAccessToUser(getAuthentication(), userId);
     }
 
 }

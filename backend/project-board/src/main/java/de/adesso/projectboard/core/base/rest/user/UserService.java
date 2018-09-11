@@ -7,6 +7,7 @@ import de.adesso.projectboard.core.base.rest.exceptions.UserNotFoundException;
 import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
 import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
 import de.adesso.projectboard.core.base.rest.security.AuthenticationInfo;
+import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplicationRepository;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import de.adesso.projectboard.core.base.rest.user.persistence.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +28,18 @@ public class UserService {
 
     private final ProjectRepository projectRepo;
 
+    private final ProjectApplicationRepository applicationRepo;
+
     private final AuthenticationInfo authInfo;
 
     @Autowired
     public UserService(UserRepository userRepo,
                        ProjectRepository projectRepo,
+                       ProjectApplicationRepository applicationRepo,
                        AuthenticationInfo authInfo) {
         this.userRepo = userRepo;
         this.projectRepo = projectRepo;
+        this.applicationRepo = applicationRepo;
         this.authInfo = authInfo;
     }
 
@@ -147,7 +152,7 @@ public class UserService {
      *          The id of the {@link AbstractProject} to add a bookmark for.
      *
      * @return
-     *          The result of {@link User#addBookmark(AbstractProject)}.
+     *          The {@link AbstractProject} added to the bookmarks.
      *
      * @throws UserNotFoundException
      *          When no {@link User} is found for the given {@code userId}.
@@ -157,7 +162,7 @@ public class UserService {
      *
      * @see #getUserById(String)
      */
-    public boolean addBookmarkToUser(String userId, long projectId) throws UserNotFoundException, ProjectNotFoundException {
+    public AbstractProject addBookmarkToUser(String userId, long projectId) throws UserNotFoundException, ProjectNotFoundException {
 
         // get the user with the given id
         User user = getUserById(userId);
@@ -171,10 +176,10 @@ public class UserService {
         // add the project and persist the entity
         AbstractProject project = projectOptional.get();
 
-        boolean added = user.addBookmark(project);
+        user.addBookmark(project);
         userRepo.save(user);
 
-        return added;
+        return project;
     }
 
     /**
@@ -192,7 +197,7 @@ public class UserService {
      *          The {@link ProjectApplication} to add to the user.
      *
      * @return
-     *          The given {@code application}
+     *          The application <b>after</b> persisting it.
      *
      * @throws UserNotFoundException
      *          When no {@link User} is found for the given {@code userId}.
@@ -210,12 +215,15 @@ public class UserService {
             throw new IllegalArgumentException("The application can only be added to the user with the same id!");
         }
 
+        // persist the application
+        ProjectApplication savedApplication = applicationRepo.save(application);
+
         // add the application and update the user
         User user = getUserById(userId);
-        user.addApplication(application);
+        user.addApplication(savedApplication);
         userRepo.save(user);
 
-        return application;
+        return savedApplication;
     }
 
     /**

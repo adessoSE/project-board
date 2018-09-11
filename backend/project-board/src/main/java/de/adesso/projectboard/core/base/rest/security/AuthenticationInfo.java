@@ -1,14 +1,11 @@
 package de.adesso.projectboard.core.base.rest.security;
 
-import de.adesso.projectboard.core.base.rest.user.application.ProjectApplicationController;
-import de.adesso.projectboard.core.base.rest.user.bookmark.ProjectBookmarkController;
-
 /**
- * Interface used in REST controllers to get user specific information.
+ * Interface used by the {@link de.adesso.projectboard.core.base.rest.user.UserService} to
+ * get the id of the currently authenticated user.
  *
  * @see de.adesso.projectboard.core.rest.security.KeycloakAuthenticationInfo
- * @see ProjectApplicationController
- * @see ProjectBookmarkController
+ * @see de.adesso.projectboard.core.base.rest.user.UserService
  */
 public interface AuthenticationInfo {
 

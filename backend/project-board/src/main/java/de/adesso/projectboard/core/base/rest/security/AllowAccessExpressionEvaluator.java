@@ -70,4 +70,20 @@ public class AllowAccessExpressionEvaluator implements ExpressionEvaluator {
         return false;
     }
 
+    /**
+     *
+     * @param authentication
+     *          The {@link Authentication} object.
+     *
+     * @param userId
+     *          The id of the {@link de.adesso.projectboard.core.base.rest.user.persistence.User}
+     *          the current user wants to access.
+     *
+     * @return
+     *          <i>true</i>
+     */
+    @Override
+    public boolean hasElevatedAccessToUser(Authentication authentication, String userId) {
+        return true;
+    }
 }
