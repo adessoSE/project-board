@@ -1,53 +1,49 @@
-package de.adesso.projectboard.core.rest.security.persistence;
+package de.adesso.projectboard.core.rest.useraccess.persistence;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 /**
- * Entity to persist info about user access to projects.
+ * Entity to persist info about user access to projects/applications.
  *
  * @see UserAccessInfoRepository
+ * @see de.adesso.projectboard.core.rest.security.UserAccessExpressionEvaluator
  */
-@Table
+@Table(name = "USER_ACCESS_INFO")
 @Entity
 @Getter
 @Setter
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class UserAccessInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty
-    @Column(nullable = false)
-    private String userId;
+    @ManyToOne(optional = false)
+    private User user;
 
     @Column(nullable = false)
     private LocalDateTime accessStart;
 
-    @NotNull
     @Column(nullable = false)
     private LocalDateTime accessEnd;
 
     /**
-     * Constructs a new entity. The {@link #accessStart} is automatically
+     * Constructs a new entity. The {@link #accessStart access start} is automatically
      * set to the current time when persisting the entity.
      *
-     * @param userId
-     *          The id of the user.
+     * @param user
+     *          The {@link User} the access is given to.
      *
      * @param accessEnd
      *          The {@link LocalDateTime} of when the access should end.
      */
-    public UserAccessInfo(String userId, LocalDateTime accessEnd) {
-        this.userId = userId;
+    public UserAccessInfo(User user, LocalDateTime accessEnd) {
+        this.user = user;
         this.accessEnd = accessEnd;
     }
 
@@ -55,6 +51,10 @@ public class UserAccessInfo {
         // protected no-arg constructor for JPA
     }
 
+    /**
+     * Set the access start date to the current
+     * {@link LocalDateTime} when persisting the entity.
+     */
     @PrePersist
     public void setAccessStart() {
         this.accessStart = LocalDateTime.now();

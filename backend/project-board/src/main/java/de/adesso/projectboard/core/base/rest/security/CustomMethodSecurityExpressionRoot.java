@@ -67,7 +67,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
     /**
      *
      * @return
-     *          <i>true</i>, when the authenticated user is authorized to
+     *          <i>true</i>, if the authenticated user is authorized to
      *          view projects, <i>false</i> otherwise
      *
      * @see ExpressionEvaluator#hasAccessToProjects(Authentication)
@@ -79,15 +79,66 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
 
     /**
      *
+     * @param projectId
+     *          The id of the {@link de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject}
+     *          the user wants to access.
+     *
      * @return
-     *          <i>true</i>, when the authenticated user is authorized to
+     *          <i>true</i>, if the authenticated user is authorized to
+     *          view the project, <i>false</i> otherwise.
+     *
+     * @see ExpressionEvaluator#hasAccessToProject(Authentication, long)
+     * @see de.adesso.projectboard.core.base.rest.project.ProjectController
+     */
+    public boolean hasAccessToProject(long projectId) {
+        return evaluator.hasAccessToProject(getAuthentication(), projectId);
+    }
+
+    /**
+     *
+     * @return
+     *          <i>true</i>, if the authenticated user is authorized to
      *          apply for projects, <i>false</i> otherwise.
      *
      * @see ExpressionEvaluator#hasPermissionToApply(Authentication)
-     * @see de.adesso.projectboard.core.base.rest.application.ProjectApplicationController
+     * @see de.adesso.projectboard.core.base.rest.user.UserController
      */
     public boolean hasPermissionToApply() {
         return evaluator.hasPermissionToApply(getAuthentication());
+    }
+
+    /**
+     *
+     * @param userId
+     *          The id of the {@link de.adesso.projectboard.core.base.rest.user.persistence.User}
+     *          the current user wants to access.
+     *
+     * @return
+     *          <i>true</i>, if the authenticated user is authorized to access
+     *          the user, <i>false</i> otherwise.
+     *
+     * @see ExpressionEvaluator#hasPermissionToAccessUser(Authentication, String)
+     * @see de.adesso.projectboard.core.base.rest.user.UserController
+     */
+    public boolean hasPermissionToAccessUser(String userId) {
+        return evaluator.hasPermissionToAccessUser(getAuthentication(), userId);
+    }
+
+    /**
+     *
+     * @param userId
+     *          The id of the {@link de.adesso.projectboard.core.base.rest.user.persistence.User}
+     *          the current user wants to access.
+     *
+     * @return
+     *          <i>true</i>, if the authenticated user is authorized to access the
+     *          user with elevated access permissions, <i>false</i> otherwise
+     *
+     * @see ExpressionEvaluator#hasElevatedAccessToUser(Authentication, String)
+     * @see de.adesso.projectboard.core.rest.useraccess.UserAccessController
+     */
+    public boolean hasElevatedAccessToUser(String userId) {
+        return evaluator.hasElevatedAccessToUser(getAuthentication(), userId);
     }
 
 }

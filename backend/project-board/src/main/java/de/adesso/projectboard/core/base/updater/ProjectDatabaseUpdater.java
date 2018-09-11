@@ -1,9 +1,9 @@
 package de.adesso.projectboard.core.base.updater;
 
 import de.adesso.projectboard.core.base.configuration.ProjectBoardConfigurationProperties;
-import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
-import de.adesso.projectboard.core.base.project.persistence.ProjectRepository;
-import de.adesso.projectboard.core.base.reader.AbstractProjectReader;
+import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
+import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
+import de.adesso.projectboard.core.base.reader.ProjectReader;
 import de.adesso.projectboard.core.base.updater.persistence.ProjectDatabaseUpdaterInfo;
 import de.adesso.projectboard.core.base.updater.persistence.ProjectDatabaseUpdaterInfoRepository;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ public class ProjectDatabaseUpdater {
 
     private final ProjectRepository projectRepository;
 
-    private final AbstractProjectReader projectReader;
+    private final ProjectReader projectReader;
 
     private final Duration refreshIntervalDuration;
 
@@ -36,7 +36,7 @@ public class ProjectDatabaseUpdater {
     @Autowired
     public ProjectDatabaseUpdater(ProjectDatabaseUpdaterInfoRepository infoRepository,
                                   ProjectRepository projectRepository,
-                                  AbstractProjectReader projectReader,
+                                  ProjectReader projectReader,
                                   ProjectBoardConfigurationProperties properties) {
         this.infoRepository = infoRepository;
         this.projectRepository = projectRepository;
@@ -48,7 +48,7 @@ public class ProjectDatabaseUpdater {
     }
 
     /**
-     * Refreshes the project database by using a {@link AbstractProjectReader}.
+     * Refreshes the project database by using a {@link ProjectReader}.
      *
      * @see #shouldUpdate(ProjectDatabaseUpdaterInfo)
      */

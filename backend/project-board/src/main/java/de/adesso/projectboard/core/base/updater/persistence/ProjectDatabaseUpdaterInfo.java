@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 public class ProjectDatabaseUpdaterInfo {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(nullable = false)

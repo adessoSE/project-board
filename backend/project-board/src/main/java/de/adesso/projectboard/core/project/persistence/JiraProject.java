@@ -3,7 +3,7 @@ package de.adesso.projectboard.core.project.persistence;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
+import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
 import de.adesso.projectboard.core.project.deserializer.date.CreatedUpdatedDateDeserializer;
 import de.adesso.projectboard.core.project.deserializer.field.ObjectNameDeserializer;
 import de.adesso.projectboard.core.project.deserializer.field.ObjectValueDeserializer;
@@ -41,17 +41,17 @@ public class JiraProject extends AbstractProject {
     List<String> labels;
 
     @Lob
-    @Column(length = 4096)
+    @Column(length = 8192)
     @JsonAlias("customfield_10288")
     private String job;
 
     @Lob
-    @Column(length = 4096)
+    @Column(length = 8192)
     @JsonAlias("customfield_10296")
     private String skills;
 
     @Lob
-    @Column(length = 4096)
+    @Column(length = 8192)
     private String description;
 
     @JsonDeserialize(using = ObjectValueDeserializer.class)
@@ -88,7 +88,7 @@ public class JiraProject extends AbstractProject {
     private String elongation;
 
     @Lob
-    @Column(length = 4096)
+    @Column(length = 8192)
     @JsonAlias("customfield_10304")
     private String other;
 

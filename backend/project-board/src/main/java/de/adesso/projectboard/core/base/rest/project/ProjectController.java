@@ -1,8 +1,8 @@
 package de.adesso.projectboard.core.base.rest.project;
 
 import de.adesso.projectboard.core.base.configuration.ProjectBoardConfigurationProperties;
-import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
-import de.adesso.projectboard.core.base.project.persistence.ProjectRepository;
+import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
+import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
 import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.core.base.rest.scanner.RestProjectAttributeScanner;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.criteria.*;
 import java.util.*;
 
-@PreAuthorize("hasAccessToProjects()")
 @RestController
 @RequestMapping("/projects")
 public class ProjectController {
@@ -37,7 +36,11 @@ public class ProjectController {
         this.entityManager = entityManager;
     }
 
-    @GetMapping("/{projectId}")
+
+    @PreAuthorize("hasRole('admin') || hasAccessToProject(#projectId)")
+    @GetMapping(value = "/{projectId}",
+            produces = "application/json"
+    )
     public AbstractProject getById(@PathVariable long projectId) {
         Optional<AbstractProject> projectOptional = projectRepository.findById(projectId);
 
@@ -48,12 +51,20 @@ public class ProjectController {
         }
     }
 
-    @GetMapping
+
+    @PreAuthorize("hasRole('admin') || hasAccessToProjects()")
+    @GetMapping(value = "/",
+            produces = "application/json"
+    )
     public Iterable<? extends AbstractProject> getAll() {
         return projectRepository.findAll();
     }
 
-    @GetMapping("/search")
+
+    @PreAuthorize("hasRole('admin') || hasAccessToProjects()")
+    @GetMapping(value = "/search",
+            produces = "application/json"
+    )
     @SuppressWarnings("unchecked")
     public Iterable<? extends AbstractProject> search(@RequestParam Map<String,String> requestParams) {
         // map the query params to the corresponding field name
@@ -64,6 +75,8 @@ public class ProjectController {
                 fieldParamValueMap.put(scanner.getFieldNameByQueryName(entry.getKey()), entry.getValue());
             }
         }
+
+        // TODO: SQL injection possible?
 
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery query = builder.createQuery(properties.getProjectClass());

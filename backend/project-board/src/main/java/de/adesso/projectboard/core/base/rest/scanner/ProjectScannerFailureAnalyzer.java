@@ -3,7 +3,12 @@ package de.adesso.projectboard.core.base.rest.scanner;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 
-// TODO: where to put string resources?
+/**
+ * Spring failure analyzer to analyze {@link FieldsWithSameQueryNameException}s thrown
+ * on startup.
+ *
+ * @see RestProjectAttributeScanner
+ */
 public class ProjectScannerFailureAnalyzer extends AbstractFailureAnalyzer<FieldsWithSameQueryNameException> {
 
     @Override

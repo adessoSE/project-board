@@ -1,6 +1,6 @@
 package de.adesso.projectboard.core.project.persistence;
 
-import de.adesso.projectboard.core.base.project.persistence.ProjectRepository;
+import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

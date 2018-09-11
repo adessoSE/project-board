@@ -1,5 +1,6 @@
-package de.adesso.projectboard.core.base.project.persistence;
+package de.adesso.projectboard.core.base.rest.project.persistence;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,8 +14,7 @@ import javax.persistence.InheritanceType;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Getter
-@Setter
+@Data
 public abstract class AbstractProject {
 
     @Id

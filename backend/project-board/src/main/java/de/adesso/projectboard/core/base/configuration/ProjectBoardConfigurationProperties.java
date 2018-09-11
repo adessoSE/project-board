@@ -1,6 +1,6 @@
 package de.adesso.projectboard.core.base.configuration;
 
-import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
+import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
 import de.adesso.projectboard.core.project.persistence.JiraProject;
 import lombok.Getter;
 import lombok.Setter;

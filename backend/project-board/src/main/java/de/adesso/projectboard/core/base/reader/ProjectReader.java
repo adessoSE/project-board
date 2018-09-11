@@ -1,6 +1,6 @@
 package de.adesso.projectboard.core.base.reader;
 
-import de.adesso.projectboard.core.base.project.persistence.AbstractProject;
+import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
 import org.springframework.boot.actuate.health.Health;
 
 import java.time.LocalDateTime;
@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @see de.adesso.projectboard.core.reader.JiraProjectReader
  */
-public interface AbstractProjectReader {
+public interface ProjectReader {
 
     /**
      * This method gets invoked by the {@link de.adesso.projectboard.core.base.updater.ProjectDatabaseUpdater}
