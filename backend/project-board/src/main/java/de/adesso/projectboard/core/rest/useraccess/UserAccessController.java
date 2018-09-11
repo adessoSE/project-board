@@ -46,7 +46,7 @@ public class UserAccessController {
     }
 
     @PreAuthorize("hasRole('admin') || hasPermissionToAccessUser(#userId)")
-    @GetMapping(path = "/users/{userId}/access",
+    @GetMapping(path = "/{userId}/access",
             produces = "application/json"
     )
     public UserAccessInfoResponseDTO getAccessForUser(@PathVariable("userId") String userId) throws UserNotFoundException {
