@@ -40,6 +40,24 @@ public class UserAccessController {
             throws UserNotFoundException {
         User userToGiveAccess = userService.getUserById(userId);
 
+        Optional<UserAccessInfo> accessOptional
+                = accessInfoRepo.getLatestAccessInfo(userToGiveAccess);
+
+        // update the current access info object if there is already one present
+        // and active
+        if(accessOptional.isPresent()) {
+
+            UserAccessInfo latestAccessInfo = accessOptional.get();
+
+            if(latestAccessInfo.isCurrentlyActive()) {
+                latestAccessInfo.setAccessEnd(infoDTO.getAccessEnd());
+                accessInfoRepo.save(latestAccessInfo);
+
+                return UserAccessInfoResponseDTO.fromAccessInfo(latestAccessInfo);
+            }
+        }
+
+        // create a new one if there is no active one
         UserAccessInfo accessInfo = accessInfoRepo.save(new UserAccessInfo(userToGiveAccess, infoDTO.getAccessEnd()));
 
         return UserAccessInfoResponseDTO.fromAccessInfo(accessInfo);

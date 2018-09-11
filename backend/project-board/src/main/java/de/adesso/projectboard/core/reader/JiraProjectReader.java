@@ -92,7 +92,7 @@ public class JiraProjectReader implements ProjectReader {
     @Override
     public Health health() {
         ResponseEntity<JiraServerInfo> responseEntity
-                = restTemplate.getForEntity(properties.getJiraServerInfoUrl(), JiraServerInfo.class);
+                = restTemplate.getForEntity(properties.getServerInfoUrl(), JiraServerInfo.class);
 
         if(responseEntity.getStatusCode().is2xxSuccessful()) {
             JiraServerInfo serverInfo = responseEntity.getBody();
@@ -120,7 +120,7 @@ public class JiraProjectReader implements ProjectReader {
      *          When error occurs when deserializing the response body.
      */
     private List<JiraProject> getProjectsByQuery(String jqlQuery) throws IOException {
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(properties.getJiraRequestUrl(), String.class, jqlQuery);
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(properties.getRequestUrl(), String.class, jqlQuery);
 
         // parse the json in the response body
         ObjectMapper mapper = new ObjectMapper();

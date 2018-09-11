@@ -52,6 +52,19 @@ public class UserAccessInfo {
     }
 
     /**
+     *
+     * @return
+     *          <i>true</i> if the {@link #accessStart} is equal to or before the
+     *          {@link LocalDateTime#now() current date} and the {@link #accessEnd} is after the
+     *          {@link LocalDateTime#now() current date}.
+     */
+    public boolean isCurrentlyActive() {
+        LocalDateTime now = LocalDateTime.now();
+
+        return (now.equals(accessStart) || now.isAfter(accessStart)) && now.isBefore(accessEnd);
+    }
+
+    /**
      * Set the access start date to the current
      * {@link LocalDateTime} when persisting the entity.
      */

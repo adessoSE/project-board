@@ -3,7 +3,6 @@ package de.adesso.projectboard.core.rest.useraccess.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
-import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -18,7 +17,6 @@ import java.time.LocalDateTime;
 public class UserAccessInfoRequestDTO {
 
     @NotNull
-    @Future
     private LocalDateTime accessEnd;
 
 }

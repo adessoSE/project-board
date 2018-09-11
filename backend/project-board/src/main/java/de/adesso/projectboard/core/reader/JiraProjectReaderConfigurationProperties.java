@@ -30,13 +30,13 @@ public class JiraProjectReaderConfigurationProperties {
      */
     @Pattern(regexp = ".*jql=\\{.+\\}.*", message = "The JIRA URL must contain a placeholder for the JQL query!")
     @NotEmpty
-    private String jiraRequestUrl;
+    private String requestUrl;
 
     /**
      * The request URL of the serverInfo API endpoint.
      */
     @NotEmpty
-    private String jiraServerInfoUrl;
+    private String serverInfoUrl;
 
     /**
      * The username to use for authorization.

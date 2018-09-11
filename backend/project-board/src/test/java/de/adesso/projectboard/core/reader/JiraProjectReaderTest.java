@@ -45,7 +45,7 @@ public class JiraProjectReaderTest {
 
     @Before
     public void setUp() {
-        given(properties.getJiraRequestUrl()).willReturn("/test");
+        given(properties.getRequestUrl()).willReturn("/test");
     }
 
     @Test
