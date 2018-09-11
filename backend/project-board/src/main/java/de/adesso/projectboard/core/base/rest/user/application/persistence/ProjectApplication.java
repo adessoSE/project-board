@@ -36,6 +36,8 @@ public class ProjectApplication {
     /**
      * The comment of the application.
      */
+    @Column(length = 4096)
+    @Lob
     private String comment;
 
     /**
