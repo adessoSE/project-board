@@ -29,16 +29,6 @@ public class User {
     private String id;
 
     /**
-     * The first name of the user.
-     */
-    private String firstName;
-
-    /**
-     * The last name of the user.
-     */
-    private String lastName;
-
-    /**
      * The bookmarked {@link AbstractProject projects} of the
      * user.
      */
@@ -52,27 +42,8 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL)
     Set<ProjectApplication> applications;
 
-    /**
-     *
-     * @param id
-     *          The id of the user.
-     *
-     * @param firstName
-     *          The first name of the user.
-     *
-     * @param lastName
-     *          The last name of the user.
-     */
-    public User(String id, String firstName, String lastName) {
-        this(id);
-
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
 
     /**
-     * Constructs a new instance. {@link #firstName First name} and
-     * {@link #lastName last name} are not set!
      *
      * @param id
      *          The id of the user.

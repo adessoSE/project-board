@@ -13,12 +13,12 @@ public class MailService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private final JavaMailSenderImpl mailSender;
-
-    @Autowired
-    public MailService(JavaMailSenderImpl mailSender) {
-        this.mailSender = mailSender;
-    }
+//    private final JavaMailSenderImpl mailSender;
+//
+//    @Autowired
+//    public MailService(JavaMailSenderImpl mailSender) {
+//        this.mailSender = mailSender;
+//    }
 
     @Async
     public void sendMessage(SimpleMailMessage message) {

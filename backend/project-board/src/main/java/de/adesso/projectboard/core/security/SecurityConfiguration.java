@@ -53,7 +53,7 @@ public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter 
                     .sessionAuthenticationStrategy(sessionAuthenticationStrategy())
                 .and()
                 .authorizeRequests()
-                    .antMatchers( "/projects*", "/applications*", "/bookmarks*", "/useraccess*").hasRole("user")
+                    .antMatchers( "/projects*", "/users*").hasRole("user")
                     .antMatchers("/actuator*").hasRole("admin")
                 .anyRequest()
                     .permitAll();

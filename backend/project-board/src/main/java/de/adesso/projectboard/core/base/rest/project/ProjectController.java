@@ -53,8 +53,7 @@ public class ProjectController {
 
 
     @PreAuthorize("hasRole('admin') || hasAccessToProjects()")
-    @GetMapping(value = "/",
-            produces = "application/json"
+    @GetMapping(produces = "application/json"
     )
     public Iterable<? extends AbstractProject> getAll() {
         return projectRepository.findAll();
