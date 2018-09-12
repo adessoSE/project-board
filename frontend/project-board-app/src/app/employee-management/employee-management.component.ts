@@ -33,7 +33,6 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
     for (let i = 1; i < 29; i++) {
       this.numberOfDaysSelect.push(i);
     }
-    console.log(this.selectedEmployee);
     if (!this.adminControls) {
       this.getFavorites();
     }
