@@ -60,7 +60,8 @@
 
     <div class="mt-3">
       <button class="btn btn-primary mr-3 mb-3" (click)="requestProject()">Projekt anfragen</button>
-      <button class="btn btn-outline-secondary mb-3" (click)="addToFavorites()">Als Favorit markieren</button>
+      <button *ngIf="!favorite" class="btn btn-outline-secondary mb-3" (click)="addToFavorites()">Als Favorit markieren</button>
+      <button *ngIf="favorite" class="btn btn-outline-secondary mb-3" (click)="removeFromFavorites()">Von Favoriten entfernen</button>
     </div>
   </div>
   <p *ngIf="!selectedProject">Kein Projekt ausgewählt.</p>

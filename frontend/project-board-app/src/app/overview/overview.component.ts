@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthenticationService } from '../_services/authentication.service';
 import { EmployeeService } from '../_services/employee.service';
 
 @Component({
@@ -8,7 +9,7 @@ import { EmployeeService } from '../_services/employee.service';
 })
 export class OverviewComponent implements OnInit {
   user = {
-    'id': 1,
+    'id': 'jacobs',
     'enabled': true,
     'duration': 11,
     'name': {
@@ -19,10 +20,11 @@ export class OverviewComponent implements OnInit {
     'email': 'lottie.jacobs@adesso.de'
   };
 
-  constructor(private employeeService: EmployeeService) { }
+  constructor(private employeeService: EmployeeService,
+              private authService: AuthenticationService) { }
 
   ngOnInit() {
     // TODO: receive data about logged in user from backend
-    // this.employeeService.getUserData().subscribe(user => this.user = user);
+    // this.employeeService.getEmployeeWithId(this.authService.username).subscribe(user => this.user = user);
   }
 }

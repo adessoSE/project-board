@@ -1,5 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthenticationService } from '../_services/authentication.service';
+import { EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
 
 @Component({
@@ -9,8 +11,12 @@ import { Project, ProjectService } from '../_services/project.service';
 })
 export class ProjectDetailsComponent implements OnInit {
   @Input() selectedProject: Project;
+  favorite = false;
 
-  constructor(private router: Router, private projectService: ProjectService) { }
+  constructor(private router: Router,
+              private projectService: ProjectService,
+              private employeeService: EmployeeService,
+              private authService: AuthenticationService) { }
 
   ngOnInit() {
   }
@@ -20,7 +26,10 @@ export class ProjectDetailsComponent implements OnInit {
   }
 
   addToFavorites() {
-    // TODO: receive real userId from somewhere
-    this.projectService.addToFavorites(1, this.selectedProject.id).subscribe(r => console.log(r));
+    this.employeeService.addToFavorites(this.authService.username, this.selectedProject.id).subscribe(() => this.favorite = true);
+  }
+
+  removeFromFavorites() {
+    this.employeeService.removeFromFavorites(this.authService.username, this.selectedProject.id).subscribe(() => this.favorite = false);
   }
 }

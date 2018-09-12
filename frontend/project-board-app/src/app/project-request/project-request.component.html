@@ -6,4 +6,6 @@
 <div *ngIf="!project">
   Dieses Projekt ist leider nicht verfügbar.
 </div>
-<button class="btn btn-primary">Projekt anfragen</button>
+
+<!--  TODO: add a textfield for the comment  -->
+<button class="btn btn-primary" (click)="requestProject()">Projekt anfragen</button>
