@@ -1,25 +1,30 @@
 <div class="sticky">
   <h4>Details</h4>
   <div *ngIf="selectedEmployee" class="details">
-    <div class="row">
-      <div class="col-4">Name:</div>
-      <div class="col right">{{selectedEmployee.fullName}}</div>
-      <br>
-    </div>
-    <div class="row">
-      <div class="col-4">Status:</div>
-      <div class="col right">{{selectedEmployee.enabled ? 'Aktiviert' : 'Deaktiviert'}}</div>
-      <br>
-    </div>
-    <div [ngClass]="{'row': true, 'disabled': !selectedEmployee.enabled}">
-      <div class="col-4">Dauer der Freischaltung:</div>
-      <div class="col right">{{selectedEmployee.duration ? selectedEmployee.duration + ' Tag(e)' : '-'}}</div>
-    </div>
-    <div class="row">
-      <div class="col-4">Email:</div>
-      <div class="col right">{{selectedEmployee.email}}</div>
+
+    <!--  User Info  -->
+    <div class="inset">
+      <div *ngIf="adminControls" class="row">
+        <div class="col-4">Name:</div>
+        <div class="col right">{{selectedEmployee.fullName}}</div>
+        <br>
+      </div>
+      <div class="row">
+        <div class="col-4">Status:</div>
+        <div class="col right">{{selectedEmployee.enabled ? 'Freigeschaltet' : 'Nicht freigeschaltet'}}</div>
+        <br>
+      </div>
+      <div [ngClass]="{'row': true, 'disabled': !selectedEmployee.enabled}">
+        <div class="col-4">Dauer der Freischaltung:</div>
+        <div class="col right">{{selectedEmployee.duration ? selectedEmployee.duration + ' Tag(e)' : '-'}}</div>
+      </div>
+      <div class="row">
+        <div class="col-4">Email:</div>
+        <div class="col right">{{selectedEmployee.email}}</div>
+      </div>
     </div>
 
+    <!--  Admin Controls  -->
     <div *ngIf="adminControls" class="mt-2 pt-1 border-top">
       <form *ngIf="!selectedEmployee.enabled">
         <div class="form-group">
@@ -35,14 +40,32 @@
       </div>
     </div>
   </div>
+
+  <!--  Favorites  -->
   <ng-container *ngIf="!adminControls">
     <h4>Favoriten</h4>
-    <div *ngFor="let f of favorites">{{f.title}}</div>
+    <div *ngFor="let f of favorites; index as i" [ngClass]="{'border-bottom pb-2 mb-2': i<favorites.length-1}">
+      <div class="inset">
+        <a routerLink="/projects/{{f.key}}">{{f.key}}</a><br>
+        {{f.title}}<br>
+        <small class="link-red" (click)="removeFromFavorites(f.id)">Favorit entfernen</small>
+      </div>
+    </div>
     <div *ngIf="!favorites || favorites.length === 0">Du hast keine Favoriten markiert.</div>
   </ng-container>
+
+  <!--  Applications  -->
   <ng-container *ngIf="selectedEmployee">
     <h4>Anfragen</h4>
-    <div *ngFor="let a of applications">{{a.title}}</div>
+    <div *ngFor="let a of applications; index as i" [ngClass]="{'border-bottom pb-2 mb-2': i<applications.length-1}">
+      <div class="inset">
+        <a routerLink="/projects/{{a.project.key}}">{{a.project.key}}</a><br>
+        {{a.project.title}}<br>
+        Kommentar: {{a.comment}}<br>
+        Datum: {{a.date | date : 'dd.MM.yyyy'}}<br>
+        <small *ngIf="!adminControls" class="link-red" (click)="revokeApplication(a.id)">Anfrage zurückrufen</small>
+      </div>
+    </div>
     <div *ngIf="!applications || applications.length === 0">Keine Projektanfragen.</div>
   </ng-container>
   <p *ngIf="!selectedEmployee">Kein Mitarbeiter ausgewählt.</p>

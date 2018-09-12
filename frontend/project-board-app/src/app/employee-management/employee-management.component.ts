@@ -1,5 +1,6 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { Employee } from '../_services/employee.service';
+import { AuthenticationService } from '../_services/authentication.service';
+import { Application, Employee, EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
 
 @Component({
@@ -13,12 +14,14 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
   numberOfDaysSelect = [];
 
   favorites: Project[];
-  applications: Project[];
+  applications: Application[];
 
-  constructor(private projectService: ProjectService) { }
+  constructor(private projectService: ProjectService,
+              private employeeService: EmployeeService,
+              private authService: AuthenticationService) { }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.selectedEmployee.currentValue) {
+    if (changes.selectedEmployee.currentValue && !changes.selectedEmployee.isFirstChange()) {
       if (!this.adminControls) {
         this.getFavorites();
       }
@@ -30,6 +33,7 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
     for (let i = 1; i < 29; i++) {
       this.numberOfDaysSelect.push(i);
     }
+    console.log(this.selectedEmployee);
     if (!this.adminControls) {
       this.getFavorites();
     }
@@ -49,10 +53,18 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
   }
 
   getFavorites() {
-    this.projectService.getFavorites(this.selectedEmployee.id).subscribe(fav => this.favorites = fav);
+    this.employeeService.getFavorites(this.selectedEmployee.id).subscribe(fav => this.favorites = fav);
+  }
+
+  removeFromFavorites(projectId) {
+    this.employeeService.removeFromFavorites(this.authService.username, projectId).subscribe(() => this.getFavorites());
   }
 
   getApplications() {
-    this.projectService.getApplicationsForUser(this.selectedEmployee.id).subscribe(appls => this.applications = appls);
+    this.employeeService.getApplications(this.selectedEmployee.id).subscribe(appls => this.applications = appls);
+  }
+
+  revokeApplication(appId) {
+    this.employeeService.revokeApplication(this.authService.username, appId).subscribe(() => this.getApplications());
   }
 }
