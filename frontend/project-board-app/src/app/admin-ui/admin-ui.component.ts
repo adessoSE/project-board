@@ -19,7 +19,10 @@ export class AdminUiComponent implements OnInit, AfterViewChecked {
     this.mobile = window.screen.width < 768;
   }
 
-  constructor(private employeeService: EmployeeService, private route: ActivatedRoute, private router: Router, private location: Location) { }
+  constructor(private employeeService: EmployeeService,
+              private route: ActivatedRoute,
+              private router: Router,
+              private location: Location) { }
 
   ngOnInit() {
     this.mobile = window.screen.width <= 425;
@@ -34,8 +37,8 @@ export class AdminUiComponent implements OnInit, AfterViewChecked {
   }
 
   private setSelectedEmployee(employeeId) {
-    for (let e of this.employees) {
-      if (e.id == employeeId) {
+    for (const e of this.employees) {
+      if (e.id === employeeId) {
         this.selectedEmployee = e;
         return;
       }
@@ -44,7 +47,7 @@ export class AdminUiComponent implements OnInit, AfterViewChecked {
   }
 
   employeeClicked(employee) {
-    if (this.selectedEmployee == employee) {
+    if (this.selectedEmployee === employee) {
       this.location.replaceState(`/admin`);
       this.selectedEmployee = null;
       this.scroll = false;
@@ -57,7 +60,7 @@ export class AdminUiComponent implements OnInit, AfterViewChecked {
 
   ngAfterViewChecked() {
     if (this.mobile && this.scroll && this.selectedEmployee) {
-      let btn = $(`#${this.selectedEmployee.id}`);
+      const btn = $(`#${this.selectedEmployee.id}`);
       // navbar has 56 pixels height
       $('html, body').animate({scrollTop: $(btn).offset().top - 56}, 'slow');
       this.scroll = false;

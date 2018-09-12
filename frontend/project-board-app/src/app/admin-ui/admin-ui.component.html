@@ -8,7 +8,9 @@
           <span [ngClass]="{'badge badge-width': true, 'badge-success': e.enabled, 'badge-danger badge-red': !e.enabled}">{{e.duration || '0'}}</span>
           {{e.fullName}}
         </button>
-        <app-employee-management *ngIf="mobile && selectedEmployee?.id == e.id" [selectedEmployee]="selectedEmployee"></app-employee-management>
+        <div *ngIf="mobile && selectedEmployee?.id == e.id" style="padding: 0 15px 15px 15px">
+          <app-employee-management [selectedEmployee]="selectedEmployee"></app-employee-management>
+        </div>
       </ng-container>
     </div>
   </div>
