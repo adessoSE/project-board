@@ -25,8 +25,11 @@ export class EmployeeService {
     return this.http.get<EmployeeAccessInfo>(`${environment.resourceServer}/users/${userId}/access`);
   }
 
-  setEmployeeAccessInfo(userId, accessEnd: Date) {
-    return this.http.post(`${environment.resourceServer}/users/${userId}/access`, accessEnd);
+  setEmployeeAccessInfo(userId, accessEnd) {
+    const body = {
+      'accessEnd': accessEnd
+    };
+    return this.http.post(`${environment.resourceServer}/users/${userId}/access`, body);
   }
 
   getApplications(userId) {
