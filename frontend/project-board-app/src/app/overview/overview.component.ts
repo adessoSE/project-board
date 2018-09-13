@@ -24,7 +24,10 @@ export class OverviewComponent implements OnInit {
               private authService: AuthenticationService) { }
 
   ngOnInit() {
-    // TODO: receive data about logged in user from backend
-    // this.employeeService.getEmployeeWithId(this.authService.username).subscribe(user => this.user = user);
+    // TODO: receive all needed data about the user from the backend
+    this.employeeService.getEmployeeWithId(this.authService.username).subscribe(user => {
+      this.user = user;
+      this.user.fullName = this.authService.name;
+    });
   }
 }
