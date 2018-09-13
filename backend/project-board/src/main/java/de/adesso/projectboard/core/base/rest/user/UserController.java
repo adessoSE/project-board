@@ -53,7 +53,7 @@ public class UserController {
      *          A {@link List} of all {@link User}s.
      */
     @PreAuthorize("hasRole('admin')")
-    @GetMapping(path = "/")
+    @GetMapping
     public List<UserResponseDTO> getAllUsers() {
         return StreamSupport.stream(userService.getAllUsers().spliterator(), true)
                 .map(UserResponseDTO::fromUser)
