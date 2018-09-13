@@ -15,14 +15,13 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserAccessExpressionEvaluatorTest {
-
-    // TODO: fix test
 
     @Mock
     private KeycloakAuthenticationInfo authInfo;
@@ -43,24 +42,25 @@ public class UserAccessExpressionEvaluatorTest {
 
     @Test
     public void testHasAccessToProjects_HasAccess() {
-        LocalDateTime accessStart = LocalDateTime.now().plus(7L, ChronoUnit.WEEKS);
+        LocalDateTime accessStart = LocalDateTime.now().minus(1L, ChronoUnit.WEEKS);
         LocalDateTime accessEnd = LocalDateTime.now().plus(2L, ChronoUnit.WEEKS);
 
-        UserAccessInfo info = new UserAccessInfo(new User(authInfo.getUserId()), accessEnd);
+        User user = new User(authInfo.getUserId());
+        UserAccessInfo info = new UserAccessInfo(user, accessEnd);
         info.setAccessStart(accessStart);
 
-        when(accessInfoRepo.findFirstByUserOrderByAccessEndDesc(any()))
+        when(accessInfoRepo.getLatestAccessInfo(any()))
                 .thenReturn(Optional.of(info));
 
-        assertTrue(evaluator.hasAccessToProjects(null));
+        assertTrue(evaluator.hasAccessToProjects(null, user));
     }
 
-    /*@Test
+    @Test
     public void testHasAccessToProjects_NoOptionalValue() {
-        when(accessInfoRepo.findFirstByUserIdOrderByAccessEndDesc(anyString()))
+        when(accessInfoRepo.getLatestAccessInfo(any()))
                 .thenReturn(Optional.empty());
 
-        assertFalse(evaluator.hasAccessToProjects(null));
+        assertFalse(evaluator.hasAccessToProjects(null, new User("test")));
     }
 
     @Test
@@ -68,13 +68,14 @@ public class UserAccessExpressionEvaluatorTest {
         LocalDateTime accessStart = LocalDateTime.now().minus(6L, ChronoUnit.DAYS);
         LocalDateTime accessEnd = LocalDateTime.now().minus(1L, ChronoUnit.DAYS);
 
-        UserAccessInfo info = new UserAccessInfo(authInfo.getUsername(), accessEnd);
+        User user = new User(authInfo.getUserId());
+        UserAccessInfo info = new UserAccessInfo(user, accessEnd);
         info.setAccessStart(accessStart);
 
-        when(accessInfoRepo.findFirstByUserIdOrderByAccessEndDesc(anyString()))
+        when(accessInfoRepo.getLatestAccessInfo(any()))
                 .thenReturn(Optional.of(info));
 
-        assertFalse(evaluator.hasAccessToProjects(null));
-    }*/
+        assertFalse(evaluator.hasAccessToProjects(null, user));
+    }
 
 }
