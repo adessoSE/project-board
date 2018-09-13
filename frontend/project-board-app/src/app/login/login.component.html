@@ -4,14 +4,14 @@
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
       <div class="form-group">
         <label for="username">Benutzername</label>
-        <input id="username" type="text" formControlName="username" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.username.errors }"/>
+        <input id="username" type="text" autocomplete="username" formControlName="username" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.username.errors }"/>
         <div *ngIf="submitted && f.username.errors" class="invalid-feedback">
           <div *ngIf="f.username.errors.required">Benutzername ist notwendig</div>
         </div>
       </div>
       <div class="form-group">
         <label for="password">Passwort</label>
-        <input id="password" type="password" formControlName="password" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.password.errors }"/>
+        <input id="password" type="password" autocomplete="current-password" formControlName="password" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.password.errors }"/>
         <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
           <div *ngIf="f.password.errors.required">Passwort ist notwendig</div>
         </div>
