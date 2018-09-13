@@ -13,22 +13,6 @@ export class ProjectService {
   getProjectWithID(projectId) {
     return this.http.get<Project>(`${environment.resourceServer}/projects/${projectId}`);
   }
-
-  getApplicationsForUser(userId) {
-    return this.http.get<Project[]>(`${environment.resourceServer}/users/${userId}/applications`);
-  }
-
-  getFavorites(userId) {
-    return this.http.get<Project[]>(`${environment.resourceServer}/users/${userId}/bookmarks`);
-  }
-
-  addToFavorites(userId, projectId) {
-    return this.http.post<boolean>(`${environment.resourceServer}/users/${userId}/bookmarks`, {projectId});
-  }
-
-  removeFromFavorites(userId, projectId) {
-    this.http.delete(`${environment.resourceServer}/users/${userId}/bookmarks/${projectId}`);
-  }
 }
 
 export interface Project {

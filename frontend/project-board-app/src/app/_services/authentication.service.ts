@@ -30,5 +30,13 @@ export class AuthenticationService {
     }
     return claims.name;
   }
+
+  get username() {
+    const claims: any = this.oAuthService.getIdentityClaims();
+    if (!claims) {
+      return null;
+    }
+    return claims.preferred_username;
+  }
 }
 

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { EmployeeService } from '../_services/employee.service';
 import { Project } from '../_services/project.service';
 
 @Component({
@@ -9,8 +10,9 @@ import { Project } from '../_services/project.service';
 })
 export class ProjectRequestComponent implements OnInit {
   project: Project;
+  comment: string;
 
-  constructor(private router: Router, private route: ActivatedRoute) { }
+  constructor(private router: Router, private route: ActivatedRoute, private employeeService: EmployeeService) { }
 
   ngOnInit() {
     this.route.data.subscribe((data: { project: Project }) => {
@@ -18,4 +20,7 @@ export class ProjectRequestComponent implements OnInit {
     });
   }
 
+  requestProject() {
+    this.employeeService.applyForProject('jacobs', this.project.id, this.comment).subscribe();
+  }
 }
