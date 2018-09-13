@@ -9,10 +9,7 @@ export class AuthenticationService {
   }
 
   login(username: string, password: string) {
-    return from(this.oAuthService.fetchTokenUsingPasswordFlow(username, password).then(() => {
-      // Loading data about the user
-      return this.oAuthService.loadUserProfile();
-    }));
+    return from(this.oAuthService.fetchTokenUsingPasswordFlowAndLoadUserProfile(username, password));
   }
 
   logout() {
@@ -38,5 +35,16 @@ export class AuthenticationService {
     }
     return claims.preferred_username;
   }
-}
 
+  private hasUserRole(role: string) {
+    const claims: any = this.oAuthService.getIdentityClaims();
+    if (!claims) {
+      return false;
+    }
+    return claims.scope.includes(role);
+  }
+
+  get isAdmin() {
+    return this.hasUserRole('admin');
+  }
+}
