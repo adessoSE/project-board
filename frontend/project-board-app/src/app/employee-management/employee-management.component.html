@@ -51,7 +51,7 @@
         <small class="link-red" (click)="removeFromFavorites(f.id)">Favorit entfernen</small>
       </div>
     </div>
-    <div *ngIf="!favorites || favorites.length === 0">Du hast keine Favoriten markiert.</div>
+    <div class="inset" *ngIf="!favorites || favorites.length === 0">Du hast keine Favoriten markiert.</div>
   </ng-container>
 
   <!--  Applications  -->
@@ -66,7 +66,9 @@
         <small *ngIf="!adminControls" class="link-red" (click)="revokeApplication(a.id)">Anfrage zurückrufen</small>
       </div>
     </div>
-    <div *ngIf="!applications || applications.length === 0">Keine Projektanfragen.</div>
+    <div class="inset" *ngIf="!applications || applications.length === 0">
+      {{!adminControls ? 'Du hast keine Projekte angefragt.' : 'Keine Projektanfragen.'}}
+    </div>
   </ng-container>
   <p *ngIf="!selectedEmployee">Kein Mitarbeiter ausgewählt.</p>
 </div>

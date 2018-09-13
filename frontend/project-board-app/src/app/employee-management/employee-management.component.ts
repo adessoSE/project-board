@@ -1,3 +1,4 @@
+import { formatDate } from '@angular/common';
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Application, Employee, EmployeeService } from '../_services/employee.service';
@@ -42,13 +43,26 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
   }
 
   activate(duration) {
-    this.selectedEmployee.enabled = true;
-    this.selectedEmployee.duration = duration.value;
+    const accessEnd = new Date();
+    // console.log('now: ', accessEnd);
+    accessEnd.setDate(accessEnd.getDate() + Number(duration.value));
+    // console.log(`now plus ${duration.value} day: ${accessEnd}`);
+    accessEnd.setHours(24, 0, 0, 0);
+    // console.log('set hours to 24: ', accessEnd);
+    const dateString = formatDate(accessEnd, 'yyyy-MM-ddT00:00:00', 'de');
+    this.employeeService.setEmployeeAccessInfo(this.selectedEmployee.id, dateString).subscribe(() => {
+      this.selectedEmployee.enabled = true;
+      this.selectedEmployee.duration = duration.value;
+    });
   }
 
   deactivate() {
-    this.selectedEmployee.enabled = false;
-    this.selectedEmployee.duration = null;
+    const accessEnd = new Date();
+    const dateString = formatDate(accessEnd, 'yyyy-MM-ddT00:00:00', 'de');
+    this.employeeService.setEmployeeAccessInfo(this.selectedEmployee.id, dateString).subscribe(() => {
+      this.selectedEmployee.enabled = false;
+      this.selectedEmployee.duration = null;
+    });
   }
 
   getFavorites() {
