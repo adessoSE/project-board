@@ -1,0 +1,19 @@
+@import 'functions';
+@import '../../../node_modules/bootstrap/scss/variables';
+
+.comment {
+  margin-bottom: 1rem;
+}
+
+.comment-label {
+  font-weight: bold;
+}
+
+.comment-textarea {
+  height: $line-height-base * 4rem;
+  width: 100%;
+  max-width: 500px;
+  overflow-y: auto;
+  resize: none;
+  display: block;
+}

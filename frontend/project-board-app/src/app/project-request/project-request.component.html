@@ -7,5 +7,9 @@
   Dieses Projekt ist leider nicht verfügbar.
 </div>
 
-<!--  TODO: add a textfield for the comment  -->
+<div class="comment">
+  <label class="comment-label" for="comment">Kommentar:</label>
+  <textarea [ngModel]="comment" class="comment-textarea" id="comment" name="comment" placeholder="Schreib einen Kommentar..."></textarea>
+</div>
+
 <button class="btn btn-primary" (click)="requestProject()">Projekt anfragen</button>
