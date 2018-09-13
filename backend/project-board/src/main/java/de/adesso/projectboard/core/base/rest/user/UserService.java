@@ -13,6 +13,8 @@ import de.adesso.projectboard.core.base.rest.user.persistence.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -83,6 +85,15 @@ public class UserService {
      */
     public boolean userExists(String userId) {
         return userRepo.existsById(userId);
+    }
+
+    /**
+     *
+     * @return
+     *          A {@link Iterable} of all {@link User}s
+     */
+    public Iterable<User> getAllUsers() {
+        return userRepo.findAll();
     }
 
     /**
