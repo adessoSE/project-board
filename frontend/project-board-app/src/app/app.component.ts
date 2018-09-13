@@ -22,7 +22,7 @@ export class AppComponent {
 
     // set the scope for the permissions the client should request
     // The first three are defined by OIDC. The 4th is a usecase-specific one
-    this.oAuthService.scope = 'openid profile user admin';
+    this.oAuthService.scope = 'openid profile email';
 
     // set to true, to receive also an id_token via OpenId Connect (OIDC) in addition to the
     // OAuth2-based access_token
@@ -35,10 +35,8 @@ export class AppComponent {
     this.oAuthService.setStorage(sessionStorage);
 
     // Discovery Document of your AuthServer as defined by OIDC
-    // let url = 'http://localhost:8080/auth/realms/adesso/.well-known/openid-configuration';
     const url = `${environment.authHost}/auth/realms/adesso/.well-known/openid-configuration`;
 
-    // this.oAuthService.issuer = 'http://localhost:8080/auth/realms/adesso';
     this.oAuthService.issuer = `${environment.authHost}/auth/realms/adesso`;
 
     // For DEV-Purposes to establish a non https connection to the Keycloak VM on an external server
@@ -62,5 +60,9 @@ export class AppComponent {
 
   isUserAuthenticated() {
     return this.oAuthService.hasValidAccessToken();
+  }
+
+  get isAdmin() {
+    return this.authenticationService.isAdmin;
   }
 }
