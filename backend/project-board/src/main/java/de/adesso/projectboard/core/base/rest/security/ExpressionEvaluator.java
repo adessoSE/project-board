@@ -1,5 +1,6 @@
 package de.adesso.projectboard.core.base.rest.security;
 
+import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -19,18 +20,24 @@ public interface ExpressionEvaluator {
      * @param authentication
      *          The {@link Authentication} object.
      *
+     * @param user
+     *          The {@link User} object of the currently authenticated user.
+     *
      * @return
      *          <i>true</i>, if the user is permitted to view projects,
      *          <i>false</i> otherwise.
      *
      * @see CustomMethodSecurityExpressionRoot#hasAccessToProjects()
      */
-    boolean hasAccessToProjects(Authentication authentication);
+    boolean hasAccessToProjects(Authentication authentication, User user);
 
     /**
      *
      * @param authentication
      *          The {@link Authentication} object.
+     *
+     * @param user
+     *          The {@link User} object of the currently authenticated user.
      *
      * @param projectId
      *          The id of the {@link de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject}
@@ -42,12 +49,15 @@ public interface ExpressionEvaluator {
      *
      * @see CustomMethodSecurityExpressionRoot#hasAccessToProject(long)
      */
-    boolean hasAccessToProject(Authentication authentication, long projectId);
+    boolean hasAccessToProject(Authentication authentication, User user, long projectId);
 
     /**
      *
      * @param authentication
      *          The {@link Authentication} object.
+     *
+     * @param user
+     *          The {@link User} object of the currently authenticated user.
      *
      * @return
      *          <i>true</i>, if the user is permitted to apply
@@ -55,12 +65,15 @@ public interface ExpressionEvaluator {
      *
      * @see CustomMethodSecurityExpressionRoot#hasPermissionToApply()
      */
-    boolean hasPermissionToApply(Authentication authentication);
+    boolean hasPermissionToApply(Authentication authentication, User user);
 
     /**
      *
      * @param authentication
      *          The {@link Authentication} object.
+     *
+     * @param user
+     *          The {@link User} object of the currently authenticated user.
      *
      * @param userId
      *          The id of the {@link de.adesso.projectboard.core.base.rest.user.persistence.User}
@@ -72,12 +85,15 @@ public interface ExpressionEvaluator {
      *
      * @see CustomMethodSecurityExpressionRoot#hasPermissionToAccessUser(String)
      */
-    boolean hasPermissionToAccessUser(Authentication authentication, String userId);
+    boolean hasPermissionToAccessUser(Authentication authentication, User user, String userId);
 
     /**
      *
      * @param authentication
      *          The {@link Authentication} object.
+     *
+     * @param user
+     *          The {@link User} object of the currently authenticated user.
      *
      * @param userId
      *          The id of the {@link de.adesso.projectboard.core.base.rest.user.persistence.User}
@@ -89,7 +105,7 @@ public interface ExpressionEvaluator {
      *
      * @see CustomMethodSecurityExpressionRoot#hasElevatedAccessToUser(String)
      */
-    default boolean hasElevatedAccessToUser(Authentication authentication, String userId) {
+    default boolean hasElevatedAccessToUser(Authentication authentication, User user, String userId) {
         return true;
     }
 

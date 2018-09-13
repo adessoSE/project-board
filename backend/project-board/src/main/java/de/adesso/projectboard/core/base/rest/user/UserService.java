@@ -142,6 +142,24 @@ public class UserService {
     }
 
     /**
+     *
+     * @param userId
+     *          The id of the user.
+     *
+     * @return
+     *          If there is a {@link User} with the given {@code userId} present,
+     *          the user is returned. Creates a new {@link User} otherwise and
+     *          return it after persisting it otherwise.
+     *
+     * @see #getUserById(String)
+     */
+    public User getOrCreateUserById(String userId) {
+        Optional<User> userOptional = userRepo.findById(userId);
+
+        return userOptional.orElse(userRepo.save(new User(userId)));
+    }
+
+    /**
      * Adds a new bookmark to the {@link User#getBookmarks() user's bookmarks} and
      * persists the updated entity.
      *

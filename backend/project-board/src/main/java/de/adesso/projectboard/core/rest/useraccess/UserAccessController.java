@@ -31,7 +31,7 @@ public class UserAccessController {
         this.userService = userService;
     }
 
-    @PreAuthorize("hasRole('admin') || hasElevatedAccessToUser(#userId)")
+    @PreAuthorize("hasElevatedAccessToUser(#userId) || hasRole('admin')")
     @PostMapping(path = "/{userId}/access",
             consumes = "application/json",
             produces = "application/json"
@@ -63,7 +63,7 @@ public class UserAccessController {
         return UserAccessInfoResponseDTO.fromAccessInfo(accessInfo);
     }
 
-    @PreAuthorize("hasRole('admin') || hasPermissionToAccessUser(#userId)")
+    @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @GetMapping(path = "/{userId}/access",
             produces = "application/json"
     )

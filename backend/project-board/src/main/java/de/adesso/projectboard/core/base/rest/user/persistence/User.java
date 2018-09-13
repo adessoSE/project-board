@@ -42,7 +42,6 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL)
     Set<ProjectApplication> applications;
 
-
     /**
      *
      * @param id

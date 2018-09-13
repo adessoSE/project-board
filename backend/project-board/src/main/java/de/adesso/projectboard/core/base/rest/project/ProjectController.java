@@ -37,7 +37,7 @@ public class ProjectController {
     }
 
 
-    @PreAuthorize("hasRole('admin') || hasAccessToProject(#projectId)")
+    @PreAuthorize("hasAccessToProject(#projectId) || hasRole('admin')")
     @GetMapping(value = "/{projectId}",
             produces = "application/json"
     )
@@ -52,7 +52,7 @@ public class ProjectController {
     }
 
 
-    @PreAuthorize("hasRole('admin') || hasAccessToProjects()")
+    @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
     @GetMapping(produces = "application/json"
     )
     public Iterable<? extends AbstractProject> getAll() {
@@ -60,7 +60,7 @@ public class ProjectController {
     }
 
 
-    @PreAuthorize("hasRole('admin') || hasAccessToProjects()")
+    @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
     @GetMapping(value = "/search",
             produces = "application/json"
     )

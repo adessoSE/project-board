@@ -55,6 +55,9 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      * @param authentication
      *          The {@link Authentication} object.
      *
+     * @param user
+     *          The {@link User} object of the currently authenticated user.
+     *
      * @return
      *          <i>true</i>, if the the currently authenticated user's
      *          latest {@link UserAccessInfo} object's {@link UserAccessInfo#accessEnd access end date}
@@ -64,9 +67,9 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      * @see UserService#getCurrentUser()
      */
     @Override
-    public boolean hasAccessToProjects(Authentication authentication) {
+    public boolean hasAccessToProjects(Authentication authentication, User user) {
         Optional<UserAccessInfo> accessInfo
-                = userAccessInfoRepo.getLatestAccessInfo(userService.getCurrentUser());
+                = userAccessInfoRepo.getLatestAccessInfo(user);
 
         if(accessInfo.isPresent()) {
             LocalDateTime accessEnd = accessInfo.get().getAccessEnd();
@@ -82,39 +85,48 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      * @param authentication
      *          The {@link Authentication} object.
      *
+     * @param user
+     *          The {@link User} object of the currently authenticated user.
+     *
      * @param projectId
      *          The id of the {@link de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject}
      *          the user wants to access.
      *
      * @return
-     *          The result of {@link #hasAccessToProjects(Authentication)}.
+     *          The result of {@link #hasAccessToProjects(Authentication, User)}.
      *
-     * @see #hasAccessToProjects(Authentication)
+     * @see #hasAccessToProjects(Authentication, User)
      */
     @Override
-    public boolean hasAccessToProject(Authentication authentication, long projectId) {
-        return hasAccessToProjects(authentication);
+    public boolean hasAccessToProject(Authentication authentication, User user, long projectId) {
+        return hasAccessToProjects(authentication, user);
     }
 
     /**
      *
      * @param authentication
      *          The {@link Authentication} object.
+     *
+     * @param user
+     *          The {@link User} object of the currently authenticated user.
      *
      * @return
-     *          The result of {@link #hasAccessToProjects(Authentication)}
+     *          The result of {@link #hasAccessToProjects(Authentication, User)}
      *
-     * @see #hasAccessToProjects(Authentication)
+     * @see #hasAccessToProjects(Authentication, User)
      */
     @Override
-    public boolean hasPermissionToApply(Authentication authentication) {
-        return hasAccessToProjects(authentication);
+    public boolean hasPermissionToApply(Authentication authentication, User user) {
+        return hasAccessToProjects(authentication, user);
     }
 
     /**
      *
      * @param authentication
      *          The {@link Authentication} object.
+     *
+     * @param user
+     *          The {@link User} object of the currently authenticated user.
      *
      * @param userId
      *          The id of the {@link de.adesso.projectboard.core.base.rest.user.persistence.User}
@@ -130,14 +142,17 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      * @see Set#contains(Object)
      */
     @Override
-    public boolean hasPermissionToAccessUser(Authentication authentication, String userId) {
-        return userService.getCurrentUser().getId().equals(userId) || authInfo.getEmployeeSet().contains(userId);
+    public boolean hasPermissionToAccessUser(Authentication authentication, User user, String userId) {
+        return user.getId().equals(userId) || authInfo.getEmployeeSet().contains(userId);
     }
 
     /**
      *
      * @param authentication
      *          The {@link Authentication} object.
+     *
+     * @param user
+     *          The {@link User} object of the currently authenticated user.
      *
      * @param userId
      *          The id of the {@link de.adesso.projectboard.core.base.rest.user.persistence.User}
@@ -152,7 +167,7 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      * @see Set#contains(Object)
      */
     @Override
-    public boolean hasElevatedAccessToUser(Authentication authentication, String userId) {
+    public boolean hasElevatedAccessToUser(Authentication authentication, User user, String userId) {
         return authInfo.getEmployeeSet().contains(userId);
     }
 

@@ -19,6 +19,9 @@ import javax.validation.Valid;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * {@link RestController} for user related data.
+ */
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -38,7 +41,7 @@ public class UserController {
         this.applicationHandler = applicationHandler;
     }
 
-    @PreAuthorize("hasRole('admin') || hasPermissionToAccessUser(#userId)")
+    @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @GetMapping(path = "/{userId}",
             produces = "application/json"
     )
@@ -46,7 +49,7 @@ public class UserController {
         return UserResponseDTO.fromUser(userService.getUserById(userId));
     }
 
-    @PreAuthorize("hasRole('admin') || hasPermissionToAccessUser(#userId)")
+    @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @DeleteMapping(value = "/{userId}/bookmarks/{projectId}",
             produces = "application/json"
     )
@@ -67,7 +70,7 @@ public class UserController {
      *          When no {@link AbstractProject project} is found for the
      *          given {@link BookmarkRequestDTO#getProjectId() id}.
      */
-    @PreAuthorize("hasRole('admin') || (hasPermissionToAccessUser(#userId) && hasAccessToProjects())")
+    @PreAuthorize("(hasPermissionToAccessUser(#userId) && hasAccessToProjects()) || hasRole('admin')")
     @PostMapping(value = "/{userId}/bookmarks",
             consumes = "application/json",
             produces = "application/json"
@@ -77,7 +80,7 @@ public class UserController {
         return userService.addBookmarkToUser(userId, bookmarkClientDTO.getProjectId());
     }
 
-    @PreAuthorize("hasRole('admin') || hasPermissionToAccessUser(#userId)")
+    @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @GetMapping(path = "/{userId}/bookmarks",
             produces = "application/json"
     )
@@ -97,7 +100,7 @@ public class UserController {
      *          When the {@link AbstractProject} with the {@link ProjectApplicationRequestDTO#getProjectId() given id}
      *          is not found.
      */
-    @PreAuthorize("hasRole('admin') || hasPermissionToApply()")
+    @PreAuthorize("hasPermissionToApply() || hasRole('admin')")
     @PostMapping(path = "/{userId}/applications",
             consumes = "application/json",
             produces = "application/json"
@@ -124,7 +127,7 @@ public class UserController {
         return ProjectApplicationResponseDTO.fromApplication(savedApplication);
     }
 
-    @PreAuthorize("hasRole('admin') || hasPermissionToAccessUser(#userId)")
+    @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @GetMapping(path = "/{userId}/applications",
             produces = "application/json"
     )
