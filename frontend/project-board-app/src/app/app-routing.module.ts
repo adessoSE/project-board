@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AdminGuard } from './_guards/admin.guard';
 import { AuthGuard } from './_guards/auth.guard';
 import { ProjectResolverService } from './_services/project-resolver.service';
 import { AdminUiComponent } from './admin-ui/admin-ui.component';
@@ -22,7 +23,7 @@ const routes: Routes = [
     resolve: {
       employees: EmployeeResolverService
     },
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, AdminGuard]
   },
   {
     path: 'admin',
@@ -30,7 +31,7 @@ const routes: Routes = [
     resolve: {
       employees: EmployeeResolverService
     },
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, AdminGuard]
   },
   {
     path: 'projects/:id/request',
