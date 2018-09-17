@@ -11,12 +11,12 @@
       </div>
       <div class="row">
         <div class="col-4">Status:</div>
-        <div class="col right">{{selectedEmployee.enabled ? 'Freigeschaltet' : 'Nicht freigeschaltet'}}</div>
+        <div class="col right">{{accessInfo?.hasAccess ? 'Freigeschaltet' : 'Nicht freigeschaltet'}}</div>
         <br>
       </div>
-      <div [ngClass]="{'row': true, 'disabled': !selectedEmployee.enabled}">
-        <div class="col-4">Dauer der Freischaltung:</div>
-        <div class="col right">{{selectedEmployee.duration ? selectedEmployee.duration + ' Tag(e)' : '-'}}</div>
+      <div [ngClass]="{'row': true, 'disabled': !accessInfo?.hasAccess}">
+        <div class="col-4">Freigeschaltet bis:</div>
+        <div class="col right">{{accessInfo?.hasAccess ? (accessInfo?.accessEnd | date : 'dd.MM.yyyy') : '-'}}</div>
       </div>
       <div class="row">
         <div class="col-4">Email:</div>
@@ -26,7 +26,7 @@
 
     <!--  Admin Controls  -->
     <div *ngIf="adminControls" class="mt-2 pt-1 border-top">
-      <form *ngIf="!selectedEmployee.enabled">
+      <form *ngIf="!accessInfo?.hasAccess">
         <div class="form-group">
           <label class="select-label" for="durationSelect">Dauer der Freischaltung</label>
           <select #duration required class="select form-control" id="durationSelect">
@@ -36,7 +36,7 @@
         </div>
       </form>
       <div>
-        <button (click)="deactivate()" *ngIf="selectedEmployee.enabled" class="btn btn-danger btn-deactivate">Zugang deaktivieren</button>
+        <button (click)="deactivate()" *ngIf="accessInfo?.hasAccess" class="btn btn-danger btn-deactivate">Zugang deaktivieren</button>
       </div>
     </div>
   </div>

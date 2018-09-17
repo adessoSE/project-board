@@ -29,7 +29,7 @@ export class EmployeeService {
     const body = {
       'accessEnd': accessEnd
     };
-    return this.http.post(`${environment.resourceServer}/users/${userId}/access`, body);
+    return this.http.post<EmployeeAccessInfo>(`${environment.resourceServer}/users/${userId}/access`, body);
   }
 
   getApplications(userId) {

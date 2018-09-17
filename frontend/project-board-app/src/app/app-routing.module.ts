@@ -1,14 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { AccessGuard } from './_guards/access.guard';
 import { AdminGuard } from './_guards/admin.guard';
 import { AuthGuard } from './_guards/auth.guard';
+import { EmployeeResolverService } from './_services/employee-resolver.service';
 import { ProjectResolverService } from './_services/project-resolver.service';
+import { ProjectsResolverService } from './_services/projects-resolver.service';
 import { AdminUiComponent } from './admin-ui/admin-ui.component';
 import { LoginComponent } from './login/login.component';
 import { OverviewComponent } from './overview/overview.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-import { EmployeeResolverService } from './_services/employee-resolver.service';
-import { ProjectsResolverService } from './_services/projects-resolver.service';
 import { ProjectRequestComponent } from './project-request/project-request.component';
 import { UserUiComponent } from './user-ui/user-ui.component';
 
@@ -38,7 +39,8 @@ const routes: Routes = [
     component: ProjectRequestComponent,
     resolve: {
       project: ProjectResolverService
-    }
+    },
+    canActivate: [AuthGuard, AccessGuard]
   },
   {
     path: 'projects/:key',
@@ -46,7 +48,7 @@ const routes: Routes = [
     resolve: {
       projects: ProjectsResolverService
     },
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, AccessGuard]
   },
   {
     path: 'projects',
@@ -54,7 +56,7 @@ const routes: Routes = [
     resolve: {
       projects: ProjectsResolverService
     },
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, AccessGuard]
   },
   {
     path: 'overview',
