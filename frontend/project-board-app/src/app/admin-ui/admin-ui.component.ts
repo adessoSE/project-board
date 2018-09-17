@@ -25,7 +25,7 @@ export class AdminUiComponent implements OnInit, AfterViewChecked {
               private location: Location) { }
 
   ngOnInit() {
-    this.mobile = window.screen.width <= 425;
+    this.mobile = window.screen.width <= 768;
     this.route.data.subscribe((data: { employees: Employee[] }) => {
       this.employees = data.employees;
       this.route.params.subscribe(params => {
@@ -65,5 +65,16 @@ export class AdminUiComponent implements OnInit, AfterViewChecked {
       $('html, body').animate({scrollTop: $(btn).offset().top - 56}, 'slow');
       this.scroll = false;
     }
+  }
+
+  dayDifference(date1: Date, date2: Date) {
+    date1 = new Date(date1);
+    date2 = new Date(date2);
+    const time1 = date1.getTime();
+    const time2 = date2.getTime();
+    let days = time1 >= time2 ? time1 - time2 : time2 - time1;
+    days /= 86400000;
+    days -= days % 1;
+    return days;
   }
 }
