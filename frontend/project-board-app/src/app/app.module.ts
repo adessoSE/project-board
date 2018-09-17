@@ -18,6 +18,7 @@ import { AdminUiComponent } from './admin-ui/admin-ui.component';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { CreateProjectComponent } from './create-project/create-project.component';
 import { EmployeeManagementComponent } from './employee-management/employee-management.component';
 import { LoginComponent } from './login/login.component';
 import { OverviewComponent } from './overview/overview.component';
@@ -40,7 +41,8 @@ registerLocaleData(localeDe, 'de');
     ProjectDetailsComponent,
     EmployeeManagementComponent,
     ProjectRequestComponent,
-    OverviewComponent
+    OverviewComponent,
+    CreateProjectComponent
   ],
   imports: [
     BrowserModule,
