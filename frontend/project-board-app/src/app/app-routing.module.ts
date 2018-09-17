@@ -7,6 +7,7 @@ import { EmployeeResolverService } from './_services/employee-resolver.service';
 import { ProjectResolverService } from './_services/project-resolver.service';
 import { ProjectsResolverService } from './_services/projects-resolver.service';
 import { AdminUiComponent } from './admin-ui/admin-ui.component';
+import { CreateProjectComponent } from './create-project/create-project.component';
 import { LoginComponent } from './login/login.component';
 import { OverviewComponent } from './overview/overview.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
@@ -33,6 +34,11 @@ const routes: Routes = [
       employees: EmployeeResolverService
     },
     canActivate: [AuthGuard, AdminGuard]
+  },
+  {
+    path: 'projects/new',
+    component: CreateProjectComponent,
+    canActivate: [AuthGuard]
   },
   {
     path: 'projects/:id/request',
