@@ -92,7 +92,7 @@ public class ProjectDatabaseUpdater {
      *          The {@link ProjectDatabaseUpdaterInfo} object of the last successful update.
      *
      * @return
-     *          <i>true</i> if the difference between {@link LocalDateTime#now() now} and
+     *          {@code true} if the difference between {@link LocalDateTime#now() now} and
      *          {@link ProjectDatabaseUpdaterInfo#getTime()} is longer than
      *          {@link ProjectBoardConfigurationProperties#getRefreshInterval()} minutes.
      */

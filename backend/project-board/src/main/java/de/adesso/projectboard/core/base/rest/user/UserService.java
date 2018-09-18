@@ -8,13 +8,12 @@ import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject
 import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
 import de.adesso.projectboard.core.base.rest.security.AuthenticationInfo;
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplicationRepository;
+import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import de.adesso.projectboard.core.base.rest.user.persistence.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -43,35 +42,50 @@ public class UserService {
         this.projectRepo = projectRepo;
         this.applicationRepo = applicationRepo;
         this.authInfo = authInfo;
+
+
+
+        // mock users
+        User user = new User("daniel", "Daniel", "Meier", "daniel.meier@adesso.de");
+        User user1 = new User("alex", "Alexander", "Brockmann", "alexander.brockmann@adesso.de");
+        SuperUser superUser = new SuperUser("tom", "Tom", "Hombergs", "tom.hombergs@adesso.de");
+        superUser.addStaffMember(user);
+        superUser.addStaffMember(user1);
+
+        SuperUser superUser1 = new SuperUser("marcus", "Marcus", "Keinenplan", "marcus.keinenplan@adesso.de");
+
+        userRepo.save(superUser);
+        userRepo.save(superUser1);
     }
 
     /**
      * Returns the {@link User} object of the currently authenticated
-     * user. Creates a new (persisted) {@link User} object when no
-     * {@link User} object exists for the current user.
+     * user.
      *
      * @return
-     *          The {@link User} object of the currently
-     *          authenticated user.
+     *          The result of {@link #getUserById(String)} with the
+     *          returned value of {@link AuthenticationInfo#getUserId()}
+     *          as the {@code userId}.
+     *
+     * @throws UserNotFoundException
+     *          When no user was found.
      *
      * @see AuthenticationInfo#getUserId()
+     * @see #getUserById(String)
      */
-    public User getCurrentUser() {
-        Optional<User> optionalUser = userRepo.findById(authInfo.getUserId());
-
-        return optionalUser.orElseGet(() -> userRepo.save(new User(authInfo.getUserId())));
+    public User getCurrentUser() throws UserNotFoundException {
+        return getUserById(authInfo.getUserId());
     }
 
     /**
      *
      * @return
-     *          The user ID of the current user returned by
-     *          {@link #getCurrentUser()}.
+     *          The user ID of the currently authenticated user.
      *
-     * @see #getCurrentUser()
+     * @see AuthenticationInfo#getUserId()
      */
     public String getCurrentUserId() {
-        return getCurrentUser().getId();
+        return authInfo.getUserId();
     }
 
     /**
@@ -80,8 +94,8 @@ public class UserService {
      *          The id of the user.
      *
      * @return
-     *          <i>true</i>, if the user with the given
-     *          id exists, <i>false</i> otherwise.
+     *          {@code true}, if the user with the given
+     *          id exists, {@code false} otherwise.
      */
     public boolean userExists(String userId) {
         return userRepo.existsById(userId);
@@ -106,11 +120,11 @@ public class UserService {
      *          the bookmark refers to.
      *
      * @return
-     *          <i>true</i>, when a {@link AbstractProject} with the the given
+     *          {@code true}, when a {@link AbstractProject} with the the given
      *          {@code projectId} exists and the user's {@link User#getBookmarks() bookmarks}
      *          contains the project.
      *          <br>
-     *          <i>false</i> when the project/user with the given id does
+     *          {@code false} when the project/user with the given id does
      *          not exist or the the user's {@link User#getBookmarks() bookmarks} don't contain
      *          the project.
      *
@@ -150,24 +164,6 @@ public class UserService {
         }
 
         return userOptional.get();
-    }
-
-    /**
-     *
-     * @param userId
-     *          The id of the user.
-     *
-     * @return
-     *          If there is a {@link User} with the given {@code userId} present,
-     *          the user is returned. Creates a new {@link User} otherwise and
-     *          return it after persisting it otherwise.
-     *
-     * @see #getUserById(String)
-     */
-    public User getOrCreateUserById(String userId) {
-        Optional<User> userOptional = userRepo.findById(userId);
-
-        return userOptional.orElse(userRepo.save(new User(userId)));
     }
 
     /**
@@ -296,6 +292,18 @@ public class UserService {
         } else {
             throw new BookmarkNotFoundException();
         }
+    }
+
+    /**
+     *
+     * @param user
+     *          The {@link User} to persist.
+     *
+     * @return
+     *          The result of {@link UserRepository#save(Object)}.
+     */
+    public User save(User user) {
+        return userRepo.save(user);
     }
 
 }

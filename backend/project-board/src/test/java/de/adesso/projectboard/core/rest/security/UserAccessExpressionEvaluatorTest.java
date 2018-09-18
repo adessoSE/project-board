@@ -2,7 +2,7 @@ package de.adesso.projectboard.core.rest.security;
 
 import de.adesso.projectboard.core.base.rest.user.UserService;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
-import de.adesso.projectboard.core.rest.useraccess.persistence.UserAccessInfo;
+import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.UserAccessInfo;
 import de.adesso.projectboard.core.rest.useraccess.persistence.UserAccessInfoRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,9 +25,6 @@ public class UserAccessExpressionEvaluatorTest {
 
     @Mock
     private KeycloakAuthenticationInfo authInfo;
-
-    @Mock
-    private UserAccessInfoRepository accessInfoRepo;
 
     @Mock
     private UserService userService;

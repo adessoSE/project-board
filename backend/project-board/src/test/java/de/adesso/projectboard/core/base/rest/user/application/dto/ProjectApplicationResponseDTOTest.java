@@ -5,7 +5,6 @@ import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import de.adesso.projectboard.core.project.persistence.JiraProject;
 import org.junit.Test;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 

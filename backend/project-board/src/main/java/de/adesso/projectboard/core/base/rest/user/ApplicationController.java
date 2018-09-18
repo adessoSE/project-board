@@ -60,8 +60,8 @@ public class ApplicationController {
             consumes = "application/json",
             produces = "application/json"
     )
-    public ProjectApplicationResponseDTO createApplicationForUser(@Valid @RequestBody ProjectApplicationRequestDTO projectApplicationClientDTO, @PathVariable("userId") String userId)
-            throws ProjectNotFoundException, UserNotFoundException {
+    public ProjectApplicationResponseDTO createApplicationForUser(@Valid @RequestBody ProjectApplicationRequestDTO projectApplicationClientDTO,
+                                                                  @PathVariable("userId") String userId) throws ProjectNotFoundException, UserNotFoundException {
 
         // get the project by the given id
         Optional<AbstractProject> projectOptional = projectRepo.findById(projectApplicationClientDTO.getProjectId());
@@ -73,34 +73,15 @@ public class ApplicationController {
         ProjectApplication application
                 = new ProjectApplication(projectOptional.get(), projectApplicationClientDTO.getComment(), userService.getCurrentUser());
 
-        // call the handler method
-        applicationHandler.onApplicationReceived(application);
-
+        // persist the application
         ProjectApplication savedApplication
                 = userService.addApplicationToUser(userId, application);
 
-        return ProjectApplicationResponseDTO.fromApplication(savedApplication);
-    }
+        // call the handler method
+        applicationHandler.onApplicationReceived(savedApplication);
 
-    /**
-     *
-     * @param userId
-     *          The id of the {@link User}.
-     *
-     * @param applicationId
-     *          The if of the {@link ProjectApplication}.
-     *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId} is found.
-     *
-     * @throws ApplicationNotFoundException
-     *          When no {@link ProjectApplication} with the given {@code applicationId} is found.
-     */
-    @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
-    @DeleteMapping(path = "/{userId}/applications/{applicationId}")
-    public void deleteApplicationOfUser(@PathParam("userId") String userId, @PathParam("applicationId") long applicationId)
-            throws UserNotFoundException, ApplicationNotFoundException {
-        // TODO: implement (should applications be deleted?)
+        // return a DTO
+        return ProjectApplicationResponseDTO.fromApplication(savedApplication);
     }
 
     /**

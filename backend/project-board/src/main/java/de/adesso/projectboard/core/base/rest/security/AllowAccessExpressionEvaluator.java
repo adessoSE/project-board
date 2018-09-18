@@ -5,7 +5,7 @@ import org.springframework.security.core.Authentication;
 
 /**
  * Auto-configured implementation of the {@link ExpressionEvaluator} interface. Method implementations
- * always return <i>true</i>.
+ * always return {@code true}.
  *
  * @see ExpressionEvaluator
  */
@@ -20,7 +20,7 @@ public class AllowAccessExpressionEvaluator implements ExpressionEvaluator {
      *          The {@link User} object of the currently authenticated user.
      *
      * @return
-     *          <i>true</i>
+     *          {@code true}
      */
     @Override
     public boolean hasAccessToProjects(Authentication authentication, User user) {
@@ -40,7 +40,7 @@ public class AllowAccessExpressionEvaluator implements ExpressionEvaluator {
      *          the user wants to access.
      *
      * @return
-     *          <i>true</i>
+     *          {@code true}
      */
     @Override
     public boolean hasAccessToProject(Authentication authentication, User user, long projectId) {
@@ -56,7 +56,7 @@ public class AllowAccessExpressionEvaluator implements ExpressionEvaluator {
      *          The {@link User} object of the currently authenticated user.
      *
      * @return
-     *          <i>true</i>
+     *          {@code true}
      */
     @Override
     public boolean hasPermissionToApply(Authentication authentication, User user) {
@@ -72,11 +72,11 @@ public class AllowAccessExpressionEvaluator implements ExpressionEvaluator {
      *          The {@link User} object of the currently authenticated user.
      *
      * @param userId
-     *          The id of the {@link de.adesso.projectboard.core.base.rest.user.persistence.User}
+     *          The id of the {@link User}
      *          the current user wants to access.
      *
      * @return
-     *          <i>true</i>
+     *          {@code true}
      */
     @Override
     public boolean hasPermissionToAccessUser(Authentication authentication, User user, String userId) {
@@ -92,11 +92,11 @@ public class AllowAccessExpressionEvaluator implements ExpressionEvaluator {
      *          The {@link User} object of the currently authenticated user.
      *
      * @param userId
-     *          The id of the {@link de.adesso.projectboard.core.base.rest.user.persistence.User}
+     *          The id of the {@link User}
      *          the current user wants to access.
      *
      * @return
-     *          <i>true</i>
+     *          {@code true}
      */
     @Override
     public boolean hasElevatedAccessToUser(Authentication authentication, User user, String userId) {
