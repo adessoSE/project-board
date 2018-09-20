@@ -41,17 +41,17 @@
     </div>
   </div>
 
-  <!--  Favorites  -->
+  <!--  Bookmarks  -->
   <ng-container *ngIf="!adminControls">
-    <h4>Favoriten</h4>
-    <div *ngFor="let f of favorites; index as i" [ngClass]="{'border-bottom pb-2 mb-2': i<favorites.length-1}">
+    <h4>Lesezeichen</h4>
+    <div *ngFor="let b of bookmarks; index as i" [ngClass]="{'border-bottom pb-2 mb-2': i<bookmarks.length-1}">
       <div class="inset">
-        <a routerLink="/projects/{{f.key}}">{{f.key}}</a><br>
-        {{f.title}}<br>
-        <small class="link-red" (click)="removeFromFavorites(f.id)">Favorit entfernen</small>
+        <a routerLink="/projects/{{b.key}}">{{b.key}}</a><br>
+        {{b.title}}<br>
+        <small class="link-red" (click)="removeBookmark(b.id)">Lesezeichen entfernen</small>
       </div>
     </div>
-    <div class="inset" *ngIf="!favorites || favorites.length === 0">Du hast keine Favoriten markiert.</div>
+    <div class="inset" *ngIf="!bookmarks || bookmarks.length === 0">Du hast keine Lesezeichen.</div>
   </ng-container>
 
   <!--  Applications  -->
@@ -63,7 +63,7 @@
         {{a.project.title}}<br>
         Kommentar: {{a.comment}}<br>
         Datum: {{a.date | date : 'dd.MM.yyyy'}}<br>
-        <small *ngIf="!adminControls" class="link-red" (click)="revokeApplication(a.id)">Anfrage zurückrufen</small>
+        <small *ngIf="!adminControls && revokeable" class="link-red" (click)="revokeApplication(a.id)">Anfrage zurückrufen</small>
       </div>
     </div>
     <div class="inset" *ngIf="!applications || applications.length === 0">

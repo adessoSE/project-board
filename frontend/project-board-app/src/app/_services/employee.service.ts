@@ -54,15 +54,15 @@ export class EmployeeService {
     return this.http.post(`${environment.resourceServer}/users/${userId}/applications`, body);
   }
 
-  getFavorites(userId) {
+  getBookmarks(userId) {
     return this.http.get<Project[]>(`${environment.resourceServer}/users/${userId}/bookmarks`);
   }
 
-  addToFavorites(userId, projectId) {
+  addBookmark(userId, projectId) {
     return this.http.post(`${environment.resourceServer}/users/${userId}/bookmarks`, {projectId});
   }
 
-  removeFromFavorites(userId, projectId) {
+  removeBookmark(userId, projectId) {
     return this.http.delete(`${environment.resourceServer}/users/${userId}/bookmarks/${projectId}`);
   }
 }

@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { faBookmark } from '@fortawesome/free-regular-svg-icons/faBookmark';
 import { AuthenticationService } from '../_services/authentication.service';
 import { EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
@@ -11,7 +12,11 @@ import { Project, ProjectService } from '../_services/project.service';
 })
 export class ProjectDetailsComponent implements OnInit {
   @Input() selectedProject: Project;
-  favorite = false;
+  @Input() applicable;
+  @Input() bookmark = false;
+  @Output() bookmarkChanged = new EventEmitter();
+  faBookmark = faBookmark;
+  bmTooltip = 'Du hast ein Lesezeichen an diesem Projekt.';
 
   constructor(private router: Router,
               private projectService: ProjectService,
@@ -25,11 +30,13 @@ export class ProjectDetailsComponent implements OnInit {
     this.router.navigate([`projects/${this.selectedProject.id}/request`]);
   }
 
-  addToFavorites() {
-    this.employeeService.addToFavorites(this.authService.username, this.selectedProject.id).subscribe(() => this.favorite = true);
+  addBookmark() {
+    this.employeeService.addBookmark(this.authService.username, this.selectedProject.id)
+      .subscribe(() => this.bookmarkChanged.emit(this.selectedProject));
   }
 
-  removeFromFavorites() {
-    this.employeeService.removeFromFavorites(this.authService.username, this.selectedProject.id).subscribe(() => this.favorite = false);
+  removeBookmark() {
+    this.employeeService.removeBookmark(this.authService.username, this.selectedProject.id)
+      .subscribe(() => this.bookmarkChanged.emit(this.selectedProject));
   }
 }

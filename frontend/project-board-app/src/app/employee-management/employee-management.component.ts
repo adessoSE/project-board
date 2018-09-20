@@ -12,9 +12,10 @@ import { Project, ProjectService } from '../_services/project.service';
 export class EmployeeManagementComponent implements OnInit, OnChanges {
   @Input() selectedEmployee: Employee;
   @Input() adminControls = true;
+  @Input() revokeable = false;
   numberOfDaysSelect = [];
 
-  favorites: Project[];
+  bookmarks: Project[];
   applications: Application[];
   accessInfo: EmployeeAccessInfo;
 
@@ -25,7 +26,7 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes.selectedEmployee.currentValue && !changes.selectedEmployee.isFirstChange()) {
       if (!this.adminControls) {
-        this.getFavorites();
+        this.getBookmarks();
       }
       this.getApplications();
       this.getAccessInfo();
@@ -37,7 +38,7 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
       this.numberOfDaysSelect.push(i);
     }
     if (!this.adminControls) {
-      this.getFavorites();
+      this.getBookmarks();
     }
     if (this.selectedEmployee) {
       this.getApplications();
@@ -67,12 +68,12 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
     });
   }
 
-  getFavorites() {
-    this.employeeService.getFavorites(this.selectedEmployee.id).subscribe(fav => this.favorites = fav);
+  getBookmarks() {
+    this.employeeService.getBookmarks(this.selectedEmployee.id).subscribe(bookmarks => this.bookmarks = bookmarks);
   }
 
-  removeFromFavorites(projectId) {
-    this.employeeService.removeFromFavorites(this.authService.username, projectId).subscribe(() => this.getFavorites());
+  removeBookmark(projectId) {
+    this.employeeService.removeBookmark(this.authService.username, projectId).subscribe(() => this.getBookmarks());
   }
 
   getApplications() {
