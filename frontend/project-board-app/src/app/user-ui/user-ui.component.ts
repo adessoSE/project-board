@@ -38,7 +38,13 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
 
     this.route.data.subscribe(data => {
       this.projects = data.projects;
-      this.appliedProjects = data.appliedProjects;
+      this.appliedProjects = data.applications.map(apps => {
+        const projects: Project[] = [];
+        for (const a of apps) {
+          projects.push(a.project);
+        }
+        return projects;
+      });
       this.bookmarks = data.bookmarks;
       this.route.params.subscribe(params => {
         if (params.key) {

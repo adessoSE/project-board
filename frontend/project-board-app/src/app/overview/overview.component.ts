@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AuthenticationService } from '../_services/authentication.service';
-import { EmployeeService } from '../_services/employee.service';
+import { Application, EmployeeService } from '../_services/employee.service';
+import { Project } from '../_services/project.service';
 
 @Component({
   selector: 'app-overview',
@@ -19,8 +21,11 @@ export class OverviewComponent implements OnInit {
     'fullName': 'Lottie Jacobs',
     'email': 'lottie.jacobs@adesso.de'
   };
+  bookmarks: Project[];
+  applications: Application[];
 
-  constructor(private employeeService: EmployeeService,
+  constructor(private route: ActivatedRoute,
+              private employeeService: EmployeeService,
               private authService: AuthenticationService) { }
 
   ngOnInit() {
@@ -28,6 +33,10 @@ export class OverviewComponent implements OnInit {
     this.employeeService.getEmployeeWithId(this.authService.username).subscribe(user => {
       this.user = user;
       this.user.fullName = this.authService.name;
+    });
+    this.route.data.subscribe(data => {
+      this.bookmarks = data.bookmarks;
+      this.applications = data.applications;
     });
   }
 }

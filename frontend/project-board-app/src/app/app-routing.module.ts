@@ -4,9 +4,9 @@ import { AccessGuard } from './_guards/access.guard';
 import { AdminGuard } from './_guards/admin.guard';
 import { AlreadyAppliedGuard } from './_guards/already-applied.guard';
 import { AuthGuard } from './_guards/auth.guard';
-import { AppliedProjectsResolverService } from './_services/applied-projects-resolver.service';
-import { EmployeeResolverService } from './_services/employee-resolver.service';
+import { ApplicationsResolverService } from './_services/applications-resolver.service';
 import { BookmarksResolverService } from './_services/bookmarks-resolver.service';
+import { EmployeeResolverService } from './_services/employee-resolver.service';
 import { ProjectResolverService } from './_services/project-resolver.service';
 import { ProjectsResolverService } from './_services/projects-resolver.service';
 import { AdminUiComponent } from './admin-ui/admin-ui.component';
@@ -56,7 +56,7 @@ const routes: Routes = [
     component: UserUiComponent,
     resolve: {
       projects: ProjectsResolverService,
-      appliedProjects: AppliedProjectsResolverService,
+      appliedProjects: ApplicationsResolverService,
       bookmarks: BookmarksResolverService
     },
     canActivate: [AuthGuard, AccessGuard]
@@ -66,7 +66,7 @@ const routes: Routes = [
     component: UserUiComponent,
     resolve: {
       projects: ProjectsResolverService,
-      appliedProjects: AppliedProjectsResolverService,
+      appliedProjects: ApplicationsResolverService,
       bookmarks: BookmarksResolverService
     },
     canActivate: [AuthGuard, AccessGuard]
@@ -74,6 +74,10 @@ const routes: Routes = [
   {
     path: 'overview',
     component: OverviewComponent,
+    resolve: {
+      bookmarks: BookmarksResolverService,
+      applications: ApplicationsResolverService
+    },
     canActivate: [AuthGuard]
   },
   {

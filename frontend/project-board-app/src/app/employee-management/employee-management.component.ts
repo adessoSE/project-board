@@ -13,10 +13,10 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
   @Input() selectedEmployee: Employee;
   @Input() adminControls = true;
   @Input() revokeable = false;
-  numberOfDaysSelect = [];
+  @Input() bookmarks: Project[] = [];
+  @Input() applications: Application[] = [];
 
-  bookmarks: Project[];
-  applications: Application[];
+  numberOfDaysSelect = [];
   accessInfo: EmployeeAccessInfo;
 
   constructor(private projectService: ProjectService,
@@ -57,6 +57,7 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
     this.employeeService.setEmployeeAccessInfo(this.selectedEmployee.id, dateString).subscribe(accInf => {
       this.accessInfo = accInf;
       this.selectedEmployee.duration = duration.value;
+      this.selectedEmployee.enabled = true;
     });
   }
 
@@ -65,6 +66,8 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
     const dateString = formatDate(accessEnd, 'yyyy-MM-ddT00:00:00', 'de');
     this.employeeService.setEmployeeAccessInfo(this.selectedEmployee.id, dateString).subscribe(accInf => {
       this.accessInfo = accInf;
+      this.selectedEmployee.duration = 0;
+      this.selectedEmployee.enabled = false;
     });
   }
 
