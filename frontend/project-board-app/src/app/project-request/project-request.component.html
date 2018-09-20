@@ -9,7 +9,7 @@
 
 <div class="comment">
   <label class="comment-label" for="comment">Kommentar:</label>
-  <textarea [ngModel]="comment" class="form-control comment-textarea" id="comment" name="comment" placeholder="Schreib einen Kommentar..." rows="4"></textarea>
+  <textarea [(ngModel)]="comment" class="form-control comment-textarea" id="comment" name="comment" placeholder="Schreib einen Kommentar..." rows="4"></textarea>
 </div>
 
 <button class="btn btn-primary" (click)="requestProject()">Projekt anfragen</button>
