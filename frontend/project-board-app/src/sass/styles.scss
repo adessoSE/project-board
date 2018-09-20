@@ -5,6 +5,16 @@
 .display-3 {
   margin-top: 1rem;
 }
+
+.inner-container {
+  padding-left: 15%;
+  padding-right: 15%;
+}
+
+h1 {
+  text-align: center;
+}
+
 @include media-breakpoint-down(md) {
   .display-1 {
     font-size: 4rem;
@@ -38,5 +48,9 @@
 
   .background-inner {
     padding-bottom: 0;
+  }
+
+  .inner-container {
+    padding: 0;
   }
 }

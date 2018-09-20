@@ -1,5 +1,5 @@
 <div class="sticky">
-  <h4>Details</h4>
+  <h4 *ngIf="adminControls">Details</h4>
   <div *ngIf="selectedEmployee" class="details">
 
     <!--  User Info  -->
@@ -18,7 +18,7 @@
         <div class="col-4">Freigeschaltet bis:</div>
         <div class="col right">{{accessInfo?.hasAccess ? (accessInfo?.accessEnd | date : 'dd.MM.yyyy') : '-'}}</div>
       </div>
-      <div class="row">
+      <div *ngIf="adminControls" class="row">
         <div class="col-4">Email:</div>
         <div class="col right">{{selectedEmployee.email}}</div>
       </div>

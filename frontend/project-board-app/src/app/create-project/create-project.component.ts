@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AlertService } from '../_services/alert.service';
 import { Project, ProjectService } from '../_services/project.service';
 
 @Component({
@@ -15,7 +16,7 @@ export class CreateProjectComponent implements OnInit {
   description = '';
   title = '';
   key = '';
-  issuetype = '';
+  issuetype = 'Studentisches Projekt';
   job = '';
   lob = '';
   customer = '';
@@ -28,9 +29,11 @@ export class CreateProjectComponent implements OnInit {
   freelancer = '';
   other = '';
 
-  constructor(private projectService: ProjectService) { }
+  constructor(private projectService: ProjectService,
+              private alertService: AlertService) { }
 
   ngOnInit() {
+    this.alertService.warning('Bitte beachte, dass hier nur studentische Projekte erstellt werden können.');
   }
 
   createProject() {
