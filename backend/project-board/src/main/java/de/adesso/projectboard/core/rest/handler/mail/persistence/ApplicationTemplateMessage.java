@@ -17,7 +17,7 @@ public class ApplicationTemplateMessage extends TemplateMessage {
 
     private static final String DISCLAIMER = "\n\n\nThis is a automatically generated message, please do not reply!";
 
-    private static final String TITLE_PATTERN = "New application for JIRA Project %s";
+    private static final String TITLE_PATTERN = "Anfrage für Projekt %s";
 
     private static final String MAIN_TEXT_PATTERN = "%s applied for the JIRA Project \"%s\".";
 
@@ -37,14 +37,14 @@ public class ApplicationTemplateMessage extends TemplateMessage {
     }
 
     private String buildText() {
-        return String.format("New Application by %s!", getReferencedUser().getFullName());
+        return String.format("Neue Anfrage von %s!", getReferencedUser().getFullName());
     }
 
     @Override
     public SimpleMailMessage getMailMessage() {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
 
-        mailMessage.setSubject(String.format(TITLE_PATTERN, "Projekt!"));
+        mailMessage.setSubject(String.format(TITLE_PATTERN, "<Placeholder>"));
         mailMessage.setText(buildText());
 
         return mailMessage;
