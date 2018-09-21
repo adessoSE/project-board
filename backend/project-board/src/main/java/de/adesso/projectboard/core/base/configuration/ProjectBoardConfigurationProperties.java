@@ -1,7 +1,7 @@
 package de.adesso.projectboard.core.base.configuration;
 
 import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
-import de.adesso.projectboard.core.project.persistence.JiraProject;
+import de.adesso.projectboard.core.project.persistence.Project;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -29,6 +29,6 @@ public class ProjectBoardConfigurationProperties {
      * The project class.
      */
     @NotNull
-    private Class<? extends AbstractProject> projectClass = JiraProject.class;
+    private Class<? extends AbstractProject> projectClass = Project.class;
 
 }

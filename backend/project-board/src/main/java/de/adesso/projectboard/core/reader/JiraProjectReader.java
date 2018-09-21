@@ -3,10 +3,10 @@ package de.adesso.projectboard.core.reader;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
 import de.adesso.projectboard.core.base.reader.ProjectReader;
+import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
 import de.adesso.projectboard.core.project.JiraIssue;
-import de.adesso.projectboard.core.project.persistence.JiraProject;
+import de.adesso.projectboard.core.project.persistence.Project;
 import de.adesso.projectboard.core.reader.jql.JqlComparator;
 import de.adesso.projectboard.core.reader.jql.JqlQueryStringBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * A {@link ProjectReader} implementation that reads {@link JiraProject}s from
+ * A {@link ProjectReader} implementation that reads {@link Project}s from
  * a JIRA REST API.
  *
  * <p>
@@ -58,7 +58,7 @@ public class JiraProjectReader implements ProjectReader {
      *          {@link de.adesso.projectboard.core.base.updater.ProjectDatabaseUpdater}.
      *
      * @return
-     *          A List of {@link JiraProject}s that were created/modified since {@code dateTime}.
+     *          A List of {@link Project}s that were created/modified since {@code dateTime}.
      *
      * @throws Exception
      *          When a error occurs.
@@ -71,7 +71,7 @@ public class JiraProjectReader implements ProjectReader {
     /**
      *
      * @return
-     *          A List of {@link JiraProject}s.
+     *          A List of {@link Project}s.
      *
      * @throws Exception
      *          When a error occurs.
@@ -114,12 +114,12 @@ public class JiraProjectReader implements ProjectReader {
      *          The JQL query to execute.
      *
      * @return
-     *          A list of {@link JiraProject}s.
+     *          A list of {@link Project}s.
      *
      * @throws IOException
      *          When error occurs when deserializing the response body.
      */
-    private List<JiraProject> getProjectsByQuery(String jqlQuery) throws IOException {
+    private List<Project> getProjectsByQuery(String jqlQuery) throws IOException {
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(properties.getRequestUrl(), String.class, jqlQuery);
 
         // parse the json in the response body
@@ -134,6 +134,7 @@ public class JiraProjectReader implements ProjectReader {
 
         return jiraIssueList.stream()
                 .map(JiraIssue::getProjectWithIdAndKey)
+                .map(this::cutStrings)
                 .collect(Collectors.toList());
     }
 
@@ -159,6 +160,12 @@ public class JiraProjectReader implements ProjectReader {
                 .build();
     }
 
+    /**
+     *
+     * @return
+     *          The JQL query used to get the initial projects when
+     *          the first update is performed.
+     */
     private String getJqlInitialQueryString() {
         JqlQueryStringBuilder orQueryBuilder = new JqlQueryStringBuilder();
         JqlQueryStringBuilder andQueryBuilder = new JqlQueryStringBuilder();
@@ -174,4 +181,69 @@ public class JiraProjectReader implements ProjectReader {
                 .build();
     }
 
+    /**
+     * Method used to cut string values of a project to a persistable.
+     *
+     * @param project
+     *          The {@link Project}.
+     *
+     * @return
+     *          A {@link Project} with a limited String size.
+     *
+     */
+    private Project cutStrings(Project project) {
+        // 256 character limit
+        project.setStatus(cutAndAppendDotsIfRequired(project.getStatus(), 256));
+        project.setTitle(cutAndAppendDotsIfRequired(project.getTitle(), 256));
+        project.setKey(cutAndAppendDotsIfRequired(project.getKey(), 256));
+        project.setLob(cutAndAppendDotsIfRequired(project.getLob(), 256));
+        project.setCustomer(cutAndAppendDotsIfRequired(project.getCustomer(), 256));
+        project.setLocation(cutAndAppendDotsIfRequired(project.getLocation(), 256));
+        project.setOperationStart(cutAndAppendDotsIfRequired(project.getOperationStart(), 256));
+        project.setOperationEnd(cutAndAppendDotsIfRequired(project.getOperationEnd(), 256));
+        project.setEffort(cutAndAppendDotsIfRequired(project.getEffort(), 256));
+        project.setFreelancer(cutAndAppendDotsIfRequired(project.getFreelancer(), 256));
+        project.setElongation(cutAndAppendDotsIfRequired(project.getElongation(), 256));
+
+        List<String> cutLabels = project.getLabels().stream()
+                .map(label -> cutAndAppendDotsIfRequired(label, 256))
+                .collect(Collectors.toList());
+        project.setLabels(cutLabels);
+
+        // 8192 character limit
+        project.setJob(cutAndAppendDotsIfRequired(project.getJob(), 8192));
+        project.setSkills(cutAndAppendDotsIfRequired(project.getSkills(), 8192));
+        project.setDescription(cutAndAppendDotsIfRequired(project.getDescription(), 8192));
+        project.setOther(cutAndAppendDotsIfRequired(project.getOther(), 8192));
+
+        return project;
+    }
+
+    /**
+     *
+     * @param string
+     *          The string to cut.
+     *
+     * @param maxLength
+     *          The max maxLength of the string.
+     *
+     * @return
+     *          The string as it was passed in case it was shorter than
+     *          {@code maxLength} characters or {@code null}, a string with the given max
+     *          length with <i>"..."</i> appended to it to indicate that it
+     *          was cut or a empty string when {@code maxLength < 3}.
+     */
+    private String cutAndAppendDotsIfRequired(String string, int maxLength) {
+        if(string == null) {
+            return null;
+        } else if(maxLength < 3) {
+            return "";
+        }
+
+        if(string.length() > maxLength) {
+            return string.subSequence(0, Math.max(0, maxLength - 4)) + "...";
+        } else {
+            return string;
+        }
+    }
 }

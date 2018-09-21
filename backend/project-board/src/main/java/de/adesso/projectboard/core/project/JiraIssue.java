@@ -2,7 +2,7 @@ package de.adesso.projectboard.core.project;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import de.adesso.projectboard.core.project.persistence.JiraProject;
+import de.adesso.projectboard.core.project.persistence.Project;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,9 +17,9 @@ public class JiraIssue {
     private String key;
 
     @JsonAlias("fields")
-    private JiraProject project;
+    private Project project;
 
-    public JiraProject getProjectWithIdAndKey() {
+    public Project getProjectWithIdAndKey() {
         project.setId(Long.parseLong(id));
         project.setKey(key);
 

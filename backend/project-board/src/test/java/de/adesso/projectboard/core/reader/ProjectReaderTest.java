@@ -1,7 +1,7 @@
 package de.adesso.projectboard.core.reader;
 
 import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
-import de.adesso.projectboard.core.project.persistence.JiraProject;
+import de.adesso.projectboard.core.project.persistence.Project;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +32,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @RunWith(SpringRunner.class)
 @RestClientTest(JiraProjectReader.class)
 @ActiveProfiles("adesso-jira")
-public class JiraProjectReaderTest {
+public class ProjectReaderTest {
 
     @MockBean
     private JiraProjectReaderConfigurationProperties properties;
@@ -57,7 +57,7 @@ public class JiraProjectReaderTest {
 
         assertEquals(2, projectList.size());
 
-        JiraProject firstProject = (JiraProject) projectList.get(0);
+        Project firstProject = (Project) projectList.get(0);
 
         assertEquals(1L, firstProject.getId());
         assertEquals("Teststatus 1", firstProject.getStatus());
@@ -83,7 +83,7 @@ public class JiraProjectReaderTest {
         assertEquals("Testother 1", firstProject.getOther());
 
 
-        JiraProject secondProject = (JiraProject) projectList.get(1);
+        Project secondProject = (Project) projectList.get(1);
 
         assertEquals(2L, secondProject.getId());
         assertEquals("Teststatus 2", secondProject.getStatus());

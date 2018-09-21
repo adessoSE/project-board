@@ -1,6 +1,7 @@
-package de.adesso.projectboard.core.rest.useraccess.persistence;
+package de.adesso.projectboard.core.base.rest.user.useraccess.persistence;
 
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
+import de.adesso.projectboard.core.rest.security.UserAccessExpressionEvaluator;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,12 +9,11 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
- * Entity to persist info about user access to projects/applications.
+ * Entity to persist info about user access to projects/applications. Used by the
+ * {@link UserAccessExpressionEvaluator} to authorize REST interface method invocations.
  *
- * @see UserAccessInfoRepository
- * @see de.adesso.projectboard.core.rest.security.UserAccessExpressionEvaluator
+ * @see User
  */
-@Table(name = "USER_ACCESS_INFO")
 @Entity
 @Getter
 @Setter
@@ -54,7 +54,7 @@ public class UserAccessInfo {
     /**
      *
      * @return
-     *          <i>true</i> if the {@link #accessStart} is equal to or before the
+     *          {@code true} if the {@link #accessStart} is equal to or before the
      *          {@link LocalDateTime#now() current date} and the {@link #accessEnd} is after the
      *          {@link LocalDateTime#now() current date}.
      */

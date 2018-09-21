@@ -1,23 +1,19 @@
-package de.adesso.projectboard.core.rest.useraccess.dto;
+package de.adesso.projectboard.core.base.rest.user.useraccess.dto;
 
-import de.adesso.projectboard.core.base.rest.user.dto.UserResponseDTO;
-import de.adesso.projectboard.core.base.rest.user.persistence.User;
-import de.adesso.projectboard.core.rest.useraccess.persistence.UserAccessInfo;
+import de.adesso.projectboard.core.base.rest.user.UserAccessController;
+import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.UserAccessInfo;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * The DTO of a {@link de.adesso.projectboard.core.rest.useraccess.persistence.UserAccessInfo}
- * object send back to the user.
+ * The DTO of a {@link UserAccessInfo} object sent back to the user.
  *
- * @see de.adesso.projectboard.core.rest.useraccess.UserAccessController
+ * @see UserAccessController
  */
 @Data
 public class UserAccessInfoResponseDTO implements Serializable {
-
-    private UserResponseDTO user;
 
     private boolean hasAccess;
 
@@ -38,7 +34,6 @@ public class UserAccessInfoResponseDTO implements Serializable {
     public static UserAccessInfoResponseDTO fromAccessInfo(UserAccessInfo info) {
         UserAccessInfoResponseDTO responseDTO = new UserAccessInfoResponseDTO();
 
-        responseDTO.setUser(UserResponseDTO.fromUser(info.getUser()));
         responseDTO.setAccessStart(info.getAccessStart());
         responseDTO.setAccessEnd(info.getAccessEnd());
 
@@ -50,16 +45,13 @@ public class UserAccessInfoResponseDTO implements Serializable {
 
     /**
      *
-     * @param user
-     *          The {@link User} object.
-     *
      * @return
-     *          A new {@link UserAccessInfoResponseDTO} with {@link #hasAccess} set to false.
+     *          A new {@link UserAccessInfoResponseDTO} with {@link #hasAccess}
+     *          set to {@code false}.
      */
-    public static UserAccessInfoResponseDTO noAccess(User user) {
+    public static UserAccessInfoResponseDTO noAccess() {
         UserAccessInfoResponseDTO responseDTO = new UserAccessInfoResponseDTO();
 
-        responseDTO.setUser(UserResponseDTO.fromUser(user));
         responseDTO.setHasAccess(false);
 
         return responseDTO;

@@ -2,49 +2,30 @@ package de.adesso.projectboard.core.rest.security;
 
 import de.adesso.projectboard.core.base.rest.security.ExpressionEvaluator;
 import de.adesso.projectboard.core.base.rest.user.UserService;
+import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
-import de.adesso.projectboard.core.rest.useraccess.persistence.UserAccessInfo;
-import de.adesso.projectboard.core.rest.useraccess.persistence.UserAccessInfoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.UserAccessInfo;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.Set;
 
 /**
  * A {@link ExpressionEvaluator} implementation that is used to authorize access
- * to the REST interface.
+ * to the REST interface by using persisted user data.
  *
  * <p>
- *     Activated via the <i>adesso-keycloak</i> profile.
+ *     Activated via the <i>user-access</i> spring profile.
  * </p>
  *
  * @see ExpressionEvaluator
- * @see UserAccessInfoRepository
  * @see UserService
- * @see KeycloakAuthenticationInfo
  */
-@Profile("adesso-keycloak")
+@Profile("user-access")
 @Service
 public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
-
-    private final UserAccessInfoRepository userAccessInfoRepo;
-
-    private final UserService userService;
-
-    private final KeycloakAuthenticationInfo authInfo;
-
-    @Autowired
-    public UserAccessExpressionEvaluator(UserAccessInfoRepository userAccessInfoRepo,
-                                         UserService userService,
-                                         KeycloakAuthenticationInfo authInfo) {
-        this.userAccessInfoRepo = userAccessInfoRepo;
-        this.userService = userService;
-        this.authInfo = authInfo;
-    }
 
     /**
      * Gets the currently authenticated user from the {@link UserService}
@@ -59,25 +40,13 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          The {@link User} object of the currently authenticated user.
      *
      * @return
-     *          <i>true</i>, if the the currently authenticated user's
-     *          latest {@link UserAccessInfo} object's {@link UserAccessInfo#accessEnd access end date}
-     *          is after the {@link LocalDateTime#now() current} date time, <i>false</i> otherwise.
+     *          The result of {@link User#hasAccess()}.
      *
-     * @see UserAccessInfoRepository#getLatestAccessInfo(User)
-     * @see UserService#getCurrentUser()
+     * @see User#hasAccess()
      */
     @Override
     public boolean hasAccessToProjects(Authentication authentication, User user) {
-        Optional<UserAccessInfo> accessInfo
-                = userAccessInfoRepo.getLatestAccessInfo(user);
-
-        if(accessInfo.isPresent()) {
-            LocalDateTime accessEnd = accessInfo.get().getAccessEnd();
-
-            return accessEnd.isAfter(LocalDateTime.now());
-        }
-
-        return false;
+        return user.hasAccess() || user instanceof SuperUser;
     }
 
     /**
@@ -129,21 +98,18 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          The {@link User} object of the currently authenticated user.
      *
      * @param userId
-     *          The id of the {@link de.adesso.projectboard.core.base.rest.user.persistence.User}
+     *          The id of the {@link User}
      *          the current user wants to access.
      *
      * @return
-     *          <i>true</i>, when the currently authenticated user has the same {@link User#getId() id}
-     *          or the given {@code userId} is included in the {@link Set} of the current users employees,
-     *          <i>false</i> otherwise.
+     *          {@code true}, when the currently authenticated user has the same {@link User#getId() id}
+     *          or the result of {@link #hasElevatedAccessToUser(Authentication, User, String)}.
      *
-     * @see UserService#getCurrentUser()
-     * @see KeycloakAuthenticationInfo#getEmployeeSet()
-     * @see Set#contains(Object)
+     * @see SuperUser#getStaffMembers()
      */
     @Override
     public boolean hasPermissionToAccessUser(Authentication authentication, User user, String userId) {
-        return user.getId().equals(userId) || authInfo.getEmployeeSet().contains(userId);
+        return user.getId().equals(userId) || hasElevatedAccessToUser(authentication, user, userId);
     }
 
     /**
@@ -155,20 +121,24 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          The {@link User} object of the currently authenticated user.
      *
      * @param userId
-     *          The id of the {@link de.adesso.projectboard.core.base.rest.user.persistence.User}
+     *          The id of the {@link User}
      *          the current user wants to access.
      *
      * @return
-     *          <i>true</i>, if the {@code userId} is in the
-     *          {@link KeycloakAuthenticationInfo#getEmployeeSet() authenticated user's employee set},
-     *          <i>false</i>
+     *          {@code true}, when the user is a {@link SuperUser} and a user with the given
+     *          {@code userId} is included in the {@link Set} of the {@link SuperUser#getStaffMembers() user's staff members},
+     *          {@code false} otherwise.
      *
-     * @see KeycloakAuthenticationInfo#getEmployeeSet()
-     * @see Set#contains(Object)
+     * @see SuperUser
      */
     @Override
     public boolean hasElevatedAccessToUser(Authentication authentication, User user, String userId) {
-        return authInfo.getEmployeeSet().contains(userId);
+        if(user instanceof SuperUser) {
+            return ((SuperUser) user).getStaffMembers().stream()
+                    .anyMatch(staffMember -> staffMember.getId().equals(userId));
+        }
+
+        return false;
     }
 
 }

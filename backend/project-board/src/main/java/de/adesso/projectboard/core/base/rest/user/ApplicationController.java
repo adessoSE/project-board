@@ -1,6 +1,5 @@
 package de.adesso.projectboard.core.base.rest.user;
 
-import de.adesso.projectboard.core.base.rest.exceptions.ApplicationNotFoundException;
 import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.core.base.rest.exceptions.UserNotFoundException;
 import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
@@ -16,7 +15,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.websocket.server.PathParam;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -55,13 +53,13 @@ public class ApplicationController {
      *          When the {@link AbstractProject} with the {@link ProjectApplicationRequestDTO#getProjectId() given id}
      *          is not found.
      */
-    @PreAuthorize("hasPermissionToApply() || hasRole('admin')")
+    @PreAuthorize("(hasPermissionToAccessUser(#userId) && hasPermissionToApply()) || hasRole('admin')")
     @PostMapping(path = "/{userId}/applications",
             consumes = "application/json",
             produces = "application/json"
     )
-    public ProjectApplicationResponseDTO createApplicationForUser(@Valid @RequestBody ProjectApplicationRequestDTO projectApplicationClientDTO, @PathVariable("userId") String userId)
-            throws ProjectNotFoundException, UserNotFoundException {
+    public ProjectApplicationResponseDTO createApplicationForUser(@Valid @RequestBody ProjectApplicationRequestDTO projectApplicationClientDTO,
+                                                                  @PathVariable("userId") String userId) throws ProjectNotFoundException, UserNotFoundException {
 
         // get the project by the given id
         Optional<AbstractProject> projectOptional = projectRepo.findById(projectApplicationClientDTO.getProjectId());
@@ -73,34 +71,15 @@ public class ApplicationController {
         ProjectApplication application
                 = new ProjectApplication(projectOptional.get(), projectApplicationClientDTO.getComment(), userService.getCurrentUser());
 
-        // call the handler method
-        applicationHandler.onApplicationReceived(application);
-
+        // persist the application
         ProjectApplication savedApplication
                 = userService.addApplicationToUser(userId, application);
 
-        return ProjectApplicationResponseDTO.fromApplication(savedApplication);
-    }
+        // call the handler method
+        applicationHandler.onApplicationReceived(savedApplication);
 
-    /**
-     *
-     * @param userId
-     *          The id of the {@link User}.
-     *
-     * @param applicationId
-     *          The if of the {@link ProjectApplication}.
-     *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId} is found.
-     *
-     * @throws ApplicationNotFoundException
-     *          When no {@link ProjectApplication} with the given {@code applicationId} is found.
-     */
-    @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
-    @DeleteMapping(path = "/{userId}/applications/{applicationId}")
-    public void deleteApplicationOfUser(@PathParam("userId") String userId, @PathParam("applicationId") long applicationId)
-            throws UserNotFoundException, ApplicationNotFoundException {
-        // TODO: implement (should applications be deleted?)
+        // return a DTO
+        return ProjectApplicationResponseDTO.fromApplication(savedApplication);
     }
 
     /**

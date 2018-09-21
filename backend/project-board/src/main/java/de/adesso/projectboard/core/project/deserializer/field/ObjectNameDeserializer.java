@@ -1,10 +1,12 @@
 package de.adesso.projectboard.core.project.deserializer.field;
 
+import de.adesso.projectboard.core.project.persistence.Project;
+
 /**
  * A {@link ObjectFieldDeserializer} that returns the string value of a field named
  * {@value #FIELD_NAME} inside a json object.
  *
- * @see de.adesso.projectboard.core.project.persistence.JiraProject
+ * @see Project
  */
 public class ObjectNameDeserializer extends ObjectFieldDeserializer {
 

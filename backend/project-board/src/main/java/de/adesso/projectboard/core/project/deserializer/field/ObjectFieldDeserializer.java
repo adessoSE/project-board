@@ -5,13 +5,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import de.adesso.projectboard.core.project.persistence.Project;
 
 import java.io.IOException;
 
 /**
  * A {@link StdDeserializer} that returns a string value of a field inside a json object.
  *
- * @see de.adesso.projectboard.core.project.persistence.JiraProject
+ * @see Project
  */
 public abstract class ObjectFieldDeserializer extends StdDeserializer<String> {
 

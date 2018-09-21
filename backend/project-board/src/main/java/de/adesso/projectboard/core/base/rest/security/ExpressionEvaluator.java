@@ -24,8 +24,8 @@ public interface ExpressionEvaluator {
      *          The {@link User} object of the currently authenticated user.
      *
      * @return
-     *          <i>true</i>, if the user is permitted to view projects,
-     *          <i>false</i> otherwise.
+     *          {@code true}, if the user is permitted to view projects,
+     *          {@code false} otherwise.
      *
      * @see CustomMethodSecurityExpressionRoot#hasAccessToProjects()
      */
@@ -44,8 +44,8 @@ public interface ExpressionEvaluator {
      *          the user wants to access.
      *
      * @return
-     *          <i>true</i>, if the user is permitted to access the project,
-     *          <i>false</i> otherwise.
+     *          {@code true}, if the user is permitted to access the project,
+     *          {@code false} otherwise.
      *
      * @see CustomMethodSecurityExpressionRoot#hasAccessToProject(long)
      */
@@ -60,8 +60,8 @@ public interface ExpressionEvaluator {
      *          The {@link User} object of the currently authenticated user.
      *
      * @return
-     *          <i>true</i>, if the user is permitted to apply
-     *          for projects, <i>false</i> otherwise.
+     *          {@code true}, if the user is permitted to apply
+     *          for projects, {@code false} otherwise.
      *
      * @see CustomMethodSecurityExpressionRoot#hasPermissionToApply()
      */
@@ -76,12 +76,12 @@ public interface ExpressionEvaluator {
      *          The {@link User} object of the currently authenticated user.
      *
      * @param userId
-     *          The id of the {@link de.adesso.projectboard.core.base.rest.user.persistence.User}
+     *          The id of the {@link User}
      *          the current user wants to access.
      *
      * @return
-     *          <i>true</i>, if the user is permitted to access the user,
-     *          <i>false</i> otherwise.
+     *          {@code true}, if the user is permitted to access the user,
+     *          {@code false} otherwise.
      *
      * @see CustomMethodSecurityExpressionRoot#hasPermissionToAccessUser(String)
      */
@@ -96,12 +96,12 @@ public interface ExpressionEvaluator {
      *          The {@link User} object of the currently authenticated user.
      *
      * @param userId
-     *          The id of the {@link de.adesso.projectboard.core.base.rest.user.persistence.User}
+     *          The id of the {@link User}
      *          the current user wants to access.
      *
      * @return
-     *          <i>true</i>, if the user has elevated access to the user,
-     *          <i>false</i> otherwise.
+     *          {@code true}, if the user has elevated access to the user,
+     *          {@code false} otherwise.
      *
      * @see CustomMethodSecurityExpressionRoot#hasElevatedAccessToUser(String)
      */

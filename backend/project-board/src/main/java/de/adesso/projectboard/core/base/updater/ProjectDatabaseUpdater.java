@@ -52,7 +52,7 @@ public class ProjectDatabaseUpdater {
      *
      * @see #shouldUpdate(ProjectDatabaseUpdaterInfo)
      */
-    @Scheduled(fixedDelay = 10000L)
+    @Scheduled(fixedDelay = 30000L)
     public void refreshProjectDatabase() {
         Optional<ProjectDatabaseUpdaterInfo> lastSuccessfulUpdate
                 = infoRepository.findFirstByStatusOrderByTimeDesc(ProjectDatabaseUpdaterInfo.Status.SUCCESS);
@@ -92,7 +92,7 @@ public class ProjectDatabaseUpdater {
      *          The {@link ProjectDatabaseUpdaterInfo} object of the last successful update.
      *
      * @return
-     *          <i>true</i> if the difference between {@link LocalDateTime#now() now} and
+     *          {@code true} if the difference between {@link LocalDateTime#now() now} and
      *          {@link ProjectDatabaseUpdaterInfo#getTime()} is longer than
      *          {@link ProjectBoardConfigurationProperties#getRefreshInterval()} minutes.
      */

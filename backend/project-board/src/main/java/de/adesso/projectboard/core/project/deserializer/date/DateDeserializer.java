@@ -1,6 +1,7 @@
 package de.adesso.projectboard.core.project.deserializer.date;
 
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import de.adesso.projectboard.core.project.persistence.Project;
 
 import java.time.format.DateTimeFormatter;
 
@@ -11,7 +12,7 @@ import java.time.format.DateTimeFormatter;
  * @param <T>
  *          The type to deserialize to.
  *
- * @see de.adesso.projectboard.core.project.persistence.JiraProject
+ * @see Project
  */
 public abstract class DateDeserializer<T> extends StdDeserializer<T> {
 

@@ -1,5 +1,6 @@
 package de.adesso.projectboard.core.base.rest.security;
 
+import de.adesso.projectboard.core.base.rest.user.UserAccessController;
 import de.adesso.projectboard.core.base.rest.user.UserService;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
@@ -31,6 +32,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
 
     /**
      * Creates a new instance.
+     *
      *  @param authentication
      *          The {@link Authentication} to use. Cannot be null.
      *
@@ -75,14 +77,19 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
     /**
      *
      * @return
-     *          <i>true</i>, if the authenticated user is authorized to
-     *          view projects, <i>false</i> otherwise
+     *          The result of {@link ExpressionEvaluator#hasAccessToProjects(Authentication, User)}
+     *          when the user is authenticated (a {@link User} object is present), {@code false} otherwise.
      *
      * @see ExpressionEvaluator#hasAccessToProjects(Authentication, User)
      * @see de.adesso.projectboard.core.base.rest.project.ProjectController
      */
     public boolean hasAccessToProjects() {
-        return evaluator.hasAccessToProjects(getAuthentication(), userService.getCurrentUser());
+        // check if the user has a corresponding User object
+        if(userService.userExists(userService.getCurrentUserId())) {
+            return evaluator.hasAccessToProjects(getAuthentication(), userService.getCurrentUser());
+        }
+
+        return false;
     }
 
     /**
@@ -92,27 +99,37 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
      *          the user wants to access.
      *
      * @return
-     *          <i>true</i>, if the authenticated user is authorized to
-     *          view the project, <i>false</i> otherwise.
+     *          The result of {@link ExpressionEvaluator#hasAccessToProject(Authentication, User, long)}
+                when the user is authenticated (a {@link User} object is present), {@code false} otherwise.
      *
      * @see ExpressionEvaluator#hasAccessToProject(Authentication, User, long)
      * @see de.adesso.projectboard.core.base.rest.project.ProjectController
      */
     public boolean hasAccessToProject(long projectId) {
-        return evaluator.hasAccessToProject(getAuthentication(), userService.getCurrentUser(), projectId);
+        // check if the user has a corresponding User object
+        if(userService.userExists(userService.getCurrentUserId())) {
+            return evaluator.hasAccessToProject(getAuthentication(), userService.getCurrentUser(), projectId);
+        }
+
+        return false;
     }
 
     /**
      *
      * @return
-     *          <i>true</i>, if the authenticated user is authorized to
-     *          apply for projects, <i>false</i> otherwise.
+     *          The result of {@link ExpressionEvaluator#hasPermissionToApply(Authentication, User)}
+     *          when the user is authenticated (a {@link User} object is present), {@code false} otherwise.
      *
      * @see ExpressionEvaluator#hasPermissionToApply(Authentication, User)
      * @see de.adesso.projectboard.core.base.rest.user.UserController
      */
     public boolean hasPermissionToApply() {
-        return evaluator.hasPermissionToApply(getAuthentication(), userService.getCurrentUser());
+        // check if the user has a corresponding User object
+        if(userService.userExists(userService.getCurrentUserId())) {
+            return evaluator.hasPermissionToApply(getAuthentication(), userService.getCurrentUser());
+        }
+
+        return false;
     }
 
     /**
@@ -122,31 +139,40 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
      *          the current user wants to access.
      *
      * @return
-     *          <i>true</i>, if the authenticated user is authorized to access
-     *          the user, <i>false</i> otherwise.
+     *          The result of {@link ExpressionEvaluator#hasPermissionToAccessUser(Authentication, User, String)}
+     *          when the user is authenticated (a {@link User} object is present), {@code false} otherwise.
      *
      * @see ExpressionEvaluator#hasPermissionToAccessUser(Authentication, User, String)
      * @see de.adesso.projectboard.core.base.rest.user.UserController
      */
     public boolean hasPermissionToAccessUser(String userId) {
-        return evaluator.hasPermissionToAccessUser(getAuthentication(), userService.getCurrentUser(), userId);
+        // check if the user has a corresponding User object
+        if(userService.userExists(userService.getCurrentUserId())) {
+            return evaluator.hasPermissionToAccessUser(getAuthentication(), userService.getCurrentUser(), userId);
+        }
+
+        return false;
     }
 
     /**
      *
      * @param userId
-     *          The id of the {@link User}
-     *          the current user wants to access.
+     *          The id of the {@link User} the current user wants to access.
      *
      * @return
-     *          <i>true</i>, if the authenticated user is authorized to access the
-     *          user with elevated access permissions, <i>false</i> otherwise
+     *          The result of {@link ExpressionEvaluator#hasElevatedAccessToUser(Authentication, User, String)}
+     *          when the user is authenticated (a {@link User} object is present), {@code false} otherwise.
      *
      * @see ExpressionEvaluator#hasElevatedAccessToUser(Authentication, User, String)
-     * @see de.adesso.projectboard.core.rest.useraccess.UserAccessController
+     * @see UserAccessController
      */
     public boolean hasElevatedAccessToUser(String userId) {
-        return evaluator.hasElevatedAccessToUser(getAuthentication(), userService.getCurrentUser(), userId);
+        // check if the user has a corresponding User object
+        if(userService.userExists(userService.getCurrentUserId())) {
+            return evaluator.hasElevatedAccessToUser(getAuthentication(), userService.getCurrentUser(), userId);
+        }
+
+        return false;
     }
 
 }

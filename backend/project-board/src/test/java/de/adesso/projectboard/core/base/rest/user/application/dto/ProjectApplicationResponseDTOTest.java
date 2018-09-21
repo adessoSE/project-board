@@ -1,11 +1,11 @@
 package de.adesso.projectboard.core.base.rest.user.application.dto;
 
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
+import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
-import de.adesso.projectboard.core.project.persistence.JiraProject;
+import de.adesso.projectboard.core.project.persistence.Project;
 import org.junit.Test;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
@@ -15,9 +15,10 @@ public class ProjectApplicationResponseDTOTest {
 
     @Test
     public void fromApplication() {
-        User user = new User("user");
+        SuperUser superUser = new SuperUser("test-user-1");
+        User user = new User("test-user-2", superUser);
 
-        JiraProject project = new JiraProject();
+        Project project = new Project();
         project.setId(1L);
 
         LocalDateTime applicationTime = LocalDateTime.now().minus(2L, ChronoUnit.DAYS);
