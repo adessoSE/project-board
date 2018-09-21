@@ -39,12 +39,12 @@ public class UserAccessController {
         userToGiveAccess.giveAccessUntil(infoDTO.getAccessEnd());
 
         // save the updated user
-        userToGiveAccess = userService.save(userToGiveAccess);
+        User updatedUser = userService.save(userToGiveAccess);
 
         // call handler method
-        userAccessHandler.onAccessGranted(userToGiveAccess);
+        userAccessHandler.onAccessGranted(updatedUser);
 
-        return UserResponseDTO.fromUser(userToGiveAccess);
+        return UserResponseDTO.fromUser(updatedUser);
     }
 
     @PreAuthorize("hasElevatedAccessToUser(#userId) || hasRole('admin')")
@@ -53,9 +53,9 @@ public class UserAccessController {
         User user = userService.getUserById(userId);
 
         user.removeAccess();
-        userService.save(user);
+        User updatedUser = userService.save(user);
 
-        return UserResponseDTO.fromUser(user);
+        return UserResponseDTO.fromUser(updatedUser);
     }
 
 }

@@ -14,6 +14,7 @@ import java.util.*;
 /**
  * Entity to persist information about users.
  *
+ * @see SuperUser
  * @see AbstractProject
  * @see ProjectApplication
  */
@@ -48,6 +49,9 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false)
+    private String lob;
+
     /**
      * The bookmarked {@link AbstractProject projects} of the
      * user.
@@ -65,7 +69,7 @@ public class User {
     /**
      * The boss of this user.
      */
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private SuperUser boss;
 
     /**
@@ -76,28 +80,29 @@ public class User {
     @JoinTable(name = "JOIN_TABLE_USER_ACCESS_INFO")
     private List<UserAccessInfo> accessInfo;
 
+
     /**
-     * Constructs a new instance.
+     * Constructs a new instance. Sets the ID and adds the user
+     * to the {@link SuperUser#staffMembers staff members} of the
+     * given {@link SuperUser}.
      *
-     * @param id
-     *          The id of the user.
+     * <p>
+     *     <b>Note:</b> {@link #setFirstName(String) first name}, {@link #setLastName(String) last name},
+     *     {@link #setEmail(String) email address} and {@link #setLob(String) LOB} have to be set
+     *     afterwards!
+     * </p>
      *
-     * @param firstName
-     *          The first name of the user.
+     * @param userId
+     *          The ID of the user.
      *
-     * @param lastName
-     *          The last name of the user.
-     *
-     * @param email
-     *          The <b>unique</b> email of the user.
+     * @param boss
+     *          The {@link SuperUser boss} of the user.
      */
-    public User(String id, String firstName, String lastName, String email) {
+    public User(String userId, SuperUser boss) {
         this();
 
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
+        this.id = userId;
+        boss.addStaffMember(this);
     }
 
     protected User() {
@@ -106,6 +111,22 @@ public class User {
         this.accessInfo = new LinkedList<>();
         this.applications = new LinkedHashSet<>();
         this.bookmarks = new LinkedHashSet<>();
+    }
+
+    /**
+     *
+     * @param firstName
+     *          The first name of the user.
+     *
+     * @param lastName
+     *          The last name of the user.
+     *
+     * @see #setFirstName(String)
+     * @see #setLastName(String)
+     */
+    public void setFullName(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     /**
@@ -250,6 +271,15 @@ public class User {
         }
 
         return null;
+    }
+
+    /**
+     *
+     * @param boss
+     *          The boss of the user.
+     */
+    protected void setBoss(SuperUser boss) {
+        this.boss = boss;
     }
 
 }

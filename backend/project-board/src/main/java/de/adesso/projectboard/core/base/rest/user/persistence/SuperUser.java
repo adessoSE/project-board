@@ -8,7 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- *
+ * User with 
  *
  * @see User
  */
@@ -24,24 +24,46 @@ public class SuperUser extends User {
     private Set<User> staffMembers;
 
     /**
+     * Constructs a new instance. The boss is set to {@code this}
+     * by using the {@link #addStaffMember(User)} method.
      *
-     * @param id
-     *          The id of this user.
+     * <p>
+     *     <b>Note:</b> {@link #setFirstName(String) first name}, {@link #setLastName(String) last name},
+     *     {@link #setEmail(String) email address} and {@link #setLob(String) LOB} have to be set
+     *     afterwards!
+     * </p>
      *
-     * @param firstName
-     *          The first name of this user.
-     *
-     * @param lastName
-     *          The last name of this user.
-     *
-     * @param email
-     *          The <b>unique</b> email address of this user.
-     *
+     * @param userId
+     *          The ID of the user.
      */
-    public SuperUser(String id, String firstName, String lastName, String email) {
-        super(id, firstName, lastName, email);
+    public SuperUser(String userId) {
+        this();
 
-        this.staffMembers = new LinkedHashSet<>();
+        this.setId(userId);
+        this.addStaffMember(this);
+    }
+
+    /**
+     * Constructs a new instance. Sets the ID and adds the user
+     * to the {@link #staffMembers staff members} of the user.
+     *
+     * <p>
+     *     <b>Note:</b> {@link #setFirstName(String) first name}, {@link #setLastName(String) last name},
+     *     {@link #setEmail(String) email address} and {@link #setLob(String) LOB} have to be set
+     *     afterwards!
+     * </p>
+     *
+     * @param userId
+     *          The ID of the user.
+     *
+     * @param boss
+     *          The {@link SuperUser boss} of the user.
+     */
+    public SuperUser(String userId, SuperUser boss) {
+        this();
+
+        this.setId(userId);
+        boss.addStaffMember(this);
     }
 
     protected SuperUser() {
@@ -51,43 +73,26 @@ public class SuperUser extends User {
     }
 
     /**
-     * Adds a {@link User} to the {@link #staffMembers} and sets
-     * the {@code user}'s boss to {@code this}.
+     * Removes the user from the previous boss' {@link #staffMembers staff members},
+     * adds to to the {@link #staffMembers staff members} of this user
+     * and sets the {@code user}'s boss to {@code this}.
      *
      * @param user
      *          The {@link User} to add to the staff members.
      *
      * @return
-     *          The result of {@link Set#add(Object)}
+     *          {@code true}, if the user was newly added to
+     *          the staff members, {@code false} otherwise.
      *
-     * @see #removeStaffMember(User)
      */
     public boolean addStaffMember(User user) {
         if(staffMembers.add(user)) {
+            SuperUser oldBoss = user.getBoss();
+            if(oldBoss != null) {
+                oldBoss.staffMembers.remove(user);
+            }
+
             user.setBoss(this);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
-     * Removes a {@link User} from the {@link #staffMembers} and sets
-     * the {@code user}'s boss to <i>null</i> when the user was
-     * found in the {@link #staffMembers staff members} set.
-     *
-     * @param user
-     *          The {@link User} to remove from the staffMembers.
-     *
-     * @return
-     *          The result of {@link Set#remove(Object)}
-     *
-     * @see #addStaffMember(User)
-     */
-    public boolean removeStaffMember(User user) {
-        if(staffMembers.remove(user)) {
-            user.setBoss(null);
 
             return true;
         }

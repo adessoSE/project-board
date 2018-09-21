@@ -1,8 +1,10 @@
 package de.adesso.projectboard.core.base.rest.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
-import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.UserAccessInfo;
 import de.adesso.projectboard.core.base.rest.user.useraccess.dto.UserAccessInfoResponseDTO;
+import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.UserAccessInfo;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,6 +13,7 @@ import java.io.Serializable;
  * The DTO of a {@link User} send back to the user.
  */
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserResponseDTO implements Serializable {
 
     private String id;
@@ -21,11 +24,15 @@ public class UserResponseDTO implements Serializable {
 
     private String email;
 
+    private String lob;
+
     private UserAccessInfoResponseDTO accessInfo;
 
-    private SetLink applications;
+    private CollectionLink applications;
 
-    private SetLink bookmarks;
+    private CollectionLink bookmarks;
+
+    private CollectionLink staff;
 
     /**
      *
@@ -38,13 +45,13 @@ public class UserResponseDTO implements Serializable {
     public static UserResponseDTO fromUser(User user) {
         // create new applications link to break circular reference to applications
         // user -> application -> user -> application -> ....
-        SetLink applicationsLink = new SetLink();
+        CollectionLink applicationsLink = new CollectionLink();
         applicationsLink.setCount(user.getApplications().size());
         applicationsLink.setPath(String.format("/users/%s/applications", user.getId()));
 
         // create new bookmarks link to break circular reference to bookmarks
         // user -> bookmark -> user -> bookmark -> ....
-        SetLink bookmarksLink = new SetLink();
+        CollectionLink bookmarksLink = new CollectionLink();
         bookmarksLink.setCount(user.getBookmarks().size());
         bookmarksLink.setPath(String.format("/users/%s/bookmarks", user.getId()));
 
@@ -64,15 +71,25 @@ public class UserResponseDTO implements Serializable {
         userDTO.setFirstName(user.getFirstName());
         userDTO.setLastName(user.getLastName());
         userDTO.setEmail(user.getEmail());
+        userDTO.setLob(user.getLob());
         userDTO.setApplications(applicationsLink);
         userDTO.setBookmarks(bookmarksLink);
         userDTO.setAccessInfo(infoDTO);
+
+        // create new staff link when it is necessary
+        if(user instanceof SuperUser) {
+            CollectionLink staffLink = new CollectionLink();
+            staffLink.setCount(((SuperUser) user).getStaffMembers().size());
+            staffLink.setPath(String.format("/users/%s/staff", user.getId()));
+
+            userDTO.setStaff(staffLink);
+        }
 
         return userDTO;
     }
 
     @Data
-    public static class SetLink implements Serializable {
+    public static class CollectionLink implements Serializable {
 
         private long count;
 

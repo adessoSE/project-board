@@ -66,7 +66,7 @@ public class ProjectApplication {
     }
 
     @PrePersist
-    private void setApplicationDate() {
+    private void setApplicationDateToNow() {
         this.applicationDate = LocalDateTime.now();
     }
 

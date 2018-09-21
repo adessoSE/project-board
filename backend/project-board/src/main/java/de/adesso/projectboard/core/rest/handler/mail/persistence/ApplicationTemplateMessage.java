@@ -1,8 +1,6 @@
 package de.adesso.projectboard.core.rest.handler.mail.persistence;
 
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
-import de.adesso.projectboard.core.base.rest.user.persistence.User;
-import de.adesso.projectboard.core.project.persistence.JiraProject;
 import de.adesso.projectboard.core.rest.handler.application.ProjectBoardApplicationHandler;
 import org.springframework.mail.SimpleMailMessage;
 

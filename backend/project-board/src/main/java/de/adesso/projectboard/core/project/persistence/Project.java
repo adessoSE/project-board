@@ -7,6 +7,7 @@ import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject
 import de.adesso.projectboard.core.project.deserializer.date.CreatedUpdatedDateDeserializer;
 import de.adesso.projectboard.core.project.deserializer.field.ObjectNameDeserializer;
 import de.adesso.projectboard.core.project.deserializer.field.ObjectValueDeserializer;
+import de.adesso.projectboard.core.reader.JiraProjectReader;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,16 +16,16 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * A {@link AbstractProject} that is used by the {@link de.adesso.projectboard.core.reader.JiraProjectReader}.
+ * A {@link AbstractProject} to represent JIRA projects.
  *
- * @see de.adesso.projectboard.core.reader.JiraProjectReader
+ * @see JiraProjectReader
  */
 @Entity
-@Table(name = "JIRA_PROJECT")
+@Table
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class JiraProject extends AbstractProject {
+public class Project extends AbstractProject {
 
     @JsonDeserialize(using = ObjectNameDeserializer.class)
     private String status;

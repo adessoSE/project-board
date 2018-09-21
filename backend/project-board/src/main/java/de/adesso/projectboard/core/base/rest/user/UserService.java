@@ -42,20 +42,6 @@ public class UserService {
         this.projectRepo = projectRepo;
         this.applicationRepo = applicationRepo;
         this.authInfo = authInfo;
-
-
-
-        // mock users
-        User user = new User("daniel", "Daniel", "Meier", "daniel.meier@adesso.de");
-        User user1 = new User("alex", "Alexander", "Brockmann", "alexander.brockmann@adesso.de");
-        SuperUser superUser = new SuperUser("tom", "Tom", "Hombergs", "tom.hombergs@adesso.de");
-        superUser.addStaffMember(user);
-        superUser.addStaffMember(user1);
-
-        SuperUser superUser1 = new SuperUser("marcus", "Marcus", "Keinenplan", "marcus.keinenplan@adesso.de");
-
-        userRepo.save(superUser);
-        userRepo.save(superUser1);
     }
 
     /**

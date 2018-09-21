@@ -1,6 +1,6 @@
-package de.adesso.projectboard.core.project.persistence;
+package de.adesso.projectboard.core.base.rest.project.persistence;
 
-import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
+import de.adesso.projectboard.core.project.persistence.Project;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +17,14 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-public class JiraProjectPersistenceTest {
+public class ProjectPersistenceTest {
 
     @Autowired
     private ProjectRepository projectRepository;
 
     @Test
     public void testSave_OK() {
-        JiraProject firstProject = new JiraProject();
+        Project firstProject = new Project();
 
         firstProject.setId(1L);
         firstProject.setKey("Testkey");
@@ -49,14 +49,14 @@ public class JiraProjectPersistenceTest {
 
         projectRepository.save(firstProject);
 
-        List<JiraProject> projects = StreamSupport.stream(projectRepository.findAll().spliterator(), false)
-                .map(project -> (JiraProject) project)
+        List<Project> projects = StreamSupport.stream(projectRepository.findAll().spliterator(), false)
+                .map(project -> (Project) project)
                 .collect(Collectors.toList());
 
         assertEquals(1, projects.size());
 
         // first project
-        JiraProject projectRetrieved = projects.get(0);
+        Project projectRetrieved = projects.get(0);
 
         assertEquals(1L, projectRetrieved.getId());
         assertEquals("Testkey", projectRetrieved.getKey());

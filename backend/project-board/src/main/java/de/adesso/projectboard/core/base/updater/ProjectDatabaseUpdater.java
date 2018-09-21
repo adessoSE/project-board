@@ -52,7 +52,7 @@ public class ProjectDatabaseUpdater {
      *
      * @see #shouldUpdate(ProjectDatabaseUpdaterInfo)
      */
-    @Scheduled(fixedDelay = 10000L)
+    @Scheduled(fixedDelay = 30000L)
     public void refreshProjectDatabase() {
         Optional<ProjectDatabaseUpdaterInfo> lastSuccessfulUpdate
                 = infoRepository.findFirstByStatusOrderByTimeDesc(ProjectDatabaseUpdaterInfo.Status.SUCCESS);

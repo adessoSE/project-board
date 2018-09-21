@@ -2,9 +2,11 @@ package de.adesso.projectboard.core.base.rest.project;
 
 import de.adesso.projectboard.core.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
+import de.adesso.projectboard.core.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
 import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.core.base.rest.scanner.RestProjectAttributeScanner;
+import de.adesso.projectboard.core.base.rest.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.*;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/projects")
@@ -25,15 +29,18 @@ public class ProjectController {
 
     private final EntityManager entityManager;
 
+    private final UserService userService;
+
     @Autowired
     public ProjectController(RestProjectAttributeScanner scanner,
                              ProjectRepository projectRepository,
                              ProjectBoardConfigurationProperties properties,
-                             EntityManager entityManager) {
+                             EntityManager entityManager, UserService userService) {
         this.scanner = scanner;
         this.projectRepository = projectRepository;
         this.properties = properties;
         this.entityManager = entityManager;
+        this.userService = userService;
     }
 
 
@@ -52,11 +59,40 @@ public class ProjectController {
     }
 
 
-    @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
-    @GetMapping(produces = "application/json"
+    @PreAuthorize("hasRole('admin')")
+    @GetMapping(path = "/all",
+            produces = "application/json"
     )
     public Iterable<? extends AbstractProject> getAll() {
         return projectRepository.findAll();
+    }
+
+    @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
+    @GetMapping(produces = "application/json")
+    public Iterable<? extends AbstractProject> getAllForUser() {
+        String userLob = userService.getCurrentUser().getLob();
+
+        return StreamSupport.stream(projectRepository.findAll().spliterator(), false)
+                .map(project -> (Project) project)
+                .filter(jiraProject -> {
+
+                    String projectLob = jiraProject.getLob();
+                    boolean hasLob = projectLob != null;
+                    boolean isEscalated = "eskaliert".equalsIgnoreCase(jiraProject.getStatus());
+                    boolean isOpen = "offen".equalsIgnoreCase(jiraProject.getStatus());
+
+                    // exclude projects with a different status than "Offen" or "eskaliert"
+                    if(isEscalated || (!hasLob && isOpen)) {
+                        return true;
+                    }
+
+                    if(hasLob && isOpen) {
+                        return userLob.equalsIgnoreCase(projectLob);
+                    }
+
+                    return false;
+                })
+                .collect(Collectors.toList());
     }
 
 
