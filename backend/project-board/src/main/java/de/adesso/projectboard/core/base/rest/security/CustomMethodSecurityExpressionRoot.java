@@ -1,5 +1,6 @@
 package de.adesso.projectboard.core.base.rest.security;
 
+import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.user.UserAccessController;
 import de.adesso.projectboard.core.base.rest.user.UserService;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
@@ -95,7 +96,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
     /**
      *
      * @param projectId
-     *          The id of the {@link de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject}
+     *          The id of the {@link Project}
      *          the user wants to access.
      *
      * @return

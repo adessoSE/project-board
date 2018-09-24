@@ -1,7 +1,7 @@
 package de.adesso.projectboard.core.base.updater;
 
 import de.adesso.projectboard.core.base.configuration.ProjectBoardConfigurationProperties;
-import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
+import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
 import de.adesso.projectboard.core.base.reader.ProjectReader;
 import de.adesso.projectboard.core.base.updater.persistence.ProjectDatabaseUpdaterInfo;
@@ -59,7 +59,7 @@ public class ProjectDatabaseUpdater {
 
 
         try {
-            List<? extends AbstractProject> projects;
+            List<? extends Project> projects;
 
             if(lastSuccessfulUpdate.isPresent()) {
                 if(!shouldUpdate(lastSuccessfulUpdate.get())) {

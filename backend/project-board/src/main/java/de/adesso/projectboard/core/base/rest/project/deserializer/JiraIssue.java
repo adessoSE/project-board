@@ -1,8 +1,8 @@
-package de.adesso.projectboard.core.project;
+package de.adesso.projectboard.core.base.rest.project.deserializer;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import de.adesso.projectboard.core.project.persistence.Project;
+import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import lombok.Getter;
 import lombok.Setter;
 

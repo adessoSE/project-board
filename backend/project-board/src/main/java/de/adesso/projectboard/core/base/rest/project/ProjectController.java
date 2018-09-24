@@ -1,27 +1,26 @@
 package de.adesso.projectboard.core.base.rest.project;
 
 import de.adesso.projectboard.core.base.configuration.ProjectBoardConfigurationProperties;
-import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
-import de.adesso.projectboard.core.project.persistence.Project;
-import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
 import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException;
-import de.adesso.projectboard.core.base.rest.scanner.RestProjectAttributeScanner;
+import de.adesso.projectboard.core.base.rest.project.persistence.Project;
+import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
 import de.adesso.projectboard.core.base.rest.user.UserService;
+import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.*;
-import java.util.*;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/projects")
 public class ProjectController {
-
-    private final RestProjectAttributeScanner scanner;
 
     private final ProjectRepository projectRepository;
 
@@ -32,11 +31,9 @@ public class ProjectController {
     private final UserService userService;
 
     @Autowired
-    public ProjectController(RestProjectAttributeScanner scanner,
-                             ProjectRepository projectRepository,
+    public ProjectController(ProjectRepository projectRepository,
                              ProjectBoardConfigurationProperties properties,
                              EntityManager entityManager, UserService userService) {
-        this.scanner = scanner;
         this.projectRepository = projectRepository;
         this.properties = properties;
         this.entityManager = entityManager;
@@ -48,8 +45,8 @@ public class ProjectController {
     @GetMapping(value = "/{projectId}",
             produces = "application/json"
     )
-    public AbstractProject getById(@PathVariable long projectId) {
-        Optional<AbstractProject> projectOptional = projectRepository.findById(projectId);
+    public Project getById(@PathVariable long projectId) {
+        Optional<Project> projectOptional = projectRepository.findById(projectId);
 
         if(projectOptional.isPresent()) {
             return projectOptional.get();
@@ -58,80 +55,45 @@ public class ProjectController {
         }
     }
 
-
     @PreAuthorize("hasRole('admin')")
     @GetMapping(path = "/all",
             produces = "application/json"
     )
-    public Iterable<? extends AbstractProject> getAll() {
+    public Iterable<? extends Project> getAll() {
         return projectRepository.findAll();
     }
 
     @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
     @GetMapping(produces = "application/json")
-    public Iterable<? extends AbstractProject> getAllForUser() {
-        String userLob = userService.getCurrentUser().getLob();
+    public Iterable<? extends Project> getAllForUser() {
+        final String userLob = userService.getCurrentUser().getLob();
+        final boolean isSuperUser = userService.getCurrentUser() instanceof SuperUser;
 
         return StreamSupport.stream(projectRepository.findAll().spliterator(), false)
-                .map(project -> (Project) project)
-                .filter(jiraProject -> {
+                .filter(project -> {
 
-                    String projectLob = jiraProject.getLob();
-                    boolean hasLob = projectLob != null;
-                    boolean isEscalated = "eskaliert".equalsIgnoreCase(jiraProject.getStatus());
-                    boolean isOpen = "offen".equalsIgnoreCase(jiraProject.getStatus());
+                    String projectLob = project.getLob();
+                    final boolean projectHasLob = projectLob != null;
+                    boolean projectIsEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
+                    boolean projectIsOpen = "offen".equalsIgnoreCase(project.getStatus());
 
-                    // exclude projects with a different status than "Offen" or "eskaliert"
-                    if(isEscalated || (!hasLob && isOpen)) {
+                    // superusers have access to all open and escalated projects
+                    if(isSuperUser && (projectIsOpen || projectIsEscalated)) {
                         return true;
                     }
 
-                    if(hasLob && isOpen) {
+                    // exclude projects with a different status than "Offen" or "eskaliert"
+                    if(projectIsEscalated || (!projectHasLob && projectIsOpen)) {
+                        return true;
+                    }
+
+                    if(projectHasLob && projectIsOpen) {
                         return userLob.equalsIgnoreCase(projectLob);
                     }
 
                     return false;
                 })
                 .collect(Collectors.toList());
-    }
-
-
-    @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
-    @GetMapping(value = "/search",
-            produces = "application/json"
-    )
-    @SuppressWarnings("unchecked")
-    public Iterable<? extends AbstractProject> search(@RequestParam Map<String,String> requestParams) {
-        // map the query params to the corresponding field name
-        Map<String, String> fieldParamValueMap = new LinkedHashMap<>();
-
-        for(Map.Entry<String, String> entry : requestParams.entrySet()) {
-            if(scanner.canQuery(entry.getKey())) {
-                fieldParamValueMap.put(scanner.getFieldNameByQueryName(entry.getKey()), entry.getValue());
-            }
-        }
-
-        // TODO: SQL injection possible?
-
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery query = builder.createQuery(properties.getProjectClass());
-        Root root = query.from(properties.getProjectClass());
-
-        List<Predicate> predicates = new ArrayList<>();
-
-        // create a predicate for each query param
-        for(Map.Entry<String, String> queryEntry : fieldParamValueMap.entrySet()) {
-            Expression<String> actual = builder.lower(root.get(queryEntry.getKey()));
-            String pattern = '%' + queryEntry.getValue().toLowerCase() + '%';
-
-            predicates.add(builder.like(actual, pattern));
-        }
-
-        // create a disjunction of all predicates
-        Predicate[] predicatesArr = new Predicate[predicates.size()];
-        query.where(builder.or(predicates.toArray(predicatesArr)));
-
-        return entityManager.createQuery(query.select(root)).getResultList();
     }
 
 }

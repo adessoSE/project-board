@@ -1,7 +1,7 @@
-package de.adesso.projectboard.core.project.deserializer.date;
+package de.adesso.projectboard.core.base.rest.project.deserializer.date;
 
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import de.adesso.projectboard.core.project.persistence.Project;
+import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 
 import java.time.format.DateTimeFormatter;
 

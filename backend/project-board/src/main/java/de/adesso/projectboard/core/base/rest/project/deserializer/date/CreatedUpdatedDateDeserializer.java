@@ -1,4 +1,4 @@
-package de.adesso.projectboard.core.project.deserializer.date;
+package de.adesso.projectboard.core.base.rest.project.deserializer.date;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

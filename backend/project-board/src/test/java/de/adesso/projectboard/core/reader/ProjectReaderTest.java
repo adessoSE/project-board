@@ -1,7 +1,6 @@
 package de.adesso.projectboard.core.reader;
 
-import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
-import de.adesso.projectboard.core.project.persistence.Project;
+import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,7 +52,7 @@ public class ProjectReaderTest {
         server.expect(requestTo("/test"))
                 .andRespond(withSuccess(getJiraJsonResponse(), MediaType.APPLICATION_JSON));
 
-        List<? extends AbstractProject> projectList = reader.getInitialProjects();
+        List<? extends Project> projectList = reader.getInitialProjects();
 
         assertEquals(2, projectList.size());
 

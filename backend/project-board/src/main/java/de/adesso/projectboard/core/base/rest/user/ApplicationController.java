@@ -2,7 +2,7 @@ package de.adesso.projectboard.core.base.rest.user;
 
 import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.core.base.rest.exceptions.UserNotFoundException;
-import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
+import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
 import de.adesso.projectboard.core.base.rest.user.application.ProjectApplicationHandler;
 import de.adesso.projectboard.core.base.rest.user.application.dto.ProjectApplicationRequestDTO;
@@ -50,7 +50,7 @@ public class ApplicationController {
      *          The {@link ProjectApplicationResponseDTO} of the created {@link ProjectApplication}.
      *
      * @throws ProjectNotFoundException
-     *          When the {@link AbstractProject} with the {@link ProjectApplicationRequestDTO#getProjectId() given id}
+     *          When the {@link Project} with the {@link ProjectApplicationRequestDTO#getProjectId() given id}
      *          is not found.
      */
     @PreAuthorize("(hasPermissionToAccessUser(#userId) && hasPermissionToApply()) || hasRole('admin')")
@@ -62,7 +62,7 @@ public class ApplicationController {
                                                                   @PathVariable("userId") String userId) throws ProjectNotFoundException, UserNotFoundException {
 
         // get the project by the given id
-        Optional<AbstractProject> projectOptional = projectRepo.findById(projectApplicationClientDTO.getProjectId());
+        Optional<Project> projectOptional = projectRepo.findById(projectApplicationClientDTO.getProjectId());
         if(!projectOptional.isPresent()) {
             throw new ProjectNotFoundException();
         }
