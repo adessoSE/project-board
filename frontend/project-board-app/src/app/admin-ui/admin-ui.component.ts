@@ -34,7 +34,7 @@ export class AdminUiComponent implements OnInit, AfterViewChecked {
           e.duration = 0;
         }
         return e;
-      });
+      }).sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
       this.route.params.subscribe(params => {
         if (params.id) {
           this.setSelectedEmployee(params.id);
