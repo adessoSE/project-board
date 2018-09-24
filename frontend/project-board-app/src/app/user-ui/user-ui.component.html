@@ -2,8 +2,13 @@
 <div class="row mt-4">
   <div class="col-md-6">
     <h4>Projekte</h4>
+    <label for="filter" class="sr-only">Filter</label>
+    <input #filter ngModel (ngModelChange)="filterProjects($event)" [ngClass]="{'search form-control': true, 'mb-1': filter.value != '', 'mb-3': filter.value == ''}" type="text" name="filter" id="filter" placeholder="Projekte filtern...">
+    <div *ngIf="filter.value != ''" class="mb-1" style="text-align: center">
+      <small>{{filteredProjects.length}} Treffer</small>
+    </div>
     <div class="list-group">
-      <ng-container *ngFor="let p of projects" >
+      <ng-container *ngFor="let p of filteredProjects">
         <button #btn id="{{p.key}}" (click)="projectClicked(p)" type="button" [ngClass]="{'list-group-item list-group-item-action': true, 'active': p.key == selectedProject?.key}">
           <span>
             <fa-icon title="{{appTooltip}}" class="mr-2" *ngIf="!isProjectApplicable(p.key)" [icon]="faEnvelope"></fa-icon>
@@ -16,6 +21,6 @@
     </div>
   </div>
   <div *ngIf="!mobile" class="col-md-6">
-        <app-project-details [bookmark]="isProjectBookmarked(selectedProject?.key)" [applicable]="isProjectApplicable(selectedProject?.key)" (bookmarkChanged)="handleBookmark($event)" [selectedProject]="selectedProject"></app-project-details>
+    <app-project-details [bookmark]="isProjectBookmarked(selectedProject?.key)" [applicable]="isProjectApplicable(selectedProject?.key)" (bookmarkChanged)="handleBookmark($event)" [selectedProject]="selectedProject"></app-project-details>
   </div>
 </div>

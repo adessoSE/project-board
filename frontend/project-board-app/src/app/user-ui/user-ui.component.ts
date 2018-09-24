@@ -18,6 +18,7 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
   faBookmark = faBookmark;
 
   projects: Project[] = [];
+  filteredProjects: Project[] = [];
   appliedProjects: Project[] = [];
   bookmarks: Project[] = [];
   selectedProject: Project;
@@ -38,6 +39,7 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
 
     this.route.data.subscribe(data => {
       this.projects = data.projects;
+      this.filteredProjects = this.projects;
 
       // extract projects from applications
       this.appliedProjects = data.applications.map(app => app.project);
@@ -49,6 +51,54 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
         }
       });
     });
+  }
+
+  filterProjects(filterInput) {
+    const filter = filterInput.toLowerCase().split(' ').filter(e => e.length > 2);
+    if (filter.length > 0) {
+      this.location.replaceState(`/projects`);
+      this.selectedProject = null;
+      const filtered: { project: Project, hitCount: number }[] = [];
+      this.projects.forEach(p => {
+        for (const f of filter) {
+          if (p.title && p.title.toLowerCase().includes(f)) {
+            let o;
+            if (o = filtered.find(e => e.project.key === p.key)) {
+              o.hitCount++;
+            } else {
+              filtered.push({'project': p, 'hitCount': 1});
+            }
+          }
+          if (p.job && p.job.toLowerCase().includes(f)) {
+            let o;
+            if (o = filtered.find(e => e.project.key === p.key)) {
+              o.hitCount++;
+            } else {
+              filtered.push({'project': p, 'hitCount': 1});
+            }
+          }
+          if (p.description && p.description.toLowerCase().includes(f)) {
+            let o;
+            if (o = filtered.find(e => e.project.key === p.key)) {
+              o.hitCount++;
+            } else {
+              filtered.push({'project': p, 'hitCount': 1});
+            }
+          }
+          if (p.skills && p.skills.toLowerCase().includes(f)) {
+            let o;
+            if (o = filtered.find(e => e.project.key === p.key)) {
+              o.hitCount++;
+            } else {
+              filtered.push({'project': p, 'hitCount': 1});
+            }
+          }
+        }
+      });
+      this.filteredProjects = filtered.sort((a, b) => a.hitCount >= b.hitCount ? -1 : 1).map(e => e.project);
+    } else {
+      this.filteredProjects = this.projects;
+    }
   }
 
   private setSelectedProject(projectId: string) {
