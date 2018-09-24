@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
+import { faChevronUp } from '@fortawesome/free-solid-svg-icons/faChevronUp';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { environment } from '../environments/environment';
 import { AlertService } from './_services/alert.service';
@@ -10,6 +11,8 @@ import { AuthenticationService } from './_services/authentication.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
+  faChevronUp = faChevronUp;
+
   constructor(private oAuthService: OAuthService,
               private authenticationService: AuthenticationService,
               private alertService: AlertService) {
@@ -64,5 +67,21 @@ export class AppComponent {
 
   get isAdmin() {
     return this.authenticationService.isAdmin;
+  }
+
+  @HostListener('window:scroll') onScroll() {
+    if (/Mobi/.test(navigator.userAgent)) {
+      // mobile!
+      if (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400) {
+        document.getElementById('top-badge').style.setProperty('display', 'inline');
+      } else {
+        document.getElementById('top-badge').style.setProperty('display', 'none');
+      }
+    }
+  }
+
+  scrollTop() {
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
   }
 }
