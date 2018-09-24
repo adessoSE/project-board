@@ -28,6 +28,18 @@ public class UserController {
     @Autowired
     public UserController(UserService userService) {
         this.userService = userService;
+
+        SuperUser tom = new SuperUser("tom");
+        tom.setFullName("Tom", "Hombergs");
+        tom.setEmail("daniel.meier@adesso.de");
+        tom.setLob("Cross Industries");
+
+        User daniel = new User("daniel", tom);
+        daniel.setFullName("Daniel", "Meier");
+        daniel.setEmail("dadadadadadwdawdwa");
+        daniel.setLob("Cross Industries");
+
+        userService.save(tom);
     }
 
     /**

@@ -3,7 +3,7 @@ package de.adesso.projectboard.core.base.rest.user;
 import de.adesso.projectboard.core.base.rest.exceptions.BookmarkNotFoundException;
 import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.core.base.rest.exceptions.UserNotFoundException;
-import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
+import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.user.bookmark.dto.BookmarkRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,10 +37,10 @@ public class BookmarkController {
      *          The {@link BookmarkRequestDTO} sent by the user.
      *
      * @return
-     *          The {@link AbstractProject} bookmarked.
+     *          The {@link Project} bookmarked.
      *
      * @throws ProjectNotFoundException
-     *          When no {@link AbstractProject project} is found for the
+     *          When no {@link Project project} is found for the
      *          given {@link BookmarkRequestDTO#getProjectId() id}.
      */
     @PreAuthorize("(hasPermissionToAccessUser(#userId) && hasAccessToProjects()) || hasRole('admin')")
@@ -48,7 +48,7 @@ public class BookmarkController {
             consumes = "application/json",
             produces = "application/json"
     )
-    public AbstractProject createBookmarkForUser(@Valid @RequestBody BookmarkRequestDTO bookmarkClientDTO, @PathVariable("userId") String userId)
+    public Project createBookmarkForUser(@Valid @RequestBody BookmarkRequestDTO bookmarkClientDTO, @PathVariable("userId") String userId)
             throws ProjectNotFoundException {
         return userService.addBookmarkToUser(userId, bookmarkClientDTO.getProjectId());
     }
@@ -57,7 +57,7 @@ public class BookmarkController {
     @GetMapping(path = "/{userId}/bookmarks",
             produces = "application/json"
     )
-    public Iterable<AbstractProject> getBookmarksOfUser(@PathVariable("userId") String userId) throws UserNotFoundException {
+    public Iterable<Project> getBookmarksOfUser(@PathVariable("userId") String userId) throws UserNotFoundException {
         return userService.getUserById(userId).getBookmarks();
     }
 

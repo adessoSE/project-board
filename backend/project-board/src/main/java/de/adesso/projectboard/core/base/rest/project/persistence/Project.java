@@ -1,13 +1,11 @@
-package de.adesso.projectboard.core.project.persistence;
+package de.adesso.projectboard.core.base.rest.project.persistence;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
-import de.adesso.projectboard.core.project.deserializer.date.CreatedUpdatedDateDeserializer;
-import de.adesso.projectboard.core.project.deserializer.field.ObjectNameDeserializer;
-import de.adesso.projectboard.core.project.deserializer.field.ObjectValueDeserializer;
-import de.adesso.projectboard.core.reader.JiraProjectReader;
+import de.adesso.projectboard.core.base.rest.project.deserializer.date.CreatedUpdatedDateDeserializer;
+import de.adesso.projectboard.core.base.rest.project.deserializer.field.ObjectNameDeserializer;
+import de.adesso.projectboard.core.base.rest.project.deserializer.field.ObjectValueDeserializer;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,16 +14,19 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * A {@link AbstractProject} to represent JIRA projects.
+ * Entity to persist project data.
  *
- * @see JiraProjectReader
+ * @see ProjectRepository
  */
 @Entity
-@Table
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Project extends AbstractProject {
+public class Project {
+
+    @Id
+    private long id;
 
     @JsonDeserialize(using = ObjectNameDeserializer.class)
     private String status;
@@ -39,7 +40,7 @@ public class Project extends AbstractProject {
     private String title;
 
     @ElementCollection
-    List<String> labels;
+    private List<String> labels;
 
     @Lob
     @Column(length = 8192)

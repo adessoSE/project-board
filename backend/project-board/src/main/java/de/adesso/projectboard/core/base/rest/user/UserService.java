@@ -4,11 +4,10 @@ import de.adesso.projectboard.core.base.rest.user.application.persistence.Projec
 import de.adesso.projectboard.core.base.rest.exceptions.BookmarkNotFoundException;
 import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.core.base.rest.exceptions.UserNotFoundException;
-import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
+import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
 import de.adesso.projectboard.core.base.rest.security.AuthenticationInfo;
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplicationRepository;
-import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import de.adesso.projectboard.core.base.rest.user.persistence.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,11 +101,11 @@ public class UserService {
      *          The id of the {@link User} to check for the bookmark.
      *
      * @param projectId
-     *          The id of the {@link de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject}
+     *          The id of the {@link Project}
      *          the bookmark refers to.
      *
      * @return
-     *          {@code true}, when a {@link AbstractProject} with the the given
+     *          {@code true}, when a {@link Project} with the the given
      *          {@code projectId} exists and the user's {@link User#getBookmarks() bookmarks}
      *          contains the project.
      *          <br>
@@ -119,7 +118,7 @@ public class UserService {
         Optional<User> userOptional = userRepo.findById(userId);
 
         if(userOptional.isPresent()) {
-            Optional<AbstractProject> projectOptional = projectRepo.findById(projectId);
+            Optional<Project> projectOptional = projectRepo.findById(projectId);
 
             if(projectOptional.isPresent()) {
                 return userRepo.existsByIdAndBookmarksContaining(userId, projectOptional.get());
@@ -160,32 +159,32 @@ public class UserService {
      *          The id of the {@link User} to add the bookmark to.
      *
      * @param projectId
-     *          The id of the {@link AbstractProject} to add a bookmark for.
+     *          The id of the {@link Project} to add a bookmark for.
      *
      * @return
-     *          The {@link AbstractProject} added to the bookmarks.
+     *          The {@link Project} added to the bookmarks.
      *
      * @throws UserNotFoundException
      *          When no {@link User} is found for the given {@code userId}.
      *
      * @throws ProjectNotFoundException
-     *          When no {@link AbstractProject} is found for the given {@code projectId}.
+     *          When no {@link Project} is found for the given {@code projectId}.
      *
      * @see #getUserById(String)
      */
-    public AbstractProject addBookmarkToUser(String userId, long projectId) throws UserNotFoundException, ProjectNotFoundException {
+    public Project addBookmarkToUser(String userId, long projectId) throws UserNotFoundException, ProjectNotFoundException {
 
         // get the user with the given id
         User user = getUserById(userId);
 
         // get the project with the given id
-        Optional<AbstractProject> projectOptional = projectRepo.findById(projectId);
+        Optional<Project> projectOptional = projectRepo.findById(projectId);
         if(!projectOptional.isPresent()) {
             throw new ProjectNotFoundException();
         }
 
         // add the project and persist the entity
-        AbstractProject project = projectOptional.get();
+        Project project = projectOptional.get();
 
         user.addBookmark(project);
         userRepo.save(user);
@@ -238,23 +237,23 @@ public class UserService {
     }
 
     /**
-     * Removes a bookmarked {@link AbstractProject} from the users bookmarks
+     * Removes a bookmarked {@link Project} from the users bookmarks
      * and persists the updated entity.
      *
      * @param userId
      *          The id of the {@link User} to remove the bookmark from.
      *
      * @param projectId
-     *          The id of the bookmarked {@link AbstractProject}.
+     *          The id of the bookmarked {@link Project}.
      *
      * @throws UserNotFoundException
      *          When no {@link User} is found for the given {@code userId}.
      *
      * @throws ProjectNotFoundException
-     *          When no {@link AbstractProject} is found for the given {@code projectId}.
+     *          When no {@link Project} is found for the given {@code projectId}.
      *
      * @throws BookmarkNotFoundException
-     *          When the user has not bookmarked the {@link AbstractProject}.
+     *          When the user has not bookmarked the {@link Project}.
      *
      * @see #getUserById(String)
      */
@@ -264,7 +263,7 @@ public class UserService {
         User user = getUserById(userId);
 
         // get the project with the given id
-        Optional<AbstractProject> projectOptional = projectRepo.findById(projectId);
+        Optional<Project> projectOptional = projectRepo.findById(projectId);
         if(!projectOptional.isPresent()) {
             throw new ProjectNotFoundException();
         }

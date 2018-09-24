@@ -30,6 +30,8 @@ public class ProjectDatabaseUpdaterInfo {
     @Column(nullable = false)
     private Status status;
 
+    @Lob
+    @Column(length = 512)
     private String failureReason;
 
     protected ProjectDatabaseUpdaterInfo() {
@@ -45,6 +47,10 @@ public class ProjectDatabaseUpdaterInfo {
         this.time = time;
         this.status = status;
         this.failureReason = exception != null ? exception.getMessage() : null;
+
+        if(failureReason != null && failureReason.length() > 512) {
+            failureReason = failureReason.substring(0, 511);
+        }
     }
 
     public enum Status {

@@ -1,5 +1,6 @@
 package de.adesso.projectboard.core.base.rest.security;
 
+import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import org.springframework.security.core.Authentication;
 
@@ -40,7 +41,7 @@ public interface ExpressionEvaluator {
      *          The {@link User} object of the currently authenticated user.
      *
      * @param projectId
-     *          The id of the {@link de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject}
+     *          The id of the {@link Project}
      *          the user wants to access.
      *
      * @return

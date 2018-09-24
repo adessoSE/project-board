@@ -1,6 +1,6 @@
 package de.adesso.projectboard.core.base.rest.user.application.dto;
 
-import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
+import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.user.ApplicationController;
 import de.adesso.projectboard.core.base.rest.user.dto.UserResponseDTO;
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
@@ -21,7 +21,7 @@ public class ProjectApplicationResponseDTO implements Serializable {
 
     private UserResponseDTO user;
 
-    private AbstractProject project;
+    private Project project;
 
     private String comment;
 

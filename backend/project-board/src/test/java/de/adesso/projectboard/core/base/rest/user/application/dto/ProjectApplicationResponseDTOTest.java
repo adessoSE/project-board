@@ -1,9 +1,9 @@
 package de.adesso.projectboard.core.base.rest.user.application.dto;
 
+import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
 import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
-import de.adesso.projectboard.core.project.persistence.Project;
 import org.junit.Test;
 
 import java.time.LocalDateTime;

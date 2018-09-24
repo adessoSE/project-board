@@ -1,6 +1,6 @@
 package de.adesso.projectboard.core.base.rest.user.persistence;
 
-import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
+import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
 import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.UserAccessInfo;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import java.util.*;
  * Entity to persist information about users.
  *
  * @see SuperUser
- * @see AbstractProject
+ * @see Project
  * @see ProjectApplication
  */
 @Entity
@@ -53,11 +53,11 @@ public class User {
     private String lob;
 
     /**
-     * The bookmarked {@link AbstractProject projects} of the
+     * The bookmarked {@link Project projects} of the
      * user.
      */
     @OneToMany(cascade = CascadeType.ALL)
-    private Set<AbstractProject> bookmarks;
+    private Set<Project> bookmarks;
 
     /**
      * The {@link ProjectApplication applications} of the
@@ -145,14 +145,14 @@ public class User {
     /**
      *
      * @param project
-     *          The {@link AbstractProject} to add a bookmark for.
+     *          The {@link Project} to add a bookmark for.
      *
      * @return
      *          The result of {@link Set#add(Object)}.
      *
      * @see #addApplication(ProjectApplication)
      */
-    public boolean addBookmark(AbstractProject project) {
+    public boolean addBookmark(Project project) {
         return bookmarks.add(project);
     }
 
@@ -164,7 +164,7 @@ public class User {
      * @return
      *          The result of {@link Set#add(Object)}.
      *
-     * @see #addBookmark(AbstractProject)
+     * @see #addBookmark(Project)
      */
     public boolean addApplication(ProjectApplication application) {
         return applications.add(application);
@@ -173,12 +173,12 @@ public class User {
     /**
      *
      * @param project
-     *          The {@link AbstractProject} to remove the bookmark for.
+     *          The {@link Project} to remove the bookmark for.
      *
      * @return
      *          The result of {@link Set#remove(Object)}.
      */
-    public boolean removeBookmark(AbstractProject project) {
+    public boolean removeBookmark(Project project) {
         return this.bookmarks.remove(project);
     }
 

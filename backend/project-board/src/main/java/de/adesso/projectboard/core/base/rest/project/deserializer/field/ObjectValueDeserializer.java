@@ -1,6 +1,6 @@
-package de.adesso.projectboard.core.project.deserializer.field;
+package de.adesso.projectboard.core.base.rest.project.deserializer.field;
 
-import de.adesso.projectboard.core.project.persistence.Project;
+import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 
 /**
  * A {@link ObjectFieldDeserializer} that returns the string value of a field named

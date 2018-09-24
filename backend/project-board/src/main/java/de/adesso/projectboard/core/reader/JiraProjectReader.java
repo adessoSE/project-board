@@ -4,9 +4,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.adesso.projectboard.core.base.reader.ProjectReader;
-import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
-import de.adesso.projectboard.core.project.JiraIssue;
-import de.adesso.projectboard.core.project.persistence.Project;
+import de.adesso.projectboard.core.base.rest.project.persistence.Project;
+import de.adesso.projectboard.core.base.rest.project.deserializer.JiraIssue;
 import de.adesso.projectboard.core.reader.jql.JqlComparator;
 import de.adesso.projectboard.core.reader.jql.JqlQueryStringBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +63,7 @@ public class JiraProjectReader implements ProjectReader {
      *          When a error occurs.
      */
     @Override
-    public List<? extends AbstractProject> getAllProjectsSince(LocalDateTime dateTime) throws Exception {
+    public List<? extends Project> getAllProjectsSince(LocalDateTime dateTime) throws Exception {
         return getProjectsByQuery(getJqlUpdateQueryString(dateTime));
     }
 
@@ -77,7 +76,7 @@ public class JiraProjectReader implements ProjectReader {
      *          When a error occurs.
      */
     @Override
-    public List<? extends AbstractProject> getInitialProjects() throws Exception {
+    public List<? extends Project> getInitialProjects() throws Exception {
         return getProjectsByQuery(getJqlInitialQueryString());
     }
 

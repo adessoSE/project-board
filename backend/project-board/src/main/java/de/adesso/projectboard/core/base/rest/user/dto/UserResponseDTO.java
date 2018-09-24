@@ -49,8 +49,7 @@ public class UserResponseDTO implements Serializable {
         applicationsLink.setCount(user.getApplications().size());
         applicationsLink.setPath(String.format("/users/%s/applications", user.getId()));
 
-        // create new bookmarks link to break circular reference to bookmarks
-        // user -> bookmark -> user -> bookmark -> ....
+        // create new bookmarks link
         CollectionLink bookmarksLink = new CollectionLink();
         bookmarksLink.setCount(user.getBookmarks().size());
         bookmarksLink.setPath(String.format("/users/%s/bookmarks", user.getId()));

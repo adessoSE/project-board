@@ -1,6 +1,6 @@
 package de.adesso.projectboard.core.base.rest.user.application.persistence;
 
-import de.adesso.projectboard.core.base.rest.project.persistence.AbstractProject;
+import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,7 +25,7 @@ public class ProjectApplication {
      * The project the user applied for.
      */
     @ManyToOne(optional = false)
-    private AbstractProject project;
+    private Project project;
 
     /**
      * The user this application belongs to.
@@ -51,7 +51,7 @@ public class ProjectApplication {
      * current {@link LocalDateTime} when persisting the entity.
      *
      * @param project
-     *          The {@link AbstractProject} the user applied for.
+     *          The {@link Project} the user applied for.
      *
      * @param comment
      *          The comment of the application.
@@ -59,7 +59,7 @@ public class ProjectApplication {
      * @param user
      *          The {@link User} this project belongs to.
      */
-    public ProjectApplication(AbstractProject project, String comment, User user) {
+    public ProjectApplication(Project project, String comment, User user) {
         this.project = project;
         this.comment = comment;
         this.user = user;

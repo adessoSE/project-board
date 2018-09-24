@@ -1,11 +1,11 @@
-package de.adesso.projectboard.core.project.deserializer.field;
+package de.adesso.projectboard.core.base.rest.project.deserializer.field;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import de.adesso.projectboard.core.project.persistence.Project;
+import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 
 import java.io.IOException;
 
