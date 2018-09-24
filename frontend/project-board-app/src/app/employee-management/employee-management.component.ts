@@ -45,16 +45,12 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
 
   activate(duration) {
     const accessEnd = new Date();
-    // console.log('now: ', accessEnd);
     accessEnd.setDate(accessEnd.getDate() + Number(duration.value));
-    // console.log(`now plus ${duration.value} day: ${accessEnd}`);
     accessEnd.setHours(23, 59, 59, 999);
-    // console.log('set hours to 24: ', accessEnd);
     const dateString = formatDate(accessEnd, 'yyyy-MM-ddTHH:mm:ss.SSS', 'de');
     this.employeeService.setEmployeeAccessInfo(this.selectedEmployee.id, dateString).subscribe(user => {
       this.selectedEmployee.accessInfo = user.accessInfo;
       this.selectedEmployee.duration = duration.value;
-      this.selectedEmployee.enabled = true;
     });
   }
 
@@ -62,7 +58,6 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
     this.employeeService.deleteEmployeeAccessInfo(this.selectedEmployee.id).subscribe(user => {
       this.selectedEmployee.accessInfo = user.accessInfo;
       this.selectedEmployee.duration = 0;
-      this.selectedEmployee.enabled = false;
     });
   }
 
