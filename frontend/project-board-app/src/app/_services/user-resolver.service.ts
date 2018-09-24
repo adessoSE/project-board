@@ -4,13 +4,15 @@ import { Observable } from 'rxjs';
 import { AuthenticationService } from './authentication.service';
 import { Employee, EmployeeService } from './employee.service';
 
-@Injectable()
-export class EmployeeResolverService implements Resolve<Employee[]> {
+@Injectable({
+  providedIn: 'root'
+})
+export class UserResolverService implements Resolve<Employee> {
 
   constructor(private employeeService: EmployeeService,
               private authenticationService: AuthenticationService) { }
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Employee[]> {
-    return this.employeeService.getEmployeesForSuperUser(this.authenticationService.username);
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Employee> {
+    return this.employeeService.getEmployeeWithId(this.authenticationService.username);
   }
 }

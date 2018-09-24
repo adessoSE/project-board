@@ -9,6 +9,7 @@ import { BookmarksResolverService } from './_services/bookmarks-resolver.service
 import { EmployeeResolverService } from './_services/employee-resolver.service';
 import { ProjectResolverService } from './_services/project-resolver.service';
 import { ProjectsResolverService } from './_services/projects-resolver.service';
+import { UserResolverService } from './_services/user-resolver.service';
 import { AdminUiComponent } from './admin-ui/admin-ui.component';
 import { CreateProjectComponent } from './create-project/create-project.component';
 import { LoginComponent } from './login/login.component';
@@ -56,7 +57,7 @@ const routes: Routes = [
     component: UserUiComponent,
     resolve: {
       projects: ProjectsResolverService,
-      appliedProjects: ApplicationsResolverService,
+      applications: ApplicationsResolverService,
       bookmarks: BookmarksResolverService
     },
     canActivate: [AuthGuard, AccessGuard]
@@ -66,7 +67,7 @@ const routes: Routes = [
     component: UserUiComponent,
     resolve: {
       projects: ProjectsResolverService,
-      appliedProjects: ApplicationsResolverService,
+      applications: ApplicationsResolverService,
       bookmarks: BookmarksResolverService
     },
     canActivate: [AuthGuard, AccessGuard]
@@ -75,6 +76,7 @@ const routes: Routes = [
     path: 'overview',
     component: OverviewComponent,
     resolve: {
+      user: UserResolverService,
       bookmarks: BookmarksResolverService,
       applications: ApplicationsResolverService
     },

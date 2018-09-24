@@ -6,17 +6,17 @@
     <div class="inset">
       <div *ngIf="adminControls" class="row">
         <div class="col-4">Name:</div>
-        <div class="col right">{{selectedEmployee.fullName}}</div>
+        <div class="col right">{{selectedEmployee.firstName}} {{selectedEmployee.lastName}}</div>
         <br>
       </div>
       <div class="row">
         <div class="col-4">Status:</div>
-        <div class="col right">{{accessInfo?.hasAccess ? 'Freigeschaltet' : 'Nicht freigeschaltet'}}</div>
+        <div class="col right">{{selectedEmployee.accessInfo.hasAccess ? 'Freigeschaltet' : 'Nicht freigeschaltet'}}</div>
         <br>
       </div>
-      <div [ngClass]="{'row': true, 'disabled': !accessInfo?.hasAccess}">
+      <div [ngClass]="{'row': true, 'disabled': !selectedEmployee.accessInfo.hasAccess}">
         <div class="col-4">Freigeschaltet bis:</div>
-        <div class="col right">{{accessInfo?.hasAccess ? (accessInfo?.accessEnd | date : 'dd.MM.yyyy') : '-'}}</div>
+        <div class="col right">{{selectedEmployee.accessInfo.hasAccess ? (selectedEmployee.accessInfo.accessEnd | date : 'dd.MM.yyyy') : '-'}}</div>
       </div>
       <div *ngIf="adminControls" class="row">
         <div class="col-4">Email:</div>
@@ -26,7 +26,7 @@
 
     <!--  Admin Controls  -->
     <div *ngIf="adminControls" class="mt-2 pt-1 border-top">
-      <form *ngIf="!accessInfo?.hasAccess">
+      <form *ngIf="!selectedEmployee.accessInfo.hasAccess">
         <div class="form-group">
           <label class="select-label" for="durationSelect">Dauer der Freischaltung</label>
           <select #duration required class="select form-control" id="durationSelect">
@@ -36,7 +36,7 @@
         </div>
       </form>
       <div>
-        <button (click)="deactivate()" *ngIf="accessInfo?.hasAccess" class="btn btn-danger btn-deactivate">Zugang deaktivieren</button>
+        <button (click)="deactivate()" *ngIf="selectedEmployee.accessInfo.hasAccess" class="btn btn-danger btn-deactivate">Zugang deaktivieren</button>
       </div>
     </div>
   </div>

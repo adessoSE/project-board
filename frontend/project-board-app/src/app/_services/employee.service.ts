@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { Project } from './project.service';
 
@@ -9,37 +8,27 @@ export class EmployeeService {
 
   constructor(private http: HttpClient) { }
 
-  getEmployees() {
-    return this.http.get<Employee[]>('./assets/employees.json');
+  getEmployeesForSuperUser(superUserId) {
+    return this.http.get<Employee[]>(`${environment.resourceServer}/users/${superUserId}/staff`);
   }
-
-  // getEmployees() {
-  //   return this.http.get<Employee[]>(`${environment.resourceServer}/users`);
-  // }
 
   getEmployeeWithId(userId) {
     return this.http.get<Employee>(`${environment.resourceServer}/users/${userId}`);
-  }
-
-  getEmployeeAccessInfo(userId) {
-    return this.http.get<EmployeeAccessInfo>(`${environment.resourceServer}/users/${userId}/access`);
   }
 
   setEmployeeAccessInfo(userId, accessEnd) {
     const body = {
       'accessEnd': accessEnd
     };
-    return this.http.post<EmployeeAccessInfo>(`${environment.resourceServer}/users/${userId}/access`, body);
+    return this.http.post<Employee>(`${environment.resourceServer}/users/${userId}/access`, body);
+  }
+
+  deleteEmployeeAccessInfo(userId) {
+    return this.http.delete<Employee>(`${environment.resourceServer}/users/${userId}/access`);
   }
 
   getApplications(userId) {
     return this.http.get<Application[]>(`${environment.resourceServer}/users/${userId}/applications`);
-  }
-
-  getApplicationsMock(userId) {
-    return this.http.get<Application[]>('./assets/applications.json').pipe(
-      map(data => data.filter(a => a.user.id === userId))
-    );
   }
 
   revokeApplication(userId, appId) {
@@ -69,13 +58,9 @@ export class EmployeeService {
 
 export interface Employee {
   id: string;
-  enabled: boolean;
   duration: number;
-  name: {
-    first: string,
-    last: string
-  };
-  fullName: string;
+  firstName: string;
+  lastName: string;
   email: string;
   applications: {
     count: number;
@@ -85,10 +70,10 @@ export interface Employee {
     count: number;
     path: string;
   };
+  accessInfo: EmployeeAccessInfo;
 }
 
 export interface EmployeeAccessInfo {
-  user: Employee;
   hasAccess: boolean;
   accessStart: Date;
   accessEnd: Date;

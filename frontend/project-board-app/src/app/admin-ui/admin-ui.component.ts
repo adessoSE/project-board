@@ -27,7 +27,14 @@ export class AdminUiComponent implements OnInit, AfterViewChecked {
   ngOnInit() {
     this.mobile = window.screen.width <= 768;
     this.route.data.subscribe((data: { employees: Employee[] }) => {
-      this.employees = data.employees;
+      this.employees = data.employees.map(e => {
+        if (e.accessInfo.hasAccess) {
+          e.duration = this.daysUntil(e.accessInfo.accessEnd);
+        } else {
+          e.duration = 0;
+        }
+        return e;
+      });
       this.route.params.subscribe(params => {
         if (params.id) {
           this.setSelectedEmployee(params.id);
@@ -67,14 +74,25 @@ export class AdminUiComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  dayDifference(date1: Date, date2: Date) {
-    date1 = new Date(date1);
-    date2 = new Date(date2);
-    const time1 = date1.getTime();
-    const time2 = date2.getTime();
-    let days = time1 >= time2 ? time1 - time2 : time2 - time1;
+  private daysUntil(date: Date) {
+    date = new Date(date);
+    const time1 = new Date().getTime();
+    const time2 = date.getTime();
+    if (time1 >= time2) {
+      return 0;
+    }
+    let days = time2 - time1;
     days /= 86400000;
     days -= days % 1;
     return days;
+  }
+
+  badgeTooltip(employee) {
+    const days = this.daysUntil(employee.accessInfo.accessEnd);
+    const fullName = `${employee.firstName} ${employee.lastName}`;
+    if (employee.accessInfo.hasAccess) {
+      return `${fullName} hat noch ${days} ${days > 1 ? 'Tage' : 'Tag'} Zugang zum Project Board.`;
+    }
+    return `${employee.firstName} ${employee.lastName} hat keinen Zugang zum Project Board.`;
   }
 }

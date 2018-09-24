@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AuthenticationService } from '../_services/authentication.service';
-import { Application, EmployeeService } from '../_services/employee.service';
+import { Application, Employee } from '../_services/employee.service';
 import { Project } from '../_services/project.service';
 
 @Component({
@@ -10,31 +9,15 @@ import { Project } from '../_services/project.service';
   styleUrls: ['./overview.component.scss']
 })
 export class OverviewComponent implements OnInit {
-  user = {
-    'id': 'jacobs',
-    'enabled': true,
-    'duration': 11,
-    'name': {
-      'first': 'Lottie',
-      'last': 'Jacobs'
-    },
-    'fullName': 'Lottie Jacobs',
-    'email': 'lottie.jacobs@adesso.de'
-  };
+  user: Employee;
   bookmarks: Project[];
   applications: Application[];
 
-  constructor(private route: ActivatedRoute,
-              private employeeService: EmployeeService,
-              private authService: AuthenticationService) { }
+  constructor(private route: ActivatedRoute) { }
 
   ngOnInit() {
-    // TODO: receive all needed data about the user from the backend
-    this.employeeService.getEmployeeWithId(this.authService.username).subscribe(user => {
-      this.user = user;
-      this.user.fullName = this.authService.name;
-    });
     this.route.data.subscribe(data => {
+      this.user = data.user;
       this.bookmarks = data.bookmarks;
       this.applications = data.applications;
     });

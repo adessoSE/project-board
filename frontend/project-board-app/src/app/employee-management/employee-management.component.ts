@@ -1,7 +1,7 @@
 import { formatDate } from '@angular/common';
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { AuthenticationService } from '../_services/authentication.service';
-import { Application, Employee, EmployeeAccessInfo, EmployeeService } from '../_services/employee.service';
+import { Application, Employee, EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
 
 @Component({
@@ -17,7 +17,6 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
   @Input() applications: Application[] = [];
 
   numberOfDaysSelect = [];
-  accessInfo: EmployeeAccessInfo;
 
   constructor(private projectService: ProjectService,
               private employeeService: EmployeeService,
@@ -29,7 +28,6 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
         this.getBookmarks();
       }
       this.getApplications();
-      this.getAccessInfo();
     }
   }
 
@@ -42,7 +40,6 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
     }
     if (this.selectedEmployee) {
       this.getApplications();
-      this.getAccessInfo();
     }
   }
 
@@ -54,18 +51,16 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
     accessEnd.setHours(23, 59, 59, 999);
     // console.log('set hours to 24: ', accessEnd);
     const dateString = formatDate(accessEnd, 'yyyy-MM-ddTHH:mm:ss.SSS', 'de');
-    this.employeeService.setEmployeeAccessInfo(this.selectedEmployee.id, dateString).subscribe(accInf => {
-      this.accessInfo = accInf;
+    this.employeeService.setEmployeeAccessInfo(this.selectedEmployee.id, dateString).subscribe(user => {
+      this.selectedEmployee.accessInfo = user.accessInfo;
       this.selectedEmployee.duration = duration.value;
       this.selectedEmployee.enabled = true;
     });
   }
 
   deactivate() {
-    const accessEnd = new Date();
-    const dateString = formatDate(accessEnd, 'yyyy-MM-ddT00:00:00', 'de');
-    this.employeeService.setEmployeeAccessInfo(this.selectedEmployee.id, dateString).subscribe(accInf => {
-      this.accessInfo = accInf;
+    this.employeeService.deleteEmployeeAccessInfo(this.selectedEmployee.id).subscribe(user => {
+      this.selectedEmployee.accessInfo = user.accessInfo;
       this.selectedEmployee.duration = 0;
       this.selectedEmployee.enabled = false;
     });
@@ -85,9 +80,5 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
 
   revokeApplication(appId) {
     this.employeeService.revokeApplication(this.authService.username, appId).subscribe(() => this.getApplications());
-  }
-
-  getAccessInfo() {
-    this.employeeService.getEmployeeAccessInfo(this.selectedEmployee.id).subscribe(accInf => this.accessInfo = accInf);
   }
 }
