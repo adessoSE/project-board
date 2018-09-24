@@ -44,7 +44,7 @@ public class AllowAccessExpressionEvaluator implements ExpressionEvaluator {
      *          {@code true}
      */
     @Override
-    public boolean hasAccessToProject(Authentication authentication, User user, long projectId) {
+    public boolean hasAccessToProject(Authentication authentication, User user, String projectId) {
         return true;
     }
 
@@ -81,6 +81,41 @@ public class AllowAccessExpressionEvaluator implements ExpressionEvaluator {
      */
     @Override
     public boolean hasPermissionToAccessUser(Authentication authentication, User user, String userId) {
+        return true;
+    }
+
+    /**
+     *
+     * @param authentication
+     *          The {@link Authentication} object.
+     *
+     * @param user
+     *          The {@link User} object of the currently authenticated user.
+     *
+     * @return
+     *          {@code true}
+     */
+    @Override
+    public boolean hasPermissionToCreateProjects(Authentication authentication, User user) {
+        return true;
+    }
+
+    /**
+     *
+     * @param authentication
+     *          The {@link Authentication} object.
+     *
+     * @param user
+     *          The {@link User} object of the currently authenticated user.
+     *
+     * @param projectId
+     *          The id of the {@link Project} the user wants to update.
+     *
+     * @return
+     *          {@code true}
+     */
+    @Override
+    public boolean hasPermissionToUpdateProject(Authentication authentication, User user, String projectId) {
         return true;
     }
 

@@ -10,6 +10,6 @@ import javax.validation.constraints.NotNull;
 public class BookmarkRequestDTO {
 
     @NotNull
-    private Long projectId;
+    private String projectId;
 
 }

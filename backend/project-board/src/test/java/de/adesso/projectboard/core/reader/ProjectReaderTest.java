@@ -58,10 +58,9 @@ public class ProjectReaderTest {
 
         Project firstProject = (Project) projectList.get(0);
 
-        assertEquals(1L, firstProject.getId());
         assertEquals("Teststatus 1", firstProject.getStatus());
         assertEquals("Testissuetype 1", firstProject.getIssuetype());
-        assertEquals("Testkey 1", firstProject.getKey());
+        assertEquals("Testkey 1", firstProject.getId());
         assertEquals("Testsummary 1", firstProject.getTitle());
         assertEquals(2, firstProject.getLabels().size());
         assertEquals("Testlabel 1", firstProject.getLabels().get(0));
@@ -84,10 +83,9 @@ public class ProjectReaderTest {
 
         Project secondProject = (Project) projectList.get(1);
 
-        assertEquals(2L, secondProject.getId());
         assertEquals("Teststatus 2", secondProject.getStatus());
         assertEquals("Testissuetype 2", secondProject.getIssuetype());
-        assertEquals("Testkey 2", secondProject.getKey());
+        assertEquals("Testkey 2", secondProject.getId());
         assertEquals("Testsummary 2", secondProject.getTitle());
         assertEquals(0, secondProject.getLabels().size());
         assertEquals("Testjob 2", secondProject.getJob());

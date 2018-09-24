@@ -114,7 +114,7 @@ public class UserService {
      *          the project.
      *
      */
-    public boolean userHasBookmark(String userId, long projectId) {
+    public boolean userHasBookmark(String userId, String projectId) {
         Optional<User> userOptional = userRepo.findById(userId);
 
         if(userOptional.isPresent()) {
@@ -172,7 +172,7 @@ public class UserService {
      *
      * @see #getUserById(String)
      */
-    public Project addBookmarkToUser(String userId, long projectId) throws UserNotFoundException, ProjectNotFoundException {
+    public Project addBookmarkToUser(String userId, String projectId) throws UserNotFoundException, ProjectNotFoundException {
 
         // get the user with the given id
         User user = getUserById(userId);
@@ -257,7 +257,7 @@ public class UserService {
      *
      * @see #getUserById(String)
      */
-    public void removeBookmarkFromUser(String userId, long projectId) throws UserNotFoundException, ProjectNotFoundException, BookmarkNotFoundException {
+    public void removeBookmarkFromUser(String userId, String projectId) throws UserNotFoundException, ProjectNotFoundException, BookmarkNotFoundException {
 
         // get the user with the given id
         User user = getUserById(userId);

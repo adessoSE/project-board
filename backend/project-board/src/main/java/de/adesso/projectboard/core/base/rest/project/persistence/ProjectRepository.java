@@ -5,6 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * {@link CrudRepository} for persisting {@link Project}s.
  */
-public interface ProjectRepository extends CrudRepository<Project, Long> {
+public interface ProjectRepository extends CrudRepository<Project, String> {
     
 }

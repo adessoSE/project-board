@@ -132,7 +132,7 @@ public class JiraProjectReader implements ProjectReader {
         List<JiraIssue> jiraIssueList = Arrays.asList(mapper.readValue(issueNodeText, JiraIssue[].class));
 
         return jiraIssueList.stream()
-                .map(JiraIssue::getProjectWithIdAndKey)
+                .map(JiraIssue::getProjectWithId)
                 .map(this::cutStrings)
                 .collect(Collectors.toList());
     }
@@ -194,7 +194,6 @@ public class JiraProjectReader implements ProjectReader {
         // 256 character limit
         project.setStatus(cutAndAppendDotsIfRequired(project.getStatus(), 256));
         project.setTitle(cutAndAppendDotsIfRequired(project.getTitle(), 256));
-        project.setKey(cutAndAppendDotsIfRequired(project.getKey(), 256));
         project.setLob(cutAndAppendDotsIfRequired(project.getLob(), 256));
         project.setCustomer(cutAndAppendDotsIfRequired(project.getCustomer(), 256));
         project.setLocation(cutAndAppendDotsIfRequired(project.getLocation(), 256));

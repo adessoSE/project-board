@@ -68,7 +68,7 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      * @see #hasAccessToProjects(Authentication, User)
      */
     @Override
-    public boolean hasAccessToProject(Authentication authentication, User user, long projectId) {
+    public boolean hasAccessToProject(Authentication authentication, User user, String projectId) {
         return hasAccessToProjects(authentication, user);
     }
 
@@ -111,6 +111,43 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
     @Override
     public boolean hasPermissionToAccessUser(Authentication authentication, User user, String userId) {
         return user.getId().equals(userId) || hasElevatedAccessToUser(authentication, user, userId);
+    }
+
+    /**
+     *
+     * @param authentication
+     *          The {@link Authentication} object.
+     *
+     * @param user
+     *          The {@link User} object of the currently authenticated user.
+     *
+     * @return
+     *          {@code true}, if the given {@link User} is a {@link SuperUser},
+     *          {@code false} otherwise.
+     */
+    @Override
+    public boolean hasPermissionToCreateProjects(Authentication authentication, User user) {
+        return user instanceof SuperUser;
+    }
+
+    /**
+     *
+     * @param authentication
+     *          The {@link Authentication} object.
+     *
+     * @param user
+     *          The {@link User} object of the currently authenticated user.
+     *
+     * @param projectId
+     *          The id of the {@link Project} the user wants to update.
+     *
+     * @return
+     *          {@code true}, if the given {@link User} is a {@link SuperUser},
+     *          {@code false} otherwise.
+     */
+    @Override
+    public boolean hasPermissionToUpdateProject(Authentication authentication, User user, String projectId) {
+        return user instanceof SuperUser;
     }
 
     /**

@@ -2,6 +2,7 @@ package de.adesso.projectboard.core.base.rest.security;
 
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
+import org.keycloak.adapters.jaas.AbstractKeycloakLoginModule;
 import org.springframework.security.core.Authentication;
 
 /**
@@ -48,9 +49,9 @@ public interface ExpressionEvaluator {
      *          {@code true}, if the user is permitted to access the project,
      *          {@code false} otherwise.
      *
-     * @see CustomMethodSecurityExpressionRoot#hasAccessToProject(long)
+     * @see CustomMethodSecurityExpressionRoot#hasAccessToProject(String)
      */
-    boolean hasAccessToProject(Authentication authentication, User user, long projectId);
+    boolean hasAccessToProject(Authentication authentication, User user, String projectId);
 
     /**
      *
@@ -87,6 +88,39 @@ public interface ExpressionEvaluator {
      * @see CustomMethodSecurityExpressionRoot#hasPermissionToAccessUser(String)
      */
     boolean hasPermissionToAccessUser(Authentication authentication, User user, String userId);
+
+    /**
+     *
+     * @param authentication
+     *          The {@link Authentication} object.
+     *
+     * @param user
+     *          The {@link User} object of the currently authenticated user.
+     *
+     * @return
+     *          {@code true}, if the user is permitted to create projects,
+     *          {@code false} otherwise.
+     *
+     * @see CustomMethodSecurityExpressionRoot#hasPermissionToAccessUser(String)
+     */
+    boolean hasPermissionToCreateProjects(Authentication authentication, User user);
+
+    /**
+     *
+     * @param authentication
+     *          The {@link Authentication} object.
+     *
+     * @param user
+     *          The {@link User} object of the currently authenticated user.
+     *
+     * @param projectId
+     *          The id of the {@link Project} the user wants to update.
+     *
+     * @return
+     *          {@code true}, if the user is permitted to update the project,
+     *          {@code false} otherwise.
+     */
+    boolean hasPermissionToUpdateProject(Authentication authentication, User user, String projectId);
 
     /**
      *

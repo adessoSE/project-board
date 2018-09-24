@@ -1,9 +1,11 @@
 package de.adesso.projectboard.core.base.rest.project.persistence;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.security.core.parameters.P;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
@@ -21,12 +23,16 @@ public class ProjectPersistenceTest {
     @Autowired
     private ProjectRepository projectRepository;
 
+    @Before
+    public void setUp() {
+        projectRepository.deleteAll();
+    }
+
     @Test
     public void testSave_OK() {
         Project firstProject = new Project();
 
-        firstProject.setId(1L);
-        firstProject.setKey("Testkey");
+        firstProject.setId("STF-1");
         firstProject.setStatus("Teststatus");
         firstProject.setIssuetype("Testissuetype");
         firstProject.setTitle("Testtitle");
@@ -57,8 +63,7 @@ public class ProjectPersistenceTest {
         // first project
         Project projectRetrieved = projects.get(0);
 
-        assertEquals(1L, projectRetrieved.getId());
-        assertEquals("Testkey", projectRetrieved.getKey());
+        assertEquals("STF-1", projectRetrieved.getId());
         assertEquals("Teststatus", projectRetrieved.getStatus());
         assertEquals("Testissuetype", projectRetrieved.getIssuetype());
         assertEquals("Testtitle", projectRetrieved.getTitle());
@@ -83,6 +88,52 @@ public class ProjectPersistenceTest {
         assertEquals("Label 1", firstProjectLabels.get(0));
         assertEquals("Label 2", firstProjectLabels.get(1));
         assertEquals("Label 3", firstProjectLabels.get(2));
+    }
+
+    @Test
+    public void testIdGenerator_AlreadySet() {
+        Project project = new Project();
+        project.setId("STF-1234");
+
+        Project persistedProject = projectRepository.save(project);
+
+        assertEquals("STF-1234", persistedProject.getId());
+    }
+
+    @Test
+    public void testIdGenerator_NotSet() {
+        Project project = new Project();
+
+        Project persistedProject = projectRepository.save(project);
+
+        assertEquals("STD-1", persistedProject.getId());
+    }
+
+    @Test
+    public void testIdGenerator_Increment() {
+        Project firstProject = new Project();
+        Project secondProject = new Project();
+
+        Project firstPersisted = projectRepository.save(firstProject);
+        Project secondPersisted = projectRepository.save(secondProject);
+
+        assertEquals("STD-1", firstPersisted.getId());
+        assertEquals("STD-2", secondPersisted.getId());
+    }
+
+    @Test
+    public void testIdGenerator_Remove() {
+        Project firstProject = new Project();
+        Project firstPersisted = projectRepository.save(firstProject);
+
+        assertEquals("STD-1", firstPersisted.getId());
+
+        projectRepository.delete(firstPersisted);
+
+        Project secondProject = new Project();
+        Project secondPersisted = projectRepository.save(secondProject);
+
+        assertEquals("STD-1", secondPersisted.getId());
     }
 
 }

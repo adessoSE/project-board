@@ -26,14 +26,14 @@ public class BookmarkController {
     @DeleteMapping(value = "/{userId}/bookmarks/{projectId}",
             produces = "application/json"
     )
-    public void deleteBookmarkOfUser(@PathVariable("userId") String userId, @PathVariable("projectId") long projectId)
+    public void deleteBookmarkOfUser(@PathVariable("userId") String userId, @PathVariable("projectId") String projectId)
             throws UserNotFoundException, ProjectNotFoundException, BookmarkNotFoundException {
         userService.removeBookmarkFromUser(userId, projectId);
     }
 
     /**
      *
-     * @param bookmarkClientDTO
+     * @param bookmarkRequestDTO
      *          The {@link BookmarkRequestDTO} sent by the user.
      *
      * @return
@@ -48,9 +48,9 @@ public class BookmarkController {
             consumes = "application/json",
             produces = "application/json"
     )
-    public Project createBookmarkForUser(@Valid @RequestBody BookmarkRequestDTO bookmarkClientDTO, @PathVariable("userId") String userId)
+    public Project createBookmarkForUser(@Valid @RequestBody BookmarkRequestDTO bookmarkRequestDTO, @PathVariable("userId") String userId)
             throws ProjectNotFoundException {
-        return userService.addBookmarkToUser(userId, bookmarkClientDTO.getProjectId());
+        return userService.addBookmarkToUser(userId, bookmarkRequestDTO.getProjectId());
     }
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")

@@ -17,7 +17,7 @@ import java.io.Serializable;
 public class ProjectApplicationRequestDTO implements Serializable {
 
     @NotNull
-    private Long projectId;
+    private String projectId;
 
     private String comment;
 

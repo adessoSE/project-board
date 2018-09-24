@@ -11,17 +11,14 @@ import lombok.Setter;
 @Setter
 public class JiraIssue {
 
-    @JsonAlias("id")
+    @JsonAlias("key")
     private String id;
-
-    private String key;
 
     @JsonAlias("fields")
     private Project project;
 
-    public Project getProjectWithIdAndKey() {
-        project.setId(Long.parseLong(id));
-        project.setKey(key);
+    public Project getProjectWithId() {
+        project.setId(id);
 
         return project;
     }

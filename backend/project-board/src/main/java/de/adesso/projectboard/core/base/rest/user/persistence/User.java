@@ -3,6 +3,7 @@ package de.adesso.projectboard.core.base.rest.user.persistence;
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
 import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.UserAccessInfo;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 

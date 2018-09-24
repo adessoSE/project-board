@@ -4,15 +4,61 @@
 
 # `/projects` - retrieve project data
 
-_Note: Data structure depends on the `AbstractProject` class implementation._
-
 - GET `/all` - get a list of all projects currently stored in the DB (`admin` only!)
 
 - GET `/` - get a list of all projects the user is allowed to access
 
 - GET `/{projectId}` - get a single project by its ID
 
-- _TODO_: POST / - create a new project
+- POST / - create a new project
+
+Example request body:
+
+```
+{
+	"status": "Offen", (required)
+	"issuetype": "Studiprojekt", (required)
+	"title": "Testprojekt für Studis", (required)
+	"job": "Testjob",
+	"skills": "Many skills!",
+	"description": "Long description", (required)
+	"lob": "LOB Cross Industries", (required)
+	"customer": "Customer"
+}
+```
+
+
+Example response:
+
+```
+{
+    "id": "STD-4",
+    "status": "Offen",
+    "issuetype": "Studiprojekt",
+    "title": "Testprojekt für Studis",
+    "labels": [],
+    "job": "Testjob",
+    "skills": "Many skills!",
+    "description": "Long description",
+    "lob": null,
+    "customer": "Customer",
+    "location": null,
+    "operationStart": null,
+    "operationEnd": null,
+    "effort": null,
+    "created": "2018-09-24T18:31:50.24",
+    "updated": "2018-09-24T18:31:50.24",
+    "freelancer": null,
+    "elongation": null,
+    "other": null
+}
+```
+
+- PUT `/{projectId}` - update a project
+
+same request/response as POST `/`
+
+- DELETE `/{projectId}` - delete a project
 
 # `/users` - retrieve and set user data
     

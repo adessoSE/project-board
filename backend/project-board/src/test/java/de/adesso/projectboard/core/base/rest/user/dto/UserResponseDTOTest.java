@@ -14,8 +14,7 @@ public class UserResponseDTOTest {
     @Test
     public void fromUser() {
         Project project = new Project();
-        project.setId(1L);
-        project.setKey("Testkey");
+        project.setId("Key");
 
         SuperUser firstUser = new SuperUser("first-user");
         firstUser.setFullName("First", "User");

@@ -19,7 +19,7 @@ public class ProjectApplicationResponseDTOTest {
         User user = new User("test-user-2", superUser);
 
         Project project = new Project();
-        project.setId(1L);
+        project.setId("Key");
 
         LocalDateTime applicationTime = LocalDateTime.now().minus(2L, ChronoUnit.DAYS);
 
@@ -31,7 +31,7 @@ public class ProjectApplicationResponseDTOTest {
 
         assertEquals("Testcomment", dto.getComment());
         assertEquals(applicationTime, dto.getDate());
-        assertEquals(1L, dto.getProject().getId());
+        assertEquals("Key", dto.getProject().getId());
         assertEquals(2L, dto.getId());
         assertNotNull(dto.getUser());
     }

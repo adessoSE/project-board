@@ -100,13 +100,13 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
      *          the user wants to access.
      *
      * @return
-     *          The result of {@link ExpressionEvaluator#hasAccessToProject(Authentication, User, long)}
+     *          The result of {@link ExpressionEvaluator#hasAccessToProject(Authentication, User, String)}
                 when the user is authenticated (a {@link User} object is present), {@code false} otherwise.
      *
-     * @see ExpressionEvaluator#hasAccessToProject(Authentication, User, long)
+     * @see ExpressionEvaluator#hasAccessToProject(Authentication, User, String)
      * @see de.adesso.projectboard.core.base.rest.project.ProjectController
      */
-    public boolean hasAccessToProject(long projectId) {
+    public boolean hasAccessToProject(String projectId) {
         // check if the user has a corresponding User object
         if(userService.userExists(userService.getCurrentUserId())) {
             return evaluator.hasAccessToProject(getAuthentication(), userService.getCurrentUser(), projectId);
@@ -171,6 +171,45 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
         // check if the user has a corresponding User object
         if(userService.userExists(userService.getCurrentUserId())) {
             return evaluator.hasElevatedAccessToUser(getAuthentication(), userService.getCurrentUser(), userId);
+        }
+
+        return false;
+    }
+
+    /**
+     *
+     * @return
+     *          The result of {@link ExpressionEvaluator#hasPermissionToCreateProjects(Authentication, User)}
+     *          when the user is authenticated (a {@link User} object is present), {@code false} otherwise.
+     *
+     * @see ExpressionEvaluator#hasPermissionToCreateProjects(Authentication, User)
+     * @see de.adesso.projectboard.core.base.rest.project.ProjectController
+     */
+    public boolean hasPermissionToCreateProjects() {
+        // check if the user has a corresponding User object
+        if(userService.userExists(userService.getCurrentUserId())) {
+            return evaluator.hasPermissionToCreateProjects(getAuthentication(), userService.getCurrentUser());
+        }
+
+        return false;
+    }
+
+    /**
+     *
+     * @param projectId
+     *          The id of the {@link Project} the user wants to access.
+     *
+     * @return
+     *          The result of {@link ExpressionEvaluator#hasPermissionToUpdateProject(Authentication, User, String)}
+     *          when the user is authenticated (a {@link User} object is present), {@code false} otherwise.
+     *
+     * @see ExpressionEvaluator#hasPermissionToUpdateProject(Authentication, User, String)
+     * @see de.adesso.projectboard.core.base.rest.project.ProjectController
+     */
+    public boolean hasPermissionToUpdateProject(String projectId) {
+        // check if the user has a corresponding User object
+        if(userService.userExists(userService.getCurrentUserId())) {
+            return evaluator.hasPermissionToUpdateProject(getAuthentication(), userService.getCurrentUser(), projectId);
         }
 
         return false;

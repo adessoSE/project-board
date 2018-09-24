@@ -1,13 +1,14 @@
 package de.adesso.projectboard.core.base.rest.project.persistence;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.adesso.projectboard.core.base.rest.project.deserializer.date.CreatedUpdatedDateDeserializer;
 import de.adesso.projectboard.core.base.rest.project.deserializer.field.ObjectNameDeserializer;
 import de.adesso.projectboard.core.base.rest.project.deserializer.field.ObjectValueDeserializer;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -22,19 +23,28 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Project {
 
     @Id
-    private long id;
+    @GeneratedValue(
+            generator = "project_id_generator"
+    )
+    @GenericGenerator(
+            name = "project_id_generator",
+            strategy = "de.adesso.projectboard.core.base.rest.project.persistence.ProjectIdGenerator",
+            parameters = @org.hibernate.annotations.Parameter(name = "prefix", value = "STD-")
+    )
+    private String id;
 
     @JsonDeserialize(using = ObjectNameDeserializer.class)
     private String status;
 
     @JsonDeserialize(using = ObjectNameDeserializer.class)
     private String issuetype;
-
-    private String key;
 
     @JsonAlias("summary")
     private String title;
@@ -93,5 +103,7 @@ public class Project {
     @Column(length = 8192)
     @JsonAlias("customfield_10304")
     private String other;
+
+    private boolean editable = false;
 
 }
