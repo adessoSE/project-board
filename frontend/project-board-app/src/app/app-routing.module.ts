@@ -53,7 +53,7 @@ const routes: Routes = [
     canActivate: [AuthGuard, AccessGuard, AlreadyAppliedGuard]
   },
   {
-    path: 'projects/:key',
+    path: 'projects/:id',
     component: UserUiComponent,
     resolve: {
       projects: ProjectsResolverService,
@@ -89,7 +89,8 @@ const routes: Routes = [
   },
   {
     path: '**',
-    component: PageNotFoundComponent
+    component: PageNotFoundComponent,
+    canActivate: [AuthGuard]
   }
 ];
 

@@ -46,8 +46,8 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
 
       this.bookmarks = data.bookmarks;
       this.route.params.subscribe(params => {
-        if (params.key) {
-          this.setSelectedProject(params.key);
+        if (params.id) {
+          this.setSelectedProject(params.id);
         }
       });
     });
@@ -63,7 +63,7 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
         for (const f of filter) {
           if (p.title && p.title.toLowerCase().includes(f)) {
             let o;
-            if (o = filtered.find(e => e.project.key === p.key)) {
+            if (o = filtered.find(e => e.project.id === p.id)) {
               o.hitCount++;
             } else {
               filtered.push({'project': p, 'hitCount': 1});
@@ -71,7 +71,7 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
           }
           if (p.job && p.job.toLowerCase().includes(f)) {
             let o;
-            if (o = filtered.find(e => e.project.key === p.key)) {
+            if (o = filtered.find(e => e.project.id === p.id)) {
               o.hitCount++;
             } else {
               filtered.push({'project': p, 'hitCount': 1});
@@ -79,7 +79,7 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
           }
           if (p.description && p.description.toLowerCase().includes(f)) {
             let o;
-            if (o = filtered.find(e => e.project.key === p.key)) {
+            if (o = filtered.find(e => e.project.id === p.id)) {
               o.hitCount++;
             } else {
               filtered.push({'project': p, 'hitCount': 1});
@@ -87,7 +87,7 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
           }
           if (p.skills && p.skills.toLowerCase().includes(f)) {
             let o;
-            if (o = filtered.find(e => e.project.key === p.key)) {
+            if (o = filtered.find(e => e.project.id === p.id)) {
               o.hitCount++;
             } else {
               filtered.push({'project': p, 'hitCount': 1});
@@ -102,12 +102,13 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
   }
 
   private setSelectedProject(projectId: string) {
-    for (const p of this.projects) {
-      if (p.key === projectId) {
+    for (const p of this.filteredProjects) {
+      if (p.id === projectId) {
         this.selectedProject = p;
         return;
       }
     }
+    this.router.navigate(['/notFound'], {skipLocationChange: true});
     this.selectedProject = null;
   }
 
@@ -117,7 +118,7 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
       this.selectedProject = null;
       this.scroll = false;
     } else {
-      this.location.replaceState(`/projects/${project.key}`);
+      this.location.replaceState(`/projects/${project.id}`);
       this.selectedProject = project;
       this.scroll = true;
     }
@@ -125,23 +126,23 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
 
   ngAfterViewChecked() {
     if (this.mobile && this.scroll && this.selectedProject) {
-      const btn = $(`#${this.selectedProject.key}`);
+      const btn = $(`#${this.selectedProject.id}`);
       // navbar has 56 pixels height
       $('html, body').animate({scrollTop: $(btn).offset().top - 56}, 'slow');
       this.scroll = false;
     }
   }
 
-  isProjectApplicable(key) {
-    return !this.appliedProjects.some(p => p && p.key === key);
+  isProjectApplicable(projectId) {
+    return !this.appliedProjects.some(p => p && p.id === projectId);
   }
 
-  isProjectBookmarked(key) {
-    return this.bookmarks.some(p => p && p.key === key);
+  isProjectBookmarked(projectId) {
+    return this.bookmarks.some(p => p && p.id === projectId);
   }
 
   handleBookmark(project) {
-    const index = this.bookmarks.findIndex(p => p.key === project.key);
+    const index = this.bookmarks.findIndex(p => p.id === project.id);
     if (index > -1) {
       this.bookmarks.splice(index, 1);
     } else {

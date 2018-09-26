@@ -46,7 +46,7 @@
     <h4>Lesezeichen</h4>
     <div *ngFor="let b of bookmarks; index as i" [ngClass]="{'border-bottom pb-2 mb-2': i<bookmarks.length-1}">
       <div class="inset">
-        <a routerLink="/projects/{{b.key}}">{{b.key}}</a><br>
+        <a routerLink="/projects/{{b.id}}">{{b.id}}</a><br>
         {{b.title}}<br>
         <small class="link-red" (click)="removeBookmark(b.id)">Lesezeichen entfernen</small>
       </div>
@@ -59,7 +59,7 @@
     <h4>Anfragen</h4>
     <div *ngFor="let a of applications; index as i" [ngClass]="{'border-bottom pb-2 mb-2': i<applications.length-1}">
       <div class="inset">
-        <a routerLink="/projects/{{a.project.key}}">{{a.project.key}}</a><br>
+        <a routerLink="/projects/{{a.project.id}}">{{a.project.id}}</a><br>
         {{a.project.title}}<br>
         Kommentar: {{a.comment}}<br>
         Datum: {{a.date | date : 'dd.MM.yyyy'}}<br>

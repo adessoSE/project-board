@@ -24,7 +24,7 @@ export class AlreadyAppliedGuard implements CanActivate {
       });
       if (application !== undefined) {
         this.alertService.info('Du hast dieses Projekt bereits angefragt.', true);
-        this.router.navigate([`/projects/${application.project.key}`]);
+        this.router.navigate([`/projects/${application.project.id}`]);
       }
       return application === undefined;
     }));

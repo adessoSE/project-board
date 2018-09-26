@@ -8,14 +8,13 @@ import { Project, ProjectService } from '../_services/project.service';
   styleUrls: ['./create-project.component.scss']
 })
 export class CreateProjectComponent implements OnInit {
-  id: number;
+  id: string;
   effort: number;
 
   labels = [];
 
   description = '';
   title = '';
-  key = '';
   issuetype = 'Studentisches Projekt';
   job = '';
   lob = '';
@@ -45,7 +44,6 @@ export class CreateProjectComponent implements OnInit {
 
       'description': this.description,
       'title': this.title,
-      'key': this.key,
       'issuetype': this.issuetype,
       'job': this.job,
       'lob': this.lob,

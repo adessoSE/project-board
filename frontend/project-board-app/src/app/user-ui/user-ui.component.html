@@ -9,18 +9,18 @@
     </div>
     <div class="list-group">
       <ng-container *ngFor="let p of filteredProjects">
-        <button #btn id="{{p.key}}" (click)="projectClicked(p)" type="button" [ngClass]="{'list-group-item list-group-item-action': true, 'active': p.key == selectedProject?.key}">
+        <button #btn id="{{p.id}}" (click)="projectClicked(p)" type="button" [ngClass]="{'list-group-item list-group-item-action': true, 'active': p.id == selectedProject?.id}">
           <span>
-            <fa-icon title="{{appTooltip}}" class="mr-2" *ngIf="!isProjectApplicable(p.key)" [icon]="faEnvelope"></fa-icon>
-            <fa-icon title="{{bmTooltip}}" class="mr-2" *ngIf="isProjectBookmarked(p.key)" [icon]="faBookmark"></fa-icon>
-            <b>{{p.key}}:</b> {{p.title}}
+            <fa-icon title="{{appTooltip}}" class="mr-2" *ngIf="!isProjectApplicable(p.id)" [icon]="faEnvelope"></fa-icon>
+            <fa-icon title="{{bmTooltip}}" class="mr-2" *ngIf="isProjectBookmarked(p.id)" [icon]="faBookmark"></fa-icon>
+            <b>{{p.id}}:</b> {{p.title}}
           </span>
         </button>
-        <app-project-details *ngIf="mobile && p.key == selectedProject?.key" [bookmark]="isProjectBookmarked(p.key)" [applicable]="isProjectApplicable(p.key)" (bookmarkChanged)="handleBookmark($event)" [selectedProject]="selectedProject"></app-project-details>
+        <app-project-details *ngIf="mobile && p.id == selectedProject?.id" [bookmark]="isProjectBookmarked(p.id)" [applicable]="isProjectApplicable(p.id)" (bookmarkChanged)="handleBookmark($event)" [selectedProject]="selectedProject"></app-project-details>
       </ng-container>
     </div>
   </div>
   <div *ngIf="!mobile" class="col-md-6">
-    <app-project-details [bookmark]="isProjectBookmarked(selectedProject?.key)" [applicable]="isProjectApplicable(selectedProject?.key)" (bookmarkChanged)="handleBookmark($event)" [selectedProject]="selectedProject"></app-project-details>
+    <app-project-details [bookmark]="isProjectBookmarked(selectedProject?.id)" [applicable]="isProjectApplicable(selectedProject?.id)" (bookmarkChanged)="handleBookmark($event)" [selectedProject]="selectedProject"></app-project-details>
   </div>
 </div>
