@@ -16,14 +16,13 @@ export class ProjectService {
 }
 
 export interface Project {
-  id: number;
+  id: string;
   effort: number;
 
   labels: string[];
 
   description: string;
   title: string;
-  key: string;
   issuetype: string;
   job: string;
   lob: string;
