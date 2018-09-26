@@ -4,11 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * User with 
+ * User representing a manager.
  *
  * @see User
  */
@@ -98,6 +99,16 @@ public class SuperUser extends User {
         }
 
         return false;
+    }
+
+    /**
+     *
+     * @return
+     *          A <b>unmodifiable</b> {@link Set} of the {@link User staff members}.
+     */
+    @Override
+    public Set<User> getStaffMembers() {
+        return Collections.unmodifiableSet(staffMembers);
     }
 
 }

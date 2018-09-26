@@ -70,7 +70,7 @@ public class User {
     /**
      * The boss of this user.
      */
-    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(optional = false)
     private SuperUser boss;
 
     /**
@@ -165,9 +165,17 @@ public class User {
      * @return
      *          The result of {@link Set#add(Object)}.
      *
+     * @throws IllegalArgumentException
+     *          When the user the application {@link ProjectApplication#user belongs to}
+     *          is not {@code this} user.
+     *
      * @see #addBookmark(Project)
      */
-    public boolean addApplication(ProjectApplication application) {
+    public boolean addApplication(ProjectApplication application) throws IllegalArgumentException {
+        if(!this.equals(application.getUser())) {
+            throw new IllegalArgumentException("The application belongs to another user!");
+        }
+
         return applications.add(application);
     }
 
@@ -281,6 +289,15 @@ public class User {
      */
     protected void setBoss(SuperUser boss) {
         this.boss = boss;
+    }
+
+    /**
+     *
+     * @return
+     *          A empty {@link Set} supplied by {@link Collections#emptySet()}
+     */
+    public Set<User> getStaffMembers() {
+        return Collections.emptySet();
     }
 
 }

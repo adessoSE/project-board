@@ -146,7 +146,7 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          {@code false} otherwise.
      */
     @Override
-    public boolean hasPermissionToUpdateProject(Authentication authentication, User user, String projectId) {
+    public boolean hasPermissionToEditProject(Authentication authentication, User user, String projectId) {
         return user instanceof SuperUser;
     }
 
@@ -163,20 +163,16 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          the current user wants to access.
      *
      * @return
-     *          {@code true}, when the user is a {@link SuperUser} and a user with the given
-     *          {@code userId} is included in the {@link Set} of the {@link SuperUser#getStaffMembers() user's staff members},
+     *          {@code true}, when a user with the given {@code userId} is included
+     *          in the {@link Set} of the {@link User#getStaffMembers() user's staff members},
      *          {@code false} otherwise.
      *
      * @see SuperUser
      */
     @Override
     public boolean hasElevatedAccessToUser(Authentication authentication, User user, String userId) {
-        if(user instanceof SuperUser) {
-            return ((SuperUser) user).getStaffMembers().stream()
-                    .anyMatch(staffMember -> staffMember.getId().equals(userId));
-        }
-
-        return false;
+        return user.getStaffMembers().stream()
+                .anyMatch(staffMember -> staffMember.getId().equals(userId));
     }
 
 }

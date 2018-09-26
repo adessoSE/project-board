@@ -126,7 +126,7 @@ public class ProjectController {
         return projectRepository.save(project);
     }
 
-    @PreAuthorize("hasPermissionToUpdateProject(#projectId) || hasRole('admin')")
+    @PreAuthorize("hasPermissionToEditProject(#projectId) || hasRole('admin')")
     @PutMapping(
             path = "/{projectId}",
             consumes = "application/json",
@@ -171,7 +171,7 @@ public class ProjectController {
         return projectRepository.save(project);
     }
 
-    @PreAuthorize("hasPermissionToUpdateProject(#projectId) || hasRole('admin')")
+    @PreAuthorize("hasPermissionToEditProject(#projectId) || hasRole('admin')")
     @DeleteMapping(
             path = "/{projectId}"
     )

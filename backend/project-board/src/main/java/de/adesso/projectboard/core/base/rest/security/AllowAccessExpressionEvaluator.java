@@ -115,7 +115,7 @@ public class AllowAccessExpressionEvaluator implements ExpressionEvaluator {
      *          {@code true}
      */
     @Override
-    public boolean hasPermissionToUpdateProject(Authentication authentication, User user, String projectId) {
+    public boolean hasPermissionToEditProject(Authentication authentication, User user, String projectId) {
         return true;
     }
 

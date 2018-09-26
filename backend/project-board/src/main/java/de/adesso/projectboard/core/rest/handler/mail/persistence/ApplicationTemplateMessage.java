@@ -1,52 +1,58 @@
 package de.adesso.projectboard.core.rest.handler.mail.persistence;
 
+import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
 import de.adesso.projectboard.core.rest.handler.application.ProjectBoardApplicationHandler;
-import org.springframework.mail.SimpleMailMessage;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
 /**
- *
+ * {@link TemplateMessage} sent to managers when a user applies for a {@link Project}.
  *
  * @see ProjectBoardApplicationHandler
  */
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ApplicationTemplateMessage extends TemplateMessage {
 
-    private static final String DISCLAIMER = "\n\n\nThis is a automatically generated message, please do not reply!";
+    private static final String DISCLAIMER = "\n\n\nDiese Nachricht wurde automatisch generiert!";
 
-    private static final String TITLE_PATTERN = "Anfrage für Projekt %s";
+    private static final String SUBJECT_PATTERN = "Neue Anfrage für Projekt %s!";
 
-    private static final String MAIN_TEXT_PATTERN = "%s applied for the JIRA Project \"%s\".";
+    private static final String MAIN_TEXT_PATTERN = "%s hat eine Anfrage für das Projekt \"%s\" gestellt.";
 
-    private static final String COMMENT_PATTERN = "\n\nAdditional comment from user:\n\n\"%s\"\n\n";
+    private static final String COMMENT_PATTERN = "\n\nZusätzlicher Kommentar vom Nutzer:\n\n\"%s\"\n\n";
 
     @ManyToOne
     private ProjectApplication application;
 
     public ApplicationTemplateMessage(ProjectApplication application) {
         super(application.getUser(), application.getUser().getBoss());
-
         this.application = application;
-    }
 
-    protected ApplicationTemplateMessage() {
-        // protected no-arg constructor for JPA
+        setSubject(String.format(SUBJECT_PATTERN, application.getProject().getId()));
+        setText(buildText());
     }
 
     private String buildText() {
-        return String.format("Neue Anfrage von %s!", getReferencedUser().getFullName());
+        String mainText = String.format(MAIN_TEXT_PATTERN,
+                application.getUser().getFullName(),
+                application.getProject().getTitle());
+
+        if(application.getComment() != null && !application.getComment().isEmpty()) {
+            return mainText + String.format(COMMENT_PATTERN, application.getComment());
+        } else {
+            return mainText;
+        }
     }
 
     @Override
-    public SimpleMailMessage getMailMessage() {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-
-        mailMessage.setSubject(String.format(TITLE_PATTERN, "<Placeholder>"));
-        mailMessage.setText(buildText());
-
-        return mailMessage;
+    public boolean isStillRelevant() {
+        return true;
     }
+
 }

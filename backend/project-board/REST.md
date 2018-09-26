@@ -1,8 +1,8 @@
-#REST endpoint documentation
+# REST endpoint documentation
 
 ### Note: a user with the `admin` role has access to everything (good for testing)
 
-# `/projects` - retrieve project data
+## `/projects` - retrieve project data
 
 - GET `/all` - get a list of all projects currently stored in the DB (`admin` only!)
 
@@ -60,7 +60,7 @@ same request/response as POST `/`
 
 - DELETE `/{projectId}` - delete a project
 
-# `/users` - retrieve and set user data
+## `/users` - retrieve and set user data
     
 - GET `/{userId}/` - get a user by its ID
         
@@ -296,4 +296,4 @@ Example response:
 }
 ```
 
-##Note: this has no effect on REST authorization when the `user-access` profile is not activated!
+### Note: this has no effect on REST authorization when the `user-access` profile is not activated!

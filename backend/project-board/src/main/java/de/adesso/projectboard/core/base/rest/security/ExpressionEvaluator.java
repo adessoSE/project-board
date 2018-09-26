@@ -120,7 +120,7 @@ public interface ExpressionEvaluator {
      *          {@code true}, if the user is permitted to update the project,
      *          {@code false} otherwise.
      */
-    boolean hasPermissionToUpdateProject(Authentication authentication, User user, String projectId);
+    boolean hasPermissionToEditProject(Authentication authentication, User user, String projectId);
 
     /**
      *

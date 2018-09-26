@@ -1,7 +1,6 @@
 package de.adesso.projectboard.core.rest.handler.mail;
 
 import de.adesso.projectboard.core.rest.handler.mail.persistence.MessageRepository;
-import de.adesso.projectboard.core.rest.handler.mail.persistence.MessageStatus;
 import de.adesso.projectboard.core.rest.handler.mail.persistence.TemplateMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,16 +33,23 @@ public class MailService {
      */
     @Scheduled(fixedDelay = 30000L)
     protected void sendMessages() {
-        messageRepository.findAllByStatus(MessageStatus.PENDING).forEach(message -> {
+        messageRepository.findAll().forEach(message -> {
             try {
-                // set the addressee and send it
-                SimpleMailMessage mailMessage = message.getMailMessage();
-                mailMessage.setTo(message.getAddressee().getEmail());
-                mailSender.send(mailMessage);
+                if(message.isStillRelevant()) {
+                    // create a new mail message, set the subject, text, addressee and send it
+                    SimpleMailMessage mailMessage = new SimpleMailMessage();
+                    mailMessage.setSubject(message.getSubject());
+                    mailMessage.setText(message.getText());
+                    mailMessage.setTo(message.getAddressee().getEmail());
 
-                // set the status to 'sent' when everything went well
-                message.setStatus(MessageStatus.SENT);
-                messageRepository.save(message);
+                    mailSender.send(mailMessage);
+
+                    logger.debug(String.format("Mail sent to %s!", message.getAddressee().getEmail()));
+                }
+
+                // delete the message when it was sent
+                // successfully or is not relevant anymore
+                messageRepository.delete(message);
             } catch (Exception err) {
                 logger.error("Error sending mail!", err);
             }
