@@ -45,18 +45,18 @@ public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter 
 
         http
                 .cors()
-                    .disable()
+                .and()
                 .csrf()
-                    .disable()
+                .disable()
                 .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    .sessionAuthenticationStrategy(sessionAuthenticationStrategy())
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionAuthenticationStrategy(sessionAuthenticationStrategy())
                 .and()
                 .authorizeRequests()
-                    .antMatchers( "/**").hasRole("user")
-                    .antMatchers("/actuator*").hasRole("admin")
+                .antMatchers("/**").hasRole("user")
+                .antMatchers("/actuator*").hasRole("admin")
                 .anyRequest()
-                    .permitAll();
+                .permitAll();
     }
 
     // maps the keycloak roles to spring compatible roles
@@ -70,7 +70,7 @@ public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter 
 
     // resolver that resolves the properties in the spring.properties file
     @Bean
-    public KeycloakConfigResolver KeyCloakConfigResolver(){
+    public KeycloakConfigResolver KeyCloakConfigResolver() {
         return new KeycloakSpringBootConfigResolver();
     }
 
