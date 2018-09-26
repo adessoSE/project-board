@@ -1,4 +1,4 @@
-#REST endpoint documentation
+# REST endpoint documentation
 
 ### Note: a user with the `admin` role has access to everything (good for testing)
 
@@ -296,4 +296,4 @@ Example response:
 }
 ```
 
-####Note: this has no effect on REST authorization when the `user-access` profile is not activated!
+### Note: this has no effect on REST authorization when the `user-access` profile is not activated!
