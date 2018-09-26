@@ -1,5 +1,6 @@
 package de.adesso.projectboard.core.base.rest.user;
 
+import de.adesso.projectboard.core.base.rest.exceptions.AlreadyAppliedException;
 import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.core.base.rest.exceptions.UserNotFoundException;
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
@@ -52,6 +53,12 @@ public class ApplicationController {
      * @throws ProjectNotFoundException
      *          When the {@link Project} with the {@link ProjectApplicationRequestDTO#getProjectId() given id}
      *          is not found.
+     *
+     * @throws UserNotFoundException
+     *          When no {@link User} with the given {@code userId} is found.
+     *
+     * @throws AlreadyAppliedException
+     *          When the user has already applied for the {@link Project}.
      */
     @PreAuthorize("(hasPermissionToAccessUser(#userId) && hasPermissionToApply()) || hasRole('admin')")
     @PostMapping(path = "/{userId}/applications",
@@ -59,7 +66,8 @@ public class ApplicationController {
             produces = "application/json"
     )
     public ProjectApplicationResponseDTO createApplicationForUser(@Valid @RequestBody ProjectApplicationRequestDTO projectApplicationClientDTO,
-                                                                  @PathVariable("userId") String userId) throws ProjectNotFoundException, UserNotFoundException {
+                                                                  @PathVariable("userId") String userId)
+            throws ProjectNotFoundException, UserNotFoundException, AlreadyAppliedException {
 
         // get the project by the given id
         Optional<Project> projectOptional = projectRepo.findById(projectApplicationClientDTO.getProjectId());
@@ -67,9 +75,14 @@ public class ApplicationController {
             throw new ProjectNotFoundException();
         }
 
+        // check if the user already applied for the project
+        if(userService.userHasAppliedForProject(userId, projectOptional.get())) {
+            throw new AlreadyAppliedException();
+        }
+
         // create a new project application instance
         ProjectApplication application
-                = new ProjectApplication(projectOptional.get(), projectApplicationClientDTO.getComment(), userService.getCurrentUser());
+                = new ProjectApplication(projectOptional.get(), projectApplicationClientDTO.getComment(), userService.getUserById(userId));
 
         // persist the application
         ProjectApplication savedApplication = applicationRepo.save(application);

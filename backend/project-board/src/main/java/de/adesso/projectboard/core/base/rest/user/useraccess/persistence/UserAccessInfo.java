@@ -34,7 +34,7 @@ public class UserAccessInfo {
 
     /**
      * Constructs a new entity. The {@link #accessStart access start} is automatically
-     * set to the current time when persisting the entity.
+     * set to the current time.
      *
      * @param user
      *          The {@link User} the access is given to.
@@ -44,6 +44,7 @@ public class UserAccessInfo {
      */
     public UserAccessInfo(User user, LocalDateTime accessEnd) {
         this.user = user;
+        this.accessStart = LocalDateTime.now();
         this.accessEnd = accessEnd;
     }
 
@@ -62,15 +63,6 @@ public class UserAccessInfo {
         LocalDateTime now = LocalDateTime.now();
 
         return (now.equals(accessStart) || now.isAfter(accessStart)) && now.isBefore(accessEnd);
-    }
-
-    /**
-     * Set the access start date to the current
-     * {@link LocalDateTime} when persisting the entity.
-     */
-    @PrePersist
-    public void setAccessStart() {
-        this.accessStart = LocalDateTime.now();
     }
 
 }

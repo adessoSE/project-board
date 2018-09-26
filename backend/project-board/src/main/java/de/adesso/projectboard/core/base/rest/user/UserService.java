@@ -131,6 +131,29 @@ public class UserService {
     /**
      *
      * @param userId
+     *          The id of the {@link User}.
+     *
+     * @param project
+     *          The {@link Project}.
+     *
+     * @return
+     *          {@code true}, when the user with the given {@code userId}
+     *          has a {@link ProjectApplication} that {@link ProjectApplication#getProject() references}
+     *          the {@code project}.
+     *
+     * @throws UserNotFoundException
+     *          When no user with the given {@code userId} is found.
+     *
+     */
+    public boolean userHasAppliedForProject(String userId, Project project) throws UserNotFoundException {
+        User user = getUserById(userId);
+        return user.getApplications().stream()
+                .anyMatch(application -> application.getProject().equals(project));
+    }
+
+    /**
+     *
+     * @param userId
      *          The id of the user to retrieve.
      *
      * @return
