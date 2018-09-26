@@ -193,50 +193,6 @@ public class UserService {
     }
 
     /**
-     * Adds the given {@link ProjectApplication} to the user and persists the
-     * updated entity.
-     *
-     * <p>
-     *     <b>Note:</b> The {@code application} gets persisted as well.
-     * </p>
-     *
-     * @param userId
-     *          The id of the {@link User} to add the application to.
-     *
-     * @param application
-     *          The {@link ProjectApplication} to add to the user.
-     *
-     * @return
-     *          The application <b>after</b> persisting it.
-     *
-     * @throws UserNotFoundException
-     *          When no {@link User} is found for the given {@code userId}.
-     *
-     * @throws IllegalArgumentException
-     *          When the application's {@link ProjectApplication#getUser() user id} does not match
-     *          the given {@code userId}.
-     *
-     * @see #getUserById(String)
-     */
-    public ProjectApplication addApplicationToUser(String userId, ProjectApplication application) throws UserNotFoundException, IllegalArgumentException {
-
-        // check integrity
-        if(!application.getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("The application can only be added to the user with the same id!");
-        }
-
-        // persist the application
-        ProjectApplication savedApplication = applicationRepo.save(application);
-
-        // add the application and update the user
-        User user = getUserById(userId);
-        user.addApplication(savedApplication);
-        userRepo.save(user);
-
-        return savedApplication;
-    }
-
-    /**
      * Removes a bookmarked {@link Project} from the users bookmarks
      * and persists the updated entity.
      *

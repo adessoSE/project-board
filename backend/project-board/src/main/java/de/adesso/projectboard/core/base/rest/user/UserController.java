@@ -36,7 +36,7 @@ public class UserController {
 
         User daniel = new User("daniel", tom);
         daniel.setFullName("Daniel", "Meier");
-        daniel.setEmail("dadadadadadwdawdwa");
+        daniel.setEmail("Daniel.Meier@adesso.de");
         daniel.setLob("Cross Industries");
         userService.save(tom);
 
@@ -138,13 +138,9 @@ public class UserController {
     public List<UserResponseDTO> getStaffMembersOfUser(@PathVariable("userId") String userId) throws UserNotFoundException {
         User user = userService.getUserById(userId);
 
-        if(user instanceof SuperUser) {
-            return ((SuperUser) user).getStaffMembers().stream()
-                    .map(UserResponseDTO::fromUser)
-                    .collect(Collectors.toList());
-        }
-
-        return Collections.emptyList();
+        return user.getStaffMembers().stream()
+                .map(UserResponseDTO::fromUser)
+                .collect(Collectors.toList());
     }
 
     /**

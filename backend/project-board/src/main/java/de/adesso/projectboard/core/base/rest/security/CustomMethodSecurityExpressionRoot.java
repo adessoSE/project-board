@@ -200,16 +200,16 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
      *          The id of the {@link Project} the user wants to access.
      *
      * @return
-     *          The result of {@link ExpressionEvaluator#hasPermissionToUpdateProject(Authentication, User, String)}
+     *          The result of {@link ExpressionEvaluator#hasPermissionToEditProject(Authentication, User, String)}
      *          when the user is authenticated (a {@link User} object is present), {@code false} otherwise.
      *
-     * @see ExpressionEvaluator#hasPermissionToUpdateProject(Authentication, User, String)
+     * @see ExpressionEvaluator#hasPermissionToEditProject(Authentication, User, String)
      * @see de.adesso.projectboard.core.base.rest.project.ProjectController
      */
-    public boolean hasPermissionToUpdateProject(String projectId) {
+    public boolean hasPermissionToEditProject(String projectId) {
         // check if the user has a corresponding User object
         if(userService.userExists(userService.getCurrentUserId())) {
-            return evaluator.hasPermissionToUpdateProject(getAuthentication(), userService.getCurrentUser(), projectId);
+            return evaluator.hasPermissionToEditProject(getAuthentication(), userService.getCurrentUser(), projectId);
         }
 
         return false;

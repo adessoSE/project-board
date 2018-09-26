@@ -5,6 +5,7 @@ import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.UserAcc
 import de.adesso.projectboard.core.base.rest.user.UserAccessController;
 import lombok.Data;
 
+import javax.validation.constraints.Future;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserAccessInfoRequestDTO {
 
+    @Future
     @NotNull
     private LocalDateTime accessEnd;
 

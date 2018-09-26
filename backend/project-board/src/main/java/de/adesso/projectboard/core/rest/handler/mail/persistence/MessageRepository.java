@@ -7,6 +7,4 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface MessageRepository extends CrudRepository<TemplateMessage, Long> {
 
-    Iterable<TemplateMessage> findAllByStatus(MessageStatus status);
-
 }

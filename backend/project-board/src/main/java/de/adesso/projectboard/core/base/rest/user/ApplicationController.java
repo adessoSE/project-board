@@ -72,8 +72,7 @@ public class ApplicationController {
                 = new ProjectApplication(projectOptional.get(), projectApplicationClientDTO.getComment(), userService.getCurrentUser());
 
         // persist the application
-        ProjectApplication savedApplication
-                = userService.addApplicationToUser(userId, application);
+        ProjectApplication savedApplication = applicationRepo.save(application);
 
         // call the handler method
         applicationHandler.onApplicationReceived(savedApplication);

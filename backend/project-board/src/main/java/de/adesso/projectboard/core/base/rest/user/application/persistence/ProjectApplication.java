@@ -30,7 +30,7 @@ public class ProjectApplication {
     /**
      * The user this application belongs to.
      */
-    @ManyToOne(optional = false)
+    @ManyToOne(cascade = CascadeType.REFRESH, optional = false)
     private User user;
 
     /**
@@ -47,8 +47,13 @@ public class ProjectApplication {
     private LocalDateTime applicationDate;
 
     /**
-     * Constructs a new instance. The {@link #applicationDate} is set to the
-     * current {@link LocalDateTime} when persisting the entity.
+     * Constructs a new instance. Adds the application to the user's
+     * {@link User#applications}.
+     *
+     * <p>
+     *      <b>Note:</b> The {@link #applicationDate} is set to the
+     *      current {@link LocalDateTime} when persisting the entity.
+     * </p>
      *
      * @param project
      *          The {@link Project} the user applied for.
@@ -63,6 +68,8 @@ public class ProjectApplication {
         this.project = project;
         this.comment = comment;
         this.user = user;
+
+        user.addApplication(this);
     }
 
     @PrePersist
