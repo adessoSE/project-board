@@ -1,6 +1,5 @@
 package de.adesso.projectboard.core.base.rest.project;
 
-import de.adesso.projectboard.core.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotEditableException;
 import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.core.base.rest.project.dto.ProjectRequestDTO;
@@ -12,9 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.persistence.EntityManager;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -25,16 +24,11 @@ public class ProjectController {
 
     private final ProjectRepository projectRepository;
 
-    private final ProjectBoardConfigurationProperties properties;
-
     private final UserService userService;
 
     @Autowired
-    public ProjectController(ProjectRepository projectRepository,
-                             ProjectBoardConfigurationProperties properties,
-                             UserService userService) {
+    public ProjectController(ProjectRepository projectRepository, UserService userService) {
         this.projectRepository = projectRepository;
-        this.properties = properties;
         this.userService = userService;
     }
 
@@ -57,13 +51,13 @@ public class ProjectController {
     @GetMapping(path = "/all",
             produces = "application/json"
     )
-    public Iterable<? extends Project> getAll() {
+    public Iterable<Project> getAll() {
         return projectRepository.findAll();
     }
 
     @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
     @GetMapping(produces = "application/json")
-    public Iterable<? extends Project> getAllForUser() {
+    public List<Project> getAllForUser() {
         final String userLob = userService.getCurrentUser().getLob();
         final boolean isSuperUser = userService.getCurrentUser() instanceof SuperUser;
 

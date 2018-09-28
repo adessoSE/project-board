@@ -1,6 +1,7 @@
 buildscript {
 	ext {
 		springBootVersion = '2.0.4.RELEASE'
+		springVersion = '5.0.8.RELEASE'
 		lombokVersion = '1.18.2'
 		hsqlVersion = '2.4.1'
 		keycloakVersion = '4.3.0.Final'
@@ -56,7 +57,8 @@ dependencies {
 	)
 
 	testCompile(
-			[group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: "${springBootVersion}"]
+			[group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: "${springBootVersion}"],
+			[group: 'org.springframework.security', name: 'spring-security-test', version: "${springVersion}"]
 	)
 
 	apt(group: 'org.projectlombok', name: 'lombok', version: "${lombokVersion}")
