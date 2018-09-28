@@ -2,10 +2,11 @@ package de.adesso.projectboard.core.rest.security;
 
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.security.ExpressionEvaluator;
-import de.adesso.projectboard.core.base.rest.user.persistence.UserService;
+import de.adesso.projectboard.core.base.rest.user.service.UserService;
 import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.UserAccessInfo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,13 @@ import java.util.Set;
 @Profile("user-access")
 @Service
 public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
+
+    private final UserService userService;
+
+    @Autowired
+    public UserAccessExpressionEvaluator(UserService userService) {
+        this.userService = userService;
+    }
 
     /**
      * Gets the currently authenticated user from the {@link UserService}
@@ -147,7 +155,7 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      */
     @Override
     public boolean hasPermissionToEditProject(Authentication authentication, User user, String projectId) {
-        return user instanceof SuperUser;
+        return user.getCreatedProjects().stream().anyMatch(project -> project.getId().equals(projectId));
     }
 
     /**
@@ -171,8 +179,11 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      */
     @Override
     public boolean hasElevatedAccessToUser(Authentication authentication, User user, String userId) {
-        return user.getStaffMembers().stream()
-                .anyMatch(staffMember -> staffMember.getId().equals(userId));
+        if(user instanceof SuperUser) {
+            return userService.userHasStaffMember((SuperUser) user, userId);
+        } else {
+            return false;
+        }
     }
 
 }

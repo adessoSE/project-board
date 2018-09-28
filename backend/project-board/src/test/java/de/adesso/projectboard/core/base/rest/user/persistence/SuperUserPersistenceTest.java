@@ -19,38 +19,68 @@ public class SuperUserPersistenceTest {
 
     @Test
     public void testSave() {
-        SuperUser superUser = new SuperUser("user-1");
-        superUser.setEmail("user.1@example.com");
-        superUser.setFullName("First Test", "User");
-        superUser.setLob("LOB Test");
-        userRepository.save(superUser);
+        SuperUser firstUser = new SuperUser("first-user");
+        firstUser.setFullName("First", "User");
+        firstUser.setEmail("first.user@example.com");
+        firstUser.setLob("LOB Test");
+        userRepository.save(firstUser);
 
-        User user = new User("user-2", superUser);
-        user.setEmail("user.2@example.com");
-        user.setFullName("Second Test", "User");
-        user.setLob("LOB Test");
-        userRepository.save(user);
+        User secondUser = new User("second-user", firstUser);
+        secondUser.setFullName("Second", "User");
+        secondUser.setEmail("second.user@example.com");
+        secondUser.setLob("LOB Test");
+        userRepository.save(secondUser);
 
-        Optional<User> superUserOptional = userRepository.findById("user-1");
-        Optional<User> userOptional = userRepository.findById("user-2");
+        User thirdUser = new User("third-user", firstUser);
+        thirdUser.setFullName("Third", "User");
+        thirdUser.setEmail("third.user@example.com");
+        thirdUser.setLob("LOB Test");
+        userRepository.save(thirdUser);
 
-        assertTrue(superUserOptional.isPresent());
-        User savedSuperUser = superUserOptional.get();
-        assertEquals("user-1", savedSuperUser.getId());
-        assertEquals("First Test", savedSuperUser.getFirstName());
-        assertEquals("User", savedSuperUser.getLastName());
-        assertEquals("LOB Test", savedSuperUser.getLob());
-        assertEquals(savedSuperUser, savedSuperUser.getBoss());
-        assertEquals(2L, savedSuperUser.getStaffMembers().size());
+        assertEquals(3L, userRepository.count());
 
-        assertTrue(userOptional.isPresent());
-        User savedUser = userOptional.get();
-        assertEquals("user-2", savedUser.getId());
-        assertEquals("Second Test", savedUser.getFirstName());
-        assertEquals("User", savedUser.getLastName());
-        assertEquals("LOB Test", savedUser.getLob());
-        assertEquals(savedSuperUser, savedUser.getBoss());
-        assertEquals(0L, savedUser.getStaffMembers().size());
+        // first user
+        Optional<User> retrievedUserOptional = userRepository.findById("first-user");
+        assertTrue(retrievedUserOptional.isPresent());
+
+        SuperUser firstRetrievedUser = (SuperUser) retrievedUserOptional.get();
+
+        assertEquals(3L, firstRetrievedUser.getStaffMembers().size());
+        assertEquals("first-user", firstRetrievedUser.getId());
+        assertEquals("First", firstRetrievedUser.getFirstName());
+        assertEquals("User", firstRetrievedUser.getLastName());
+        assertEquals("first.user@example.com", firstRetrievedUser.getEmail());
+        assertEquals("LOB Test", firstRetrievedUser.getLob());
+        assertEquals(firstRetrievedUser, firstRetrievedUser.getBoss());
+        assertTrue(firstRetrievedUser.getStaffMembers().contains(firstRetrievedUser));
+
+        // second user
+        retrievedUserOptional = userRepository.findById("first-user");
+        assertTrue(retrievedUserOptional.isPresent());
+
+        User secondRetrievedUser = retrievedUserOptional.get();
+
+        assertEquals("second-user", secondRetrievedUser.getId());
+        assertEquals("Second", secondRetrievedUser.getFirstName());
+        assertEquals("User", secondRetrievedUser.getLastName());
+        assertEquals("second.user@example.com", secondRetrievedUser.getEmail());
+        assertEquals("LOB Test", secondRetrievedUser.getLob());
+        assertEquals(firstRetrievedUser, secondRetrievedUser.getBoss());
+        assertTrue(secondRetrievedUser.getStaffMembers().contains(secondRetrievedUser));
+
+        // third user
+        retrievedUserOptional = userRepository.findById("first-user");
+        assertTrue(retrievedUserOptional.isPresent());
+
+        User thirdRetrievedUser = retrievedUserOptional.get();
+
+        assertEquals("third-user", thirdRetrievedUser.getId());
+        assertEquals("Third", thirdRetrievedUser.getFirstName());
+        assertEquals("User", thirdRetrievedUser.getLastName());
+        assertEquals("third.user@example.com", thirdRetrievedUser.getEmail());
+        assertEquals("LOB Test", thirdRetrievedUser.getLob());
+        assertEquals(firstRetrievedUser, thirdRetrievedUser.getBoss());
+        assertTrue(thirdRetrievedUser.getStaffMembers().contains(thirdRetrievedUser));
     }
 
 }

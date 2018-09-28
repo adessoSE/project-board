@@ -104,6 +104,6 @@ public class Project {
     @JsonAlias("customfield_10304")
     private String other;
 
-    private boolean editable = false;
+    private boolean editable;
 
 }

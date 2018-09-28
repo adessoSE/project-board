@@ -5,7 +5,7 @@ import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException
 import de.adesso.projectboard.core.base.rest.exceptions.UserNotFoundException;
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.user.bookmark.dto.BookmarkRequestDTO;
-import de.adesso.projectboard.core.base.rest.user.persistence.UserService;
+import de.adesso.projectboard.core.base.rest.user.service.BookmarkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -16,11 +16,11 @@ import javax.validation.Valid;
 @RequestMapping("/users")
 public class BookmarkController {
 
-    private final UserService userService;
+    private final BookmarkService bookmarkService;
 
     @Autowired
-    public BookmarkController(UserService userService) {
-        this.userService = userService;
+    public BookmarkController(BookmarkService bookmarkService) {
+        this.bookmarkService = bookmarkService;
     }
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
@@ -29,7 +29,7 @@ public class BookmarkController {
     )
     public void deleteBookmarkOfUser(@PathVariable("userId") String userId, @PathVariable("projectId") String projectId)
             throws UserNotFoundException, ProjectNotFoundException, BookmarkNotFoundException {
-        userService.removeBookmarkFromUser(userId, projectId);
+        bookmarkService.removeBookmarkFromUser(userId, projectId);
     }
 
     /**
@@ -51,7 +51,7 @@ public class BookmarkController {
     )
     public Project createBookmarkForUser(@Valid @RequestBody BookmarkRequestDTO bookmarkRequestDTO, @PathVariable("userId") String userId)
             throws ProjectNotFoundException {
-        return userService.addBookmarkToUser(userId, bookmarkRequestDTO.getProjectId());
+        return bookmarkService.addBookmarkToUser(userId, bookmarkRequestDTO.getProjectId());
     }
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
@@ -59,7 +59,7 @@ public class BookmarkController {
             produces = "application/json"
     )
     public Iterable<Project> getBookmarksOfUser(@PathVariable("userId") String userId) throws UserNotFoundException {
-        return userService.getUserById(userId).getBookmarks();
+        return bookmarkService.getBookmarksOfUser(userId);
     }
 
 }

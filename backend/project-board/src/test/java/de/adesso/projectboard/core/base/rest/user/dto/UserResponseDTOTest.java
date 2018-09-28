@@ -28,11 +28,13 @@ public class UserResponseDTOTest {
 
         firstUser.addApplication(new ProjectApplication(project, "Testcomment", firstUser));
         firstUser.addBookmark(project);
+        firstUser.addCreatedProject(new Project());
 
         UserResponseDTO dto = UserResponseDTO.fromUser(firstUser);
 
         assertEquals(1L, dto.getApplications().getCount());
         assertEquals(1L, dto.getBookmarks().getCount());
+        assertEquals(1L, dto.getProjects().getCount());
         assertEquals("first-user", dto.getId());
         assertEquals("First", dto.getFirstName());
         assertEquals("User", dto.getLastName());

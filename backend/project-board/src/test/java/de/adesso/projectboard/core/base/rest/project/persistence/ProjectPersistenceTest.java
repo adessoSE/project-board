@@ -5,14 +5,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.security.core.parameters.P;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -51,39 +49,37 @@ public class ProjectPersistenceTest {
         firstProject.setFreelancer("Testfreelancer");
         firstProject.setElongation("Testelongation");
         firstProject.setOther("Testother");
+        firstProject.setEditable(false);
 
         projectRepository.save(firstProject);
 
-        List<Project> projects = StreamSupport.stream(projectRepository.findAll().spliterator(), false)
-                .map(project -> (Project) project)
-                .collect(Collectors.toList());
+        Optional<Project> projectOptional = projectRepository.findById("STF-1");
+        assertTrue(projectOptional.isPresent());
 
-        assertEquals(1, projects.size());
+        Project retrievedProject = projectOptional.get();
 
-        // first project
-        Project projectRetrieved = projects.get(0);
-
-        assertEquals("STF-1", projectRetrieved.getId());
-        assertEquals("Teststatus", projectRetrieved.getStatus());
-        assertEquals("Testissuetype", projectRetrieved.getIssuetype());
-        assertEquals("Testtitle", projectRetrieved.getTitle());
-        assertEquals("Testjob", projectRetrieved.getJob());
-        assertEquals("Testskills", projectRetrieved.getSkills());
-        assertEquals("Testdescription", projectRetrieved.getDescription());
-        assertEquals("Testlob", projectRetrieved.getLob());
-        assertEquals("Testcustomer", projectRetrieved.getCustomer());
-        assertEquals("Testlocation", projectRetrieved.getLocation());
-        assertEquals("Teststart", projectRetrieved.getOperationStart());
-        assertEquals("Testend", projectRetrieved.getOperationEnd());
-        assertEquals("Testeffort", projectRetrieved.getEffort());
-        assertEquals(LocalDateTime.of(2018, 1, 1, 12, 0), projectRetrieved.getCreated());
-        assertEquals(LocalDateTime.of(2018, 1, 2, 12, 0), projectRetrieved.getUpdated());
-        assertEquals("Testfreelancer", projectRetrieved.getFreelancer());
-        assertEquals("Testelongation", projectRetrieved.getElongation());
-        assertEquals("Testother", projectRetrieved.getOther());
+        assertEquals("STF-1", retrievedProject.getId());
+        assertEquals("Teststatus", retrievedProject.getStatus());
+        assertEquals("Testissuetype", retrievedProject.getIssuetype());
+        assertEquals("Testtitle", retrievedProject.getTitle());
+        assertEquals("Testjob", retrievedProject.getJob());
+        assertEquals("Testskills", retrievedProject.getSkills());
+        assertEquals("Testdescription", retrievedProject.getDescription());
+        assertEquals("Testlob", retrievedProject.getLob());
+        assertEquals("Testcustomer", retrievedProject.getCustomer());
+        assertEquals("Testlocation", retrievedProject.getLocation());
+        assertEquals("Teststart", retrievedProject.getOperationStart());
+        assertEquals("Testend", retrievedProject.getOperationEnd());
+        assertEquals("Testeffort", retrievedProject.getEffort());
+        assertEquals(LocalDateTime.of(2018, 1, 1, 12, 0), retrievedProject.getCreated());
+        assertEquals(LocalDateTime.of(2018, 1, 2, 12, 0), retrievedProject.getUpdated());
+        assertEquals("Testfreelancer", retrievedProject.getFreelancer());
+        assertEquals("Testelongation", retrievedProject.getElongation());
+        assertEquals("Testother", retrievedProject.getOther());
+        assertFalse(retrievedProject.isEditable());
 
 
-        List<String> firstProjectLabels = projectRetrieved.getLabels();
+        List<String> firstProjectLabels = retrievedProject.getLabels();
         assertEquals(3, firstProjectLabels.size());
         assertEquals("Label 1", firstProjectLabels.get(0));
         assertEquals("Label 2", firstProjectLabels.get(1));
@@ -134,6 +130,109 @@ public class ProjectPersistenceTest {
         Project secondPersisted = projectRepository.save(secondProject);
 
         assertEquals("STD-1", secondPersisted.getId());
+    }
+
+    @Test
+    public void testCustomQuery_GetAllForUserOfLob() {
+        projectRepository.saveAll(getProjectList());
+
+        // get a list of all projects for a user of the lob "LOB Test"
+        List<Project> allForUser = projectRepository.getAllForUserOfLob("LOB Test");
+
+        boolean allEscalatedOrFromSameLob = allForUser.stream()
+                .allMatch(project -> {
+                    boolean isOpen = "offen".equalsIgnoreCase(project.getStatus());
+                    boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
+                    boolean sameLobAsUser = "LOB Test".equalsIgnoreCase(project.getLob());
+                    boolean noLob = project.getLob() == null;
+
+                    // escalated || isOpen <-> (sameLob || noLob)
+                    // equivalence because implication is not enough
+                    // when the status is neither "eskaliert" nor "offen"
+                    return isEscalated || (isOpen && (sameLobAsUser || noLob) || (!isOpen && !(sameLobAsUser || noLob)));
+                });
+
+        assertTrue(allEscalatedOrFromSameLob);
+
+        assertEquals(5L, allForUser.size());
+    }
+
+    @Test
+    public void testCustomQuery_GetAllForSuperUser() {
+        // get a list of all projects for a superuser
+        List<Project> allForUser = projectRepository.getAllForSuperUser();
+
+        boolean allEscalatedOrOpen =
+                allForUser.stream()
+                        .allMatch(project -> {
+                            boolean isOpen = "offen".equalsIgnoreCase(project.getStatus());
+                            boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
+
+                            return isOpen || isEscalated;
+                        });
+        assertTrue(allEscalatedOrOpen);
+
+        assertEquals(6L, allForUser.size());
+    }
+
+    public List<Project> getProjectList() {
+        Project firstProject = Project.builder()
+                .id("STD-1")
+                .status("Offen")
+                .lob("LOB Test")
+                .build();
+
+        Project secondProject = Project.builder()
+                .id("STD-2")
+                .status("eskaliert")
+                .lob("LOB Test")
+                .build();
+
+        Project thirdProject = Project.builder()
+                .id("STD-3")
+                .status("Abgeschlossen")
+                .lob("LOB Test")
+                .build();
+
+        Project fourthProject = Project.builder()
+                .id("STD-4")
+                .status("Offen")
+                .lob("LOB Prod")
+                .build();
+
+        Project fifthProject = Project.builder()
+                .id("STD-5")
+                .status("eskaliert")
+                .lob("LOB Prod")
+                .build();
+
+        Project sixthProject = Project.builder()
+                .id("STD-6")
+                .status("Offen")
+                .lob(null)
+                .build();
+
+        Project seventhProject = Project.builder()
+                .id("STD-7")
+                .status("eskaliert")
+                .lob(null)
+                .build();
+
+        Project eighthProject = Project.builder()
+                .id("STD-8")
+                .status("Abgeschlossen")
+                .lob(null)
+                .build();
+
+        Project ninthProject = Project.builder()
+                .id("STD-8")
+                .status("Something weird")
+                .lob(null)
+                .build();
+
+        return Arrays.asList(firstProject, secondProject, thirdProject,
+                fourthProject, fifthProject, sixthProject,
+                seventhProject, eighthProject, ninthProject);
     }
 
 }

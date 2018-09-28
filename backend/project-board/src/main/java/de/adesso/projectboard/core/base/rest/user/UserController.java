@@ -1,10 +1,11 @@
 package de.adesso.projectboard.core.base.rest.user;
 
 import de.adesso.projectboard.core.base.rest.exceptions.UserNotFoundException;
+import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.user.dto.UserResponseDTO;
 import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
-import de.adesso.projectboard.core.base.rest.user.persistence.UserService;
+import de.adesso.projectboard.core.base.rest.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -133,16 +134,37 @@ public class UserController {
         return UserResponseDTO.fromUser(userService.getUserById(userId));
     }
 
+    /**
+     *
+     * @param userId
+     *          The if of the {@link User}.
+     *
+     * @return
+     *          A {@link Iterable} of all {@link Project}s the user with the given {@code userId}
+     *          created.
+     *
+     * @throws UserNotFoundException
+     *          When no {@link User} with the given {@code userId} was found.
+     */
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @GetMapping(path = "/{userId}/staff",
             produces = "application/json"
     )
-    public List<UserResponseDTO> getStaffMembersOfUser(@PathVariable("userId") String userId) throws UserNotFoundException {
+    public Iterable<UserResponseDTO> getStaffMembersOfUser(@PathVariable("userId") String userId) throws UserNotFoundException {
         User user = userService.getUserById(userId);
 
         return user.getStaffMembers().stream()
                 .map(UserResponseDTO::fromUser)
                 .collect(Collectors.toList());
+    }
+
+    @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
+    @GetMapping(
+            path = "/{userId}/projects",
+            produces = "application/json"
+    )
+    public Iterable<Project> getCreatedProjectsOfUser(@PathVariable("userId") String userId) throws UserNotFoundException {
+        return userService.getUserById(userId).getCreatedProjects();
     }
 
     /**
@@ -152,7 +174,7 @@ public class UserController {
      */
     @PreAuthorize("hasRole('admin')")
     @GetMapping
-    public List<UserResponseDTO> getAllUsers() {
+    public Iterable<UserResponseDTO> getAllUsers() {
         return StreamSupport.stream(userService.getAllUsers().spliterator(), true)
                 .map(UserResponseDTO::fromUser)
                 .collect(Collectors.toList());

@@ -1,6 +1,6 @@
 package de.adesso.projectboard.core.base.updater;
 
-import de.adesso.projectboard.core.base.updater.persistence.ProjectDatabaseUpdaterInfo;
+import de.adesso.projectboard.core.base.updater.persistence.UpdateJob;
 import de.adesso.projectboard.core.base.updater.persistence.ProjectDatabaseUpdaterInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
@@ -32,12 +32,12 @@ public class UpdaterHealthIndicator implements HealthIndicator {
      */
     @Override
     public Health health() {
-        Optional<ProjectDatabaseUpdaterInfo> lastInfoOptional = updaterRepository.findLatest();
+        Optional<UpdateJob> lastInfoOptional = updaterRepository.findLatest();
 
         if(lastInfoOptional.isPresent()) {
-            ProjectDatabaseUpdaterInfo lastInfo = lastInfoOptional.get();
+            UpdateJob lastInfo = lastInfoOptional.get();
 
-            if(ProjectDatabaseUpdaterInfo.Status.FAILURE.equals(lastInfo.getStatus())) {
+            if(UpdateJob.Status.FAILURE.equals(lastInfo.getStatus())) {
                 return Health.down()
                         .withDetail("reason", lastInfoOptional.get().getFailureReason())
                         .build();
@@ -45,7 +45,7 @@ public class UpdaterHealthIndicator implements HealthIndicator {
                 return Health.up()
                         .withDetail("lastUpdate", lastInfo.getTime())
                         .withDetail("totalUpdates", updaterRepository.count())
-                        .withDetail("successfulUpdates", updaterRepository.countByStatus(ProjectDatabaseUpdaterInfo.Status.SUCCESS))
+                        .withDetail("successfulUpdates", updaterRepository.countByStatus(UpdateJob.Status.SUCCESS))
                         .build();
             }
 

@@ -4,7 +4,7 @@ import de.adesso.projectboard.core.base.configuration.ProjectBoardConfigurationP
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
 import de.adesso.projectboard.core.base.reader.ProjectReader;
-import de.adesso.projectboard.core.base.updater.persistence.ProjectDatabaseUpdaterInfo;
+import de.adesso.projectboard.core.base.updater.persistence.UpdateJob;
 import de.adesso.projectboard.core.base.updater.persistence.ProjectDatabaseUpdaterInfoRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,12 +50,12 @@ public class ProjectDatabaseUpdater {
     /**
      * Refreshes the project database by using a {@link ProjectReader}.
      *
-     * @see #shouldUpdate(ProjectDatabaseUpdaterInfo)
+     * @see #shouldUpdate(UpdateJob)
      */
     @Scheduled(fixedDelay = 30000L)
     public void refreshProjectDatabase() {
-        Optional<ProjectDatabaseUpdaterInfo> lastSuccessfulUpdate
-                = infoRepository.findFirstByStatusOrderByTimeDesc(ProjectDatabaseUpdaterInfo.Status.SUCCESS);
+        Optional<UpdateJob> lastSuccessfulUpdate
+                = infoRepository.findFirstByStatusOrderByTimeDesc(UpdateJob.Status.SUCCESS);
 
 
         try {
@@ -73,12 +73,12 @@ public class ProjectDatabaseUpdater {
 
             projectRepository.saveAll(projects);
 
-            infoRepository.save(new ProjectDatabaseUpdaterInfo(LocalDateTime.now(), ProjectDatabaseUpdaterInfo.Status.SUCCESS));
+            infoRepository.save(new UpdateJob(LocalDateTime.now(), UpdateJob.Status.SUCCESS));
         } catch (Exception e) {
             logger.error("Error updating project database!", e);
 
-            ProjectDatabaseUpdaterInfo info = new ProjectDatabaseUpdaterInfo(LocalDateTime.now(),
-                    ProjectDatabaseUpdaterInfo.Status.FAILURE,
+            UpdateJob info = new UpdateJob(LocalDateTime.now(),
+                    UpdateJob.Status.FAILURE,
                     e);
 
             infoRepository.save(info);
@@ -89,14 +89,14 @@ public class ProjectDatabaseUpdater {
     /**
      *
      * @param lastUpdate
-     *          The {@link ProjectDatabaseUpdaterInfo} object of the last successful update.
+     *          The {@link UpdateJob} object of the last successful update.
      *
      * @return
      *          {@code true} if the difference between {@link LocalDateTime#now() now} and
-     *          {@link ProjectDatabaseUpdaterInfo#getTime()} is longer than
+     *          {@link UpdateJob#getTime()} is longer than
      *          {@link ProjectBoardConfigurationProperties#getRefreshInterval()} minutes.
      */
-    private boolean shouldUpdate(ProjectDatabaseUpdaterInfo lastUpdate) {
+    private boolean shouldUpdate(UpdateJob lastUpdate) {
         Duration lastUpdateDeltaDuration = Duration.between(lastUpdate.getTime(), LocalDateTime.now()).abs();
 
         return refreshIntervalDuration.compareTo(lastUpdateDeltaDuration) <= 0;
