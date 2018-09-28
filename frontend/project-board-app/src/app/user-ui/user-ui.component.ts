@@ -44,8 +44,7 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
       this.filteredProjects = this.projects;
 
       // extract projects from applications
-      this.appliedProjects = data.applications.map(app => app.project);
-
+      this.appliedProjects = data.applications ? data.applications.map(app => app.project) : [];
       this.bookmarks = data.bookmarks;
       this.route.params.subscribe(params => {
         if (params.id) {
@@ -138,11 +137,11 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
   }
 
   isProjectApplicable(projectId) {
-    return !this.appliedProjects.some(p => p && p.id === projectId);
+    return this.appliedProjects ? !this.appliedProjects.some(p => p && p.id === projectId) : true;
   }
 
   isProjectBookmarked(projectId) {
-    return this.bookmarks.some(p => p && p.id === projectId);
+    return this.bookmarks ? this.bookmarks.some(p => p && p.id === projectId) : false;
   }
 
   handleBookmark(project) {

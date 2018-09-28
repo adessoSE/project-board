@@ -12,7 +12,7 @@ import { ProjectsResolverService } from './_services/projects-resolver.service';
 import { UserResolverService } from './_services/user-resolver.service';
 import { AdminUiComponent } from './admin-ui/admin-ui.component';
 import { CreateProjectComponent } from './create-project/create-project.component';
-import { LoginComponent } from './login/login.component';
+import { LogoutComponent } from './logout/logout.component';
 import { OverviewComponent } from './overview/overview.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ProjectRequestComponent } from './project-request/project-request.component';
@@ -20,8 +20,8 @@ import { UserUiComponent } from './user-ui/user-ui.component';
 
 const routes: Routes = [
   {
-    path: 'login',
-    component: LoginComponent
+    path: 'logout',
+    component: LogoutComponent
   },
   {
     path: 'admin/:id',
@@ -83,14 +83,17 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'notFound',
+    component: PageNotFoundComponent
+  },
+  {
     path: '',
     redirectTo: 'projects',
     pathMatch: 'full'
   },
   {
     path: '**',
-    component: PageNotFoundComponent,
-    canActivate: [AuthGuard]
+    component: UserUiComponent
   }
 ];
 
