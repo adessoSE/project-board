@@ -5,8 +5,8 @@ import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException
 import de.adesso.projectboard.core.base.rest.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
-import de.adesso.projectboard.core.base.rest.user.UserService;
 import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
+import de.adesso.projectboard.core.base.rest.user.persistence.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

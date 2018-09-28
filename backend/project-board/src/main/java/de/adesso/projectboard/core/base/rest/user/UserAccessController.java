@@ -1,6 +1,7 @@
 package de.adesso.projectboard.core.base.rest.user;
 
 import de.adesso.projectboard.core.base.rest.exceptions.UserNotFoundException;
+import de.adesso.projectboard.core.base.rest.user.persistence.UserService;
 import de.adesso.projectboard.core.base.rest.user.useraccess.UserAccessHandler;
 import de.adesso.projectboard.core.base.rest.user.useraccess.dto.UserAccessInfoRequestDTO;
 import de.adesso.projectboard.core.base.rest.user.dto.UserResponseDTO;

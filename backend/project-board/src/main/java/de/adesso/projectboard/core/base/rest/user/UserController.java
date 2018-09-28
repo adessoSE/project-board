@@ -4,6 +4,7 @@ import de.adesso.projectboard.core.base.rest.exceptions.UserNotFoundException;
 import de.adesso.projectboard.core.base.rest.user.dto.UserResponseDTO;
 import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
+import de.adesso.projectboard.core.base.rest.user.persistence.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -110,6 +110,8 @@ public class UserController {
         cox.setEmail("alexandria.cox@adesso.de");
         cox.setLob("LOB Banking");
         userService.save(cox);
+
+        userService.delete(cox);
     }
 
     /**

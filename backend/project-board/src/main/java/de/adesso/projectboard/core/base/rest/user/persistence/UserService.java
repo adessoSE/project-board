@@ -1,4 +1,4 @@
-package de.adesso.projectboard.core.base.rest.user;
+package de.adesso.projectboard.core.base.rest.user.persistence;
 
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
 import de.adesso.projectboard.core.base.rest.exceptions.BookmarkNotFoundException;
@@ -270,4 +270,18 @@ public class UserService {
         return userRepo.save(user);
     }
 
+    /**
+     * Deletes a {@link User} from the database by removing it from the boss'
+     * {@link SuperUser#staffMembers}.
+     *
+     * @param user
+     *          The {@link User} to remove.
+     *
+     * @see SuperUser#removeStaffMember(User)
+     */
+    public void delete(User user) {
+        SuperUser boss = user.getBoss();
+        boss.removeStaffMember(user);
+        userRepo.save(boss);
+    }
 }
