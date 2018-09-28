@@ -1,11 +1,13 @@
 package de.adesso.projectboard.core.base.rest.security;
 
+import de.adesso.projectboard.core.base.rest.user.persistence.UserService;
+
 /**
- * Interface used by the {@link de.adesso.projectboard.core.base.rest.user.UserService} to
+ * Interface used by the {@link UserService} to
  * get the id of the currently authenticated user.
  *
  * @see de.adesso.projectboard.core.rest.security.KeycloakAuthenticationInfo
- * @see de.adesso.projectboard.core.base.rest.user.UserService
+ * @see UserService
  */
 public interface AuthenticationInfo {
 

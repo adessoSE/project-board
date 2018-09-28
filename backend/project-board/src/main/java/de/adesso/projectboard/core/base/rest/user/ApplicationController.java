@@ -11,6 +11,7 @@ import de.adesso.projectboard.core.base.rest.user.application.dto.ProjectApplica
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplicationRepository;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
+import de.adesso.projectboard.core.base.rest.user.persistence.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;

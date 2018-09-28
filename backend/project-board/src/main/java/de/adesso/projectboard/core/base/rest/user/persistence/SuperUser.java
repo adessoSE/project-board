@@ -21,7 +21,7 @@ public class SuperUser extends User {
     /**
      * The user's supervised {@link User}s.
      */
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<User> staffMembers;
 
     /**
@@ -94,6 +94,32 @@ public class SuperUser extends User {
             }
 
             user.setBoss(this);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Removes a {@link User} from the {@link #staffMembers} and sets its
+     * {@link #boss} to {@code null}.
+     *
+     * <p>
+     *     <b>Note:</b> The user is not persistable afterwards, because a {@link SuperUser boss}
+     *     is required!
+     * </p>
+     *
+     * @param user
+     *          The {@link User} to remove from the {@link #staffMembers}.
+     *
+     * @return
+     *          {@code true}, when the given {@code user} was present in the {@link #staffMembers}
+     *          set, {@code false} otherwise.
+     */
+    protected boolean removeStaffMember(User user) {
+        if(staffMembers.remove(user)) {
+            user.setBoss(null);
 
             return true;
         }

@@ -70,7 +70,10 @@ public class User {
     /**
      * The boss of this user.
      */
-    @ManyToOne(optional = false)
+    @ManyToOne(
+            cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE},
+            optional = false
+    )
     private SuperUser boss;
 
     /**

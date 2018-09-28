@@ -2,7 +2,7 @@ package de.adesso.projectboard.core.base.rest.security;
 
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.user.UserAccessController;
-import de.adesso.projectboard.core.base.rest.user.UserService;
+import de.adesso.projectboard.core.base.rest.user.persistence.UserService;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;

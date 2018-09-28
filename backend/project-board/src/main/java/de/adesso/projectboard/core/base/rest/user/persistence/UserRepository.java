@@ -6,7 +6,7 @@ import org.springframework.data.repository.CrudRepository;
 /**
  * {@link CrudRepository} to persist {@link User} entities.
  *
- * @see de.adesso.projectboard.core.base.rest.user.UserService
+ * @see UserService
  */
 public interface UserRepository extends CrudRepository<User, String> {
 

@@ -1,6 +1,6 @@
 package de.adesso.projectboard.core.base.rest.security;
 
-import de.adesso.projectboard.core.base.rest.user.UserService;
+import de.adesso.projectboard.core.base.rest.user.persistence.UserService;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
