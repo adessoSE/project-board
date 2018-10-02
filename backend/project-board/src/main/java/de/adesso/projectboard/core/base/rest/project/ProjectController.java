@@ -150,7 +150,7 @@ public class ProjectController {
                 .description(projectDTO.getDescription())
                 .lob(projectDTO.getLob())
                 .customer(projectDTO.getCustomer())
-                .lob(projectDTO.getLocation())
+                .location(projectDTO.getLocation())
                 .operationStart(projectDTO.getOperationStart())
                 .operationEnd(projectDTO.getOperationEnd())
                 .effort(projectDTO.getEffort())
