@@ -1,5 +1,6 @@
 import { formatDate } from '@angular/common';
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Router } from '@angular/router';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Application, Employee, EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
@@ -15,12 +16,14 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
   @Input() revokeable = false;
   @Input() bookmarks: Project[] = [];
   @Input() applications: Application[] = [];
+  @Input() projects: Project[] = [];
 
   numberOfDaysSelect = [];
 
   constructor(private projectService: ProjectService,
               private employeeService: EmployeeService,
-              private authService: AuthenticationService) { }
+              private authService: AuthenticationService,
+              private router: Router) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.selectedEmployee.currentValue && !changes.selectedEmployee.isFirstChange()) {
@@ -75,5 +78,13 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
 
   revokeApplication(appId) {
     this.employeeService.revokeApplication(this.authService.username, appId).subscribe(() => this.getApplications());
+  }
+
+  deleteProject(projectId) {
+    this.projectService.deleteProject(projectId).subscribe(() => this.projects = this.projects.filter(p => p.id !== projectId));
+  }
+
+  editProject(projectId) {
+    this.router.navigate([`/projects/${projectId}/edit`]);
   }
 }

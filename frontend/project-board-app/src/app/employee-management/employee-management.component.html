@@ -70,5 +70,20 @@
       {{!adminControls ? 'Du hast keine Projekte angefragt.' : 'Keine Projektanfragen.'}}
     </div>
   </ng-container>
+
+  <!--  Created Projects-->
+  <ng-container *ngIf="!adminControls">
+    <h4>Erstellte Projekte</h4>
+    <div *ngFor="let p of projects; index as i" [ngClass]="{'border-bottom pb-2 mb-2': i<projects.length-1}">
+      <div class="inset">
+        <a routerLink="/projects/{{p.id}}">{{p.id}}</a><br>
+        {{p.title}}<br>
+        <small class="link-red" (click)="deleteProject(p.id)">Projekt löschen</small>
+        <small class="link-blue" (click)="editProject(p.id)">Bearbeiten</small>
+      </div>
+    </div>
+    <div class="inset" *ngIf="!projects || projects.length === 0">Du hast keine Projekte erstellt.</div>
+  </ng-container>
+
   <p *ngIf="!selectedEmployee">Kein Mitarbeiter ausgewählt.</p>
 </div>

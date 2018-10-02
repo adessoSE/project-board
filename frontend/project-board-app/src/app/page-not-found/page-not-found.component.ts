@@ -8,10 +8,11 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons';
 })
 export class PageNotFoundComponent implements OnInit {
   faTimes = faTimes;
+  message: string;
 
   constructor() { }
 
   ngOnInit() {
+    this.message = 'Die angeforderte Ressource ist nicht verfügbar.';
   }
-
 }

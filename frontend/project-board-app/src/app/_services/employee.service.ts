@@ -54,6 +54,10 @@ export class EmployeeService {
   removeBookmark(userId, projectId) {
     return this.http.delete(`${environment.resourceServer}/users/${userId}/bookmarks/${projectId}`);
   }
+
+  getProjects(userId) {
+    return this.http.get<Project[]>(`${environment.resourceServer}/users/${userId}/projects`);
+  }
 }
 
 export interface Employee {

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { faBookmark } from '@fortawesome/free-regular-svg-icons';
 import { faEnvelope } from '@fortawesome/free-regular-svg-icons/faEnvelope';
 import * as $ from 'jquery';
+import { AlertService } from '../_services/alert.service';
 import { Project, ProjectService } from '../_services/project.service';
 
 @Component({
@@ -30,6 +31,7 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
   }
 
   constructor(private projectsService: ProjectService,
+              private alertService: AlertService,
               private route: ActivatedRoute,
               private router: Router,
               private location: Location) { }
@@ -42,12 +44,14 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
       this.filteredProjects = this.projects;
 
       // extract projects from applications
-      this.appliedProjects = data.applications.map(app => app.project);
-
+      this.appliedProjects = data.applications ? data.applications.map(app => app.project) : [];
       this.bookmarks = data.bookmarks;
       this.route.params.subscribe(params => {
         if (params.id) {
           this.setSelectedProject(params.id);
+          if (!this.selectedProject) {
+            this.alertService.info('Das angegebene Projekt wurde nicht gefunden.');
+          }
         }
       });
     });
@@ -108,7 +112,6 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
         return;
       }
     }
-    this.router.navigate(['/notFound'], {skipLocationChange: true});
     this.selectedProject = null;
   }
 
@@ -134,11 +137,11 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
   }
 
   isProjectApplicable(projectId) {
-    return !this.appliedProjects.some(p => p && p.id === projectId);
+    return this.appliedProjects ? !this.appliedProjects.some(p => p && p.id === projectId) : true;
   }
 
   isProjectBookmarked(projectId) {
-    return this.bookmarks.some(p => p && p.id === projectId);
+    return this.bookmarks ? this.bookmarks.some(p => p && p.id === projectId) : false;
   }
 
   handleBookmark(project) {
