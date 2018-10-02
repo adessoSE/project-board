@@ -46,7 +46,7 @@
     <h4>Lesezeichen</h4>
     <div *ngFor="let b of bookmarks; index as i" [ngClass]="{'border-bottom pb-2 mb-2': i<bookmarks.length-1}">
       <div class="inset">
-        <a routerLink="/projects/{{b.id}}">{{b.id}}</a><br>
+        <a routerLink="/browse/{{b.id}}">{{b.id}}</a><br>
         {{b.title}}<br>
         <small class="link-red" (click)="removeBookmark(b.id)">Lesezeichen entfernen</small>
       </div>
@@ -59,7 +59,7 @@
     <h4>Anfragen</h4>
     <div *ngFor="let a of applications; index as i" [ngClass]="{'border-bottom pb-2 mb-2': i<applications.length-1}">
       <div class="inset">
-        <a routerLink="/projects/{{a.project.id}}">{{a.project.id}}</a><br>
+        <a routerLink="/browse/{{a.project.id}}">{{a.project.id}}</a><br>
         {{a.project.title}}<br>
         Kommentar: {{a.comment}}<br>
         Datum: {{a.date | date : 'dd.MM.yyyy'}}<br>
@@ -76,7 +76,7 @@
     <h4>Erstellte Projekte</h4>
     <div *ngFor="let p of projects; index as i" [ngClass]="{'border-bottom pb-2 mb-2': i<projects.length-1}">
       <div class="inset">
-        <a routerLink="/projects/{{p.id}}">{{p.id}}</a><br>
+        <a routerLink="/browse/{{p.id}}">{{p.id}}</a><br>
         {{p.title}}<br>
         <small class="link-blue mr-3" (click)="editProject(p.id)">Bearbeiten</small>
         <small class="link-red" (click)="deleteProject(p.id)">Projekt löschen</small>

@@ -5,11 +5,11 @@ import * as $ from 'jquery';
 import { Employee, EmployeeService } from '../_services/employee.service';
 
 @Component({
-  selector: 'app-admin-ui',
-  templateUrl: './admin-ui.component.html',
-  styleUrls: ['./admin-ui.component.scss']
+  selector: 'app-executives',
+  templateUrl: './executives.component.html',
+  styleUrls: ['./executives.component.scss']
 })
-export class AdminUiComponent implements OnInit, AfterViewChecked {
+export class ExecutivesComponent implements OnInit, AfterViewChecked {
   employees: Employee[] = [];
   selectedEmployee: Employee;
   mobile = false;

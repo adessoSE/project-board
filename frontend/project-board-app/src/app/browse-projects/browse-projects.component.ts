@@ -9,11 +9,11 @@ import { AlertService } from '../_services/alert.service';
 import { Project, ProjectService } from '../_services/project.service';
 
 @Component({
-  selector: 'app-user-ui',
-  templateUrl: './user-ui.component.html',
-  styleUrls: ['./user-ui.component.scss']
+  selector: 'app-browse-projects',
+  templateUrl: './browse-projects.component.html',
+  styleUrls: ['./browse-projects.component.scss']
 })
-export class UserUiComponent implements OnInit, AfterViewChecked {
+export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
   appTooltip = 'Du hast dieses Projekt bereits angefragt.';
   bmTooltip = 'Du hast ein Lesezeichen an diesem Projekt.';
   studTooltip = 'Studentisches Projekt';
@@ -63,7 +63,7 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
   filterProjects(filterInput) {
     const filter = filterInput.toLowerCase().split(' ').filter(e => e.length > 2);
     if (filter.length > 0) {
-      this.location.replaceState(`/projects`);
+      this.location.replaceState(`/browse`);
       this.selectedProject = null;
       const filtered: { project: Project, hitCount: number }[] = [];
       this.projects.forEach(p => {
@@ -120,11 +120,11 @@ export class UserUiComponent implements OnInit, AfterViewChecked {
 
   projectClicked(project) {
     if (this.selectedProject === project) {
-      this.location.replaceState(`/projects`);
+      this.location.replaceState(`/browse`);
       this.selectedProject = null;
       this.scroll = false;
     } else {
-      this.location.replaceState(`/projects/${project.id}`);
+      this.location.replaceState(`/browse/${project.id}`);
       this.selectedProject = project;
       this.scroll = true;
     }

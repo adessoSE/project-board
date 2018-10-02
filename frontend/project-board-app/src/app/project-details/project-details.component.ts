@@ -30,7 +30,7 @@ export class ProjectDetailsComponent implements OnInit {
   }
 
   requestProject() {
-    this.router.navigate([`projects/${this.selectedProject.id}/request`]);
+    this.router.navigate([`/projects/${this.selectedProject.id}/request`]);
   }
 
   addBookmark() {

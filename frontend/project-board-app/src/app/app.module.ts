@@ -14,11 +14,12 @@ import { AlertService } from './_services/alert.service';
 import { AuthenticationService } from './_services/authentication.service';
 import { EmployeeService } from './_services/employee.service';
 import { ProjectService } from './_services/project.service';
-import { AdminUiComponent } from './admin-ui/admin-ui.component';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { BrowseProjectsComponent } from './browse-projects/browse-projects.component';
 import { EmployeeManagementComponent } from './employee-management/employee-management.component';
+import { ExecutivesComponent } from './executives/executives.component';
 import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
 import { OverviewComponent } from './overview/overview.component';
@@ -26,16 +27,15 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { ProjectDetailsComponent } from './project-details/project-details.component';
 import { ProjectRequestComponent } from './project-request/project-request.component';
 import { ProjectComponent } from './project/project.component';
-import { UserUiComponent } from './user-ui/user-ui.component';
 
 registerLocaleData(localeDe, 'de');
 
 @NgModule({
   declarations: [
     AppComponent,
-    AdminUiComponent,
+    ExecutivesComponent,
     PageNotFoundComponent,
-    UserUiComponent,
+    BrowseProjectsComponent,
     LoginComponent,
     AlertComponent,
     YesOrNoPipe,

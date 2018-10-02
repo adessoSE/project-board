@@ -34,7 +34,7 @@ export class LoginComponent implements OnInit {
     });
 
     if (this.oAuthService.hasValidAccessToken()) {
-      this.router.navigate(['/projects']);
+      this.router.navigate(['/browse']);
       this.alertService.info('Du bist bereits eingeloggt! Wenn du den Benutzer wechseln möchtest, logge dich erst aus.');
     }
     // else if (this.authenticationService.token && !this.oAuthService.hasValidAccessToken()){

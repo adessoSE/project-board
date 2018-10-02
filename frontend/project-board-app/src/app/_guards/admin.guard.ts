@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
@@ -18,7 +18,7 @@ export class AdminGuard implements CanActivate {
     // only allowed to admins
     if (!this.authenticationService.isAdmin) {
       this.alertService.error('Du hast keinen Zugriff auf diesen Bereich.', true);
-      this.router.navigate(['/projects']);
+      this.router.navigate(['/browse']);
       return false;
     }
     return true;

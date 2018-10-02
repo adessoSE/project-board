@@ -12,13 +12,13 @@ import { EmployeeResolverService } from './_services/employee-resolver.service';
 import { ProjectResolverService } from './_services/project-resolver.service';
 import { ProjectsResolverService } from './_services/projects-resolver.service';
 import { UserResolverService } from './_services/user-resolver.service';
-import { AdminUiComponent } from './admin-ui/admin-ui.component';
+import { BrowseProjectsComponent } from './browse-projects/browse-projects.component';
+import { ExecutivesComponent } from './executives/executives.component';
 import { LogoutComponent } from './logout/logout.component';
 import { OverviewComponent } from './overview/overview.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ProjectRequestComponent } from './project-request/project-request.component';
 import { ProjectComponent } from './project/project.component';
-import { UserUiComponent } from './user-ui/user-ui.component';
 
 const routes: Routes = [
   {
@@ -27,7 +27,7 @@ const routes: Routes = [
   },
   {
     path: 'admin/:id',
-    component: AdminUiComponent,
+    component: ExecutivesComponent,
     resolve: {
       employees: EmployeeResolverService
     },
@@ -35,7 +35,7 @@ const routes: Routes = [
   },
   {
     path: 'admin',
-    component: AdminUiComponent,
+    component: ExecutivesComponent,
     resolve: {
       employees: EmployeeResolverService
     },
@@ -63,8 +63,8 @@ const routes: Routes = [
     canActivate: [AuthGuard, AccessGuard, AlreadyAppliedGuard]
   },
   {
-    path: 'projects/:id',
-    component: UserUiComponent,
+    path: 'browse/:id',
+    component: BrowseProjectsComponent,
     resolve: {
       projects: ProjectsResolverService,
       applications: ApplicationsResolverService,
@@ -73,8 +73,8 @@ const routes: Routes = [
     canActivate: [AuthGuard, AccessGuard]
   },
   {
-    path: 'projects',
-    component: UserUiComponent,
+    path: 'browse',
+    component: BrowseProjectsComponent,
     resolve: {
       projects: ProjectsResolverService,
       applications: ApplicationsResolverService,
@@ -99,12 +99,12 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'projects',
+    redirectTo: 'browse',
     pathMatch: 'full'
   },
   {
     path: '**',
-    component: UserUiComponent
+    component: BrowseProjectsComponent
   }
 ];
 
