@@ -111,8 +111,6 @@ public class UserController {
         cox.setEmail("alexandria.cox@adesso.de");
         cox.setLob("LOB Banking");
         userService.save(cox);
-
-        userService.delete(cox);
     }
 
     /**

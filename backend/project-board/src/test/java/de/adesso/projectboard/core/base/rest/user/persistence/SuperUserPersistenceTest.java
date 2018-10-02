@@ -55,7 +55,7 @@ public class SuperUserPersistenceTest {
         assertTrue(firstRetrievedUser.getStaffMembers().contains(firstRetrievedUser));
 
         // second user
-        retrievedUserOptional = userRepository.findById("first-user");
+        retrievedUserOptional = userRepository.findById("second-user");
         assertTrue(retrievedUserOptional.isPresent());
 
         User secondRetrievedUser = retrievedUserOptional.get();
@@ -66,10 +66,9 @@ public class SuperUserPersistenceTest {
         assertEquals("second.user@example.com", secondRetrievedUser.getEmail());
         assertEquals("LOB Test", secondRetrievedUser.getLob());
         assertEquals(firstRetrievedUser, secondRetrievedUser.getBoss());
-        assertTrue(secondRetrievedUser.getStaffMembers().contains(secondRetrievedUser));
 
         // third user
-        retrievedUserOptional = userRepository.findById("first-user");
+        retrievedUserOptional = userRepository.findById("third-user");
         assertTrue(retrievedUserOptional.isPresent());
 
         User thirdRetrievedUser = retrievedUserOptional.get();
@@ -80,7 +79,6 @@ public class SuperUserPersistenceTest {
         assertEquals("third.user@example.com", thirdRetrievedUser.getEmail());
         assertEquals("LOB Test", thirdRetrievedUser.getLob());
         assertEquals(firstRetrievedUser, thirdRetrievedUser.getBoss());
-        assertTrue(thirdRetrievedUser.getStaffMembers().contains(thirdRetrievedUser));
     }
 
 }

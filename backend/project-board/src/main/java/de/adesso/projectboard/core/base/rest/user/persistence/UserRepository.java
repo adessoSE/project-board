@@ -21,4 +21,6 @@ public interface UserRepository extends CrudRepository<User, String> {
 
     boolean existsByIdAndBoss(String id, SuperUser boss);
 
+    boolean existsByIdAndCreatedProjectsContaining(String userId, Project project);
+
 }

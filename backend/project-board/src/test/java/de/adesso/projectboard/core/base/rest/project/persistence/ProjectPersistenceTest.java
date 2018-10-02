@@ -159,6 +159,8 @@ public class ProjectPersistenceTest {
 
     @Test
     public void testCustomQuery_GetAllForSuperUser() {
+        projectRepository.saveAll(getProjectList());
+
         // get a list of all projects for a superuser
         List<Project> allForUser = projectRepository.getAllForSuperUser();
 

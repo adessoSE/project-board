@@ -1,19 +1,17 @@
 package de.adesso.projectboard.core.base.rest.user.service;
 
-import de.adesso.projectboard.core.base.rest.exceptions.BookmarkNotFoundException;
-import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.core.base.rest.exceptions.UserNotFoundException;
-import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
 import de.adesso.projectboard.core.base.rest.security.AuthenticationInfo;
-import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
 import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import de.adesso.projectboard.core.base.rest.user.persistence.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashSet;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Wrapper for the {@link UserRepository} to manage {@link User}s.
@@ -26,16 +24,11 @@ public class UserService {
 
     private final UserRepository userRepo;
 
-    private final ProjectRepository projectRepo;
-
     private final AuthenticationInfo authInfo;
 
     @Autowired
-    public UserService(UserRepository userRepo,
-                       ProjectRepository projectRepo,
-                       AuthenticationInfo authInfo) {
+    public UserService(UserRepository userRepo, AuthenticationInfo authInfo) {
         this.userRepo = userRepo;
-        this.projectRepo = projectRepo;
         this.authInfo = authInfo;
     }
 
@@ -146,7 +139,7 @@ public class UserService {
 
     /**
      * Deletes a {@link User} from the database by removing it from the boss'
-     * {@link SuperUser#staffMembers}.
+     * {@link SuperUser#staffMembers} and deleting the user.
      *
      * @param user
      *          The {@link User} to remove.
@@ -154,8 +147,16 @@ public class UserService {
      * @see SuperUser#removeStaffMember(User)
      */
     public void delete(User user) {
-        SuperUser boss = user.getBoss();
-        boss.removeStaffMember(user);
-        userRepo.save(boss);
+        if(!user.getBoss().equals(user)) {
+            SuperUser boss = user.getBoss();
+            boss.removeStaffMember(user);
+            userRepo.delete(user);
+            userRepo.save(boss);
+        } else {
+            SuperUser boss = user.getBoss();
+            boss.removeStaffMember(user);
+            userRepo.delete(user);
+        }
     }
+
 }

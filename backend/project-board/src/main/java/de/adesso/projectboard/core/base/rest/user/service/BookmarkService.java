@@ -141,11 +141,10 @@ public class BookmarkService {
      *          not exist or the the user's {@link User#getBookmarks() bookmarks} don't contain
      *          the project.
      *
+     * @see UserRepository#existsByIdAndBookmarksContaining(String, Project)
      */
     public boolean userHasBookmark(String userId, String projectId) {
-        Optional<User> userOptional = userRepo.findById(userId);
-
-        if(userOptional.isPresent() && projectService.projectExists(projectId)) {
+        if(projectService.projectExists(projectId)) {
             Project project = projectService.getProjectById(projectId);
 
             return userRepo.existsByIdAndBookmarksContaining(userId, project);

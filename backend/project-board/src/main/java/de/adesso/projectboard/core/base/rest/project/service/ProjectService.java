@@ -75,6 +75,33 @@ public class ProjectService {
     }
 
     /**
+     *
+     * @param userId
+     *          The id of the {@link User}
+     *
+     * @param projectId
+     *          The id of the {@link Project}.
+     *
+     * @return
+     *          {@code true}, when a {@link Project} with the given id is present
+     *          in the {@link User#createdProjects created projects}
+     *          of the {@link User} with the given {@code userId}, {@code false} otherwise.
+     *
+     * @see #projectExists(String)
+     * @see #getProjectById(String)
+     * @see UserRepository#existsByIdAndCreatedProjectsContaining(String, Project)
+     */
+    public boolean userHasProject(String userId, String projectId) {
+        if(projectExists(projectId)) {
+            Project project = getProjectById(projectId);
+
+            return userRepo.existsByIdAndCreatedProjectsContaining(userId, project);
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Gets all projects the user is authorized to see. {@link SuperUser} get all
      * {@link Project}s with the status <i>offen</i> and <i>eskaliert</i>. Normal
      * {@link User}s only see {@link Project}s with the status <i>eskaliert</i>
@@ -124,7 +151,7 @@ public class ProjectService {
                 .description(projectDTO.getDescription())
                 .lob(projectDTO.getLob())
                 .customer(projectDTO.getCustomer())
-                .lob(projectDTO.getLocation())
+                .location(projectDTO.getLocation())
                 .operationStart(projectDTO.getOperationStart())
                 .operationEnd(projectDTO.getOperationEnd())
                 .effort(projectDTO.getEffort())
