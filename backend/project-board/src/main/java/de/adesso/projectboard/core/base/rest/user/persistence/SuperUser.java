@@ -1,9 +1,12 @@
 package de.adesso.projectboard.core.base.rest.user.persistence;
 
+import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -106,7 +109,7 @@ public class SuperUser extends User {
      * {@link #boss} to {@code null}.
      *
      * <p>
-     *     <b>Note:</b> The user is not persistable afterwards, because a {@link SuperUser boss}
+     *     <b>Note:</b> The user can not be persisted afterwards, because a {@link SuperUser boss}
      *     is required!
      * </p>
      *
@@ -117,7 +120,7 @@ public class SuperUser extends User {
      *          {@code true}, when the given {@code user} was present in the {@link #staffMembers}
      *          set, {@code false} otherwise.
      */
-    protected boolean removeStaffMember(User user) {
+    public boolean removeStaffMember(User user) {
         if(staffMembers.remove(user)) {
             user.setBoss(null);
 
@@ -135,6 +138,42 @@ public class SuperUser extends User {
     @Override
     public Set<User> getStaffMembers() {
         return Collections.unmodifiableSet(staffMembers);
+    }
+
+    /**
+     *
+     * @return
+     *          A {@link Set} of the created {@link Project}s of this user.
+     */
+    @Override
+    public Set<Project> getCreatedProjects() {
+        return Collections.unmodifiableSet(createdProjects);
+    }
+
+    /**
+     *
+     * @param project
+     *          The {@link Project} to add to the created projects.
+     *
+     * @return
+     *          The result of {@link Set#add(Object)}
+     */
+    @Override
+    public boolean addCreatedProject(Project project) {
+        return createdProjects.add(project);
+    }
+
+    /**
+     *
+     * @param project
+     *          The {@link Project} to remove from the created projects.
+     *
+     * @return
+     *          The result of {@link Set#remove(Object)}.
+     */
+    @Override
+    public boolean removeCreatedProject(Project project) {
+        return createdProjects.remove(project);
     }
 
 }

@@ -1,6 +1,6 @@
 package de.adesso.projectboard.core.base.rest.security;
 
-import de.adesso.projectboard.core.base.rest.user.persistence.UserService;
+import de.adesso.projectboard.core.base.rest.user.service.UserService;
 
 /**
  * Interface used by the {@link UserService} to

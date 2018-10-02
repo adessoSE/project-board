@@ -1,11 +1,13 @@
 package de.adesso.projectboard.core.rest.security;
 
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
+import de.adesso.projectboard.core.base.rest.project.service.ProjectService;
 import de.adesso.projectboard.core.base.rest.security.ExpressionEvaluator;
-import de.adesso.projectboard.core.base.rest.user.persistence.UserService;
+import de.adesso.projectboard.core.base.rest.user.service.UserService;
 import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.UserAccessInfo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -23,10 +25,21 @@ import java.util.Set;
  *
  * @see ExpressionEvaluator
  * @see UserService
+ * @see ProjectService
  */
 @Profile("user-access")
 @Service
 public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
+
+    private final UserService userService;
+
+    private final ProjectService projectService;
+
+    @Autowired
+    public UserAccessExpressionEvaluator(UserService userService, ProjectService projectService) {
+        this.userService = userService;
+        this.projectService = projectService;
+    }
 
     /**
      * Gets the currently authenticated user from the {@link UserService}
@@ -131,6 +144,8 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
     }
 
     /**
+     * A {@link User} has the permission to edit a {@link Project} when it is
+     * present in the {@link User#createdProjects created projects} of the user.
      *
      * @param authentication
      *          The {@link Authentication} object.
@@ -142,12 +157,13 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          The id of the {@link Project} the user wants to update.
      *
      * @return
-     *          {@code true}, if the given {@link User} is a {@link SuperUser},
-     *          {@code false} otherwise.
+     *          The result of {@link ProjectService#userHasProject(String, String)}.
+     *
+     * @see ProjectService#userHasProject(String, String)
      */
     @Override
     public boolean hasPermissionToEditProject(Authentication authentication, User user, String projectId) {
-        return user instanceof SuperUser;
+        return projectService.userHasProject(user.getId(), projectId);
     }
 
     /**
@@ -171,8 +187,11 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      */
     @Override
     public boolean hasElevatedAccessToUser(Authentication authentication, User user, String userId) {
-        return user.getStaffMembers().stream()
-                .anyMatch(staffMember -> staffMember.getId().equals(userId));
+        if(user instanceof SuperUser) {
+            return userService.userHasStaffMember((SuperUser) user, userId);
+        } else {
+            return false;
+        }
     }
 
 }
