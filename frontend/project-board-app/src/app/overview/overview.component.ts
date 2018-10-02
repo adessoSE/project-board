@@ -12,6 +12,7 @@ export class OverviewComponent implements OnInit {
   user: Employee;
   bookmarks: Project[];
   applications: Application[];
+  projects: Project[];
 
   constructor(private route: ActivatedRoute) { }
 
@@ -20,6 +21,7 @@ export class OverviewComponent implements OnInit {
       this.user = data.user;
       this.bookmarks = data.bookmarks;
       this.applications = data.applications;
+      this.projects = data.projects;
     });
   }
 }

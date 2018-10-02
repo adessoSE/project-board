@@ -4,8 +4,10 @@ import { AccessGuard } from './_guards/access.guard';
 import { AdminGuard } from './_guards/admin.guard';
 import { AlreadyAppliedGuard } from './_guards/already-applied.guard';
 import { AuthGuard } from './_guards/auth.guard';
+import { EditableGuard } from './_guards/editable.guard';
 import { ApplicationsResolverService } from './_services/applications-resolver.service';
 import { BookmarksResolverService } from './_services/bookmarks-resolver.service';
+import { CreatedProjectsResolverService } from './_services/created-projects-resolver.service';
 import { EmployeeResolverService } from './_services/employee-resolver.service';
 import { ProjectResolverService } from './_services/project-resolver.service';
 import { ProjectsResolverService } from './_services/projects-resolver.service';
@@ -50,7 +52,7 @@ const routes: Routes = [
     resolve: {
       project: ProjectResolverService
     },
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, EditableGuard]
   },
   {
     path: 'projects/:id/request',
@@ -86,7 +88,8 @@ const routes: Routes = [
     resolve: {
       user: UserResolverService,
       bookmarks: BookmarksResolverService,
-      applications: ApplicationsResolverService
+      applications: ApplicationsResolverService,
+      projects: CreatedProjectsResolverService
     },
     canActivate: [AuthGuard]
   },
