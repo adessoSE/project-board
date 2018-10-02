@@ -43,17 +43,27 @@ h4 {
   display: block;
 }
 
-.link-red {
-  color: red;
-  cursor: pointer;
-}
-
 .inset {
   padding-left: 1rem;
 }
 
+.link-red {
+  color: $red;
+  cursor: pointer;
+}
+
+.link-blue {
+  color: $blue;
+  cursor: pointer;
+}
+
 .link-red:hover {
-  color: darken(red, 10);
+  color: darken($red, 15);
+  text-decoration: underline;
+}
+
+.link-blue:hover {
+  color: darken($blue, 15);
   text-decoration: underline;
 }
 

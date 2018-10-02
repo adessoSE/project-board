@@ -78,8 +78,8 @@
       <div class="inset">
         <a routerLink="/projects/{{p.id}}">{{p.id}}</a><br>
         {{p.title}}<br>
+        <small class="link-blue mr-3" (click)="editProject(p.id)">Bearbeiten</small>
         <small class="link-red" (click)="deleteProject(p.id)">Projekt löschen</small>
-        <small class="link-blue" (click)="editProject(p.id)">Bearbeiten</small>
       </div>
     </div>
     <div class="inset" *ngIf="!projects || projects.length === 0">Du hast keine Projekte erstellt.</div>
