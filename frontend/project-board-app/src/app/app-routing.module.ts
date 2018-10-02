@@ -44,7 +44,7 @@ const routes: Routes = [
   {
     path: 'projects/new',
     component: ProjectComponent,
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard, AdminGuard]
   },
   {
     path: 'projects/:id/edit',
@@ -52,7 +52,7 @@ const routes: Routes = [
     resolve: {
       project: ProjectResolverService
     },
-    canActivate: [AuthGuard, EditableGuard]
+    canActivate: [AuthGuard, AdminGuard, EditableGuard]
   },
   {
     path: 'projects/:id/request',
