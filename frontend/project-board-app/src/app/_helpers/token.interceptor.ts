@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 import { AuthenticationService } from '../_services/authentication.service';
 
 @Injectable()
@@ -15,7 +16,7 @@ export class TokenInterceptor implements HttpInterceptor {
     const currentUser = this.authService.name;
     const token = this.authService.token;
 
-    if (request.url.includes('localhost:8081') && currentUser && token) {
+    if (request.url.includes(environment.resourceServer) && currentUser && token) {
       request = request.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`
@@ -27,8 +28,8 @@ export class TokenInterceptor implements HttpInterceptor {
       if (res instanceof HttpErrorResponse) {
         if (res.status === 404) {
           this.router.navigate(['/notFound']);
-          return next.handle(request);
         }
+        return next.handle(request);
       }
     }));
   }
