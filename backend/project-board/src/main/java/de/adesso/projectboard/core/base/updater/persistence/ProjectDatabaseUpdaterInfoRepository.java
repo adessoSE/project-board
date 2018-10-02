@@ -6,17 +6,17 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.Optional;
 
 /**
- * The corresponding {@link CrudRepository} to persist {@link ProjectDatabaseUpdaterInfo} in a database.
+ * The corresponding {@link CrudRepository} to persist {@link UpdateJob} in a database.
  *
- * @see ProjectDatabaseUpdaterInfo
+ * @see UpdateJob
  */
-public interface ProjectDatabaseUpdaterInfoRepository extends CrudRepository<ProjectDatabaseUpdaterInfo, Long> {
+public interface ProjectDatabaseUpdaterInfoRepository extends CrudRepository<UpdateJob, Long> {
 
-    Optional<ProjectDatabaseUpdaterInfo> findFirstByStatusOrderByTimeDesc(ProjectDatabaseUpdaterInfo.Status status);
+    Optional<UpdateJob> findFirstByStatusOrderByTimeDesc(UpdateJob.Status status);
 
-    @Query("SELECT p FROM ProjectDatabaseUpdaterInfo AS p WHERE p.time = (SELECT MAX(p.time) FROM ProjectDatabaseUpdaterInfo AS p)")
-    Optional<ProjectDatabaseUpdaterInfo> findLatest();
+    @Query("SELECT p FROM UpdateJob AS p WHERE p.time = (SELECT MAX(p.time) FROM UpdateJob AS p)")
+    Optional<UpdateJob> findLatest();
 
-    long countByStatus(ProjectDatabaseUpdaterInfo.Status status);
+    long countByStatus(UpdateJob.Status status);
 
 }

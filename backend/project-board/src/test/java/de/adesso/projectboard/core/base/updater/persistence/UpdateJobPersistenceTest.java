@@ -17,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-public class ProjectDatabaseUpdaterInfoPersistenceTest {
+public class UpdateJobPersistenceTest {
 
     @Autowired
     private ProjectDatabaseUpdaterInfoRepository infoRepository;
@@ -26,22 +26,22 @@ public class ProjectDatabaseUpdaterInfoPersistenceTest {
     public void testSave_OK() {
         LocalDateTime time = LocalDateTime.of(2018, 1, 1, 12, 0);
 
-        ProjectDatabaseUpdaterInfo info = new ProjectDatabaseUpdaterInfo();
+        UpdateJob info = new UpdateJob();
 
-        info.setStatus(ProjectDatabaseUpdaterInfo.Status.FAILURE);
+        info.setStatus(UpdateJob.Status.FAILURE);
         info.setTime(time);
         info.setFailureReason("Testreason");
 
         infoRepository.save(info);
 
-        List<ProjectDatabaseUpdaterInfo> infos = StreamSupport.stream(infoRepository.findAll().spliterator(), false)
+        List<UpdateJob> infos = StreamSupport.stream(infoRepository.findAll().spliterator(), false)
                 .collect(Collectors.toList());
 
         assertEquals(1, infos.size());
 
-        ProjectDatabaseUpdaterInfo retrievedInfo = infos.get(0);
+        UpdateJob retrievedInfo = infos.get(0);
 
-        assertEquals(ProjectDatabaseUpdaterInfo.Status.FAILURE, retrievedInfo.getStatus());
+        assertEquals(UpdateJob.Status.FAILURE, retrievedInfo.getStatus());
         assertEquals(time, retrievedInfo.getTime());
         assertEquals("Testreason", retrievedInfo.getFailureReason());
     }
@@ -49,24 +49,24 @@ public class ProjectDatabaseUpdaterInfoPersistenceTest {
     @Test
     public void testFindByStatus() {
         LocalDateTime firstTime = LocalDateTime.of(2018, 1, 1, 12, 0);
-        ProjectDatabaseUpdaterInfo firstInfo = new ProjectDatabaseUpdaterInfo();
-        firstInfo.setStatus(ProjectDatabaseUpdaterInfo.Status.SUCCESS);
+        UpdateJob firstInfo = new UpdateJob();
+        firstInfo.setStatus(UpdateJob.Status.SUCCESS);
         firstInfo.setTime(firstTime);
 
         LocalDateTime secondTime = LocalDateTime.of(2018, 2, 1, 12, 0);
-        ProjectDatabaseUpdaterInfo secondInfo = new ProjectDatabaseUpdaterInfo();
-        secondInfo.setStatus(ProjectDatabaseUpdaterInfo.Status.SUCCESS);
+        UpdateJob secondInfo = new UpdateJob();
+        secondInfo.setStatus(UpdateJob.Status.SUCCESS);
         secondInfo.setTime(secondTime);
 
         infoRepository.save(firstInfo);
         infoRepository.save(secondInfo);
 
-        Optional<ProjectDatabaseUpdaterInfo> firstByStatusOptional
-                = infoRepository.findFirstByStatusOrderByTimeDesc(ProjectDatabaseUpdaterInfo.Status.SUCCESS);
+        Optional<UpdateJob> firstByStatusOptional
+                = infoRepository.findFirstByStatusOrderByTimeDesc(UpdateJob.Status.SUCCESS);
 
         assertTrue(firstByStatusOptional.isPresent());
 
-        ProjectDatabaseUpdaterInfo firstByStatus = firstByStatusOptional.get();
+        UpdateJob firstByStatus = firstByStatusOptional.get();
 
         assertEquals(secondTime, firstByStatus.getTime());
     }

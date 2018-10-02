@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @AllArgsConstructor
-public class ProjectDatabaseUpdaterInfo {
+public class UpdateJob {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,16 +34,16 @@ public class ProjectDatabaseUpdaterInfo {
     @Column(length = 512)
     private String failureReason;
 
-    protected ProjectDatabaseUpdaterInfo() {
+    protected UpdateJob() {
         // protected no-arg constructor for JPA
     }
 
-    public ProjectDatabaseUpdaterInfo(LocalDateTime time, Status status) {
+    public UpdateJob(LocalDateTime time, Status status) {
         this.time = time;
         this.status = status;
     }
 
-    public ProjectDatabaseUpdaterInfo(LocalDateTime time, Status status, Exception exception) {
+    public UpdateJob(LocalDateTime time, Status status, Exception exception) {
         this.time = time;
         this.status = status;
         this.failureReason = exception != null ? exception.getMessage() : null;

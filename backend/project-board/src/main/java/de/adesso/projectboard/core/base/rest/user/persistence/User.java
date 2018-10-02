@@ -3,7 +3,7 @@ package de.adesso.projectboard.core.base.rest.user.persistence;
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
 import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.UserAccessInfo;
-import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -68,6 +68,12 @@ public class User {
     private Set<ProjectApplication> applications;
 
     /**
+     * The user's created {@link Project}s.
+     */
+    @OneToMany(cascade = CascadeType.ALL)
+    Set<Project> createdProjects;
+
+    /**
      * The boss of this user.
      */
     @ManyToOne(
@@ -83,7 +89,6 @@ public class User {
     @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "JOIN_TABLE_USER_ACCESS_INFO")
     private List<UserAccessInfo> accessInfo;
-
 
     /**
      * Constructs a new instance. Sets the ID and adds the user
@@ -115,6 +120,7 @@ public class User {
         this.accessInfo = new LinkedList<>();
         this.applications = new LinkedHashSet<>();
         this.bookmarks = new LinkedHashSet<>();
+        this.createdProjects = new LinkedHashSet<>();
     }
 
     /**
@@ -297,10 +303,44 @@ public class User {
     /**
      *
      * @return
-     *          A empty {@link Set} supplied by {@link Collections#emptySet()}
+     *          A empty {@link Set} of all staff members.
      */
     public Set<User> getStaffMembers() {
         return Collections.emptySet();
     }
 
+    /**
+     *
+     * @return
+     *          A empty {@link Set} of all created {@link Project}s.
+     */
+    public Set<Project> getCreatedProjects() {
+        return Collections.emptySet();
+    }
+
+    /**
+     *
+     * @param project
+     *          The {@link Project} to add to the created projects.
+     *
+     * @return
+     *          {@code true}, when the {@code project} was added to the created
+     *          projects.
+     */
+    public boolean addCreatedProject(Project project) {
+        return false;
+    }
+
+    /**
+     *
+     * @param project
+     *          The {@link Project} to remove from the created projects.
+     *
+     * @return
+     *          {@code true}, when the {@code projects} was removed from the created
+     *          projects.
+     */
+    public boolean removeCreatedProject(Project project) {
+        return false;
+    }
 }

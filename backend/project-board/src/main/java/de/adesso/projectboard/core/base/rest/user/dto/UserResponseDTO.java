@@ -34,6 +34,8 @@ public class UserResponseDTO implements Serializable {
 
     private CollectionLink staff;
 
+    private CollectionLink projects;
+
     /**
      *
      * @param user
@@ -75,13 +77,17 @@ public class UserResponseDTO implements Serializable {
         userDTO.setBookmarks(bookmarksLink);
         userDTO.setAccessInfo(infoDTO);
 
-        // create new staff link when it is necessary
+        // create new staff/projects link when it is necessary
         if(user instanceof SuperUser) {
             CollectionLink staffLink = new CollectionLink();
-            staffLink.setCount(((SuperUser) user).getStaffMembers().size());
+            staffLink.setCount(user.getStaffMembers().size());
             staffLink.setPath(String.format("/users/%s/staff", user.getId()));
-
             userDTO.setStaff(staffLink);
+
+            CollectionLink projectsLink = new CollectionLink();
+            projectsLink.setCount(user.getCreatedProjects().size());
+            projectsLink.setPath(String.format("/users/%s/projects", user.getId()));
+            userDTO.setProjects(projectsLink);
         }
 
         return userDTO;

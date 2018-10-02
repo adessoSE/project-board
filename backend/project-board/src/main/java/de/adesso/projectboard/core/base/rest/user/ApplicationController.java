@@ -4,48 +4,41 @@ import de.adesso.projectboard.core.base.rest.exceptions.AlreadyAppliedException;
 import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.core.base.rest.exceptions.UserNotFoundException;
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
-import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
 import de.adesso.projectboard.core.base.rest.user.application.ProjectApplicationHandler;
 import de.adesso.projectboard.core.base.rest.user.application.dto.ProjectApplicationRequestDTO;
 import de.adesso.projectboard.core.base.rest.user.application.dto.ProjectApplicationResponseDTO;
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
-import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplicationRepository;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
-import de.adesso.projectboard.core.base.rest.user.persistence.UserService;
+import de.adesso.projectboard.core.base.rest.user.service.ApplicationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * {@link RestController} for {@link ProjectApplication}s.
+ *
+ * @see ApplicationService
+ */
 @RestController
 @RequestMapping("/users")
 public class ApplicationController {
 
-    private final UserService userService;
-
-    private final ProjectRepository projectRepo;
-
-    private final ProjectApplicationRepository applicationRepo;
+    private final ApplicationService applicationService;
 
     private final ProjectApplicationHandler applicationHandler;
 
     @Autowired
-    public ApplicationController(UserService userService,
-                                 ProjectRepository projectRepo,
-                                 ProjectApplicationRepository applicationRepo,
-                                 ProjectApplicationHandler applicationHandler) {
-        this.userService = userService;
-        this.projectRepo = projectRepo;
-        this.applicationRepo = applicationRepo;
+    public ApplicationController(ApplicationService applicationService, ProjectApplicationHandler applicationHandler) {
+        this.applicationService = applicationService;
         this.applicationHandler = applicationHandler;
     }
 
     /**
      *
-     * @param projectApplicationClientDTO
+     * @param requestDTO
      *          The {@link ProjectApplicationRequestDTO} send by the user.
      *
      * @return
@@ -60,39 +53,26 @@ public class ApplicationController {
      *
      * @throws AlreadyAppliedException
      *          When the user has already applied for the {@link Project}.
+     *
+     * @see ApplicationService#createApplicationForUser(ProjectApplicationRequestDTO, String)
      */
     @PreAuthorize("(hasPermissionToAccessUser(#userId) && hasPermissionToApply()) || hasRole('admin')")
     @PostMapping(path = "/{userId}/applications",
             consumes = "application/json",
             produces = "application/json"
     )
-    public ProjectApplicationResponseDTO createApplicationForUser(@Valid @RequestBody ProjectApplicationRequestDTO projectApplicationClientDTO,
+    public ProjectApplicationResponseDTO createApplicationForUser(@Valid @RequestBody ProjectApplicationRequestDTO requestDTO,
                                                                   @PathVariable("userId") String userId)
             throws ProjectNotFoundException, UserNotFoundException, AlreadyAppliedException {
 
-        // get the project by the given id
-        Optional<Project> projectOptional = projectRepo.findById(projectApplicationClientDTO.getProjectId());
-        if(!projectOptional.isPresent()) {
-            throw new ProjectNotFoundException();
-        }
-
-        // check if the user already applied for the project
-        if(userService.userHasAppliedForProject(userId, projectOptional.get())) {
-            throw new AlreadyAppliedException();
-        }
-
-        // create a new project application instance
-        ProjectApplication application
-                = new ProjectApplication(projectOptional.get(), projectApplicationClientDTO.getComment(), userService.getUserById(userId));
-
-        // persist the application
-        ProjectApplication savedApplication = applicationRepo.save(application);
+        ProjectApplication application = applicationService.createApplicationForUser(requestDTO, userId);
 
         // call the handler method
-        applicationHandler.onApplicationReceived(savedApplication);
+        applicationHandler.onApplicationReceived(application);
 
         // return a DTO
-        return ProjectApplicationResponseDTO.fromApplication(savedApplication);
+        return ProjectApplicationResponseDTO.fromApplication(application);
+
     }
 
     /**
@@ -105,13 +85,15 @@ public class ApplicationController {
      *
      * @throws UserNotFoundException
      *          When the user with the given {@code userId} is not found.
+     *
+     * @see ApplicationService#getApplicationsOfUser(String)
      */
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @GetMapping(path = "/{userId}/applications",
             produces = "application/json"
     )
     public Iterable<ProjectApplicationResponseDTO> getApplicationsOfUser(@PathVariable("userId") String userId) throws UserNotFoundException {
-        return userService.getUserById(userId).getApplications().stream()
+        return applicationService.getApplicationsOfUser(userId).stream()
                 .map(ProjectApplicationResponseDTO::fromApplication)
                 .collect(Collectors.toList());
     }
