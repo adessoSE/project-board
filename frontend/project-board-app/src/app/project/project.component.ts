@@ -4,11 +4,11 @@ import { ActivatedRoute } from '@angular/router';
 import { Project, ProjectService } from '../_services/project.service';
 
 @Component({
-  selector: 'app-create-project',
-  templateUrl: './create-project.component.html',
-  styleUrls: ['./create-project.component.scss']
+  selector: 'app-project',
+  templateUrl: './project.component.html',
+  styleUrls: ['./project.component.scss']
 })
-export class CreateProjectComponent implements OnInit {
+export class ProjectComponent implements OnInit {
   project: Project = {
     customer: '',
     description: '',

@@ -18,7 +18,6 @@ import { AdminUiComponent } from './admin-ui/admin-ui.component';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { CreateProjectComponent } from './create-project/create-project.component';
 import { EmployeeManagementComponent } from './employee-management/employee-management.component';
 import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
@@ -26,6 +25,7 @@ import { OverviewComponent } from './overview/overview.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ProjectDetailsComponent } from './project-details/project-details.component';
 import { ProjectRequestComponent } from './project-request/project-request.component';
+import { ProjectComponent } from './project/project.component';
 import { UserUiComponent } from './user-ui/user-ui.component';
 
 registerLocaleData(localeDe, 'de');
@@ -43,7 +43,7 @@ registerLocaleData(localeDe, 'de');
     EmployeeManagementComponent,
     ProjectRequestComponent,
     OverviewComponent,
-    CreateProjectComponent,
+    ProjectComponent,
     LogoutComponent
   ],
   imports: [
