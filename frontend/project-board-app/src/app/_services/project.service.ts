@@ -13,28 +13,39 @@ export class ProjectService {
   getProjectWithID(projectId) {
     return this.http.get<Project>(`${environment.resourceServer}/projects/${projectId}`);
   }
+
+  createProject(project) {
+    return this.http.post<Project>(`${environment.resourceServer}/projects`, project);
+  }
+
+  updateProject(project) {
+    return this.http.put<Project>(`${environment.resourceServer}/projects/${project.id}`, project);
+  }
+
+  deleteProject(projectId) {
+    return this.http.delete(`${environment.resourceServer}/projects/${projectId}`);
+  }
 }
 
 export interface Project {
-  id: string;
-  effort: number;
-
   labels: string[];
 
+  customer: string;
   description: string;
-  title: string;
+  effort: string;
+  elongation: string;
+  freelancer: string;
+  id: string;
   issuetype: string;
   job: string;
   lob: string;
-  customer: string;
   location: string;
-  operationStart: string;
   operationEnd: string;
+  operationStart: string;
+  other: string;
   skills: string;
   status: string;
-  elongation: string;
-  freelancer: string;
-  other: string;
+  title: string;
 
   created: Date;
   updated: Date;
