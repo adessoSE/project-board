@@ -2,6 +2,9 @@
 /build/
 !gradle/wrapper/gradle-wrapper.jar
 
+### Spring Properties ###
+/src/main/resources/application-adesso-jira.properties
+
 ### STS ###
 .apt_generated
 .classpath
@@ -24,3 +27,4 @@
 /dist/
 /nbdist/
 /.nb-gradle/
+
