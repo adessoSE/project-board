@@ -92,8 +92,18 @@
         <textarea name="description" type="text" class="form-control custom-textarea" id="description" rows="4" formControlName="description" [ngClass]="{ 'is-invalid': submitted && f.description.errors }"></textarea>
       </div>
     </div>
-    <small class="mb-2 d-block">Felder, die mit einem Stern markiert sind, müssen ausgefüllt werden.</small>
+
+    <!--  Info  -->
+    <small *ngIf="submitted && form.invalid" class="invalid d-block">Du hast nicht alle benötigten Felder ausgefüllt!</small>
+    <small class="mb-3 d-block">Felder, die mit einem Stern markiert sind, müssen ausgefüllt werden.</small>
+
+    <!--  Checkbox and Button(s)  -->
+    <div *ngIf="!edit" class="form-check mb-1">
+      <input class="form-check-input" id="navigateOnSubmit" name="navigateOnSubmit" type="checkbox" [(ngModel)]="navigateOnSubmit" [ngModelOptions]="{standalone: true}">
+      <label class="form-check-label" for="navigateOnSubmit">Weiteres Projekt erstellen?</label>
+    </div>
     <button *ngIf="!edit" type="submit" class="btn btn-primary">Projekt erstellen</button>
+
     <button *ngIf="edit" type="submit" class="btn btn-primary">Änderungen speichern</button>
   </form>
 </div>

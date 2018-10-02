@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AlertService } from '../_services/alert.service';
 import { Project, ProjectService } from '../_services/project.service';
 
 @Component({
@@ -9,39 +10,23 @@ import { Project, ProjectService } from '../_services/project.service';
   styleUrls: ['./project.component.scss']
 })
 export class ProjectComponent implements OnInit {
-  project: Project = {
-    customer: '',
-    description: '',
-    effort: '',
-    elongation: '',
-    freelancer: '',
-    id: '',
-    issuetype: '',
-    job: '',
-    lob: '',
-    labels: [],
-    location: '',
-    operationEnd: '',
-    operationStart: '',
-    other: '',
-    skills: '',
-    status: '',
-    title: '',
-    created: null,
-    updated: null
-  };
+  project: Project;
 
   labelsInput = '';
   form: FormGroup;
   submitted = false;
   edit = false;
+  navigateOnSubmit = false;
 
   constructor(private projectService: ProjectService,
+              private alertService: AlertService,
               private formBuilder: FormBuilder,
-              private route: ActivatedRoute) { }
+              private route: ActivatedRoute,
+              private router: Router) { }
 
   ngOnInit() {
     this.route.data.subscribe(data => {
+      this.resetProject();
       if (data.project) {
         this.project = data.project;
         this.edit = true;
@@ -75,19 +60,59 @@ export class ProjectComponent implements OnInit {
     this.project.lob = this.f.lob.value;
     this.project.description = this.f.description.value;
     this.project.labels = this.labelsInput.split(' ');
-    if (this.project.created === null) {
-      this.project.created = new Date();
-    }
-    this.project.updated = new Date();
 
     if (this.edit) {
-      this.projectService.updateProject(this.project).subscribe();
+      this.projectService.updateProject(this.project).subscribe(() => {
+        this.alertService.success('Änderungen wurden gespeichert.', true);
+        this.router.navigate(['/overview']);
+      });
     } else {
-      this.projectService.createProject(this.project).subscribe();
+      this.projectService.createProject(this.project).subscribe(() => {
+        this.alertService.success('Projekt erfolgreich erstellt.', !this.navigateOnSubmit);
+        if (!this.navigateOnSubmit) {
+          this.router.navigate(['/overview']);
+        } else {
+          this.submitted = false;
+          this.resetProject();
+          document.body.scrollTop = 0;
+          document.documentElement.scrollTop = 0;
+        }
+      });
     }
   }
 
   get f() {
     return this.form.controls;
+  }
+
+  resetProject() {
+    this.project = {
+      customer: '',
+      description: '',
+      effort: '',
+      elongation: '',
+      freelancer: '',
+      id: '',
+      issuetype: '',
+      job: '',
+      lob: '',
+      labels: [],
+      location: '',
+      operationEnd: '',
+      operationStart: '',
+      other: '',
+      skills: '',
+      status: '',
+      title: '',
+      created: null,
+      updated: null
+    };
+    this.form = this.formBuilder.group({
+      title: ['', Validators.required],
+      status: ['', Validators.required],
+      description: ['', Validators.required],
+      lob: ['', Validators.required],
+      issuetype: ['', Validators.required]
+    });
   }
 }

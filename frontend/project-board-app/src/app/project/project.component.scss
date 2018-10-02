@@ -26,3 +26,7 @@ textarea {
 ::-webkit-scrollbar-thumb:hover {
   background: darken($primary, 10);
 }
+
+.invalid {
+  color: $red;
+}
