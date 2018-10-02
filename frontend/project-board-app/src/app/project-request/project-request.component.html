@@ -1,5 +1,6 @@
 <div *ngIf="project">
   <p>Möchtest du folgendes Projekt wirklich anfragen?</p>
+  <p>Beim Klick auf <b>Projekt anfragen</b> wird dein Vorgesetzter per Email über deine Anfrage benachrichtigt.</p>
   <p class="mt-5"><b>{{project.title}}</b></p>
   <p>{{project.job}}</p>
 </div>
@@ -9,7 +10,7 @@
 
 <div class="comment">
   <label class="comment-label" for="comment">Kommentar:</label>
-  <textarea [(ngModel)]="comment" class="form-control comment-textarea" id="comment" name="comment" placeholder="Schreib einen Kommentar..." rows="4"></textarea>
+  <textarea [(ngModel)]="comment" class="form-control comment-textarea" id="comment" name="comment" placeholder="Schreib einen Kommentar zu deiner Anfrage..." rows="4"></textarea>
 </div>
 
 <button class="btn btn-primary" (click)="requestProject()">Projekt anfragen</button>

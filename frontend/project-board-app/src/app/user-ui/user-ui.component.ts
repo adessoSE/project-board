@@ -3,6 +3,7 @@ import { AfterViewChecked, Component, HostListener, OnInit } from '@angular/core
 import { ActivatedRoute, Router } from '@angular/router';
 import { faBookmark } from '@fortawesome/free-regular-svg-icons';
 import { faEnvelope } from '@fortawesome/free-regular-svg-icons/faEnvelope';
+import { faGraduationCap } from '@fortawesome/free-solid-svg-icons/faGraduationCap';
 import * as $ from 'jquery';
 import { AlertService } from '../_services/alert.service';
 import { Project, ProjectService } from '../_services/project.service';
@@ -15,8 +16,10 @@ import { Project, ProjectService } from '../_services/project.service';
 export class UserUiComponent implements OnInit, AfterViewChecked {
   appTooltip = 'Du hast dieses Projekt bereits angefragt.';
   bmTooltip = 'Du hast ein Lesezeichen an diesem Projekt.';
+  studTooltip = 'Studentisches Projekt';
   faEnvelope = faEnvelope;
   faBookmark = faBookmark;
+  faGradCap = faGraduationCap;
 
   projects: Project[] = [];
   filteredProjects: Project[] = [];

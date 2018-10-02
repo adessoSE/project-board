@@ -13,6 +13,7 @@
           <span>
             <fa-icon title="{{appTooltip}}" class="mr-2" *ngIf="!isProjectApplicable(p.id)" [icon]="faEnvelope"></fa-icon>
             <fa-icon title="{{bmTooltip}}" class="mr-2" *ngIf="isProjectBookmarked(p.id)" [icon]="faBookmark"></fa-icon>
+            <fa-icon title="{{studTooltip}}" class="mr-2" *ngIf="p.issuetype == 'Studentisches Projekt'" [icon]="faGradCap"></fa-icon>
             <b>{{p.id}}:</b> {{p.title}}
           </span>
         </button>
