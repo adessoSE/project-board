@@ -1,84 +1,99 @@
 <h1 class="display-3">Neues Projekt</h1>
 <div class="inner-container pb-3">
-  <form (submit)="createProject()">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <div class="form-group row">
-      <label for="title" class="col-sm-2 col-form-label">Titel</label>
+      <label for="title" class="col-sm-2 col-form-label">Titel*</label>
       <div class="col-sm-10">
-        <input name="title" type="text" class="form-control" id="title" [(ngModel)]="title">
+        <input name="title" type="text" class="form-control" id="title" formControlName="title" [ngClass]="{ 'is-invalid': submitted && f.title.errors }">
       </div>
     </div>
     <div class="form-group row">
-      <label for="issueType" class="col-sm-2 col-form-label">Typ</label>
+      <label for="issueType" class="col-sm-2 col-form-label">Typ*</label>
       <div class="col-sm-10">
-        <input name="issueType" type="text" readonly class="form-control-plaintext" id="issueType" value="Studentisches Projekt" [(ngModel)]="issuetype">
+        <select name="issueType" class="form-control" id="issueType" formControlName="issuetype" [ngClass]="{ 'is-invalid': submitted && f.issuetype.errors }">
+          <option value="Staffinganfrage" selected>Staffinganfrage</option>
+          <option value="Studentisches Projekt">Studentisches Projekt</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group row">
+      <label for="status" class="col-sm-2 col-form-label">Status*</label>
+      <div class="col-sm-10">
+        <select name="status" class="form-control" id="status" formControlName="status" [ngClass]="{ 'is-invalid': submitted && f.status.errors }">
+          <option value="offen" selected>Offen</option>
+          <option value="eskaliert">Eskaliert</option>
+        </select>
       </div>
     </div>
     <div class="form-group row">
       <label for="labels" class="col-sm-2 col-form-label">Stichwörter</label>
       <div class="col-sm-10">
-        <input name="labels" type="text" class="form-control" id="labels" [(ngModel)]="labels">
+        <input name="labels" type="text" class="form-control" id="labels" [(ngModel)]="labelsInput" [ngModelOptions]="{standalone: true}">
+        <small>Stichwörter durch Leerzeichen getrennt eingeben (z.B.: 'Java SpringBoot Angular')</small>
       </div>
     </div>
     <div class="form-group row">
       <label for="job" class="col-sm-2 col-form-label">Aufgabe</label>
       <div class="col-sm-10">
-        <textarea name="job" type="text" class="form-control custom-textarea" id="job" rows="4" [(ngModel)]="job"></textarea>
+        <textarea name="job" type="text" class="form-control custom-textarea" id="job" rows="4" [(ngModel)]="project.job" [ngModelOptions]="{standalone: true}"></textarea>
       </div>
     </div>
     <div class="form-group row">
-      <label for="lob" class="col-sm-2 col-form-label">Zuständige LOB</label>
+      <label for="lob" class="col-sm-2 col-form-label">Zuständige LOB*</label>
       <div class="col-sm-10">
-        <input name="lob" type="text" class="form-control" id="lob" [(ngModel)]="lob">
+        <input name="lob" type="text" class="form-control" id="lob" formControlName="lob" [ngClass]="{ 'is-invalid': submitted && f.lob.errors }">
       </div>
     </div>
     <div class="form-group row">
       <label for="skills" class="col-sm-2 col-form-label">Skills</label>
       <div class="col-sm-10">
-        <input name="skills" type="text" class="form-control" id="skills" [(ngModel)]="skills">
+        <input name="skills" type="text" class="form-control" id="skills" [(ngModel)]="project.skills" [ngModelOptions]="{standalone: true}">
       </div>
     </div>
     <div class="form-group row">
       <label for="customer" class="col-sm-2 col-form-label">Kunde</label>
       <div class="col-sm-10">
-        <input name="customer" type="text" class="form-control" id="customer" [(ngModel)]="customer">
+        <input name="customer" type="text" class="form-control" id="customer" [(ngModel)]="project.customer" [ngModelOptions]="{standalone: true}">
       </div>
     </div>
     <div class="form-group row">
       <label for="location" class="col-sm-2 col-form-label">Einsatzort</label>
       <div class="col-sm-10">
-        <input name="location" type="text" class="form-control" id="location" [(ngModel)]="location">
+        <input name="location" type="text" class="form-control" id="location" [(ngModel)]="project.location" [ngModelOptions]="{standalone: true}">
       </div>
     </div>
     <div class="form-group row">
       <label for="start" class="col-sm-2 col-form-label">Start</label>
       <div class="col-sm-10">
-        <input name="start" type="text" class="form-control" id="start" [(ngModel)]="operationStart">
+        <input name="start" type="text" class="form-control" id="start" [(ngModel)]="project.operationStart" [ngModelOptions]="{standalone: true}">
       </div>
     </div>
     <div class="form-group row">
       <label for="end" class="col-sm-2 col-form-label">Ende</label>
       <div class="col-sm-10">
-        <input name="end" type="text" class="form-control" id="end" [(ngModel)]="operationEnd">
+        <input name="end" type="text" class="form-control" id="end" [(ngModel)]="project.operationEnd" [ngModelOptions]="{standalone: true}">
       </div>
     </div>
     <div class="form-group row">
       <label for="elongation" class="col-sm-2 col-form-label">Option auf Verlängerung</label>
       <div class="col-sm-10">
-        <input name="elongation" type="text" class="form-control" id="elongation" [(ngModel)]="elongation">
+        <input name="elongation" type="text" class="form-control" id="elongation" [(ngModel)]="project.elongation" [ngModelOptions]="{standalone: true}">
       </div>
     </div>
     <div class="form-group row">
       <label for="effort" class="col-sm-2 col-form-label">Aufwand</label>
       <div class="col-sm-10">
-        <input name="effort" type="text" class="form-control" id="effort" [(ngModel)]="effort">
+        <input name="effort" type="text" class="form-control" id="effort" [(ngModel)]="project.effort" [ngModelOptions]="{standalone: true}">
       </div>
     </div>
     <div class="form-group row">
-      <label for="description" class="col-sm-2 col-form-label">Beschreibung</label>
+      <label for="description" class="col-sm-2 col-form-label">Beschreibung*</label>
       <div class="col-sm-10">
-        <textarea name="description" type="text" class="form-control custom-textarea" id="description" rows="4" [(ngModel)]="description"></textarea>
+        <textarea name="description" type="text" class="form-control custom-textarea" id="description" rows="4" formControlName="description" [ngClass]="{ 'is-invalid': submitted && f.description.errors }"></textarea>
       </div>
     </div>
-    <button type="submit" class="btn btn-primary">Projekt erstellen</button>
+    <small class="mb-2 d-block">Felder, die mit einem Stern markiert sind, müssen ausgefüllt werden.</small>
+    <button *ngIf="!edit" type="submit" class="btn btn-primary">Projekt erstellen</button>
+    <button *ngIf="edit" type="submit" class="btn btn-primary">Änderungen speichern</button>
   </form>
 </div>

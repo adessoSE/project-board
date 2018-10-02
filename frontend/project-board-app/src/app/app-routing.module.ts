@@ -45,6 +45,14 @@ const routes: Routes = [
     canActivate: [AuthGuard]
   },
   {
+    path: 'projects/:id/edit',
+    component: CreateProjectComponent,
+    resolve: {
+      project: ProjectResolverService
+    },
+    canActivate: [AuthGuard]
+  },
+  {
     path: 'projects/:id/request',
     component: ProjectRequestComponent,
     resolve: {
