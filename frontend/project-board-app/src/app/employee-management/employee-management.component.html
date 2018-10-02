@@ -72,7 +72,7 @@
   </ng-container>
 
   <!--  Created Projects-->
-  <ng-container *ngIf="!adminControls">
+  <ng-container *ngIf="!adminControls && isAdmin()">
     <h4>Erstellte Projekte</h4>
     <div *ngFor="let p of projects; index as i" [ngClass]="{'border-bottom pb-2 mb-2': i<projects.length-1}">
       <div class="inset">

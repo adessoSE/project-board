@@ -87,4 +87,8 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
   editProject(projectId) {
     this.router.navigate([`/projects/${projectId}/edit`]);
   }
+
+  isAdmin() {
+    return this.authService.isAdmin;
+  }
 }
