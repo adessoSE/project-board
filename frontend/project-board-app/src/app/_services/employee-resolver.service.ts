@@ -4,7 +4,9 @@ import { Observable } from 'rxjs';
 import { AuthenticationService } from './authentication.service';
 import { Employee, EmployeeService } from './employee.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class EmployeeResolverService implements Resolve<Employee[]> {
 
   constructor(private employeeService: EmployeeService,

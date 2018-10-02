@@ -3,7 +3,9 @@ import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/r
 import { Observable } from 'rxjs';
 import { Project, ProjectService } from './project.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ProjectsResolverService implements Resolve<Project[]> {
 
   constructor(private projectService: ProjectService) { }

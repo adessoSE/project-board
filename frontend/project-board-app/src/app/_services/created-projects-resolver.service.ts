@@ -5,7 +5,9 @@ import { AuthenticationService } from './authentication.service';
 import { EmployeeService } from './employee.service';
 import { Project } from './project.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class CreatedProjectsResolverService implements Resolve<Project[]> {
 
   constructor(private employeeService: EmployeeService,
