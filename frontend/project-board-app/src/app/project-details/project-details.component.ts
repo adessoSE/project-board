@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { faBookmark } from '@fortawesome/free-regular-svg-icons/faBookmark';
+import { faGraduationCap } from '@fortawesome/free-solid-svg-icons/faGraduationCap';
 import { AuthenticationService } from '../_services/authentication.service';
 import { EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
@@ -16,7 +17,9 @@ export class ProjectDetailsComponent implements OnInit {
   @Input() bookmark = false;
   @Output() bookmarkChanged = new EventEmitter();
   faBookmark = faBookmark;
+  faGradCap = faGraduationCap;
   bmTooltip = 'Du hast ein Lesezeichen an diesem Projekt.';
+  studTooltip = 'Studentisches Projekt';
 
   constructor(private router: Router,
               private projectService: ProjectService,
