@@ -2,6 +2,7 @@ package de.adesso.projectboard.core.base.rest.user.application.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import de.adesso.projectboard.core.base.rest.user.ApplicationController;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -12,6 +13,7 @@ import java.io.Serializable;
  *
  * @see ApplicationController
  */
+@AllArgsConstructor
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProjectApplicationRequestDTO implements Serializable {
