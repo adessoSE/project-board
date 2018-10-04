@@ -1,6 +1,7 @@
 package de.adesso.projectboard.core.base.rest.user.service;
 
 import de.adesso.projectboard.core.base.rest.exceptions.AlreadyAppliedException;
+import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.core.base.rest.exceptions.UserNotFoundException;
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.project.service.ProjectService;
@@ -74,8 +75,12 @@ public class ApplicationService {
      * @throws AlreadyAppliedException
      *          When the {@link User} with the given {@code userId} has already applied for that
      *          {@link Project}.
+     *
+     * @throws ProjectNotFoundException
+     *          When no {@link Project} with the given {@link ProjectApplicationRequestDTO#getProjectId() projectId}
+     *          is found.
      */
-    public ProjectApplication createApplicationForUser(ProjectApplicationRequestDTO requestDTO, String userId) throws UserNotFoundException, AlreadyAppliedException {
+    public ProjectApplication createApplicationForUser(ProjectApplicationRequestDTO requestDTO, String userId) throws UserNotFoundException, AlreadyAppliedException, ProjectNotFoundException {
         Project project =  projectService.getProjectById(requestDTO.getProjectId());
         User user = userService.getUserById(userId);
 

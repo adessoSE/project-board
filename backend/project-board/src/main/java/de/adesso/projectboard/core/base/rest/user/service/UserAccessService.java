@@ -39,9 +39,8 @@ public class UserAccessService {
         User user = userService.getUserById(userId);
 
         user.removeAccess();
-        User updatedUser = userService.save(user);
 
-        return updatedUser;
+        return userService.save(user);
     }
 
     /**
