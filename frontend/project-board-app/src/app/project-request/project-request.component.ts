@@ -30,6 +30,9 @@ export class ProjectRequestComponent implements OnInit {
     this.employeeService.applyForProject(this.authService.username, this.project.id, this.comment).subscribe(() => {
       this.alertService.success(`Du hast das Projekt mit dem Schlüssel "${this.project.id}" erfolgreich angefragt.`, true);
       this.router.navigate([`/browse/${this.project.id}`]);
+      },
+      () => {
+        this.alertService.error('Es gab einen Fehler. Das Projekt konnte nicht angefragt werden.');
       }
     );
   }
