@@ -5,13 +5,13 @@ import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException
 import de.adesso.projectboard.core.base.rest.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.project.service.ProjectService;
+import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import de.adesso.projectboard.core.base.rest.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/projects")
@@ -58,6 +58,22 @@ public class ProjectController {
     public Project updateProject(@PathVariable String projectId, @Valid @RequestBody ProjectRequestDTO projectDTO)
             throws ProjectNotFoundException, ProjectNotEditableException {
             return projectService.updateProject(projectDTO, projectId);
+    }
+
+    @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
+    @GetMapping(
+            path = "search",
+            produces = "application/json",
+            params = "keyword"
+    )
+    public Iterable<Project> searchByKeyword(@RequestParam String keyword) {
+        if(keyword == null || keyword.isEmpty()) {
+            return getAllForUser();
+        } else {
+            User currentUser = userService.getCurrentUser();
+
+            return projectService.getProjectsForUserContainingKeyword(currentUser, keyword);
+        }
     }
 
     @PreAuthorize("hasPermissionToEditProject(#projectId) || hasRole('admin')")

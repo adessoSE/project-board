@@ -15,20 +15,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -76,8 +70,8 @@ public class ProjectServiceTest {
         when(projectRepo.existsById(eq(editableProject.getId()))).thenReturn(true);
         when(projectRepo.existsById(eq(nonEditableProject.getId()))).thenReturn(true);
 
-        when(projectRepo.getAllForSuperUser()).thenReturn(Collections.emptyList());
-        when(projectRepo.getAllForUserOfLob(anyString())).thenReturn(Collections.emptyList());
+        when(projectRepo.findAllByStatusEscalatedOrOpen()).thenReturn(Collections.emptyList());
+        when(projectRepo.findAllByStatusEscalatedOrOpenOrSameLob(anyString())).thenReturn(Collections.emptyList());
 
         // just return passed argument
         when(projectRepo.save(any(Project.class))).thenAnswer((Answer<Project>) invocation -> {
@@ -127,14 +121,14 @@ public class ProjectServiceTest {
     public void getProjectsForUser_User() {
         projectService.getProjectsForUser(user);
 
-        verify(projectRepo).getAllForUserOfLob(user.getLob());
+        verify(projectRepo).findAllByStatusEscalatedOrOpenOrSameLob(user.getLob());
     }
 
     @Test
     public void getProjectsForUser_SuperUser() {
         projectService.getProjectsForUser(superUser);
 
-        verify(projectRepo).getAllForSuperUser();
+        verify(projectRepo).findAllByStatusEscalatedOrOpen();
     }
 
     @Test

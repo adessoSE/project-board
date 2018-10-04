@@ -132,11 +132,11 @@ public class ProjectPersistenceTest {
     }
 
     @Test
-    public void testGetAllForUserOfLob() {
+    public void testFindAllByEscalatedOrOpenOrSameLob() {
         projectRepository.saveAll(getProjectList());
 
         // get a list of all projects for a user of the lob "LOB Test"
-        List<Project> allForUser = projectRepository.getAllForUserOfLob("LOB Test");
+        List<Project> allForUser = projectRepository.findAllByStatusEscalatedOrOpenOrSameLob("LOB Test");
 
         boolean allEscalatedOrFromSameLobOrNoLob = allForUser.stream()
                 .allMatch(project -> {
@@ -157,11 +157,11 @@ public class ProjectPersistenceTest {
     }
 
     @Test
-    public void testGetAllForSuperUser() {
+    public void testFindAllByEscalatedOrOpen() {
         projectRepository.saveAll(getProjectList());
 
         // get a list of all projects for a superuser
-        List<Project> allForUser = projectRepository.getAllForSuperUser();
+        List<Project> allForUser = projectRepository.findAllByStatusEscalatedOrOpen();
 
         // superusers can see all open/escalated projects
         boolean allEscalatedOrOpen =

@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  *
@@ -114,14 +116,38 @@ public class ProjectService {
      * @return
      *          A {@link Set} of {@link Project}s.
      *
-     * @see ProjectRepository#getAllForUserOfLob(String)
-     * @see ProjectRepository#getAllForSuperUser()
+     * @see ProjectRepository#findAllByStatusEscalatedOrOpenOrSameLob(String)
+     * @see ProjectRepository#findAllByStatusEscalatedOrOpen()
      */
     public List<Project> getProjectsForUser(User user) {
         if(user instanceof SuperUser) {
-            return projectRepo.getAllForSuperUser();
+            return projectRepo.findAllByStatusEscalatedOrOpen();
         } else {
-            return projectRepo.getAllForUserOfLob(user.getLob());
+            return projectRepo.findAllByStatusEscalatedOrOpenOrSameLob(user.getLob());
+        }
+    }
+
+    /**
+     *
+     * @param user
+     *          The {@link User} to get the projects containing the {@code keyword}
+     *          for.
+     *
+     * @param keyword
+     *          The keyword to search for.
+     *
+     * @return
+     *          The {@link List} of all {@link Project}s contatining the keyword in the
+     *          {@link Project#title}, {@link Project#description}, {@link Project#job}
+     *          or {@link Project#skills} field matching the same authorization as described
+     *          in the {{@link #getProjectsForUser(User)}} documentation.
+     *
+     */
+    public List<Project> getProjectsForUserContainingKeyword(User user, String keyword) {
+        if(user instanceof SuperUser) {
+            return projectRepo.findAllByStatusEscalatedOrOpenContainsKeyword(keyword);
+        } else {
+            return projectRepo.findAllByStatusEscalatedOrOpenOrSameLobContainsKeyword(user.getLob(), keyword);
         }
     }
 
