@@ -1,7 +1,6 @@
 package de.adesso.projectboard.core.base.rest.project.persistence;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.adesso.projectboard.core.base.rest.project.deserializer.date.CreatedUpdatedDateDeserializer;
@@ -36,7 +35,7 @@ public class Project {
     @GenericGenerator(
             name = "project_id_generator",
             strategy = "de.adesso.projectboard.core.base.rest.project.persistence.ProjectIdGenerator",
-            parameters = @org.hibernate.annotations.Parameter(name = "prefix", value = "STD-")
+            parameters = @org.hibernate.annotations.Parameter(name = "prefix", value = "AD-")
     )
     private String id;
 

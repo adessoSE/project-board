@@ -101,7 +101,7 @@ public class ProjectPersistenceTest {
 
         Project persistedProject = projectRepository.save(project);
 
-        assertEquals("STD-1", persistedProject.getId());
+        assertEquals("AD-1", persistedProject.getId());
     }
 
     @Test
@@ -112,8 +112,8 @@ public class ProjectPersistenceTest {
         Project firstPersisted = projectRepository.save(firstProject);
         Project secondPersisted = projectRepository.save(secondProject);
 
-        assertEquals("STD-1", firstPersisted.getId());
-        assertEquals("STD-2", secondPersisted.getId());
+        assertEquals("AD-1", firstPersisted.getId());
+        assertEquals("AD-2", secondPersisted.getId());
     }
 
     @Test
@@ -121,14 +121,14 @@ public class ProjectPersistenceTest {
         Project firstProject = new Project();
         Project firstPersisted = projectRepository.save(firstProject);
 
-        assertEquals("STD-1", firstPersisted.getId());
+        assertEquals("AD-1", firstPersisted.getId());
 
         projectRepository.delete(firstPersisted);
 
         Project secondProject = new Project();
         Project secondPersisted = projectRepository.save(secondProject);
 
-        assertEquals("STD-1", secondPersisted.getId());
+        assertEquals("AD-1", secondPersisted.getId());
     }
 
     @Test
