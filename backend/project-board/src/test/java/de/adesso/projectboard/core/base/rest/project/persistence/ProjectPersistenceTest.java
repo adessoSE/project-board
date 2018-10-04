@@ -28,30 +28,30 @@ public class ProjectPersistenceTest {
 
     @Test
     public void testSave_OK() {
-        Project firstProject = new Project();
+        Project project = Project.builder()
+                .id("STF-1")
+                .status("Teststatus")
+                .issuetype("Testissuetype")
+                .title("Testtitle")
+                .labels(Arrays.asList("Label 1", "Label 2", "Label 3"))
+                .job("Testjob")
+                .skills("Testskills")
+                .description("Testdescription")
+                .lob("Testlob")
+                .customer("Testcustomer")
+                .location("Testlocation")
+                .operationStart("Teststart")
+                .operationEnd("Testend")
+                .effort("Testeffort")
+                .created(LocalDateTime.of(2018, 1, 1, 12, 0))
+                .updated(LocalDateTime.of(2018, 1, 2, 12, 0))
+                .freelancer("Testfreelancer")
+                .elongation("Testelongation")
+                .other("Testother")
+                .editable(false)
+                .build();
 
-        firstProject.setId("STF-1");
-        firstProject.setStatus("Teststatus");
-        firstProject.setIssuetype("Testissuetype");
-        firstProject.setTitle("Testtitle");
-        firstProject.setLabels(Arrays.asList("Label 1", "Label 2", "Label 3"));
-        firstProject.setJob("Testjob");
-        firstProject.setSkills("Testskills");
-        firstProject.setDescription("Testdescription");
-        firstProject.setLob("Testlob");
-        firstProject.setCustomer("Testcustomer");
-        firstProject.setLocation("Testlocation");
-        firstProject.setOperationStart("Teststart");
-        firstProject.setOperationEnd("Testend");
-        firstProject.setEffort("Testeffort");
-        firstProject.setCreated(LocalDateTime.of(2018, 1, 1, 12, 0));
-        firstProject.setUpdated(LocalDateTime.of(2018, 1, 2, 12, 0));
-        firstProject.setFreelancer("Testfreelancer");
-        firstProject.setElongation("Testelongation");
-        firstProject.setOther("Testother");
-        firstProject.setEditable(false);
-
-        projectRepository.save(firstProject);
+        projectRepository.save(project);
 
         Optional<Project> projectOptional = projectRepository.findById("STF-1");
         assertTrue(projectOptional.isPresent());
@@ -77,7 +77,6 @@ public class ProjectPersistenceTest {
         assertEquals("Testelongation", retrievedProject.getElongation());
         assertEquals("Testother", retrievedProject.getOther());
         assertFalse(retrievedProject.isEditable());
-
 
         List<String> firstProjectLabels = retrievedProject.getLabels();
         assertEquals(3, firstProjectLabels.size());
@@ -130,6 +129,112 @@ public class ProjectPersistenceTest {
         Project secondPersisted = projectRepository.save(secondProject);
 
         assertEquals("STD-1", secondPersisted.getId());
+    }
+
+    @Test
+    public void testGetAllForUserOfLob() {
+        projectRepository.saveAll(getProjectList());
+
+        // get a list of all projects for a user of the lob "LOB Test"
+        List<Project> allForUser = projectRepository.getAllForUserOfLob("LOB Test");
+
+        boolean allEscalatedOrFromSameLobOrNoLob = allForUser.stream()
+                .allMatch(project -> {
+                    boolean isOpen = "offen".equalsIgnoreCase(project.getStatus());
+                    boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
+                    boolean sameLobAsUser = "LOB Test".equalsIgnoreCase(project.getLob());
+                    boolean noLob = project.getLob() == null;
+
+                    // escalated || isOpen <-> (sameLob || noLob)
+                    // equivalence because implication is not enough
+                    // when the status is neither "eskaliert" nor "offen"
+                    return isEscalated || (isOpen && (sameLobAsUser || noLob) || (!isOpen && !(sameLobAsUser || noLob)));
+                });
+
+        assertTrue(allEscalatedOrFromSameLobOrNoLob);
+
+        assertEquals(5L, allForUser.size());
+    }
+
+    @Test
+    public void testGetAllForSuperUser() {
+        projectRepository.saveAll(getProjectList());
+
+        // get a list of all projects for a superuser
+        List<Project> allForUser = projectRepository.getAllForSuperUser();
+
+        // superusers can see all open/escalated projects
+        boolean allEscalatedOrOpen =
+                allForUser.stream()
+                        .allMatch(project -> {
+                            boolean isOpen = "offen".equalsIgnoreCase(project.getStatus());
+                            boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
+
+                            return isOpen || isEscalated;
+                        });
+        assertTrue(allEscalatedOrOpen);
+
+        assertEquals(6L, allForUser.size());
+    }
+
+    private List<Project> getProjectList() {
+        Project firstProject = Project.builder()
+                .id("STF-1")
+                .status("eskaliert")
+                .lob("LOB Test")
+                .build();
+
+        Project secondProject = Project.builder()
+                .id("STF-2")
+                .status("Abgeschlossen")
+                .lob("LOB Test")
+                .build();
+
+        Project thirdProject = Project.builder()
+                .id("STF-3")
+                .status("eskaliert")
+                .lob("LOB Prod")
+                .build();
+
+        Project fourthProject = Project.builder()
+                .id("STF-4")
+                .status("Offen")
+                .lob(null)
+                .build();
+
+        Project fifthProject = Project.builder()
+                .id("STF-5")
+                .status("eskaliert")
+                .lob(null)
+                .build();
+
+        Project sixthProject = Project.builder()
+                .id("STF-6")
+                .status("Abgeschlossen")
+                .lob(null)
+                .build();
+
+        Project seventhProject = Project.builder()
+                .id("STF-7")
+                .status("Something weird")
+                .lob(null)
+                .build();
+
+        Project eighthProject = Project.builder()
+                .id("STF-8")
+                .status("Offen")
+                .lob("LOB Test")
+                .build();
+
+        Project ninthProject = Project.builder()
+                .id("STF-9")
+                .status("Offen")
+                .lob("LOB Prod")
+                .build();
+
+        return Arrays.asList(firstProject, secondProject, thirdProject,
+                fourthProject, fifthProject, sixthProject,
+                seventhProject, eighthProject, ninthProject);
     }
 
 }

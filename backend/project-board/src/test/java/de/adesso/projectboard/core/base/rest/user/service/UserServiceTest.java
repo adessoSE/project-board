@@ -18,9 +18,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -38,20 +36,16 @@ public class UserServiceTest {
 
     private SuperUser superUser;
 
+    private SuperUser otherSuperUser;
+
     private User user;
+
+    private User otherUser;
 
     @Before
     public void setUp() {
         // data setup
-        this.superUser = new SuperUser("first-super-user");
-        this.superUser.setFullName("First Super Test", "User");
-        this.superUser.setEmail("first-super-test-user@test.com");
-        this.superUser.setLob("LOB Test");
-
-        this.user = new User("first-user", superUser);
-        this.user.setFullName("First Test", "User");
-        this.user.setEmail("first-test-user@test.com");
-        this.user.setLob("LOB Test");
+        setUpMockData();
 
         // mock setup
         when(authInfo.getUserId()).thenReturn(user.getId());
@@ -69,6 +63,10 @@ public class UserServiceTest {
             Object[] args = invocation.getArguments();
             return (User) args[0];
         });
+
+        when(userRepository.existsByIdAndBoss(anyString(), any(SuperUser.class))).thenReturn(false);
+        when(userRepository.existsByIdAndBoss(eq(otherUser.getId()), eq(otherSuperUser))).thenReturn(true);
+        when(userRepository.existsByIdAndBoss(eq(user.getId()), eq(superUser))).thenReturn(true);
     }
 
     @Test
@@ -79,23 +77,11 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testGetUserById_OK() {
-        User user = userService.getUserById("first-user");
+    public void testGetCurrentUserId() {
+        String currentUserId = userService.getCurrentUserId();
 
-        assertEquals("first-user", user.getId());
-    }
-
-    @Test
-    public void testSave() {
-        User savedUser = userService.save(user);
-
-        assertEquals(user, savedUser);
-        verify(userRepository).save(user);
-    }
-
-    @Test(expected = UserNotFoundException.class)
-    public void testGetUserById_NotExisting() {
-        userService.getUserById("non-existent-user-id");
+        verify(authInfo).getUserId();
+        assertEquals(user.getId(), currentUserId);
     }
 
     @Test
@@ -112,6 +98,74 @@ public class UserServiceTest {
         assertEquals(2L, allUsers.size());
         assertTrue(allUsers.contains(superUser));
         assertTrue(allUsers.contains(user));
+    }
+
+    @Test
+    public void testGetUserById_OK() {
+        User retrievedUser = userService.getUserById(user.getId());
+
+        assertEquals(user, retrievedUser);
+    }
+
+    @Test(expected = UserNotFoundException.class)
+    public void testGetUserById_NotExisting() {
+        userService.getUserById("non-existent-user-id");
+    }
+
+    @Test
+    public void testUserHasStaffMember() {
+        assertTrue(userService.userHasStaffMember(superUser, user.getId()));
+        assertTrue(userService.userHasStaffMember(otherSuperUser, otherUser.getId()));
+
+        assertFalse(userService.userHasStaffMember(superUser, otherUser.getId()));
+        assertFalse(userService.userHasStaffMember(otherSuperUser, user.getId()));
+    }
+
+    @Test
+    public void testSave() {
+        User savedUser = userService.save(user);
+
+        verify(userRepository).save(user);
+        assertEquals(user, savedUser);
+    }
+
+    @Test
+    public void testDelete_User() {
+        userService.delete(superUser);
+
+        verify(userRepository).delete(superUser);
+        assertFalse(superUser.getStaffMembers().contains(superUser));
+    }
+
+    @Test
+    public void testDelete_SuperUser() {
+        userService.delete(user);
+
+        verify(userRepository).save(superUser);
+        verify(userRepository).delete(user);
+        assertFalse(superUser.getStaffMembers().contains(user));
+    }
+
+    private void setUpMockData() {
+        this.superUser = new SuperUser("first-super-user");
+        this.superUser.setFullName("First Super Test", "User");
+        this.superUser.setEmail("first-super-test-user@test.com");
+        this.superUser.setLob("LOB Test");
+
+        this.user = new User("first-user", superUser);
+        this.user.setFullName("First Test", "User");
+        this.user.setEmail("first-test-user@test.com");
+        this.user.setLob("LOB Test");
+
+        this.otherSuperUser = new SuperUser("second-super-user");
+        this.otherSuperUser.setFullName("Second Super Test", "User");
+        this.otherSuperUser.setEmail("second-super-test-user@test.com");
+        this.otherSuperUser.setLob("LOB Test");
+
+        this.otherUser = new User("second-user", otherSuperUser);
+        this.otherUser.setFullName("First Test", "User");
+        this.otherUser.setEmail("first-test-user@test.com");
+        this.otherUser.setLob("LOB Test");
     }
 
 }

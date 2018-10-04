@@ -13,6 +13,11 @@ import de.adesso.projectboard.core.base.rest.user.service.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,139 +28,117 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@AutoConfigureTestDatabase
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-@Transactional
-public class ProjectServiceIntegrationTest {
+@RunWith(MockitoJUnitRunner.class)
+public class ProjectServiceTest {
 
-    @Autowired
+    @Mock
     private ProjectRepository projectRepo;
 
-    @Autowired
+    @Mock
     private UserRepository userRepo;
 
-    @Autowired
+    @Mock
+    private UserService userService;
+
+    @InjectMocks
     private ProjectService projectService;
 
-    @MockBean
-    private UserService userService;
+    private SuperUser superUser;
+
+    private User user;
+
+    private Project editableProject;
+
+    private Project nonEditableProject;
 
     @Before
     public void setUp() {
-        // DB setup
-        projectRepo.saveAll(getProjectList());
-
-        SuperUser superUser = new SuperUser("super-user");
-        superUser.setFullName("Super", "User");
-        superUser.setLob("LOB Test");
-        superUser.setEmail("super-user@test.com");
-
-        User user = new User("normal-user", superUser);
-        user.setFullName("Normal", "User");
-        user.setLob("LOB Test");
-        user.setEmail("normal-user@test.com");
-
-        userRepo.saveAll(Arrays.asList(superUser, user));
+        // data setup
+        setUpUserMockData();
+        setUpProjectMockData();
 
         // mock setup
         when(userService.getUserById(anyString())).thenThrow(UserNotFoundException.class);
-        when(userService.getUserById(eq("super-user"))).thenReturn(userRepo.findById("super-user").get());
-        when(userService.getUserById(eq("normal-user"))).thenReturn(userRepo.findById("normal-user").get());
+        when(userService.getUserById(eq(superUser.getId()))).thenReturn(superUser);
+
+        when(projectRepo.findById(anyString())).thenReturn(Optional.empty());
+        when(projectRepo.findById(eq(editableProject.getId()))).thenReturn(Optional.of(editableProject));
+        when(projectRepo.findById(eq(nonEditableProject.getId()))).thenReturn(Optional.of(nonEditableProject));
+
+        when(projectRepo.existsById(anyString())).thenReturn(false);
+        when(projectRepo.existsById(eq(editableProject.getId()))).thenReturn(true);
+        when(projectRepo.existsById(eq(nonEditableProject.getId()))).thenReturn(true);
+
+        when(projectRepo.getAllForSuperUser()).thenReturn(Collections.emptyList());
+        when(projectRepo.getAllForUserOfLob(anyString())).thenReturn(Collections.emptyList());
+
+        // just return passed argument
+        when(projectRepo.save(any(Project.class))).thenAnswer((Answer<Project>) invocation -> {
+            Object[] args = invocation.getArguments();
+            return (Project) args[0];
+        });
+
+        when(userRepo.existsByIdAndCreatedProjectsContaining(anyString(), any(Project.class))).thenReturn(false);
+
+        when(userRepo.findByCreatedProjectsContaining(any(Project.class))).thenReturn(Optional.empty());
     }
 
     @Test
     public void testGetProjectById_OK() {
-        Project project = projectService.getProjectById("STF-1");
+        Project retrievedProject = projectService.getProjectById(editableProject.getId());
 
-        assertEquals("STF-1", project.getId());
-        assertEquals("Title", project.getTitle());
+        assertEquals(editableProject, retrievedProject);
     }
 
     @Test(expected = ProjectNotFoundException.class)
     public void testGetProjectById_NotFound() {
-        projectService.getProjectById("non-existent-id");
+        projectService.getProjectById("non-existent-project");
     }
 
     @Test
     public void testProjectExists() {
-        assertTrue(projectService.projectExists("STF-1"));
+        assertTrue(projectService.projectExists(editableProject.getId()));
+        assertTrue(projectService.projectExists(nonEditableProject.getId()));
         assertFalse(projectService.projectExists("non-existent-id"));
     }
 
     @Test
     public void testUserHasProject() {
-        SuperUser superUser = (SuperUser) userRepo.findById("super-user").get();
-        Project project = projectRepo.findById("STF-1").get();
+        assertFalse(projectService.userHasProject(superUser.getId(), editableProject.getId()));
 
-        assertFalse(projectService.userHasProject(superUser.getId(), project.getId()));
+        superUser.addCreatedProject(editableProject);
+        assertTrue(superUser.getCreatedProjects().contains(editableProject));
 
-        superUser.addCreatedProject(project);
-        userRepo.save(superUser);
+        // override mock behaviour
+        when(userRepo.existsByIdAndCreatedProjectsContaining(eq(superUser.getId()), eq(editableProject)))
+                .thenReturn(true);
 
-        assertTrue(projectService.userHasProject(superUser.getId(), project.getId()));
+        assertTrue(projectService.userHasProject(superUser.getId(), editableProject.getId()));
     }
 
     @Test
     public void getProjectsForUser_User() {
-        // get a list of all projects for a user of the lob "LOB Test"
-        User user = userRepo.findById("normal-user").get();
-        List<Project> allForUser = projectService.getProjectsForUser(user);
+        projectService.getProjectsForUser(user);
 
-        boolean allEscalatedOrFromSameLob = allForUser.stream()
-                .allMatch(project -> {
-                    boolean isOpen = "offen".equalsIgnoreCase(project.getStatus());
-                    boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
-                    boolean sameLobAsUser = "LOB Test".equalsIgnoreCase(project.getLob());
-                    boolean noLob = project.getLob() == null;
-
-                    // escalated || isOpen <-> (sameLob || noLob)
-                    // equivalence because implication is not enough
-                    // when the status is neither "eskaliert" nor "offen"
-                    return isEscalated || (isOpen && (sameLobAsUser || noLob) || (!isOpen && !(sameLobAsUser || noLob)));
-                });
-
-        assertTrue(allEscalatedOrFromSameLob);
-
-        assertEquals(5L, allForUser.size());
+        verify(projectRepo).getAllForUserOfLob(user.getLob());
     }
 
     @Test
     public void getProjectsForUser_SuperUser() {
-        // get a list of all projects for a superuser
-        User user = userRepo.findById("super-user").get();
-        List<Project> allForUser = projectService.getProjectsForUser(user);
+        projectService.getProjectsForUser(superUser);
 
-        boolean allEscalatedOrOpen =
-                allForUser.stream()
-                        .allMatch(project -> {
-                            boolean isOpen = "offen".equalsIgnoreCase(project.getStatus());
-                            boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
-
-                            return isOpen || isEscalated;
-                        });
-        assertTrue(allEscalatedOrOpen);
-
-        assertEquals(6L, allForUser.size());
+        verify(projectRepo).getAllForSuperUser();
     }
 
     @Test
     public void testUpdateProject_OK() {
-        Project editableProject = projectRepo.findById("STF-4").get();
-        assertTrue(editableProject.isEditable());
-
         ProjectRequestDTO dto = ProjectRequestDTO.builder()
                 .status("eskaliert")
                 .issuetype("Edited Issuetype")
@@ -176,8 +159,9 @@ public class ProjectServiceIntegrationTest {
                 .build();
         Project updatedProject = projectService.updateProject(dto, editableProject.getId());
 
+        verify(projectRepo).save(any(Project.class));
         assertTrue(updatedProject.isEditable());
-        assertEquals("STF-4", updatedProject.getId());
+        assertEquals(editableProject.getId(), updatedProject.getId());
         assertEquals("eskaliert", updatedProject.getStatus());
         assertEquals("Edited Issuetype", updatedProject.getIssuetype());
         assertEquals("Edited Title", updatedProject.getTitle());
@@ -200,9 +184,6 @@ public class ProjectServiceIntegrationTest {
 
     @Test(expected = ProjectNotEditableException.class)
     public void testUpdateProject_NotEditable() {
-        Project uneditableProject = projectRepo.findById("STF-1").get();
-        assertFalse(uneditableProject.isEditable());
-
         ProjectRequestDTO dto = ProjectRequestDTO.builder()
                 .status("eskaliert")
                 .issuetype("Edited Issuetype")
@@ -221,13 +202,11 @@ public class ProjectServiceIntegrationTest {
                 .elongation("Edited Elongation")
                 .other("Edited Other")
                 .build();
-        projectService.updateProject(dto, uneditableProject.getId());
+        projectService.updateProject(dto, nonEditableProject.getId());
     }
 
     @Test
-    public void testCreateProject() {
-        User user = userRepo.findById("super-user").get();
-
+    public void testCreateProject_OK() {
         ProjectRequestDTO dto = ProjectRequestDTO.builder()
                 .status("eskaliert")
                 .issuetype("Issuetype")
@@ -247,14 +226,14 @@ public class ProjectServiceIntegrationTest {
                 .other("Other")
                 .build();
 
-        Project createdProject = projectService.createProject(dto, user.getId());
-        assertEquals(9L, projectRepo.count());
+        Project createdProject = projectService.createProject(dto, superUser.getId());
 
-        user = userRepo.findById("super-user").get();
-        assertEquals(1L, user.getCreatedProjects().size());
-        assertTrue(user.getCreatedProjects().contains(createdProject));
+        verify(projectRepo).save(any(Project.class));
+        verify(userService).save(superUser);
 
-        assertNotNull(createdProject.getId());
+        assertEquals(1L, superUser.getCreatedProjects().size());
+        assertTrue(superUser.getCreatedProjects().contains(createdProject));
+
         assertTrue(createdProject.isEditable());
         assertEquals("eskaliert", createdProject.getStatus());
         assertEquals("Issuetype", createdProject.getIssuetype());
@@ -277,47 +256,76 @@ public class ProjectServiceIntegrationTest {
         assertNotNull(createdProject.getUpdated());
     }
 
+    @Test(expected = UserNotFoundException.class)
+    public void testCreateProject_UserNotExists() {
+        ProjectRequestDTO dto = ProjectRequestDTO.builder()
+                .status("eskaliert")
+                .issuetype("Issuetype")
+                .title("Title")
+                .labels(Arrays.asList("Label 1", "Label 2"))
+                .job("Job")
+                .skills("Skills")
+                .description("Description")
+                .lob("LOB Prod")
+                .customer("Customer")
+                .location("Location")
+                .operationStart("Start")
+                .operationEnd("End")
+                .effort("Effort")
+                .freelancer("Freelancer")
+                .elongation("Elongation")
+                .other("Other")
+                .build();
+
+        projectService.createProject(dto, "non-existent-project");
+    }
+
     @Test
-    public void testDeleteProject_OK() {
-        Project editableProject = projectRepo.findById("STF-4").get();
-        assertTrue(editableProject.isEditable());
+    public void testDeleteProjectById_OK() {
+        superUser.addCreatedProject(editableProject);
+        assertTrue(superUser.getCreatedProjects().contains(editableProject));
+
+        // override mock
+        when(userRepo.findByCreatedProjectsContaining(editableProject)).thenReturn(Optional.of(superUser));
 
         projectService.deleteProjectById(editableProject.getId());
 
-        assertEquals(7L, projectRepo.count());
-        assertFalse(projectRepo.existsById("STF-4"));
+        verify(projectRepo).delete(editableProject);
+        assertFalse(superUser.getCreatedProjects().contains(editableProject));
     }
 
     @Test(expected = ProjectNotEditableException.class)
-    public void testDeleteProject_NotEditable() {
-        Project uneditableProject = projectRepo.findById("STF-1").get();
-        assertFalse(uneditableProject.isEditable());
-
-        projectService.deleteProjectById(uneditableProject.getId());
+    public void testDeleteProjectById_ProjectNotEditable() {
+        projectService.deleteProjectById(nonEditableProject.getId());
     }
 
-    private List<Project> getProjectList() {
-        Project firstProject = Project.builder()
-                .id("STF-1")
+    @Test(expected = ProjectNotFoundException.class)
+    public void testDeleteProjectById_ProjectNotExists() {
+        projectService.deleteProjectById("non-existing-project");
+    }
+
+    private void setUpUserMockData() {
+        this.superUser = new SuperUser("super-user");
+        this.superUser.setFullName("Super", "User");
+        this.superUser.setLob("LOB Test");
+        this.superUser.setEmail("super-user@test.com");
+
+        this.user = new User("normal-user", superUser);
+        this.user.setFullName("Normal", "User");
+        this.user.setLob("LOB Test");
+        this.user.setEmail("normal-user@test.com");
+    }
+
+    private void setUpProjectMockData() {
+        this.nonEditableProject = Project.builder()
+                .id("STF-8")
                 .title("Title")
                 .status("Offen")
                 .lob("LOB Test")
                 .build();
 
-        Project secondProject = Project.builder()
-                .id("STF-2")
-                .status("eskaliert")
-                .lob("LOB Test")
-                .build();
-
-        Project thirdProject = Project.builder()
-                .id("STF-3")
-                .status("Abgeschlossen")
-                .lob("LOB Test")
-                .build();
-
-        Project fourthProject = Project.builder()
-                .id("STF-4")
+        this.editableProject = Project.builder()
+                .id("STF-9")
                 .status("Offen")
                 .issuetype("Original Issuetype")
                 .title("Original Title")
@@ -338,40 +346,6 @@ public class ProjectServiceIntegrationTest {
                 .other("Original Other")
                 .editable(true)
                 .build();
-
-        Project fifthProject = Project.builder()
-                .id("STF-5")
-                .status("eskaliert")
-                .lob("LOB Prod")
-                .build();
-
-        Project sixthProject = Project.builder()
-                .id("STF-6")
-                .status("Offen")
-                .lob(null)
-                .build();
-
-        Project seventhProject = Project.builder()
-                .id("STF-7")
-                .status("eskaliert")
-                .lob(null)
-                .build();
-
-        Project eighthProject = Project.builder()
-                .id("STF-8")
-                .status("Abgeschlossen")
-                .lob(null)
-                .build();
-
-        Project ninthProject = Project.builder()
-                .id("STF-8")
-                .status("Something weird")
-                .lob(null)
-                .build();
-
-        return Arrays.asList(firstProject, secondProject, thirdProject,
-                fourthProject, fifthProject, sixthProject,
-                seventhProject, eighthProject, ninthProject);
     }
 
 }

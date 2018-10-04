@@ -1,5 +1,6 @@
 package de.adesso.projectboard.core.reader;
 
+import de.adesso.projectboard.configuration.IntegrationTestConfiguration;
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,7 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestClientException;
@@ -30,8 +31,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 @RunWith(SpringRunner.class)
 @RestClientTest(JiraProjectReader.class)
-@ActiveProfiles("adesso-jira")
-public class ProjectReaderTest {
+public class ProjectReaderIntegrationTest {
 
     @MockBean
     private JiraProjectReaderConfigurationProperties properties;
@@ -56,7 +56,7 @@ public class ProjectReaderTest {
 
         assertEquals(2, projectList.size());
 
-        Project firstProject = (Project) projectList.get(0);
+        Project firstProject = projectList.get(0);
 
         assertEquals("Teststatus 1", firstProject.getStatus());
         assertEquals("Testissuetype 1", firstProject.getIssuetype());
@@ -81,7 +81,7 @@ public class ProjectReaderTest {
         assertEquals("Testother 1", firstProject.getOther());
 
 
-        Project secondProject = (Project) projectList.get(1);
+        Project secondProject = projectList.get(1);
 
         assertEquals("Teststatus 2", secondProject.getStatus());
         assertEquals("Testissuetype 2", secondProject.getIssuetype());
