@@ -17,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -44,6 +45,8 @@ public class ProjectServiceTest {
     @InjectMocks
     private ProjectService projectService;
 
+    private final Sort sort = Sort.unsorted();
+
     private SuperUser superUser;
 
     private User user;
@@ -70,8 +73,8 @@ public class ProjectServiceTest {
         when(projectRepo.existsById(eq(editableProject.getId()))).thenReturn(true);
         when(projectRepo.existsById(eq(nonEditableProject.getId()))).thenReturn(true);
 
-        when(projectRepo.findAllByStatusEscalatedOrOpen()).thenReturn(Collections.emptyList());
-        when(projectRepo.findAllByStatusEscalatedOrOpenOrSameLob(anyString())).thenReturn(Collections.emptyList());
+        when(projectRepo.findAllByStatusEscalatedOrOpen(any(Sort.class))).thenReturn(Collections.emptyList());
+        when(projectRepo.findAllByStatusEscalatedOrOpenOrSameLob(anyString(), any(Sort.class))).thenReturn(Collections.emptyList());
 
         // just return passed argument
         when(projectRepo.save(any(Project.class))).thenAnswer((Answer<Project>) invocation -> {
@@ -119,38 +122,37 @@ public class ProjectServiceTest {
 
     @Test
     public void getProjectsForUser_User() {
-        projectService.getProjectsForUser(user);
+        projectService.getProjectsForUser(user, sort);
 
-        verify(projectRepo).findAllByStatusEscalatedOrOpenOrSameLob(user.getLob());
+        verify(projectRepo).findAllByStatusEscalatedOrOpenOrSameLob(user.getLob(), sort);
     }
 
     @Test
     public void getProjectsForUser_SuperUser() {
-        projectService.getProjectsForUser(superUser);
+        projectService.getProjectsForUser(superUser, sort);
 
-        verify(projectRepo).findAllByStatusEscalatedOrOpen();
+        verify(projectRepo).findAllByStatusEscalatedOrOpen(sort);
     }
 
     @Test
     public void testUpdateProject_OK() {
-        ProjectRequestDTO dto = ProjectRequestDTO.builder()
-                .status("eskaliert")
-                .issuetype("Edited Issuetype")
-                .title("Edited Title")
-                .labels(Arrays.asList("Edited Label 1", "Edited Label 2"))
-                .job("Edited Job")
-                .skills("Edited Skills")
-                .description("Edited Description")
-                .lob("LOB Prod")
-                .customer("Edited Customer")
-                .location("Edited Location")
-                .operationStart("Edited Start")
-                .operationEnd("Edited End")
-                .effort("Edited Effort")
-                .freelancer("Edited Freelancer")
-                .elongation("Edited Elongation")
-                .other("Edited Other")
-                .build();
+        ProjectRequestDTO dto = new ProjectRequestDTO()
+                .setStatus("eskaliert")
+                .setIssuetype("Edited Issuetype")
+                .setTitle("Edited Title")
+                .setLabels(Arrays.asList("Edited Label 1", "Edited Label 2"))
+                .setJob("Edited Job")
+                .setSkills("Edited Skills")
+                .setDescription("Edited Description")
+                .setLob("LOB Prod")
+                .setCustomer("Edited Customer")
+                .setLocation("Edited Location")
+                .setOperationStart("Edited Start")
+                .setOperationEnd("Edited End")
+                .setEffort("Edited Effort")
+                .setFreelancer("Edited Freelancer")
+                .setElongation("Edited Elongation")
+                .setOther("Edited Other");
         Project updatedProject = projectService.updateProject(dto, editableProject.getId());
 
         verify(projectRepo).save(any(Project.class));
@@ -178,47 +180,45 @@ public class ProjectServiceTest {
 
     @Test(expected = ProjectNotEditableException.class)
     public void testUpdateProject_NotEditable() {
-        ProjectRequestDTO dto = ProjectRequestDTO.builder()
-                .status("eskaliert")
-                .issuetype("Edited Issuetype")
-                .title("Edited Title")
-                .labels(Arrays.asList("Edited Label 1", "Edited Label 2"))
-                .job("Edited Job")
-                .skills("Edited Skills")
-                .description("Edited Description")
-                .lob("LOB Prod")
-                .customer("Edited Customer")
-                .location("Edited Location")
-                .operationStart("Edited Start")
-                .operationEnd("Edited End")
-                .effort("Edited Effort")
-                .freelancer("Edited Freelancer")
-                .elongation("Edited Elongation")
-                .other("Edited Other")
-                .build();
+        ProjectRequestDTO dto = new ProjectRequestDTO()
+                .setStatus("eskaliert")
+                .setIssuetype("Edited Issuetype")
+                .setTitle("Edited Title")
+                .setLabels(Arrays.asList("Edited Label 1", "Edited Label 2"))
+                .setJob("Edited Job")
+                .setSkills("Edited Skills")
+                .setDescription("Edited Description")
+                .setLob("LOB Prod")
+                .setCustomer("Edited Customer")
+                .setLocation("Edited Location")
+                .setOperationStart("Edited Start")
+                .setOperationEnd("Edited End")
+                .setEffort("Edited Effort")
+                .setFreelancer("Edited Freelancer")
+                .setElongation("Edited Elongation")
+                .setOther("Edited Other");
         projectService.updateProject(dto, nonEditableProject.getId());
     }
 
     @Test
     public void testCreateProject_OK() {
-        ProjectRequestDTO dto = ProjectRequestDTO.builder()
-                .status("eskaliert")
-                .issuetype("Issuetype")
-                .title("Title")
-                .labels(Arrays.asList("Label 1", "Label 2"))
-                .job("Job")
-                .skills("Skills")
-                .description("Description")
-                .lob("LOB Prod")
-                .customer("Customer")
-                .location("Location")
-                .operationStart("Start")
-                .operationEnd("End")
-                .effort("Effort")
-                .freelancer("Freelancer")
-                .elongation("Elongation")
-                .other("Other")
-                .build();
+        ProjectRequestDTO dto = new ProjectRequestDTO()
+                .setStatus("eskaliert")
+                .setIssuetype("Issuetype")
+                .setTitle("Title")
+                .setLabels(Arrays.asList("Label 1", "Label 2"))
+                .setJob("Job")
+                .setSkills("Skills")
+                .setDescription("Description")
+                .setLob("LOB Prod")
+                .setCustomer("Customer")
+                .setLocation("Location")
+                .setOperationStart("Start")
+                .setOperationEnd("End")
+                .setEffort("Effort")
+                .setFreelancer("Freelancer")
+                .setElongation("Elongation")
+                .setOther("Other");
 
         Project createdProject = projectService.createProject(dto, superUser.getId());
 
@@ -252,24 +252,23 @@ public class ProjectServiceTest {
 
     @Test(expected = UserNotFoundException.class)
     public void testCreateProject_UserNotExists() {
-        ProjectRequestDTO dto = ProjectRequestDTO.builder()
-                .status("eskaliert")
-                .issuetype("Issuetype")
-                .title("Title")
-                .labels(Arrays.asList("Label 1", "Label 2"))
-                .job("Job")
-                .skills("Skills")
-                .description("Description")
-                .lob("LOB Prod")
-                .customer("Customer")
-                .location("Location")
-                .operationStart("Start")
-                .operationEnd("End")
-                .effort("Effort")
-                .freelancer("Freelancer")
-                .elongation("Elongation")
-                .other("Other")
-                .build();
+        ProjectRequestDTO dto = new ProjectRequestDTO()
+                .setStatus("eskaliert")
+                .setIssuetype("Issuetype")
+                .setTitle("Title")
+                .setLabels(Arrays.asList("Label 1", "Label 2"))
+                .setJob("Job")
+                .setSkills("Skills")
+                .setDescription("Description")
+                .setLob("LOB Prod")
+                .setCustomer("Customer")
+                .setLocation("Location")
+                .setOperationStart("Start")
+                .setOperationEnd("End")
+                .setEffort("Effort")
+                .setFreelancer("Freelancer")
+                .setElongation("Elongation")
+                .setOther("Other");
 
         projectService.createProject(dto, "non-existent-project");
     }
@@ -311,35 +310,33 @@ public class ProjectServiceTest {
     }
 
     private void setUpProjectMockData() {
-        this.nonEditableProject = Project.builder()
-                .id("STF-8")
-                .title("Title")
-                .status("Offen")
-                .lob("LOB Test")
-                .build();
+        this.nonEditableProject = new Project()
+                .setId("STF-8")
+                .setTitle("Title")
+                .setStatus("Offen")
+                .setLob("LOB Test");
 
-        this.editableProject = Project.builder()
-                .id("STF-9")
-                .status("Offen")
-                .issuetype("Original Issuetype")
-                .title("Original Title")
-                .labels(Arrays.asList("Original Label 1", "Original Label 2"))
-                .job("Original Job")
-                .skills("Original Skills")
-                .description("Original Description")
-                .lob("LOB Prod")
-                .customer("Original Customer")
-                .location("Original Location")
-                .operationStart("Original Start")
-                .operationEnd("Original End")
-                .effort("Original Effort")
-                .created(LocalDateTime.now().minus(10L, ChronoUnit.DAYS))
-                .updated(LocalDateTime.now().minus(3L, ChronoUnit.DAYS))
-                .freelancer("Original Freelancer")
-                .elongation("Original Elongation")
-                .other("Original Other")
-                .editable(true)
-                .build();
+        this.editableProject = new Project()
+                .setId("STF-9")
+                .setStatus("Offen")
+                .setIssuetype("Original Issuetype")
+                .setTitle("Original Title")
+                .setLabels(Arrays.asList("Original Label 1", "Original Label 2"))
+                .setJob("Original Job")
+                .setSkills("Original Skills")
+                .setDescription("Original Description")
+                .setLob("LOB Prod")
+                .setCustomer("Original Customer")
+                .setLocation("Original Location")
+                .setOperationStart("Original Start")
+                .setOperationEnd("Original End")
+                .setEffort("Original Effort")
+                .setCreated(LocalDateTime.now().minus(10L, ChronoUnit.DAYS))
+                .setUpdated(LocalDateTime.now().minus(3L, ChronoUnit.DAYS))
+                .setFreelancer("Original Freelancer")
+                .setElongation("Original Elongation")
+                .setOther("Original Other")
+                .setEditable(true);
     }
 
 }

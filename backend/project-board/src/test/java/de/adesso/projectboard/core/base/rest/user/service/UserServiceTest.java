@@ -12,9 +12,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -63,6 +65,15 @@ public class UserServiceTest {
             Object[] args = invocation.getArguments();
             return (User) args[0];
         });
+
+        // just return superuser's staff members in a list
+        when(userRepository.findAllByBossEquals(any(SuperUser.class), any(Sort.class)))
+                .thenAnswer((Answer<List<User>>) invocation -> {
+                    Object[] args = invocation.getArguments();
+                    SuperUser superUser = (SuperUser) args[0];
+
+                    return new ArrayList<>(superUser.getStaffMembers());
+                });
 
         when(userRepository.existsByIdAndBoss(anyString(), any(SuperUser.class))).thenReturn(false);
         when(userRepository.existsByIdAndBoss(eq(otherUser.getId()), eq(otherSuperUser))).thenReturn(true);
@@ -144,6 +155,19 @@ public class UserServiceTest {
         verify(userRepository).save(superUser);
         verify(userRepository).delete(user);
         assertFalse(superUser.getStaffMembers().contains(user));
+    }
+
+    @Test
+    public void testGetStaffMembersOfUser() {
+        Sort sort = Sort.unsorted();
+
+        List<User> userStaff = userService.getStaffMembersOfUser(user, sort);
+        assertEquals(0L, userStaff.size());
+
+        List<User> superUserStaff = userService.getStaffMembersOfUser(superUser, Sort.unsorted());
+        assertEquals(2L, superUserStaff.size());
+        assertTrue(superUserStaff.contains(user));
+        assertTrue(superUserStaff.contains(superUser));
     }
 
     private void setUpMockData() {

@@ -4,7 +4,6 @@ import de.adesso.projectboard.core.base.rest.exceptions.BookmarkNotFoundExceptio
 import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.core.base.rest.exceptions.UserNotFoundException;
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
-import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
 import de.adesso.projectboard.core.base.rest.project.service.ProjectService;
 import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
@@ -50,10 +49,9 @@ public class BookmarkServiceTest {
         this.testUser.setLob("LOB Test");
         this.testUser.setEmail("test-testUser@test.com");
 
-        this.testProject = Project.builder()
-                .id("STF-1")
-                .title("Title")
-                .build();
+        this.testProject = new Project()
+                .setId("STF-1")
+                .setTitle("Title");
 
         // mock setup for methods used often
         when(userRepo.save(testUser)).thenReturn(testUser);

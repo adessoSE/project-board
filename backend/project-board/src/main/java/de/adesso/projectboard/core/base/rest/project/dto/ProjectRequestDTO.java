@@ -1,13 +1,15 @@
 package de.adesso.projectboard.core.base.rest.project.dto;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -26,7 +28,6 @@ public class ProjectRequestDTO {
     @Size(max = 255)
     private String title;
 
-    @Builder.Default
     private List<String> labels = new ArrayList<>();
 
     @Size(max = 8192)

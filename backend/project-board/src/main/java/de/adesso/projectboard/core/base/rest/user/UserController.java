@@ -7,6 +7,8 @@ import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import de.adesso.projectboard.core.base.rest.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,10 +20,15 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 /**
- * {@link RestController} for user related data.
+ * {@link RestController REST Controller} to access {@link User}s.
+ *
+ * @see de.adesso.projectboard.core.base.rest.project.ProjectController
+ * @see ApplicationController
+ * @see BookmarkController
+ * @see UserAccessController
  */
 @RestController
-@RequestMapping("/users")
+@RequestMapping(path = "/users")
 public class UserController {
 
     private final UserService userService;
@@ -30,29 +37,18 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
 
-        SuperUser tom = new SuperUser("tom");
-        tom.setFullName("Tom", "Hombergs");
-        tom.setEmail("daniel.meier@adesso.de");
-        tom.setLob("Cross Industries");
-
-        User daniel = new User("daniel", tom);
-        daniel.setFullName("Daniel", "Meier");
-        daniel.setEmail("Daniel.Meier@adesso.de");
-        daniel.setLob("Cross Industries");
-        userService.save(tom);
-
         // creating mock-users for test-reasons
         SuperUser jacobs = new SuperUser("jacobs");
         jacobs.setFirstName("Lottie");
         jacobs.setLastName("Jacobs");
-        jacobs.setEmail("lottie.jacobs@adesso.de");
+        jacobs.setEmail("Daniel.Meier@adesso.de");
         jacobs.setLob("LOB Banking");
         userService.save(jacobs);
 
         User good = new User("good", jacobs);
         good.setFirstName("Knapp");
         good.setLastName("Good");
-        good.setEmail("knapp.good@adesso.de");
+        good.setEmail("daniel.meier@adesso.de");
         good.setLob("LOB Banking");
         userService.save(good);
 
@@ -123,11 +119,11 @@ public class UserController {
      *
      * @throws UserNotFoundException
      *          When no user is found with the given {@code userId}.
+     *
+     * @see UserService#getUserById(String)
      */
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
-    @GetMapping(path = "/{userId}",
-            produces = "application/json"
-    )
+    @GetMapping(path = "/{userId}")
     public UserResponseDTO getUserById(@PathVariable("userId") String userId) throws UserNotFoundException {
         return UserResponseDTO.fromUser(userService.getUserById(userId));
     }
@@ -137,30 +133,44 @@ public class UserController {
      * @param userId
      *          The if of the {@link User}.
      *
+     * @param sort
+     *          The {@link Sort} to apply. Sorted in ascending order
+     *          by {@link User#lastName} by default.
+     *
      * @return
-     *          A {@link Iterable} of all {@link Project}s the user with the given {@code userId}
-     *          created.
+     *          A {@link Iterable} of all {@link User staff members} of the {@link User}
+     *          with the given {@code userId}.
      *
      * @throws UserNotFoundException
      *          When no {@link User} with the given {@code userId} was found.
+     *
+     * @see UserService#getStaffMembersOfUser(User, Sort)
      */
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
-    @GetMapping(path = "/{userId}/staff",
-            produces = "application/json"
-    )
-    public Iterable<UserResponseDTO> getStaffMembersOfUser(@PathVariable("userId") String userId) throws UserNotFoundException {
+    @GetMapping(path = "/{userId}/staff")
+    public Iterable<UserResponseDTO> getStaffMembersOfUser(@PathVariable("userId") String userId, @SortDefault(value = "lastName") Sort sort) throws UserNotFoundException {
         User user = userService.getUserById(userId);
 
-        return user.getStaffMembers().stream()
+        return userService.getStaffMembersOfUser(user, sort).stream()
                 .map(UserResponseDTO::fromUser)
                 .collect(Collectors.toList());
     }
 
+    /**
+     *
+     * @param userId
+     *          The id of the {@link User} to get the created {@link Project}s from.
+     *
+     * @return
+     *          A {@link Iterable} of all {@link Project}s the user created.
+     *
+     * @throws UserNotFoundException
+     *          When no {@link User} with the given {@code userId} was found.
+     *
+     * @see UserService#getUserById(String)
+     */
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
-    @GetMapping(
-            path = "/{userId}/projects",
-            produces = "application/json"
-    )
+    @GetMapping(path = "/{userId}/projects")
     public Iterable<Project> getCreatedProjectsOfUser(@PathVariable("userId") String userId) throws UserNotFoundException {
         return userService.getUserById(userId).getCreatedProjects();
     }

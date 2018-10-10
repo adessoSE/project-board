@@ -1,15 +1,16 @@
 package de.adesso.projectboard.core.base.rest.project.persistence;
 
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 /**
- * {@link CrudRepository} for persisting {@link Project}s.
+ * {@link JpaRepository} for persisting {@link Project}s.
  */
-public interface ProjectRepository extends CrudRepository<Project, String> {
+public interface ProjectRepository extends JpaRepository<Project, String> {
 
     // a normal user can see escalated projects and open ones when the user's
     // LOB is the same as the project's one
@@ -17,17 +18,15 @@ public interface ProjectRepository extends CrudRepository<Project, String> {
     @Query("SELECT p " +
             "FROM Project AS p " +
             "WHERE (LOWER(p.status) = LOWER('eskaliert')) " +
-            "OR (LOWER(p.status) = LOWER('offen') AND (LOWER(p.lob) = LOWER(:lob) OR p.lob IS NULL))" +
-            "ORDER BY p.updated DESC")
-    List<Project> findAllByStatusEscalatedOrOpenOrSameLob(@Param("lob") String lob);
+            "OR (LOWER(p.status) = LOWER('offen') AND (LOWER(p.lob) = LOWER(:lob) OR p.lob IS NULL))")
+    List<Project> findAllByStatusEscalatedOrOpenOrSameLob(@Param("lob") String lob, Sort sort);
 
     // super users can see all escalated and open projects
     @Query("SELECT p " +
             "FROM Project AS p " +
             "WHERE (LOWER(p.status) = LOWER('eskaliert')) " +
-            "OR (LOWER(p.status) = LOWER('offen'))" +
-            "ORDER BY p.updated DESC")
-    List<Project> findAllByStatusEscalatedOrOpen();
+            "OR (LOWER(p.status) = LOWER('offen'))")
+    List<Project> findAllByStatusEscalatedOrOpen(Sort sort);
 
     @Query("SELECT p " +
             "FROM Project AS p " +
@@ -37,9 +36,8 @@ public interface ProjectRepository extends CrudRepository<Project, String> {
                 "OR LOWER(p.job) like LOWER(CONCAT('%', :keyword, '%')) " +
                 "OR LOWER(p.description) like LOWER(CONCAT('%', :keyword, '%'))" +
             ")" +
-            "AND (LOWER(p.lob) = LOWER(:lob) OR p.lob IS NULL)" +
-            "ORDER BY p.updated DESC")
-    List<Project> findAllByStatusEscalatedOrOpenOrSameLobContainsKeyword(@Param("lob") String lob, @Param("keyword") String keyword);
+            "AND (LOWER(p.lob) = LOWER(:lob) OR p.lob IS NULL)")
+    List<Project> findAllByStatusEscalatedOrOpenOrSameLobContainsKeyword(@Param("lob") String lob, @Param("keyword") String keyword, Sort sort);
 
     @Query("SELECT p " +
             "FROM Project p " +
@@ -48,9 +46,7 @@ public interface ProjectRepository extends CrudRepository<Project, String> {
                 "OR LOWER(p.skills) like LOWER(CONCAT('%', :keyword, '%')) " +
                 "OR LOWER(p.job) like LOWER(CONCAT('%', :keyword, '%')) " +
                 "OR LOWER(p.description) like LOWER(CONCAT('%', :keyword, '%'))" +
-            ") ORDER BY p.updated DESC")
-    List<Project> findAllByStatusEscalatedOrOpenContainsKeyword(@Param("keyword") String keyword);
-
-
+            ")")
+    List<Project> findAllByStatusEscalatedOrOpenContainsKeyword(@Param("keyword") String keyword, Sort sort);
 
 }

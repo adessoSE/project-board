@@ -6,7 +6,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.adesso.projectboard.core.base.rest.project.deserializer.date.CreatedUpdatedDateDeserializer;
 import de.adesso.projectboard.core.base.rest.project.deserializer.field.ObjectNameDeserializer;
 import de.adesso.projectboard.core.base.rest.project.deserializer.field.ObjectValueDeserializer;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -22,7 +25,6 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)

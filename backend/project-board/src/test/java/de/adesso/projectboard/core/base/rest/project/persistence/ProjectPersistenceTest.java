@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
@@ -21,6 +22,8 @@ public class ProjectPersistenceTest {
     @Autowired
     private ProjectRepository projectRepository;
 
+    private final Sort sort = Sort.unsorted();
+
     @Before
     public void setUp() {
         projectRepository.deleteAll();
@@ -28,28 +31,27 @@ public class ProjectPersistenceTest {
 
     @Test
     public void testSave_OK() {
-        Project project = Project.builder()
-                .id("STF-1")
-                .status("Teststatus")
-                .issuetype("Testissuetype")
-                .title("Testtitle")
-                .labels(Arrays.asList("Label 1", "Label 2", "Label 3"))
-                .job("Testjob")
-                .skills("Testskills")
-                .description("Testdescription")
-                .lob("Testlob")
-                .customer("Testcustomer")
-                .location("Testlocation")
-                .operationStart("Teststart")
-                .operationEnd("Testend")
-                .effort("Testeffort")
-                .created(LocalDateTime.of(2018, 1, 1, 12, 0))
-                .updated(LocalDateTime.of(2018, 1, 2, 12, 0))
-                .freelancer("Testfreelancer")
-                .elongation("Testelongation")
-                .other("Testother")
-                .editable(false)
-                .build();
+        Project project = new Project()
+                .setId("STF-1")
+                .setStatus("Teststatus")
+                .setIssuetype("Testissuetype")
+                .setTitle("Testtitle")
+                .setLabels(Arrays.asList("Label 1", "Label 2", "Label 3"))
+                .setJob("Testjob")
+                .setSkills("Testskills")
+                .setDescription("Testdescription")
+                .setLob("Testlob")
+                .setCustomer("Testcustomer")
+                .setLocation("Testlocation")
+                .setOperationStart("Teststart")
+                .setOperationEnd("Testend")
+                .setEffort("Testeffort")
+                .setCreated(LocalDateTime.of(2018, 1, 1, 12, 0))
+                .setUpdated(LocalDateTime.of(2018, 1, 2, 12, 0))
+                .setFreelancer("Testfreelancer")
+                .setElongation("Testelongation")
+                .setOther("Testother")
+                .setEditable(false);
 
         projectRepository.save(project);
 
@@ -136,7 +138,7 @@ public class ProjectPersistenceTest {
         projectRepository.saveAll(getProjectList());
 
         // get a list of all projects for a user of the lob "LOB Test"
-        List<Project> allForUser = projectRepository.findAllByStatusEscalatedOrOpenOrSameLob("LOB Test");
+        List<Project> allForUser = projectRepository.findAllByStatusEscalatedOrOpenOrSameLob("LOB Test", sort);
 
         boolean allEscalatedOrFromSameLobOrNoLob = allForUser.stream()
                 .allMatch(project -> {
@@ -161,7 +163,7 @@ public class ProjectPersistenceTest {
         projectRepository.saveAll(getProjectList());
 
         // get a list of all projects for a superuser
-        List<Project> allForUser = projectRepository.findAllByStatusEscalatedOrOpen();
+        List<Project> allForUser = projectRepository.findAllByStatusEscalatedOrOpen(sort);
 
         // superusers can see all open/escalated projects
         boolean allEscalatedOrOpen =
@@ -178,59 +180,50 @@ public class ProjectPersistenceTest {
     }
 
     private List<Project> getProjectList() {
-        Project firstProject = Project.builder()
-                .id("STF-1")
-                .status("eskaliert")
-                .lob("LOB Test")
-                .build();
+        Project firstProject = new Project()
+                .setId("STF-1")
+                .setStatus("eskaliert")
+                .setLob("LOB Test");
 
-        Project secondProject = Project.builder()
-                .id("STF-2")
-                .status("Abgeschlossen")
-                .lob("LOB Test")
-                .build();
+        Project secondProject = new Project()
+                .setId("STF-2")
+                .setStatus("Abgeschlossen")
+                .setLob("LOB Test");
 
-        Project thirdProject = Project.builder()
-                .id("STF-3")
-                .status("eskaliert")
-                .lob("LOB Prod")
-                .build();
+        Project thirdProject = new Project()
+                .setId("STF-3")
+                .setStatus("eskaliert")
+                .setLob("LOB Prod");
 
-        Project fourthProject = Project.builder()
-                .id("STF-4")
-                .status("Offen")
-                .lob(null)
-                .build();
+        Project fourthProject = new Project()
+                .setId("STF-4")
+                .setStatus("Offen")
+                .setLob(null);
 
-        Project fifthProject = Project.builder()
-                .id("STF-5")
-                .status("eskaliert")
-                .lob(null)
-                .build();
+        Project fifthProject = new Project()
+                .setId("STF-5")
+                .setStatus("eskaliert")
+                .setLob(null);
 
-        Project sixthProject = Project.builder()
-                .id("STF-6")
-                .status("Abgeschlossen")
-                .lob(null)
-                .build();
+        Project sixthProject = new Project()
+                .setId("STF-6")
+                .setStatus("Abgeschlossen")
+                .setLob(null);
 
-        Project seventhProject = Project.builder()
-                .id("STF-7")
-                .status("Something weird")
-                .lob(null)
-                .build();
+        Project seventhProject = new Project()
+                .setId("STF-7")
+                .setStatus("Something weird")
+                .setLob(null);
 
-        Project eighthProject = Project.builder()
-                .id("STF-8")
-                .status("Offen")
-                .lob("LOB Test")
-                .build();
+        Project eighthProject = new Project()
+                .setId("STF-8")
+                .setStatus("Offen")
+                .setLob("LOB Test");
 
-        Project ninthProject = Project.builder()
-                .id("STF-9")
-                .status("Offen")
-                .lob("LOB Prod")
-                .build();
+        Project ninthProject = new Project()
+                .setId("STF-9")
+                .setStatus("Offen")
+                .setLob("LOB Prod");
 
         return Arrays.asList(firstProject, secondProject, thirdProject,
                 fourthProject, fifthProject, sixthProject,

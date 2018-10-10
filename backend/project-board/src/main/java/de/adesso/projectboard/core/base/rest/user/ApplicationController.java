@@ -18,9 +18,12 @@ import javax.validation.Valid;
 import java.util.stream.Collectors;
 
 /**
- * {@link RestController} for {@link ProjectApplication}s.
+ * {@link RestController REST Controller} for {@link ProjectApplication}s.
  *
- * @see ApplicationService
+ * @see de.adesso.projectboard.core.base.rest.project.ProjectController
+ * @see BookmarkController
+ * @see UserAccessController
+ * @see UserController
  */
 @RestController
 @RequestMapping("/users")
@@ -57,10 +60,7 @@ public class ApplicationController {
      * @see ApplicationService#createApplicationForUser(ProjectApplicationRequestDTO, String)
      */
     @PreAuthorize("(hasPermissionToAccessUser(#userId) && hasPermissionToApply()) || hasRole('admin')")
-    @PostMapping(path = "/{userId}/applications",
-            consumes = "application/json",
-            produces = "application/json"
-    )
+    @PostMapping(path = "/{userId}/applications")
     public ProjectApplicationResponseDTO createApplicationForUser(@Valid @RequestBody ProjectApplicationRequestDTO requestDTO,
                                                                   @PathVariable("userId") String userId)
             throws ProjectNotFoundException, UserNotFoundException, AlreadyAppliedException {
@@ -89,15 +89,11 @@ public class ApplicationController {
      * @see ApplicationService#getApplicationsOfUser(String)
      */
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
-    @GetMapping(path = "/{userId}/applications",
-            produces = "application/json"
-    )
+    @GetMapping(path = "/{userId}/applications")
     public Iterable<ProjectApplicationResponseDTO> getApplicationsOfUser(@PathVariable("userId") String userId) throws UserNotFoundException {
         return applicationService.getApplicationsOfUser(userId).stream()
                 .map(ProjectApplicationResponseDTO::fromApplication)
                 .collect(Collectors.toList());
     }
-
-
 
 }

@@ -11,6 +11,7 @@ import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import de.adesso.projectboard.core.base.rest.user.persistence.UserRepository;
 import de.adesso.projectboard.core.base.rest.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -113,17 +114,20 @@ public class ProjectService {
      * @param user
      *          The user to get the set of {@link Project}s for.
      *
+     * @param sort
+     *          The {@link Sort} to apply.
+     *
      * @return
      *          A {@link Set} of {@link Project}s.
      *
-     * @see ProjectRepository#findAllByStatusEscalatedOrOpenOrSameLob(String)
-     * @see ProjectRepository#findAllByStatusEscalatedOrOpen()
+     * @see ProjectRepository#findAllByStatusEscalatedOrOpen(Sort)
+     * @see ProjectRepository#findAllByStatusEscalatedOrOpenOrSameLob(String, Sort)
      */
-    public List<Project> getProjectsForUser(User user) {
+    public List<Project> getProjectsForUser(User user, Sort sort) {
         if(user instanceof SuperUser) {
-            return projectRepo.findAllByStatusEscalatedOrOpen();
+            return projectRepo.findAllByStatusEscalatedOrOpen(sort);
         } else {
-            return projectRepo.findAllByStatusEscalatedOrOpenOrSameLob(user.getLob());
+            return projectRepo.findAllByStatusEscalatedOrOpenOrSameLob(user.getLob(), sort);
         }
     }
 
@@ -136,18 +140,21 @@ public class ProjectService {
      * @param keyword
      *          The keyword to search for.
      *
+     * @param sort
+     *          The {@link Sort} to apply.
+     *
      * @return
      *          The {@link List} of all {@link Project}s contatining the keyword in the
      *          {@link Project#title}, {@link Project#description}, {@link Project#job}
      *          or {@link Project#skills} field matching the same authorization as described
-     *          in the {{@link #getProjectsForUser(User)}} documentation.
+     *          in the {{@link #getProjectsForUser(User, Sort)}} documentation.
      *
      */
-    public List<Project> getProjectsForUserContainingKeyword(User user, String keyword) {
+    public List<Project> getProjectsForUserContainingKeyword(User user, String keyword, Sort sort) {
         if(user instanceof SuperUser) {
-            return projectRepo.findAllByStatusEscalatedOrOpenContainsKeyword(keyword);
+            return projectRepo.findAllByStatusEscalatedOrOpenContainsKeyword(keyword, sort);
         } else {
-            return projectRepo.findAllByStatusEscalatedOrOpenOrSameLobContainsKeyword(user.getLob(), keyword);
+            return projectRepo.findAllByStatusEscalatedOrOpenOrSameLobContainsKeyword(user.getLob(), keyword, sort);
         }
     }
 
@@ -166,28 +173,27 @@ public class ProjectService {
     private Project createOrUpdateProject(ProjectRequestDTO projectDTO, String projectId) {
         LocalDateTime createdUpdatedTime = LocalDateTime.now();
 
-        Project project = Project.builder()
-                .id(projectId)
-                .status(projectDTO.getStatus())
-                .issuetype(projectDTO.getIssuetype())
-                .title(projectDTO.getTitle())
-                .labels(projectDTO.getLabels())
-                .job(projectDTO.getJob())
-                .skills(projectDTO.getSkills())
-                .description(projectDTO.getDescription())
-                .lob(projectDTO.getLob())
-                .customer(projectDTO.getCustomer())
-                .location(projectDTO.getLocation())
-                .operationStart(projectDTO.getOperationStart())
-                .operationEnd(projectDTO.getOperationEnd())
-                .effort(projectDTO.getEffort())
-                .created(createdUpdatedTime)
-                .updated(createdUpdatedTime)
-                .freelancer(projectDTO.getFreelancer())
-                .elongation(projectDTO.getElongation())
-                .other(projectDTO.getOther())
-                .editable(true)
-                .build();
+        Project project = new Project()
+                .setId(projectId)
+                .setStatus(projectDTO.getStatus())
+                .setIssuetype(projectDTO.getIssuetype())
+                .setTitle(projectDTO.getTitle())
+                .setLabels(projectDTO.getLabels())
+                .setJob(projectDTO.getJob())
+                .setSkills(projectDTO.getSkills())
+                .setDescription(projectDTO.getDescription())
+                .setLob(projectDTO.getLob())
+                .setCustomer(projectDTO.getCustomer())
+                .setLocation(projectDTO.getLocation())
+                .setOperationStart(projectDTO.getOperationStart())
+                .setOperationEnd(projectDTO.getOperationEnd())
+                .setEffort(projectDTO.getEffort())
+                .setCreated(createdUpdatedTime)
+                .setUpdated(createdUpdatedTime)
+                .setFreelancer(projectDTO.getFreelancer())
+                .setElongation(projectDTO.getElongation())
+                .setOther(projectDTO.getOther())
+                .setEditable(true);
 
         return projectRepo.save(project);
     }

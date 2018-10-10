@@ -21,10 +21,10 @@ import org.mockito.stubbing.Answer;
 import java.util.Set;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ApplicationServiceTest {
@@ -53,10 +53,9 @@ public class ApplicationServiceTest {
         this.testUser.setLob("LOB Test");
         this.testUser.setEmail("test-user@test.com");
 
-        this.testProject = Project.builder()
-                .id("STF-1")
-                .title("Title")
-                .build();
+        this.testProject = new Project()
+                .setId("STF-1")
+                .setTitle("Title");
 
         // mock setup
         when(userService.getUserById(anyString())).thenThrow(UserNotFoundException.class);

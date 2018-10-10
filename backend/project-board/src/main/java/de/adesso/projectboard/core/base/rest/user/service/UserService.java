@@ -1,17 +1,17 @@
 package de.adesso.projectboard.core.base.rest.user.service;
 
 import de.adesso.projectboard.core.base.rest.exceptions.UserNotFoundException;
-import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
 import de.adesso.projectboard.core.base.rest.security.AuthenticationInfo;
 import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import de.adesso.projectboard.core.base.rest.user.persistence.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.LinkedHashSet;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Wrapper for the {@link UserRepository} to manage {@link User}s.
@@ -123,6 +123,31 @@ public class UserService {
      */
     public boolean userHasStaffMember(SuperUser user, String staffMemberId) {
         return userRepo.existsByIdAndBoss(staffMemberId, user);
+    }
+
+    /**
+     *
+     * @param user
+     *          The {@link User} to get the {@link User staff members}
+     *          of.
+     *
+     * @param sort
+     *          The {@link Sort} to apply.
+     *
+     * @return
+     *          A {@link List} of all {@link User}s who's {@link User#boss} is equal
+     *          to the given {@code user} in case the {@code user} is a {@link SuperUser}
+     *          or a empty {@link List} returned by {@link Collections#emptyList()}. Sorted
+     *          accordingly.
+     *
+     * @see UserRepository#findAllByBossEquals(SuperUser, Sort)
+     */
+    public List<User> getStaffMembersOfUser(User user, Sort sort) {
+        if(user instanceof SuperUser) {
+            return userRepo.findAllByBossEquals((SuperUser) user, sort);
+        }
+
+        return Collections.emptyList();
     }
 
     /**
