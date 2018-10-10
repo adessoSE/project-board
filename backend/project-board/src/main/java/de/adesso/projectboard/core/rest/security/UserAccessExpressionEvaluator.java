@@ -3,9 +3,10 @@ package de.adesso.projectboard.core.rest.security;
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.project.service.ProjectService;
 import de.adesso.projectboard.core.base.rest.security.ExpressionEvaluator;
-import de.adesso.projectboard.core.base.rest.user.service.UserService;
 import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
+import de.adesso.projectboard.core.base.rest.user.service.ApplicationService;
+import de.adesso.projectboard.core.base.rest.user.service.UserService;
 import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.UserAccessInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -35,10 +36,15 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
 
     private final ProjectService projectService;
 
+    private final ApplicationService applicationService;
+
     @Autowired
-    public UserAccessExpressionEvaluator(UserService userService, ProjectService projectService) {
+    public UserAccessExpressionEvaluator(UserService userService,
+                                         ProjectService projectService,
+                                         ApplicationService applicationService) {
         this.userService = userService;
         this.projectService = projectService;
+        this.applicationService = applicationService;
     }
 
     /**
@@ -76,13 +82,45 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          the user wants to access.
      *
      * @return
-     *          The result of {@link #hasAccessToProjects(Authentication, User)}.
+     *          {@code true}, when the given {@code user}
+     *          {@link ApplicationService#userHasAppliedForProject(String, Project) applied}
+     *          for the project, {@link ProjectService#userHasProject(String, String) created}
+     *          it or {@link #hasAccessToProjects(Authentication, User) has access to projects}
+     *          and the project is either <i>eskaliert</i> or <i>offen<i/> and of the same
+     *          {@link Project#lob LOB}.
      *
-     * @see #hasAccessToProjects(Authentication, User)
      */
     @Override
     public boolean hasAccessToProject(Authentication authentication, User user, String projectId) {
-        return hasAccessToProjects(authentication, user);
+        if(!projectService.projectExists(projectId)) {
+            return false;
+        }
+
+        Project project = projectService.getProjectById(projectId);
+
+        if(hasAccessToProjects(authentication, user)) {
+            boolean isOpen = "offen".equalsIgnoreCase(project.getStatus());
+            boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
+            boolean sameLobAsUser = "LOB Test".equalsIgnoreCase(project.getLob());
+            boolean noLob = project.getLob() == null;
+
+            // escalated || isOpen <-> (sameLob || noLob)
+            // equivalence because implication is not enough
+            // when the status is neither "eskaliert" nor "offen"
+            return isEscalated || ((isOpen && (sameLobAsUser || noLob)) || (!isOpen && !(sameLobAsUser || noLob)));
+        }
+
+        boolean hasAppliedForProject = applicationService.userHasAppliedForProject(user.getId(), project);
+        if(hasAppliedForProject) {
+            return true;
+        }
+
+        boolean hasProject = projectService.userHasProject(user.getId(), projectId);
+        if(hasProject) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
