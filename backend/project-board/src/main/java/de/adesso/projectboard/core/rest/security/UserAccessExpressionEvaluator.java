@@ -85,20 +85,24 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          {@code true}, when the given {@code user}
      *          {@link ApplicationService#userHasAppliedForProject(String, Project) applied}
      *          for the project, {@link ProjectService#userHasProject(String, String) created}
-     *          it or {@link #hasAccessToProjects(Authentication, User) has access to projects}
-     *          and the project is either <i>eskaliert</i> or <i>offen<i/> and of the same
-     *          {@link Project#lob LOB}.
-     *
+     *          it or {@link #hasAccessToProjects(Authentication, User) has access} to projects
+     *          and the project's {@link Project#status status} is set to "<i>eskaliert</i>".
+     *          Also returns {@code true}, when the {@code user} is a {@link SuperUser} and the
+     *          project's {@link Project#status status} is set to "<i>offen</i>" or the
+     *          project's {@link Project#status status} is set to "<i>offen</i>" and the project
+     *          is of the {@link Project#lob LOB} as the user or has no lob set ({@code null}).
+     *          {@code false} otherwise.
      */
     @Override
     public boolean hasAccessToProject(Authentication authentication, User user, String projectId) {
         if(!projectService.projectExists(projectId)) {
-            return false;
+            return true;
         }
 
         Project project = projectService.getProjectById(projectId);
 
         if(hasAccessToProjects(authentication, user)) {
+            boolean isSuperUser = user instanceof SuperUser;
             boolean isOpen = "offen".equalsIgnoreCase(project.getStatus());
             boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
             boolean sameLobAsUser = "LOB Test".equalsIgnoreCase(project.getLob());
@@ -107,7 +111,7 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
             // escalated || isOpen <-> (sameLob || noLob)
             // equivalence because implication is not enough
             // when the status is neither "eskaliert" nor "offen"
-            return isEscalated || ((isOpen && (sameLobAsUser || noLob)) || (!isOpen && !(sameLobAsUser || noLob)));
+            return isEscalated || (isOpen && isSuperUser) || ((isOpen && (sameLobAsUser || noLob)) || (!isOpen && !(sameLobAsUser || noLob)));
         }
 
         boolean hasAppliedForProject = applicationService.userHasAppliedForProject(user.getId(), project);
@@ -116,11 +120,7 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
         }
 
         boolean hasProject = projectService.userHasProject(user.getId(), projectId);
-        if(hasProject) {
-            return true;
-        }
-
-        return false;
+        return hasProject;
     }
 
     /**

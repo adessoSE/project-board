@@ -58,7 +58,8 @@ dependencies {
 
 	testCompile(
 			[group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: "${springBootVersion}"],
-			[group: 'org.springframework.security', name: 'spring-security-test', version: "${springVersion}"]
+			[group: 'org.springframework.security', name: 'spring-security-test', version: "${springVersion}"],
+			[group: 'org.projectlombok', name: 'lombok', version: "${lombokVersion}"]
 	)
 
 	apt(group: 'org.projectlombok', name: 'lombok', version: "${lombokVersion}")

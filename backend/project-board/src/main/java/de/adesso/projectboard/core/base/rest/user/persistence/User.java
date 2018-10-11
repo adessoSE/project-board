@@ -3,7 +3,6 @@ package de.adesso.projectboard.core.base.rest.user.persistence;
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
 import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.UserAccessInfo;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -134,9 +133,11 @@ public class User {
      * @see #setFirstName(String)
      * @see #setLastName(String)
      */
-    public void setFullName(String firstName, String lastName) {
+    public User setFullName(String firstName, String lastName) {
         this.firstName = firstName;
         this.lastName = lastName;
+
+        return this;
     }
 
     /**

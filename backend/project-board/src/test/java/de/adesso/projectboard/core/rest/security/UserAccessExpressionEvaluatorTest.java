@@ -2,6 +2,7 @@ package de.adesso.projectboard.core.rest.security;
 
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.project.service.ProjectService;
+import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
 import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import de.adesso.projectboard.core.base.rest.user.service.ApplicationService;
@@ -85,6 +86,134 @@ public class UserAccessExpressionEvaluatorTest {
         User user = userSupplier.getFirstUser();
 
         assertTrue(expressionEvaluator.hasPermissionToAccessUser(null, user, user.getId()));
+    }
+
+    @Test
+    public void testHasAccessToProject_User_HasAccess_OpenProjectOfSameLob() {
+        User user = userSupplier.getFirstUser();
+        user.setLob("LOB Test")
+            .giveAccessUntil(LocalDateTime.now().plus(10L, ChronoUnit.DAYS));
+
+        assertTrue(user.hasAccess());
+
+        Project openTestProjectOfSameLob = projectSupplier.getNonEditableProject()
+                .setStatus("Offen")
+                .setLob("LOB Test");
+
+        // set up mock
+        when(projectService.projectExists(eq(openTestProjectOfSameLob.getId()))).thenReturn(true);
+        when(projectService.getProjectById(eq(openTestProjectOfSameLob.getId()))).thenReturn(openTestProjectOfSameLob);
+
+        assertTrue(expressionEvaluator.hasAccessToProject(null, user, openTestProjectOfSameLob.getId()));
+    }
+
+    @Test
+    public void testHasAccessToProject_User_HasAccess_OpenProjectOfDifferentLob() {
+        User user = userSupplier.getFirstUser();
+        user.setLob("LOB Test")
+                .giveAccessUntil(LocalDateTime.now().plus(10L, ChronoUnit.DAYS));
+
+        assertTrue(user.hasAccess());
+
+        Project openProjectOfDifferentLob = projectSupplier.getNonEditableProject()
+                .setStatus("Offen")
+                .setLob("LOB Production");
+
+        // set up mock
+        when(projectService.projectExists(eq(openProjectOfDifferentLob.getId()))).thenReturn(true);
+        when(projectService.getProjectById(eq(openProjectOfDifferentLob.getId()))).thenReturn(openProjectOfDifferentLob);
+
+        assertFalse(expressionEvaluator.hasAccessToProject(null, user, openProjectOfDifferentLob.getId()));
+    }
+
+    @Test
+    public void testHasAccessToProject_User_HasAccess_EscalatedProject() {
+        User user = userSupplier.getFirstUser();
+        user.setLob("LOB Test")
+                .giveAccessUntil(LocalDateTime.now().plus(10L, ChronoUnit.DAYS));
+
+        assertTrue(user.hasAccess());
+
+        Project escalatedProjectOfDifferentLob = projectSupplier.getNonEditableProject()
+                .setStatus("eskaliert")
+                .setLob("LOB Production");
+
+        // set up mock
+        when(projectService.projectExists(eq(escalatedProjectOfDifferentLob.getId()))).thenReturn(true);
+        when(projectService.getProjectById(eq(escalatedProjectOfDifferentLob.getId()))).thenReturn(escalatedProjectOfDifferentLob);
+
+        assertTrue(expressionEvaluator.hasAccessToProject(null, user, escalatedProjectOfDifferentLob.getId()));
+    }
+
+    @Test
+    public void testHasAccessToProject_User_HasAccess_ProjectNoLob() {
+        User user = userSupplier.getFirstUser();
+        user.setLob("LOB Test")
+                .giveAccessUntil(LocalDateTime.now().plus(10L, ChronoUnit.DAYS));
+
+        assertTrue(user.hasAccess());
+
+        Project openProjectWithNoLob = projectSupplier.getNonEditableProject()
+                .setStatus("Offen")
+                .setLob(null);
+
+        // set up mock
+        when(projectService.projectExists(eq(openProjectWithNoLob.getId()))).thenReturn(true);
+        when(projectService.getProjectById(eq(openProjectWithNoLob.getId()))).thenReturn(openProjectWithNoLob);
+
+        assertTrue(expressionEvaluator.hasAccessToProject(null, user, openProjectWithNoLob.getId()));
+    }
+
+    @Test
+    public void testHasAccessToProject_User_HasAccess_ProjectUnusualStatus() {
+        User user = userSupplier.getFirstUser();
+        user.setLob("LOB Test")
+                .giveAccessUntil(LocalDateTime.now().plus(10L, ChronoUnit.DAYS));
+
+        assertTrue(user.hasAccess());
+
+        Project projectWithUnusualStatus = projectSupplier.getNonEditableProject()
+                .setStatus("Pretty unusual status")
+                .setLob("LOB Test");
+
+        // set up mock
+        when(projectService.projectExists(eq(projectWithUnusualStatus.getId()))).thenReturn(true);
+        when(projectService.getProjectById(eq(projectWithUnusualStatus.getId()))).thenReturn(projectWithUnusualStatus);
+
+        assertFalse(expressionEvaluator.hasAccessToProject(null, user, projectWithUnusualStatus.getId()));
+    }
+
+    @Test
+    public void testHasAccessToProject_User_NoAccess_HasApplied() {
+        User user = userSupplier.getFirstUser();
+        Project project = projectSupplier.getEditableProject();
+        ProjectApplication projectApplication = new ProjectApplication(project, "", user);
+
+        user.getApplications().add(projectApplication);
+
+        // set up mock
+        when(projectService.projectExists(eq(project.getId()))).thenReturn(true);
+        when(projectService.getProjectById(eq(project.getId()))).thenReturn(project);
+
+        when(applicationService.userHasAppliedForProject(eq(user.getId()), eq(project))).thenReturn(true);
+
+        assertTrue(expressionEvaluator.hasAccessToProject(null, user, project.getId()));
+    }
+
+    @Test
+    public void testHasAccessToProject_SuperUser() {
+        SuperUser superUser = userSupplier.getFirstSuperUser();
+        superUser.setLob("LOB Test");
+
+        Project project = projectSupplier.getEditableProject();
+        project.setStatus("Offen")
+                .setLob("LOB Different");
+
+        // set up mock
+        when(projectService.projectExists(eq(project.getId()))).thenReturn(true);
+        when(projectService.getProjectById(eq(project.getId()))).thenReturn(project);
+
+        assertTrue(expressionEvaluator.hasAccessToProject(null, superUser, project.getId()));
     }
 
     @Test
