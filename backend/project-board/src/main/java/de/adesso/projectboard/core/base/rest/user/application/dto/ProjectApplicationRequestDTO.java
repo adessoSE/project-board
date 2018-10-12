@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -21,6 +22,7 @@ public class ProjectApplicationRequestDTO implements Serializable {
     @NotNull
     private String projectId;
 
+    @Size(max = 4096)
     private String comment;
 
     /**
