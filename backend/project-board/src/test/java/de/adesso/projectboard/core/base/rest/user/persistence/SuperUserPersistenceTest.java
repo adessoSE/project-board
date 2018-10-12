@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -19,10 +21,16 @@ public class SuperUserPersistenceTest {
 
     @Test
     public void testSave() {
+        LocalDateTime firstAccessEndTime = LocalDateTime.now().plus(1L, ChronoUnit.DAYS);
+        LocalDateTime secondAccessEndTime = LocalDateTime.now().plus(10L, ChronoUnit.DAYS);
+
         SuperUser firstUser = new SuperUser("first-user");
         firstUser.setFullName("First", "User");
         firstUser.setEmail("first.user@example.com");
         firstUser.setLob("LOB Test");
+        firstUser.giveAccessUntil(firstAccessEndTime);
+        firstUser.removeAccess();
+        firstUser.giveAccessUntil(secondAccessEndTime);
         userRepository.save(firstUser);
 
         User secondUser = new User("second-user", firstUser);
@@ -53,6 +61,8 @@ public class SuperUserPersistenceTest {
         assertEquals("LOB Test", firstRetrievedUser.getLob());
         assertEquals(firstRetrievedUser, firstRetrievedUser.getBoss());
         assertTrue(firstRetrievedUser.getStaffMembers().contains(firstRetrievedUser));
+        assertTrue(firstRetrievedUser.hasAccess());
+        assertEquals(secondAccessEndTime, firstRetrievedUser.getAccessObject().getAccessEnd());
 
         // second user
         retrievedUserOptional = userRepository.findById("second-user");
@@ -66,6 +76,7 @@ public class SuperUserPersistenceTest {
         assertEquals("second.user@example.com", secondRetrievedUser.getEmail());
         assertEquals("LOB Test", secondRetrievedUser.getLob());
         assertEquals(firstRetrievedUser, secondRetrievedUser.getBoss());
+        assertFalse(secondRetrievedUser.hasAccess());
 
         // third user
         retrievedUserOptional = userRepository.findById("third-user");
@@ -79,6 +90,7 @@ public class SuperUserPersistenceTest {
         assertEquals("third.user@example.com", thirdRetrievedUser.getEmail());
         assertEquals("LOB Test", thirdRetrievedUser.getLob());
         assertEquals(firstRetrievedUser, thirdRetrievedUser.getBoss());
+        assertFalse(thirdRetrievedUser.hasAccess());
     }
 
 }
