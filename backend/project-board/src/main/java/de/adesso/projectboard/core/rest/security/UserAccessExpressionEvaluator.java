@@ -7,7 +7,7 @@ import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import de.adesso.projectboard.core.base.rest.user.service.ApplicationService;
 import de.adesso.projectboard.core.base.rest.user.service.UserService;
-import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.UserAccessInfo;
+import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.AccessInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
@@ -49,8 +49,8 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
 
     /**
      * Gets the currently authenticated user from the {@link UserService}
-     * and retrieves the latest {@link UserAccessInfo} object for that user.
-     * When the {@link UserAccessInfo#getAccessEnd() access end date} is
+     * and retrieves the latest {@link AccessInfo} object for that user.
+     * When the {@link AccessInfo#getAccessEnd() access end date} is
      * <b>after</b> the {@link LocalDateTime#now() current} date the user has access.
      *
      * @param authentication
@@ -105,7 +105,7 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
             boolean isSuperUser = user instanceof SuperUser;
             boolean isOpen = "offen".equalsIgnoreCase(project.getStatus());
             boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
-            boolean sameLobAsUser = "LOB Test".equalsIgnoreCase(project.getLob());
+            boolean sameLobAsUser = user.getLob().equalsIgnoreCase(project.getLob());
             boolean noLob = project.getLob() == null;
 
             // escalated || isOpen <-> (sameLob || noLob)

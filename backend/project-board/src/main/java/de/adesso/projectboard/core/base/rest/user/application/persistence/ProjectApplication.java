@@ -30,7 +30,10 @@ public class ProjectApplication {
     /**
      * The user this application belongs to.
      */
-    @ManyToOne(cascade = CascadeType.REFRESH, optional = false)
+    @ManyToOne(
+            cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE},
+            optional = false
+    )
     private User user;
 
     /**

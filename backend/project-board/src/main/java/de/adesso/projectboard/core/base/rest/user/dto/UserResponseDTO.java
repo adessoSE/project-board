@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import de.adesso.projectboard.core.base.rest.user.useraccess.dto.UserAccessInfoResponseDTO;
-import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.UserAccessInfo;
+import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.AccessInfo;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -57,10 +57,10 @@ public class UserResponseDTO implements Serializable {
         bookmarksLink.setPath(String.format("/users/%s/bookmarks", user.getId()));
 
         // create a new access info dto to break circular reference
-        // user -> accessInfo -> user
+        // user -> accessInfoList -> user
         UserAccessInfoResponseDTO infoDTO;
         if(user.hasAccess()) {
-            UserAccessInfo activeInfo = user.getAccessObject();
+            AccessInfo activeInfo = user.getAccessObject();
             infoDTO = UserAccessInfoResponseDTO.fromAccessInfo(activeInfo);
         } else {
             infoDTO = UserAccessInfoResponseDTO.noAccess();

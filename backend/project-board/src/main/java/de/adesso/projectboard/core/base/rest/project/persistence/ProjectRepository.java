@@ -17,20 +17,20 @@ public interface ProjectRepository extends JpaRepository<Project, String> {
     // projects where no LOB is set (lob = null) are included as well
     @Query("SELECT p " +
             "FROM Project AS p " +
-            "WHERE (LOWER(p.status) = LOWER('eskaliert')) " +
-            "OR (LOWER(p.status) = LOWER('offen') AND (LOWER(p.lob) = LOWER(:lob) OR p.lob IS NULL))")
+            "WHERE (LOWER(p.status) = 'eskaliert') " +
+            "OR (LOWER(p.status) = 'offen' AND (LOWER(p.lob) = LOWER(:lob) OR p.lob IS NULL))")
     List<Project> findAllByStatusEscalatedOrOpenOrSameLob(@Param("lob") String lob, Sort sort);
 
     // super users can see all escalated and open projects
     @Query("SELECT p " +
             "FROM Project AS p " +
-            "WHERE (LOWER(p.status) = LOWER('eskaliert')) " +
-            "OR (LOWER(p.status) = LOWER('offen'))")
+            "WHERE (LOWER(p.status) = 'eskaliert') " +
+            "OR (LOWER(p.status) = 'offen')")
     List<Project> findAllByStatusEscalatedOrOpen(Sort sort);
 
     @Query("SELECT p " +
             "FROM Project AS p " +
-            "WHERE ((LOWER(p.status) = LOWER('eskaliert')) OR (LOWER(p.status) = LOWER('offen')))" +
+            "WHERE ((LOWER(p.status) = 'eskaliert') OR (LOWER(p.status) = 'offen'))" +
             "AND (LOWER(p.title) like LOWER(CONCAT('%', :keyword, '%')) " +
                 "OR LOWER(p.skills) like LOWER(CONCAT('%', :keyword, '%')) " +
                 "OR LOWER(p.job) like LOWER(CONCAT('%', :keyword, '%')) " +
@@ -41,7 +41,7 @@ public interface ProjectRepository extends JpaRepository<Project, String> {
 
     @Query("SELECT p " +
             "FROM Project p " +
-            "WHERE ((LOWER(p.status) = LOWER('eskaliert')) OR (LOWER(p.status) = LOWER('offen'))) " +
+            "WHERE ((LOWER(p.status) = 'eskaliert') OR (LOWER(p.status) = 'offen')) " +
             "AND (LOWER(p.title) like LOWER(CONCAT('%', :keyword, '%')) " +
                 "OR LOWER(p.skills) like LOWER(CONCAT('%', :keyword, '%')) " +
                 "OR LOWER(p.job) like LOWER(CONCAT('%', :keyword, '%')) " +

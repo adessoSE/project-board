@@ -91,14 +91,14 @@ public class UserAccessExpressionEvaluatorTest {
     @Test
     public void testHasAccessToProject_User_HasAccess_OpenProjectOfSameLob() {
         User user = userSupplier.getFirstUser();
-        user.setLob("LOB Test")
+        user.setLob("LOB Test 1")
             .giveAccessUntil(LocalDateTime.now().plus(10L, ChronoUnit.DAYS));
 
         assertTrue(user.hasAccess());
 
         Project openTestProjectOfSameLob = projectSupplier.getNonEditableProject()
                 .setStatus("Offen")
-                .setLob("LOB Test");
+                .setLob("LOB Test 1");
 
         // set up mock
         when(projectService.projectExists(eq(openTestProjectOfSameLob.getId()))).thenReturn(true);
@@ -110,7 +110,7 @@ public class UserAccessExpressionEvaluatorTest {
     @Test
     public void testHasAccessToProject_User_HasAccess_OpenProjectOfDifferentLob() {
         User user = userSupplier.getFirstUser();
-        user.setLob("LOB Test")
+        user.setLob("LOB Test 2")
                 .giveAccessUntil(LocalDateTime.now().plus(10L, ChronoUnit.DAYS));
 
         assertTrue(user.hasAccess());
@@ -129,7 +129,7 @@ public class UserAccessExpressionEvaluatorTest {
     @Test
     public void testHasAccessToProject_User_HasAccess_EscalatedProject() {
         User user = userSupplier.getFirstUser();
-        user.setLob("LOB Test")
+        user.setLob("LOB Test 3")
                 .giveAccessUntil(LocalDateTime.now().plus(10L, ChronoUnit.DAYS));
 
         assertTrue(user.hasAccess());
@@ -148,7 +148,7 @@ public class UserAccessExpressionEvaluatorTest {
     @Test
     public void testHasAccessToProject_User_HasAccess_ProjectNoLob() {
         User user = userSupplier.getFirstUser();
-        user.setLob("LOB Test")
+        user.setLob("LOB Test 4")
                 .giveAccessUntil(LocalDateTime.now().plus(10L, ChronoUnit.DAYS));
 
         assertTrue(user.hasAccess());
@@ -167,14 +167,14 @@ public class UserAccessExpressionEvaluatorTest {
     @Test
     public void testHasAccessToProject_User_HasAccess_ProjectUnusualStatus() {
         User user = userSupplier.getFirstUser();
-        user.setLob("LOB Test")
+        user.setLob("LOB Test 5")
                 .giveAccessUntil(LocalDateTime.now().plus(10L, ChronoUnit.DAYS));
 
         assertTrue(user.hasAccess());
 
         Project projectWithUnusualStatus = projectSupplier.getNonEditableProject()
                 .setStatus("Pretty unusual status")
-                .setLob("LOB Test");
+                .setLob("LOB Test 5");
 
         // set up mock
         when(projectService.projectExists(eq(projectWithUnusualStatus.getId()))).thenReturn(true);
@@ -203,7 +203,7 @@ public class UserAccessExpressionEvaluatorTest {
     @Test
     public void testHasAccessToProject_SuperUser() {
         SuperUser superUser = userSupplier.getFirstSuperUser();
-        superUser.setLob("LOB Test");
+        superUser.setLob("LOB Test 6");
 
         Project project = projectSupplier.getEditableProject();
         project.setStatus("Offen")

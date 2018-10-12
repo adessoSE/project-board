@@ -2,7 +2,7 @@ package de.adesso.projectboard.core.base.rest.user.persistence;
 
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
-import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.UserAccessInfo;
+import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.AccessInfo;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -63,7 +63,10 @@ public class User {
      * The {@link ProjectApplication applications} of the
      * user.
      */
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            mappedBy = "user"
+    )
     private Set<ProjectApplication> applications;
 
     /**
@@ -82,12 +85,14 @@ public class User {
     private SuperUser boss;
 
     /**
-     * The user's {@link UserAccessInfo} objects to evaluate
+     * The user's {@link AccessInfo} objects to evaluate
      * REST interface access.
      */
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "JOIN_TABLE_USER_ACCESS_INFO")
-    private List<UserAccessInfo> accessInfo;
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            mappedBy = "user"
+    )
+    private List<AccessInfo> accessInfoList;
 
     /**
      * Constructs a new instance. Sets the ID and adds the user
@@ -116,7 +121,7 @@ public class User {
     protected User() {
         // protected no-arg constructor for JPA
 
-        this.accessInfo = new LinkedList<>();
+        this.accessInfoList = new LinkedList<>();
         this.applications = new LinkedHashSet<>();
         this.bookmarks = new LinkedHashSet<>();
         this.createdProjects = new LinkedHashSet<>();
@@ -220,28 +225,28 @@ public class User {
      *          The {@link LocalDateTime} until the user has access.
      *
      * @return
-     *          The {@link UserAccessInfo} object.
+     *          The {@link AccessInfo} object.
      *
      * @throws IllegalArgumentException
      *          When the given {@link LocalDateTime} is {@link LocalDateTime#isBefore(ChronoLocalDateTime) before}
      *          the current time.
      *
      * @see #hasAccess()
-     * @see UserAccessInfo
+     * @see AccessInfo
      */
-    public UserAccessInfo giveAccessUntil(LocalDateTime until) throws IllegalArgumentException {
+    public AccessInfo giveAccessUntil(LocalDateTime until) throws IllegalArgumentException {
         if(LocalDateTime.now().isAfter(until)) {
             throw new IllegalArgumentException("The given date has to be after the current date!");
         }
 
         if(hasAccess()) {
-            UserAccessInfo activeInfo = accessInfo.get(accessInfo.size() - 1);
+            AccessInfo activeInfo = accessInfoList.get(accessInfoList.size() - 1);
             activeInfo.setAccessEnd(until);
 
             return activeInfo;
         } else {
-            UserAccessInfo info = new UserAccessInfo(this, until);
-            accessInfo.add(info);
+            AccessInfo info = new AccessInfo(this, until);
+            accessInfoList.add(info);
 
             return info;
         }
@@ -249,28 +254,28 @@ public class User {
 
     /**
      * Removes the user's access by setting the date of the active
-     * {@link UserAccessInfo} to the current date in case it is present.
+     * {@link AccessInfo} to the current date in case it is present.
      *
      * @see #hasAccess()
      */
     public void removeAccess() {
         if(hasAccess()) {
-            accessInfo.get(accessInfo.size() - 1).setAccessEnd(LocalDateTime.now());
+            accessInfoList.get(accessInfoList.size() - 1).setAccessEnd(LocalDateTime.now());
         }
     }
 
     /**
      *
      * @return
-     *         {@code true}, when the last {@link UserAccessInfo} in the
-     *         {@link #accessInfo access info} list {@link UserAccessInfo#isCurrentlyActive()}  is active},
+     *         {@code true}, when the last {@link AccessInfo} in the
+     *         {@link #accessInfoList access info} list {@link AccessInfo#isCurrentlyActive()}  is active},
      *         {@code false} otherwise.
      *
-     * @see UserAccessInfo#isCurrentlyActive()
+     * @see AccessInfo#isCurrentlyActive()
      */
     public boolean hasAccess() {
-        if(!accessInfo.isEmpty()) {
-            return accessInfo.get(accessInfo.size() - 1).isCurrentlyActive();
+        if(!accessInfoList.isEmpty()) {
+            return accessInfoList.get(accessInfoList.size() - 1).isCurrentlyActive();
         }
 
         return false;
@@ -281,12 +286,12 @@ public class User {
      *
      * @return
      *          {@code null}, when {@link #hasAccess()} returns {@code false}
-     *          and the active {@link UserAccessInfo} otherwise.
+     *          and the active {@link AccessInfo} otherwise.
      *
      */
-    public UserAccessInfo getAccessObject() {
+    public AccessInfo getAccessObject() {
         if(hasAccess()) {
-            return accessInfo.get(accessInfo.size() - 1);
+            return accessInfoList.get(accessInfoList.size() - 1);
         }
 
         return null;

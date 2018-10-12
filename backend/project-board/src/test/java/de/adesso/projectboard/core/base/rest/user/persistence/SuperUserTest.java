@@ -61,12 +61,12 @@ public class SuperUserTest {
         LocalDateTime accessEndNew = LocalDateTime.now().plus(10L, ChronoUnit.DAYS);
         superUser.giveAccessUntil(accessEndNew);
         assertEquals(accessEndNew, superUser.getAccessObject().getAccessEnd());
-        assertEquals(1L, superUser.getAccessInfo().size());
+        assertEquals(1L, superUser.getAccessInfoList().size());
 
         superUser.removeAccess();
         superUser.giveAccessUntil(accessEndNew);
         assertEquals(accessEndNew, superUser.getAccessObject().getAccessEnd());
-        assertEquals(2L, superUser.getAccessInfo().size());
+        assertEquals(2L, superUser.getAccessInfoList().size());
     }
 
 }

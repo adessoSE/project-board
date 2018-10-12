@@ -1,14 +1,14 @@
 package de.adesso.projectboard.core.base.rest.user.useraccess.dto;
 
 import de.adesso.projectboard.core.base.rest.user.UserAccessController;
-import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.UserAccessInfo;
+import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.AccessInfo;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * The DTO of a {@link UserAccessInfo} object sent back to the user.
+ * The DTO of a {@link AccessInfo} object sent back to the user.
  *
  * @see UserAccessController
  */
@@ -24,14 +24,14 @@ public class UserAccessInfoResponseDTO implements Serializable {
     /**
      *
      * @param info
-     *          The {@link UserAccessInfo} object.
+     *          The {@link AccessInfo} object.
      *
      * @return
      *          A new {@link UserAccessInfoResponseDTO} with the information of
-     *          the given {@link UserAccessInfo} object.
+     *          the given {@link AccessInfo} object.
      *
      */
-    public static UserAccessInfoResponseDTO fromAccessInfo(UserAccessInfo info) {
+    public static UserAccessInfoResponseDTO fromAccessInfo(AccessInfo info) {
         UserAccessInfoResponseDTO responseDTO = new UserAccessInfoResponseDTO();
 
         responseDTO.setAccessStart(info.getAccessStart());

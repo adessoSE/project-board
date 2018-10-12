@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-public class UserAccessInfo {
+public class AccessInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,13 +42,13 @@ public class UserAccessInfo {
      * @param accessEnd
      *          The {@link LocalDateTime} of when the access should end.
      */
-    public UserAccessInfo(User user, LocalDateTime accessEnd) {
+    public AccessInfo(User user, LocalDateTime accessEnd) {
         this.user = user;
         this.accessStart = LocalDateTime.now();
         this.accessEnd = accessEnd;
     }
 
-    protected UserAccessInfo() {
+    protected AccessInfo() {
         // protected no-arg constructor for JPA
     }
 

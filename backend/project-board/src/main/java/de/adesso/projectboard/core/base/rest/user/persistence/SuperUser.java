@@ -24,7 +24,11 @@ public class SuperUser extends User {
     /**
      * The user's supervised {@link User}s.
      */
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            mappedBy = "boss"
+    )
     private Set<User> staffMembers;
 
     /**
