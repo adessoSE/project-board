@@ -56,7 +56,8 @@ public class User {
      * The bookmarked {@link Project projects} of the
      * user.
      */
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany
+    @JoinTable(name = "USER_BOOKMARKS")
     private Set<Project> bookmarks;
 
     /**

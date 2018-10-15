@@ -6,6 +6,7 @@ import de.adesso.projectboard.core.base.rest.exceptions.UserNotFoundException;
 import de.adesso.projectboard.core.base.rest.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
+import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplicationRepository;
 import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import de.adesso.projectboard.core.base.rest.user.persistence.UserRepository;
@@ -38,6 +39,9 @@ public class ProjectServiceTest {
 
     @Mock
     private UserRepository userRepo;
+
+    @Mock
+    private ProjectApplicationRepository applicationRepo;
 
     @Mock
     private UserService userService;
@@ -84,7 +88,7 @@ public class ProjectServiceTest {
 
         when(userRepo.existsByIdAndCreatedProjectsContaining(anyString(), any(Project.class))).thenReturn(false);
 
-        when(userRepo.findByCreatedProjectsContaining(any(Project.class))).thenReturn(Optional.empty());
+        when(userRepo.findAllByCreatedProjectsContaining(any(Project.class))).thenReturn(Collections.emptyList());
     }
 
     @Test
@@ -279,7 +283,8 @@ public class ProjectServiceTest {
         assertTrue(superUser.getCreatedProjects().contains(editableProject));
 
         // override mock
-        when(userRepo.findByCreatedProjectsContaining(editableProject)).thenReturn(Optional.of(superUser));
+        when(userRepo.findAllByCreatedProjectsContaining(editableProject))
+                .thenReturn(Collections.singletonList(superUser));
 
         projectService.deleteProjectById(editableProject.getId());
 

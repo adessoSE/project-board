@@ -6,6 +6,8 @@ import de.adesso.projectboard.core.base.rest.exceptions.UserNotFoundException;
 import de.adesso.projectboard.core.base.rest.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
+import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
+import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplicationRepository;
 import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import de.adesso.projectboard.core.base.rest.user.persistence.UserRepository;
@@ -29,13 +31,19 @@ public class ProjectService {
 
     private final ProjectRepository projectRepo;
 
+    private final ProjectApplicationRepository applicationRepo;
+
     private final UserRepository userRepo;
 
     private final UserService userService;
 
     @Autowired
-    public ProjectService(ProjectRepository projectRepo, UserRepository userRepo, UserService userService) {
+    public ProjectService(ProjectRepository projectRepo,
+                          ProjectApplicationRepository applicationRepo,
+                          UserRepository userRepo,
+                          UserService userService) {
         this.projectRepo = projectRepo;
+        this.applicationRepo = applicationRepo;
         this.userRepo = userRepo;
         this.userService = userService;
     }
@@ -270,9 +278,27 @@ public class ProjectService {
 
         if(existingProject.isEditable()) {
             // remove it from the user's created projects
-            Optional<User> optionalUser
-                    = userRepo.findByCreatedProjectsContaining(existingProject);
-            optionalUser.ifPresent(user -> user.removeCreatedProject(existingProject));
+            List<User> creators
+                    = userRepo.findAllByCreatedProjectsContaining(existingProject);
+            creators.forEach(user -> {
+                user.removeCreatedProject(existingProject);
+
+                userService.save(user);
+            });
+
+            // remove it from the user's bookmarks
+            List<User> bookmarkers
+                    = userRepo.findAllByBookmarksContaining(existingProject);
+            bookmarkers.forEach(user -> {
+                user.removeBookmark(existingProject);
+
+                userService.save(user);
+            });
+
+            // remove applications referring to this project
+            List<ProjectApplication> applications =
+                    applicationRepo.findAllByProjectEquals(existingProject);
+            applications.forEach(applicationRepo::delete);
 
             // delete the project
             projectRepo.delete(existingProject);

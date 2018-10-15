@@ -6,7 +6,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * {@link JpaRepository} to persist {@link User} entities.
@@ -15,9 +14,11 @@ import java.util.Optional;
  */
 public interface UserRepository extends JpaRepository<User, String> {
 
-    Optional<User> findByCreatedProjectsContaining(Project project);
+    List<User> findAllByCreatedProjectsContaining(Project project);
 
     List<User> findAllByBossEquals(SuperUser boss, Sort sort);
+
+    List<User> findAllByBookmarksContaining(Project project);
 
     boolean existsById(String userId);
 
