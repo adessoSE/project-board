@@ -8,4 +8,4 @@ Currently in development.
 
 ## Backend
 
-REST Interface documentation can be found [here](https://github.com/adessoAG/project-board/blob/master/backend/project-board/REST.md)
+REST Interface documentation can be found [here](https://documenter.getpostman.com/view/3900854/RWgrydjn)
