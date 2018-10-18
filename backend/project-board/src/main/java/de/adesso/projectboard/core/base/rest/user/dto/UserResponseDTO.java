@@ -26,6 +26,8 @@ public class UserResponseDTO implements Serializable {
 
     private String lob;
 
+    private boolean isBoss;
+
     private UserAccessInfoResponseDTO accessInfo;
 
     private CollectionLink applications;
@@ -67,15 +69,16 @@ public class UserResponseDTO implements Serializable {
         }
 
         // create new UserResponseDTO object to return
-        UserResponseDTO userDTO = new UserResponseDTO();
-        userDTO.setId(user.getId());
-        userDTO.setFirstName(user.getFirstName());
-        userDTO.setLastName(user.getLastName());
-        userDTO.setEmail(user.getEmail());
-        userDTO.setLob(user.getLob());
-        userDTO.setApplications(applicationsLink);
-        userDTO.setBookmarks(bookmarksLink);
-        userDTO.setAccessInfo(infoDTO);
+        UserResponseDTO userDTO = new UserResponseDTO()
+            .setId(user.getId())
+            .setFirstName(user.getFirstName())
+            .setLastName(user.getLastName())
+            .setEmail(user.getEmail())
+            .setLob(user.getLob())
+            .setApplications(applicationsLink)
+            .setBookmarks(bookmarksLink)
+            .setAccessInfo(infoDTO)
+            .setBoss(user instanceof SuperUser);
 
         // create new staff/projects link when it is necessary
         if(user instanceof SuperUser) {
