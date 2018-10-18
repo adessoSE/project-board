@@ -4,6 +4,7 @@
 
 ### Spring Properties ###
 /src/main/resources/application-adesso-jira.properties
+/src/main/resources/application-mail.properties
 
 ### STS ###
 .apt_generated
