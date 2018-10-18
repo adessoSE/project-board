@@ -4,6 +4,7 @@ import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotEditableExcept
 import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.core.base.rest.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
+import de.adesso.projectboard.core.base.rest.project.persistence.ProjectOrigin;
 import de.adesso.projectboard.core.base.rest.project.service.ProjectService;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import de.adesso.projectboard.core.base.rest.user.service.UserService;
@@ -102,7 +103,8 @@ public class ProjectController {
      *          When no {@link Project} with the given {@code projectId} was found.
      *
      * @throws ProjectNotEditableException
-     *          When the {@link Project} exists but is not {@link Project#isEditable() editable}.
+     *          When the {@link Project} exists but it's {@link Project#getOrigin() origin}
+     *          is not equal to {@link ProjectOrigin#CUSTOM}.
      *
      * @see ProjectService#updateProject(ProjectRequestDTO, String)
      */
@@ -148,7 +150,8 @@ public class ProjectController {
      *          When no {@link Project} with the given id was found.
      *
      * @throws ProjectNotEditableException
-     *          When the {@link Project} exists but is not {@link Project#isEditable() editable}.
+     *          When the {@link Project} exists but it's {@link Project#getOrigin() origin}
+     *          is not equal to {@link ProjectOrigin#CUSTOM}.
      */
     @PreAuthorize("hasPermissionToEditProject(#projectId) || hasRole('admin')")
     @DeleteMapping(path = "/{projectId}")

@@ -13,7 +13,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -51,7 +52,7 @@ public class ProjectPersistenceTest {
                 .setFreelancer("Testfreelancer")
                 .setElongation("Testelongation")
                 .setOther("Testother")
-                .setEditable(false);
+                .setOrigin(ProjectOrigin.JIRA);
 
         projectRepository.save(project);
 
@@ -78,7 +79,7 @@ public class ProjectPersistenceTest {
         assertEquals("Testfreelancer", retrievedProject.getFreelancer());
         assertEquals("Testelongation", retrievedProject.getElongation());
         assertEquals("Testother", retrievedProject.getOther());
-        assertFalse(retrievedProject.isEditable());
+        assertEquals(ProjectOrigin.JIRA, retrievedProject.getOrigin());
 
         List<String> firstProjectLabels = retrievedProject.getLabels();
         assertEquals(3, firstProjectLabels.size());

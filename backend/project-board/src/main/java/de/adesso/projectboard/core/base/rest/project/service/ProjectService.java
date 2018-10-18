@@ -5,6 +5,7 @@ import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException
 import de.adesso.projectboard.core.base.rest.exceptions.UserNotFoundException;
 import de.adesso.projectboard.core.base.rest.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
+import de.adesso.projectboard.core.base.rest.project.persistence.ProjectOrigin;
 import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplicationRepository;
@@ -201,7 +202,7 @@ public class ProjectService {
                 .setFreelancer(projectDTO.getFreelancer())
                 .setElongation(projectDTO.getElongation())
                 .setOther(projectDTO.getOther())
-                .setEditable(true);
+                .setOrigin(ProjectOrigin.CUSTOM);
 
         return projectRepo.save(project);
     }
@@ -221,12 +222,13 @@ public class ProjectService {
      *          When no {@link Project} with the given {@code projectId} is found.
      *
      * @throws ProjectNotEditableException
-     *          When the exiting project with the given {@code projectId} is not {@link Project#editable}.
+     *          When the {@link Project} exists but it's {@link Project#getOrigin() origin}
+     *          is not equal to {@link ProjectOrigin#CUSTOM}.
      */
     public Project updateProject(ProjectRequestDTO projectDTO, String projectId) throws ProjectNotFoundException, ProjectNotEditableException {
         Project existingProject = getProjectById(projectId);
 
-        if(existingProject.isEditable()) {
+        if(ProjectOrigin.CUSTOM.equals(existingProject.getOrigin())) {
             return createOrUpdateProject(projectDTO, projectId);
         } else {
             throw new ProjectNotEditableException();
@@ -271,12 +273,13 @@ public class ProjectService {
      *          When no {@link Project} with the given {@code projectId} was found.
      *
      * @throws ProjectNotEditableException
-     *          When the project with the given {@code projectId} is not {@link Project#editable}.
+     *          When the project's {@link Project#origin} with the given {@code projectId} is
+     *          not equal to {@link ProjectOrigin#CUSTOM}.
      */
     public void deleteProjectById(String projectId) throws ProjectNotFoundException, ProjectNotEditableException {
         Project existingProject = getProjectById(projectId);
 
-        if(existingProject.isEditable()) {
+        if(ProjectOrigin.CUSTOM.equals(existingProject.getOrigin())) {
             // remove it from the user's created projects
             List<User> creators
                     = userRepo.findAllByCreatedProjectsContaining(existingProject);

@@ -1,6 +1,7 @@
 package de.adesso.projectboard.util;
 
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
+import de.adesso.projectboard.core.base.rest.project.persistence.ProjectOrigin;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -43,7 +44,7 @@ public class ProjectSupplier {
                 .setFreelancer("Original Freelancer")
                 .setElongation("Original Elongation")
                 .setOther("Original Other")
-                .setEditable(true);
+                .setOrigin(ProjectOrigin.CUSTOM);
 
         this.nonEditableProject = new Project()
                 .setId("STF-10")
@@ -65,7 +66,7 @@ public class ProjectSupplier {
                 .setFreelancer("Original Freelancer")
                 .setElongation("Original Elongation")
                 .setOther("Original Other")
-                .setEditable(false);
+                .setOrigin(ProjectOrigin.JIRA);
     }
 
 }

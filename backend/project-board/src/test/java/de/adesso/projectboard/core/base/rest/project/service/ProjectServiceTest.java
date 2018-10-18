@@ -5,6 +5,7 @@ import de.adesso.projectboard.core.base.rest.exceptions.ProjectNotFoundException
 import de.adesso.projectboard.core.base.rest.exceptions.UserNotFoundException;
 import de.adesso.projectboard.core.base.rest.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
+import de.adesso.projectboard.core.base.rest.project.persistence.ProjectOrigin;
 import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplicationRepository;
 import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
@@ -160,7 +161,7 @@ public class ProjectServiceTest {
         Project updatedProject = projectService.updateProject(dto, editableProject.getId());
 
         verify(projectRepo).save(any(Project.class));
-        assertTrue(updatedProject.isEditable());
+        assertEquals(ProjectOrigin.CUSTOM, updatedProject.getOrigin());
         assertEquals(editableProject.getId(), updatedProject.getId());
         assertEquals("eskaliert", updatedProject.getStatus());
         assertEquals("Edited Issuetype", updatedProject.getIssuetype());
@@ -179,7 +180,6 @@ public class ProjectServiceTest {
         assertEquals("Edited Freelancer", updatedProject.getFreelancer());
         assertEquals("Edited Elongation", updatedProject.getElongation());
         assertEquals("Edited Other", updatedProject.getOther());
-        assertTrue(updatedProject.isEditable());
     }
 
     @Test(expected = ProjectNotEditableException.class)
@@ -232,7 +232,7 @@ public class ProjectServiceTest {
         assertEquals(1L, superUser.getCreatedProjects().size());
         assertTrue(superUser.getCreatedProjects().contains(createdProject));
 
-        assertTrue(createdProject.isEditable());
+        assertEquals(ProjectOrigin.CUSTOM, createdProject.getOrigin());
         assertEquals("eskaliert", createdProject.getStatus());
         assertEquals("Issuetype", createdProject.getIssuetype());
         assertEquals("Title", createdProject.getTitle());
@@ -341,7 +341,7 @@ public class ProjectServiceTest {
                 .setFreelancer("Original Freelancer")
                 .setElongation("Original Elongation")
                 .setOther("Original Other")
-                .setEditable(true);
+                .setOrigin(ProjectOrigin.CUSTOM);
     }
 
 }

@@ -105,6 +105,7 @@ public class Project {
     @JsonAlias("customfield_10304")
     private String other;
 
-    private boolean editable;
+    @Column(nullable = false)
+    private ProjectOrigin origin = ProjectOrigin.JIRA;
 
 }
