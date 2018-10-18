@@ -6,8 +6,7 @@ import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
 public class UserResponseDTOTest {
 
@@ -35,12 +34,13 @@ public class UserResponseDTOTest {
         assertEquals(1L, dto.getApplications().getCount());
         assertEquals(1L, dto.getBookmarks().getCount());
         assertEquals(1L, dto.getProjects().getCount());
+        assertEquals(2L, dto.getStaff().getCount());
         assertEquals("first-user", dto.getId());
         assertEquals("First", dto.getFirstName());
         assertEquals("User", dto.getLastName());
         assertEquals("first.user@example.com", dto.getEmail());
         assertEquals("LOB Test", dto.getLob());
-        assertEquals(2L, dto.getStaff().getCount());
+        assertTrue(dto.isBoss());
         assertFalse(dto.getAccessInfo().isHasAccess());
     }
 
