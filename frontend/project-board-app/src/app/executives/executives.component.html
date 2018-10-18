@@ -5,7 +5,11 @@
     <div class="list-group">
       <ng-container *ngFor="let e of employees">
         <button id="{{e.id}}" (click)="employeeClicked(e)" type="button" [ngClass]="{'list-group-item list-group-item-action': true, 'active': e.id == selectedEmployee?.id}">
-          <span title="{{badgeTooltip(e)}}" [ngClass]="{'badge badge-width': true, 'badge-success': e.accessInfo.hasAccess, 'badge-danger badge-red': !e.accessInfo.hasAccess}">{{e.duration || '0'}}</span>
+
+          <!-- Differentiate between boss and normal user for readability -->
+          <span *ngIf="e.boss" class="badge badge-success badge-width" title="{{badgeTooltip(e)}}">D</span>
+          <span *ngIf="!e.boss" title="{{badgeTooltip(e)}}" [ngClass]="{'badge badge-width': true, 'badge-success': e.accessInfo.hasAccess, 'badge-danger badge-red': !e.accessInfo.hasAccess}">{{e.duration || '0'}}</span>
+
           {{e.lastName}}, {{e.firstName}}
         </button>
         <div *ngIf="mobile && selectedEmployee?.id == e.id" style="padding: 0 15px 15px 15px">

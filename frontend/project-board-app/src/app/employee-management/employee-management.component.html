@@ -11,12 +11,15 @@
       </div>
       <div class="row">
         <div class="col-4">Status:</div>
-        <div class="col right">{{selectedEmployee.accessInfo.hasAccess ? 'Freigeschaltet' : 'Nicht freigeschaltet'}}</div>
+        <div class="col right">{{selectedEmployee.accessInfo.hasAccess || selectedEmployee.boss ? 'Freigeschaltet' : 'Nicht freigeschaltet'}}</div>
         <br>
       </div>
-      <div [ngClass]="{'row': true, 'disabled': !selectedEmployee.accessInfo.hasAccess}">
+      <div [ngClass]="{'row': true, 'disabled': !selectedEmployee.accessInfo.hasAccess && !selectedEmployee.boss}">
         <div class="col-4">Freigeschaltet bis:</div>
-        <div class="col right">{{selectedEmployee.accessInfo.hasAccess ? (selectedEmployee.accessInfo.accessEnd | date : 'dd.MM.yyyy') : '-'}}</div>
+
+        <!-- Differentiate between boss and normal user for readability -->
+        <div class="col right" *ngIf="selectedEmployee.boss">Dauerhaft (Führungskraft)</div>
+        <div class="col right" *ngIf="!selectedEmployee.boss">{{selectedEmployee.accessInfo.hasAccess ? (selectedEmployee.accessInfo.accessEnd | date : 'dd.MM.yyyy') : '-'}}</div>
       </div>
       <div *ngIf="adminControls" class="row">
         <div class="col-4">Email:</div>
@@ -26,7 +29,7 @@
 
     <!--  Admin Controls  -->
     <div *ngIf="adminControls" class="mt-2 pt-1 border-top">
-      <form *ngIf="!selectedEmployee.accessInfo.hasAccess">
+      <form *ngIf="!selectedEmployee.accessInfo.hasAccess && !selectedEmployee.boss">
         <div class="form-group">
           <label class="select-label" for="durationSelect">Dauer der Freischaltung</label>
           <select #duration required class="select form-control" id="durationSelect">
@@ -36,7 +39,7 @@
         </div>
       </form>
       <div>
-        <button (click)="deactivate()" *ngIf="selectedEmployee.accessInfo.hasAccess" class="btn btn-danger btn-deactivate">Zugang deaktivieren</button>
+        <button (click)="deactivate()" *ngIf="selectedEmployee.accessInfo.hasAccess && !selectedEmployee.boss" class="btn btn-danger btn-deactivate">Zugang deaktivieren</button>
       </div>
     </div>
   </div>

@@ -88,11 +88,16 @@ export class ExecutivesComponent implements OnInit, AfterViewChecked {
   }
 
   badgeTooltip(employee) {
-    const days = this.daysUntil(employee.accessInfo.accessEnd);
     const fullName = `${employee.firstName} ${employee.lastName}`;
+    if (employee.boss) {
+      return `${fullName} hat als Führungskraft dauerhaften Zugang zum Project Board.`;
+    }
+
+    const days = this.daysUntil(employee.accessInfo.accessEnd);
     if (employee.accessInfo.hasAccess) {
       return `${fullName} hat noch ${days} ${days > 1 ? 'Tage' : 'Tag'} Zugang zum Project Board.`;
     }
     return `${employee.firstName} ${employee.lastName} hat keinen Zugang zum Project Board.`;
   }
+
 }

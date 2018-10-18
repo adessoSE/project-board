@@ -66,6 +66,7 @@ export interface Employee {
   firstName: string;
   lastName: string;
   email: string;
+  boss: boolean;
   applications: {
     count: number;
     path: string;
