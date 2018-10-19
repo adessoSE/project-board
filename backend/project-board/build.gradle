@@ -1,10 +1,11 @@
 buildscript {
 	ext {
-		springBootVersion = '2.0.4.RELEASE'
-		springVersion = '5.0.8.RELEASE'
+		springBootVersion = '2.0.6.RELEASE'
+		springVersion = '5.0.9.RELEASE'
 		lombokVersion = '1.18.2'
 		hsqlVersion = '2.4.1'
 		keycloakVersion = '4.3.0.Final'
+		junitVersion = '5.3.1'
 	}
 	repositories {
 		mavenCentral()
@@ -39,28 +40,22 @@ dependencies {
 			[group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: "${springBootVersion}"],
 			[group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: "${springBootVersion}"],
 			[group: 'org.springframework.boot', name: 'spring-boot-starter-security', version: "${springBootVersion}"],
-			[group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: "${springBootVersion}"],
+			[group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: "${springBootVersion}"]
+	)
+	compile(
 			[group: 'org.keycloak', name: 'keycloak-spring-security-adapter', version: "${keycloakVersion}"],
 			[group: 'org.keycloak', name: 'keycloak-spring-boot-starter', version: "${keycloakVersion}"]
 	)
 
-	compileOnly(
-			[group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: "${springBootVersion}"],
-			[group: 'org.projectlombok', name: 'lombok', version: "${lombokVersion}"]
-	)
+	compileOnly(group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: "${springBootVersion}")
+	compileOnly(group: 'org.projectlombok', name: 'lombok', version: "${lombokVersion}")
 
-	annotationProcessor(group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: "${springBootVersion}")
+	runtime(group: 'org.springframework.boot', name: 'spring-boot-devtools', version: "${springBootVersion}")
+	runtime(group: 'org.hsqldb', name: 'hsqldb', version: "${hsqlVersion}")
 
-	runtime(
-			[group: 'org.springframework.boot', name: 'spring-boot-devtools', version: "${springBootVersion}"],
-			[group: 'org.hsqldb', name: 'hsqldb', version: "${hsqlVersion}"],
-	)
-
-	testCompile(
-			[group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: "${springBootVersion}"],
-			[group: 'org.springframework.security', name: 'spring-security-test', version: "${springVersion}"],
-			[group: 'org.projectlombok', name: 'lombok', version: "${lombokVersion}"]
-	)
+	testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test', version: "${springBootVersion}")
+	testCompile(group: 'org.springframework.security', name: 'spring-security-test', version: "${springVersion}")
+	testCompile(group: 'org.projectlombok', name: 'lombok', version: "${lombokVersion}")
 
 	apt(group: 'org.projectlombok', name: 'lombok', version: "${lombokVersion}")
 }

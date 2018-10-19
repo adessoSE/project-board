@@ -4,13 +4,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -20,55 +18,40 @@ import static org.junit.Assert.assertTrue;
 public class UpdateJobPersistenceTest {
 
     @Autowired
-    private ProjectDatabaseUpdaterInfoRepository infoRepository;
+    private UpdateJobRepository jobRepo;
 
     @Test
+    @Sql("classpath:de/adesso/projectboard/core/base/updater/persistence/UpdateJobs.sql")
     public void testSave_OK() {
-        LocalDateTime time = LocalDateTime.of(2018, 1, 1, 12, 0);
+        LocalDateTime time = LocalDateTime.of(2018, 1, 1, 13, 37);
 
-        UpdateJob info = new UpdateJob();
+        Optional<UpdateJob> jobOptional = jobRepo.findById(1L);
+        assertTrue(jobOptional.isPresent());
 
-        info.setStatus(UpdateJob.Status.FAILURE);
-        info.setTime(time);
-        info.setFailureReason("Testreason");
+        UpdateJob job = jobOptional.get();
 
-        infoRepository.save(info);
-
-        List<UpdateJob> infos = StreamSupport.stream(infoRepository.findAll().spliterator(), false)
-                .collect(Collectors.toList());
-
-        assertEquals(1, infos.size());
-
-        UpdateJob retrievedInfo = infos.get(0);
-
-        assertEquals(UpdateJob.Status.FAILURE, retrievedInfo.getStatus());
-        assertEquals(time, retrievedInfo.getTime());
-        assertEquals("Testreason", retrievedInfo.getFailureReason());
+        assertEquals(UpdateJob.Status.FAILURE, job.getStatus());
+        assertEquals(time, job.getTime());
+        assertEquals("Testreason", job.getFailureReason());
     }
 
     @Test
-    public void testFindByStatus() {
-        LocalDateTime firstTime = LocalDateTime.of(2018, 1, 1, 12, 0);
-        UpdateJob firstInfo = new UpdateJob();
-        firstInfo.setStatus(UpdateJob.Status.SUCCESS);
-        firstInfo.setTime(firstTime);
+    @Sql("classpath:de/adesso/projectboard/core/base/updater/persistence/UpdateJobs.sql")
+    public void testFindFirstByStatusOrderByTimeDesc() {
+        Optional<UpdateJob> jobOptional
+                = jobRepo.findFirstByStatusOrderByTimeDesc(UpdateJob.Status.SUCCESS);
+        assertTrue(jobOptional.isPresent());
 
-        LocalDateTime secondTime = LocalDateTime.of(2018, 2, 1, 12, 0);
-        UpdateJob secondInfo = new UpdateJob();
-        secondInfo.setStatus(UpdateJob.Status.SUCCESS);
-        secondInfo.setTime(secondTime);
+        UpdateJob job = jobOptional.get();
 
-        infoRepository.save(firstInfo);
-        infoRepository.save(secondInfo);
+        for(UpdateJob otherJob : jobRepo.findAll()) {
+            if(otherJob.getStatus().equals(job.getStatus())) {
+                boolean after = job.getTime().isAfter(otherJob.getTime());
+                boolean equal = job.getTime().isEqual(otherJob.getTime());
 
-        Optional<UpdateJob> firstByStatusOptional
-                = infoRepository.findFirstByStatusOrderByTimeDesc(UpdateJob.Status.SUCCESS);
-
-        assertTrue(firstByStatusOptional.isPresent());
-
-        UpdateJob firstByStatus = firstByStatusOptional.get();
-
-        assertEquals(secondTime, firstByStatus.getTime());
+                assertTrue(after || equal);
+            }
+        }
     }
 
 }

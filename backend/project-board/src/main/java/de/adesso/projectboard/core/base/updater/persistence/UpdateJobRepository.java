@@ -10,7 +10,7 @@ import java.util.Optional;
  *
  * @see UpdateJob
  */
-public interface ProjectDatabaseUpdaterInfoRepository extends CrudRepository<UpdateJob, Long> {
+public interface UpdateJobRepository extends CrudRepository<UpdateJob, Long> {
 
     Optional<UpdateJob> findFirstByStatusOrderByTimeDesc(UpdateJob.Status status);
 

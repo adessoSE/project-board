@@ -1,7 +1,7 @@
 package de.adesso.projectboard.core.base.updater;
 
 import de.adesso.projectboard.core.base.updater.persistence.UpdateJob;
-import de.adesso.projectboard.core.base.updater.persistence.ProjectDatabaseUpdaterInfoRepository;
+import de.adesso.projectboard.core.base.updater.persistence.UpdateJobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -17,10 +17,10 @@ import java.util.Optional;
 @Component
 public class UpdaterHealthIndicator implements HealthIndicator {
 
-    private final ProjectDatabaseUpdaterInfoRepository updaterRepository;
+    private final UpdateJobRepository updaterRepository;
 
     @Autowired
-    public UpdaterHealthIndicator(ProjectDatabaseUpdaterInfoRepository repository) {
+    public UpdaterHealthIndicator(UpdateJobRepository repository) {
         this.updaterRepository = repository;
     }
 

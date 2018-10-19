@@ -11,10 +11,9 @@ import java.time.LocalDateTime;
  * A info object for the {@link de.adesso.projectboard.core.base.updater.ProjectDatabaseUpdater}
  * to persist information about the project database updates.
  *
- * @see ProjectDatabaseUpdaterInfoRepository
+ * @see UpdateJobRepository
  */
 @Entity
-@Table(name = "PROJECT_DATABASE_UPDATER_INFO")
 @Getter
 @Setter
 @AllArgsConstructor

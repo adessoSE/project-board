@@ -4,13 +4,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -20,77 +20,29 @@ public class SuperUserPersistenceTest {
     private UserRepository userRepository;
 
     @Test
+    @Sql("classpath:de/adesso/projectboard/core/base/rest/user/persistence/Users.sql")
     public void testSave() {
-        LocalDateTime firstAccessEndTime = LocalDateTime.now().plus(1L, ChronoUnit.DAYS);
-        LocalDateTime secondAccessEndTime = LocalDateTime.now().plus(10L, ChronoUnit.DAYS);
+        Optional<User> userOptional = userRepository.findById("SuperUser2");
+        Optional<User> bossOptional = userRepository.findById("SuperUser1");
+        assertTrue(userOptional.isPresent());
+        assertTrue(bossOptional.isPresent());
 
-        SuperUser firstUser = new SuperUser("first-user");
-        firstUser.setFullName("First", "User");
-        firstUser.setEmail("first.user@example.com");
-        firstUser.setLob("LOB Test");
-        firstUser.giveAccessUntil(firstAccessEndTime);
-        firstUser.removeAccess();
-        firstUser.giveAccessUntil(secondAccessEndTime);
-        userRepository.save(firstUser);
+        SuperUser user = (SuperUser) userOptional.get();
+        SuperUser boss = (SuperUser) bossOptional.get();
 
-        User secondUser = new User("second-user", firstUser);
-        secondUser.setFullName("Second", "User");
-        secondUser.setEmail("second.user@example.com");
-        secondUser.setLob("LOB Test");
-        userRepository.save(secondUser);
+        assertEquals(2L, user.getStaffMembers().size());
+        assertEquals("SuperUser2", user.getId());
+        assertEquals("Second Test", user.getFirstName());
+        assertEquals("Super User", user.getLastName());
+        assertEquals("secondtestsuperuser@user.com", user.getEmail());
+        assertEquals("LOB Test", user.getLob());
+        assertEquals(1L, user.getAccessInfoList().size());
+        assertEquals(1L, user.getBookmarks().size());
 
-        User thirdUser = new User("third-user", firstUser);
-        thirdUser.setFullName("Third", "User");
-        thirdUser.setEmail("third.user@example.com");
-        thirdUser.setLob("LOB Test");
-        userRepository.save(thirdUser);
-
-        assertEquals(3L, userRepository.count());
-
-        // first user
-        Optional<User> retrievedUserOptional = userRepository.findById("first-user");
-        assertTrue(retrievedUserOptional.isPresent());
-
-        SuperUser firstRetrievedUser = (SuperUser) retrievedUserOptional.get();
-
-        assertEquals(3L, firstRetrievedUser.getStaffMembers().size());
-        assertEquals("first-user", firstRetrievedUser.getId());
-        assertEquals("First", firstRetrievedUser.getFirstName());
-        assertEquals("User", firstRetrievedUser.getLastName());
-        assertEquals("first.user@example.com", firstRetrievedUser.getEmail());
-        assertEquals("LOB Test", firstRetrievedUser.getLob());
-        assertEquals(firstRetrievedUser, firstRetrievedUser.getBoss());
-        assertTrue(firstRetrievedUser.getStaffMembers().contains(firstRetrievedUser));
-        assertTrue(firstRetrievedUser.hasAccess());
-        assertEquals(secondAccessEndTime, firstRetrievedUser.getAccessObject().getAccessEnd());
-
-        // second user
-        retrievedUserOptional = userRepository.findById("second-user");
-        assertTrue(retrievedUserOptional.isPresent());
-
-        User secondRetrievedUser = retrievedUserOptional.get();
-
-        assertEquals("second-user", secondRetrievedUser.getId());
-        assertEquals("Second", secondRetrievedUser.getFirstName());
-        assertEquals("User", secondRetrievedUser.getLastName());
-        assertEquals("second.user@example.com", secondRetrievedUser.getEmail());
-        assertEquals("LOB Test", secondRetrievedUser.getLob());
-        assertEquals(firstRetrievedUser, secondRetrievedUser.getBoss());
-        assertFalse(secondRetrievedUser.hasAccess());
-
-        // third user
-        retrievedUserOptional = userRepository.findById("third-user");
-        assertTrue(retrievedUserOptional.isPresent());
-
-        User thirdRetrievedUser = retrievedUserOptional.get();
-
-        assertEquals("third-user", thirdRetrievedUser.getId());
-        assertEquals("Third", thirdRetrievedUser.getFirstName());
-        assertEquals("User", thirdRetrievedUser.getLastName());
-        assertEquals("third.user@example.com", thirdRetrievedUser.getEmail());
-        assertEquals("LOB Test", thirdRetrievedUser.getLob());
-        assertEquals(firstRetrievedUser, thirdRetrievedUser.getBoss());
-        assertFalse(thirdRetrievedUser.hasAccess());
+        assertEquals(boss, user.getBoss());
+        assertEquals(2L, boss.getStaffMembers().size());
+        assertTrue(boss.getStaffMembers().contains(user));
+        assertTrue(boss.getStaffMembers().contains(boss));
     }
 
 }

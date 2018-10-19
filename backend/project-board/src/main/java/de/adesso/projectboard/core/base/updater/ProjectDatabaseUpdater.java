@@ -1,11 +1,11 @@
 package de.adesso.projectboard.core.base.updater;
 
 import de.adesso.projectboard.core.base.configuration.ProjectBoardConfigurationProperties;
+import de.adesso.projectboard.core.base.reader.ProjectReader;
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.project.persistence.ProjectRepository;
-import de.adesso.projectboard.core.base.reader.ProjectReader;
 import de.adesso.projectboard.core.base.updater.persistence.UpdateJob;
-import de.adesso.projectboard.core.base.updater.persistence.ProjectDatabaseUpdaterInfoRepository;
+import de.adesso.projectboard.core.base.updater.persistence.UpdateJobRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import java.util.Optional;
 @Service
 public class ProjectDatabaseUpdater {
 
-    private final ProjectDatabaseUpdaterInfoRepository infoRepository;
+    private final UpdateJobRepository infoRepository;
 
     private final ProjectRepository projectRepository;
 
@@ -34,7 +34,7 @@ public class ProjectDatabaseUpdater {
     private final Logger logger;
 
     @Autowired
-    public ProjectDatabaseUpdater(ProjectDatabaseUpdaterInfoRepository infoRepository,
+    public ProjectDatabaseUpdater(UpdateJobRepository infoRepository,
                                   ProjectRepository projectRepository,
                                   ProjectReader projectReader,
                                   ProjectBoardConfigurationProperties properties) {
