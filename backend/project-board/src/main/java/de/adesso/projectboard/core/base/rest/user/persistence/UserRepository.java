@@ -20,8 +20,6 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     List<User> findAllByBookmarksContaining(Project project);
 
-    boolean existsById(String userId);
-
     boolean existsByIdAndBookmarksContaining(String userId, Project project);
 
     boolean existsByIdAndBoss(String id, SuperUser boss);

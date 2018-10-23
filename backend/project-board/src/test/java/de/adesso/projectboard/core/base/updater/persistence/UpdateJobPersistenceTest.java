@@ -54,4 +54,22 @@ public class UpdateJobPersistenceTest {
         }
     }
 
+    @Test
+    @Sql("classpath:de/adesso/projectboard/core/base/updater/persistence/UpdateJobs.sql")
+    public void testFindLatest() {
+        Optional<UpdateJob> latestOptional = jobRepo.findLatest();
+        assertTrue(latestOptional.isPresent());
+
+        UpdateJob latest = latestOptional.get();
+        assertEquals(LocalDateTime.of(2018, 1, 5, 13, 37), latest.getTime());
+        assertEquals(UpdateJob.Status.SUCCESS, latest.getStatus());
+    }
+
+    @Test
+    @Sql("classpath:de/adesso/projectboard/core/base/updater/persistence/UpdateJobs.sql")
+    public void testCountByStatus() {
+        assertEquals(3L, jobRepo.countByStatus(UpdateJob.Status.FAILURE));
+        assertEquals(2L, jobRepo.countByStatus(UpdateJob.Status.SUCCESS));
+    }
+
 }

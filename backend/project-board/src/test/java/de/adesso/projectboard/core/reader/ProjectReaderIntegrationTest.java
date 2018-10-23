@@ -1,6 +1,5 @@
 package de.adesso.projectboard.core.reader;
 
-import de.adesso.projectboard.configuration.IntegrationTestConfiguration;
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,13 +9,13 @@ import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestClientException;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -112,11 +111,11 @@ public class ProjectReaderIntegrationTest {
         reader.getInitialProjects();
     }
 
-    private String getJiraJsonResponse() throws IOException {
-        URL url = this.getClass().getResource("/de/adesso/projectboard/core/JiraJsonResponse.txt");
-        File testJsonFile = new File(url.getFile());
+    private String getJiraJsonResponse() throws IOException, URISyntaxException {
+        URL url = this.getClass().getResource("JiraJsonResponse.txt");
+        File testJsonFile = new File(url.toURI());
 
-        return new String(Files.readAllBytes(testJsonFile.toPath()), StandardCharsets.UTF_8);
+        return new String(Files.readAllBytes(testJsonFile.toPath().toAbsolutePath()), StandardCharsets.UTF_8);
     }
 
 }
