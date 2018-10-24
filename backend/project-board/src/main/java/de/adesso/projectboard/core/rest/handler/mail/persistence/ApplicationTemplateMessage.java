@@ -6,7 +6,6 @@ import de.adesso.projectboard.core.rest.handler.application.ProjectBoardApplicat
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 

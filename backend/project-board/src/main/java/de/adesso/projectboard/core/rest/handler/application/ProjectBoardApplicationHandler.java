@@ -2,8 +2,8 @@ package de.adesso.projectboard.core.rest.handler.application;
 
 import de.adesso.projectboard.core.base.rest.user.application.ProjectApplicationHandler;
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
-import de.adesso.projectboard.core.rest.handler.mail.persistence.ApplicationTemplateMessage;
 import de.adesso.projectboard.core.rest.handler.mail.MailService;
+import de.adesso.projectboard.core.rest.handler.mail.persistence.ApplicationTemplateMessage;
 import de.adesso.projectboard.core.rest.handler.mail.persistence.TemplateMessage;
 import de.adesso.projectboard.core.rest.security.KeycloakAuthenticationInfo;
 import org.springframework.context.annotation.Profile;

@@ -2,8 +2,8 @@ package de.adesso.projectboard.core.base.rest.security;
 
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.user.UserAccessController;
-import de.adesso.projectboard.core.base.rest.user.service.UserService;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
+import de.adesso.projectboard.core.base.rest.user.service.UserService;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;

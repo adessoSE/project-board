@@ -2,7 +2,6 @@ package de.adesso.projectboard.core.base.rest.security;
 
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
-import org.keycloak.adapters.jaas.AbstractKeycloakLoginModule;
 import org.springframework.security.core.Authentication;
 
 /**
