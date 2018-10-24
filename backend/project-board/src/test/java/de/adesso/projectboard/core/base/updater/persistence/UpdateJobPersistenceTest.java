@@ -21,7 +21,7 @@ public class UpdateJobPersistenceTest {
     private UpdateJobRepository jobRepo;
 
     @Test
-    @Sql("classpath:de/adesso/projectboard/core/base/updater/persistence/UpdateJobs.sql")
+    @Sql("classpath:de/adesso/projectboard/core/base/persistence/UpdateJobs.sql")
     public void testSave_OK() {
         LocalDateTime time = LocalDateTime.of(2018, 1, 1, 13, 37);
 
@@ -36,7 +36,7 @@ public class UpdateJobPersistenceTest {
     }
 
     @Test
-    @Sql("classpath:de/adesso/projectboard/core/base/updater/persistence/UpdateJobs.sql")
+    @Sql("classpath:de/adesso/projectboard/core/base/persistence/UpdateJobs.sql")
     public void testFindFirstByStatusOrderByTimeDesc() {
         Optional<UpdateJob> jobOptional
                 = jobRepo.findFirstByStatusOrderByTimeDesc(UpdateJob.Status.SUCCESS);
@@ -55,7 +55,7 @@ public class UpdateJobPersistenceTest {
     }
 
     @Test
-    @Sql("classpath:de/adesso/projectboard/core/base/updater/persistence/UpdateJobs.sql")
+    @Sql("classpath:de/adesso/projectboard/core/base/persistence/UpdateJobs.sql")
     public void testFindLatest() {
         Optional<UpdateJob> latestOptional = jobRepo.findLatest();
         assertTrue(latestOptional.isPresent());
@@ -66,7 +66,7 @@ public class UpdateJobPersistenceTest {
     }
 
     @Test
-    @Sql("classpath:de/adesso/projectboard/core/base/updater/persistence/UpdateJobs.sql")
+    @Sql("classpath:de/adesso/projectboard/core/base/persistence/UpdateJobs.sql")
     public void testCountByStatus() {
         assertEquals(3L, jobRepo.countByStatus(UpdateJob.Status.FAILURE));
         assertEquals(2L, jobRepo.countByStatus(UpdateJob.Status.SUCCESS));

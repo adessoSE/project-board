@@ -25,7 +25,7 @@ public class ProjectPersistenceTest {
     private final Sort sort = Sort.unsorted();
 
     @Test
-    @Sql("classpath:de/adesso/projectboard/core/base/rest/project/persistence/Projects.sql")
+    @Sql("classpath:de/adesso/projectboard/core/base/persistence/Projects.sql")
     public void testSave_OK() {
         Optional<Project> projectOptional = projectRepository.findById("STF-1");
         assertTrue(projectOptional.isPresent());
@@ -106,7 +106,7 @@ public class ProjectPersistenceTest {
     }
 
     @Test
-    @Sql("classpath:de/adesso/projectboard/core/base/rest/project/persistence/Projects.sql")
+    @Sql("classpath:de/adesso/projectboard/core/base/persistence/Projects.sql")
     public void testFindAllByEscalatedOrOpenOrSameLob() {
         // get a list of all projects for a user of the lob "LOB Test"
         List<Project> allForUser = projectRepository.findAllByStatusEscalatedOrOpenOrSameLob("LOB Test", sort);
@@ -130,7 +130,7 @@ public class ProjectPersistenceTest {
     }
 
     @Test
-    @Sql("classpath:de/adesso/projectboard/core/base/rest/project/persistence/Projects.sql")
+    @Sql("classpath:de/adesso/projectboard/core/base/persistence/Projects.sql")
     public void testFindAllByEscalatedOrOpen() {
         // get a list of all projects for a superuser
         List<Project> allForUser = projectRepository.findAllByStatusEscalatedOrOpen(sort);

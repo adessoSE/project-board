@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDateTime;
 
 /**
  * Entity to persist info about user access to projects/applications. Used by the
@@ -34,17 +35,52 @@ public class AccessInfo {
 
     /**
      * Constructs a new entity. The {@link #accessStart access start} is automatically
-     * set to the current time.
+     * set to the current {@link LocalDateTime}.
+     *
+     * <p>
+     *     <b>Note</b>: The instance <b>is not</b> added to the
+     *     {@code user}'s {@link User#getAccessInfoList() info list}.
+     * </p>
+     *
+     * @param user
+     *          The {@link User} the instance belongs to.
+     *
+     * @param accessEnd
+     *          The {@link LocalDateTime} of when the access should end.
+     *
+     * @see AccessInfo#AccessInfo(User, LocalDateTime, LocalDateTime)
+     */
+    public AccessInfo(User user, LocalDateTime accessEnd) {
+        this(user, LocalDateTime.now(), accessEnd);
+    }
+
+    /**
+     * <p>
+     *     <b>Note</b>: The instance <b>is not</b> added to the
+     *     {@code user}'s {@link User#getAccessInfoList() info list}.
+     * </p>
      *
      * @param user
      *          The {@link User} the access is given to.
      *
+     * @param accessStart
+     *          The {@link LocalDateTime} of when the access should begin.
+     *
      * @param accessEnd
      *          The {@link LocalDateTime} of when the access should end.
+     *
+     * @throws IllegalArgumentException
+     *          When the {@code accessEnd} {@link LocalDateTime#isBefore(ChronoLocalDateTime) is before}
+     *          the {@code accessStart}.
+     *
      */
-    public AccessInfo(User user, LocalDateTime accessEnd) {
+    public AccessInfo(User user, LocalDateTime accessStart, LocalDateTime accessEnd) throws IllegalArgumentException {
+        if(accessEnd.isBefore(accessStart)) {
+            throw new IllegalArgumentException("The end time has to be after the start time!");
+        }
+
         this.user = user;
-        this.accessStart = LocalDateTime.now();
+        this.accessStart = accessStart;
         this.accessEnd = accessEnd;
     }
 

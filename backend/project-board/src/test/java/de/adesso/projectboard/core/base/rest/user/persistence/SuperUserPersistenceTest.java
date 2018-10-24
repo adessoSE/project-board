@@ -1,7 +1,6 @@
 package de.adesso.projectboard.core.base.rest.user.persistence;
 
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
-import de.adesso.projectboard.core.base.rest.project.persistence.ProjectOrigin;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,9 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -34,9 +31,10 @@ public class SuperUserPersistenceTest {
 
     @Test
     @Sql({
-            "classpath:de/adesso/projectboard/core/base/rest/project/persistence/Projects.sql",
-            "classpath:de/adesso/projectboard/core/base/rest/user/persistence/Users.sql",
-            "classpath:de/adesso/projectboard/core/base/rest/user/useraccess/persistence/UserAccess.sql"
+            "classpath:de/adesso/projectboard/core/base/persistence/Projects.sql",
+            "classpath:de/adesso/projectboard/core/base/persistence/Users.sql",
+            "classpath:de/adesso/projectboard/core/base/persistence/UserAccess.sql",
+            "classpath:de/adesso/projectboard/core/base/persistence/Bookmarks.sql",
     })
     public void testSave_OK() {
         Optional<User> userOptional = userRepository.findById("SuperUser2");
@@ -64,8 +62,9 @@ public class SuperUserPersistenceTest {
 
     @Test
     @Sql({
-            "classpath:de/adesso/projectboard/core/base/rest/project/persistence/Projects.sql",
-            "classpath:de/adesso/projectboard/core/base/rest/user/persistence/Users.sql"
+            "classpath:de/adesso/projectboard/core/base/persistence/Projects.sql",
+            "classpath:de/adesso/projectboard/core/base/persistence/Users.sql",
+            "classpath:de/adesso/projectboard/core/base/persistence/CreatedProjects.sql"
     })
     public void testFindAllByCreatedProjectsContaining() {
         List<User> users = userRepository.findAllByCreatedProjectsContaining(project);
@@ -75,8 +74,7 @@ public class SuperUserPersistenceTest {
 
     @Test
     @Sql({
-            "classpath:de/adesso/projectboard/core/base/rest/project/persistence/Projects.sql",
-            "classpath:de/adesso/projectboard/core/base/rest/user/persistence/Users.sql"
+            "classpath:de/adesso/projectboard/core/base/persistence/Users.sql"
     })
     public void testFindAllByBossEquals() {
         SuperUser superUser = (SuperUser) userRepository.findById("SuperUser2").get();
@@ -88,8 +86,9 @@ public class SuperUserPersistenceTest {
 
     @Test
     @Sql({
-            "classpath:de/adesso/projectboard/core/base/rest/project/persistence/Projects.sql",
-            "classpath:de/adesso/projectboard/core/base/rest/user/persistence/Users.sql"
+            "classpath:de/adesso/projectboard/core/base/persistence/Projects.sql",
+            "classpath:de/adesso/projectboard/core/base/persistence/Users.sql",
+            "classpath:de/adesso/projectboard/core/base/persistence/Bookmarks.sql"
     })
     public void testFindAllByBookmarksContaining() {
         List<User> users = userRepository.findAllByBookmarksContaining(project);
@@ -99,8 +98,9 @@ public class SuperUserPersistenceTest {
 
     @Test
     @Sql({
-            "classpath:de/adesso/projectboard/core/base/rest/project/persistence/Projects.sql",
-            "classpath:de/adesso/projectboard/core/base/rest/user/persistence/Users.sql"
+            "classpath:de/adesso/projectboard/core/base/persistence/Projects.sql",
+            "classpath:de/adesso/projectboard/core/base/persistence/Users.sql",
+            "classpath:de/adesso/projectboard/core/base/persistence/Bookmarks.sql",
     })
     public void testExistsByIdAndBookmarksContaining() {
         Project nonExistentProject = new Project()
@@ -116,8 +116,7 @@ public class SuperUserPersistenceTest {
 
     @Test
     @Sql({
-            "classpath:de/adesso/projectboard/core/base/rest/project/persistence/Projects.sql",
-            "classpath:de/adesso/projectboard/core/base/rest/user/persistence/Users.sql"
+            "classpath:de/adesso/projectboard/core/base/persistence/Users.sql"
     })
     public void testExistsByIdAndBoss() {
         SuperUser boss1 = (SuperUser) userRepository.findById("SuperUser1").get();
@@ -131,8 +130,9 @@ public class SuperUserPersistenceTest {
 
     @Test
     @Sql({
-            "classpath:de/adesso/projectboard/core/base/rest/project/persistence/Projects.sql",
-            "classpath:de/adesso/projectboard/core/base/rest/user/persistence/Users.sql"
+            "classpath:de/adesso/projectboard/core/base/persistence/Projects.sql",
+            "classpath:de/adesso/projectboard/core/base/persistence/Users.sql",
+            "classpath:de/adesso/projectboard/core/base/persistence/CreatedProjects.sql"
     })
     public void testExistsByIdAndCreatedProjectsContaining() {
         assertFalse(userRepository.existsByIdAndCreatedProjectsContaining("SuperUser2", project));
