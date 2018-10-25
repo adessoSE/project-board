@@ -6,6 +6,9 @@
 /src/main/resources/application-adesso-jira.properties
 /src/main/resources/application-mail.properties
 
+### Docker Directory ###
+/docker/temp/
+
 ### STS ###
 .apt_generated
 .classpath

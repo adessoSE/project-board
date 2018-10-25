@@ -1,3 +1,5 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 buildscript {
 	ext {
 		springBootVersion = '2.0.6.RELEASE'
@@ -5,7 +7,6 @@ buildscript {
 		lombokVersion = '1.18.2'
 		hsqlVersion = '2.4.1'
 		keycloakVersion = '4.3.0.Final'
-		junitVersion = '5.3.1'
 	}
 	repositories {
 		mavenCentral()
@@ -58,4 +59,50 @@ dependencies {
 	testCompile(group: 'org.projectlombok', name: 'lombok', version: "${lombokVersion}")
 
 	apt(group: 'org.projectlombok', name: 'lombok', version: "${lombokVersion}")
+}
+
+task dockerBuild(dependsOn: build) {
+	doFirst {
+		delete 'docker/temp'
+	}
+
+	doLast {
+		copy {
+			from('docker') {
+				include 'application-adesso-jira.properties'
+
+				filter(ReplaceTokens, tokens: [
+						jiraUrl: System.getProperty('jiraUrl'),
+						jiraUsername: System.getProperty('jiraUsername'),
+						jiraPassword: System.getProperty('jiraPassword')
+				])
+			}
+
+			from('docker') {
+				include 'application-adesso-keycloak.properties'
+
+				filter(ReplaceTokens, tokens: [
+						keycloakUrl: System.getProperty('keycloakUrl'),
+						keycloakRealm: System.getProperty('keycloakRealm'),
+						keycloakClient: System.getProperty('keycloakClient')
+				])
+			}
+
+			from('docker') {
+				include 'Dockerfile'
+
+				filter(ReplaceTokens, tokens: [
+						jarName: jar.archiveName
+				])
+			}
+
+			from "${buildDir}/libs/${jar.archiveName}"
+
+			into 'docker/temp'
+		}
+	}
+}
+
+clean.doFirst {
+	delete 'docker/temp'
 }
