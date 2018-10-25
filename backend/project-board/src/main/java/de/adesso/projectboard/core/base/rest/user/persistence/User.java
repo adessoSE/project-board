@@ -49,11 +49,14 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
+    /**
+     * The LoB of the user.
+     */
     @Column(nullable = false)
     private String lob;
 
     /**
-     * The bookmarked {@link Project projects} of the
+     * The bookmarked {@link Project}s of the
      * user.
      */
     @ManyToMany
@@ -305,15 +308,6 @@ public class User {
      */
     protected void setBoss(SuperUser boss) {
         this.boss = boss;
-    }
-
-    /**
-     *
-     * @return
-     *          A empty {@link Set} of all staff members.
-     */
-    public Set<User> getStaffMembers() {
-        return Collections.emptySet();
     }
 
     /**

@@ -217,9 +217,9 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          the current user wants to access.
      *
      * @return
-     *          {@code true}, when a user with the given {@code userId} is included
-     *          in the {@link Set} of the {@link User#getStaffMembers() user's staff members},
-     *          {@code false} otherwise.
+     *          {@code true}, when the {@code user} is a {@link SuperUser} and a user with the given
+     *          {@code userId} is included in the {@link Set} of the
+     *          {@link SuperUser#getStaffMembers() user's staff members}, {@code false} otherwise.
      *
      * @see SuperUser
      */

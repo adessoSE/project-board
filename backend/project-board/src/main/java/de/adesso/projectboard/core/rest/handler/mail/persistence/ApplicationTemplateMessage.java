@@ -4,7 +4,9 @@ import de.adesso.projectboard.core.base.rest.project.persistence.Project;
 import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
 import de.adesso.projectboard.core.rest.handler.application.ProjectBoardApplicationHandler;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -16,6 +18,8 @@ import javax.persistence.ManyToOne;
  */
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+@Setter
 public class ApplicationTemplateMessage extends TemplateMessage {
 
     private static final String DISCLAIMER = "\n\n\nDiese Nachricht wurde automatisch generiert!";

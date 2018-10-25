@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * The central {@link Service} to update the projects in the database.
+ * The {@link Service} to update the projects in the database.
  */
 @Service
 public class ProjectDatabaseUpdater {
@@ -56,7 +56,6 @@ public class ProjectDatabaseUpdater {
     public void refreshProjectDatabase() {
         Optional<UpdateJob> lastSuccessfulUpdate
                 = infoRepository.findFirstByStatusOrderByTimeDesc(UpdateJob.Status.SUCCESS);
-
 
         try {
             List<? extends Project> projects;

@@ -86,7 +86,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
      */
     public boolean hasAccessToProjects() {
         // check if the user has a corresponding User object
-        if(userService.userExists(userService.getCurrentUserId())) {
+        if(currentUserExists()) {
             return evaluator.hasAccessToProjects(getAuthentication(), userService.getCurrentUser());
         }
 
@@ -108,7 +108,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
      */
     public boolean hasAccessToProject(String projectId) {
         // check if the user has a corresponding User object
-        if(userService.userExists(userService.getCurrentUserId())) {
+        if(currentUserExists()) {
             return evaluator.hasAccessToProject(getAuthentication(), userService.getCurrentUser(), projectId);
         }
 
@@ -126,7 +126,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
      */
     public boolean hasPermissionToApply() {
         // check if the user has a corresponding User object
-        if(userService.userExists(userService.getCurrentUserId())) {
+        if(currentUserExists()) {
             return evaluator.hasPermissionToApply(getAuthentication(), userService.getCurrentUser());
         }
 
@@ -148,7 +148,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
      */
     public boolean hasPermissionToAccessUser(String userId) {
         // check if the user has a corresponding User object
-        if(userService.userExists(userService.getCurrentUserId())) {
+        if(currentUserExists()) {
             return evaluator.hasPermissionToAccessUser(getAuthentication(), userService.getCurrentUser(), userId);
         }
 
@@ -169,7 +169,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
      */
     public boolean hasElevatedAccessToUser(String userId) {
         // check if the user has a corresponding User object
-        if(userService.userExists(userService.getCurrentUserId())) {
+        if(currentUserExists()) {
             return evaluator.hasElevatedAccessToUser(getAuthentication(), userService.getCurrentUser(), userId);
         }
 
@@ -187,7 +187,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
      */
     public boolean hasPermissionToCreateProjects() {
         // check if the user has a corresponding User object
-        if(userService.userExists(userService.getCurrentUserId())) {
+        if(currentUserExists()) {
             return evaluator.hasPermissionToCreateProjects(getAuthentication(), userService.getCurrentUser());
         }
 
@@ -208,11 +208,21 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
      */
     public boolean hasPermissionToEditProject(String projectId) {
         // check if the user has a corresponding User object
-        if(userService.userExists(userService.getCurrentUserId())) {
+        if(currentUserExists()) {
             return evaluator.hasPermissionToEditProject(getAuthentication(), userService.getCurrentUser(), projectId);
         }
 
         return false;
+    }
+
+    /**
+     *
+     * @return
+     *          {@code true}, when a {@link User} with the {@link UserService#getCurrentUserId() current ID}
+     *          {@link UserService#userExists(String) exists}, {@code false} otherwise.
+     */
+    private boolean currentUserExists() {
+        return userService.userExists(userService.getCurrentUserId());
     }
 
 }

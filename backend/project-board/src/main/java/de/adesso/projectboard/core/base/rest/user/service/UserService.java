@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Wrapper for the {@link UserRepository} to manage {@link User}s.
+ * {@link Service} to to provide functionality to manage {@link User}s.
  *
  * @see UserRepository
  * @see AuthenticationInfo

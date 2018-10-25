@@ -18,13 +18,13 @@ public interface ProjectReader {
      * to update the projects in the database.
      *
      * @param dateTime
-     *          The {@link LocalDateTime} of the last successful update.
+     *          The {@link LocalDateTime} of the last <b>successful</b> update.
      *
      * @return
      *          A list of {@link Project}s.
      *
      * @throws Exception
-     *          When a error occurrs.
+     *          When a error occurs.
      *
      * @see de.adesso.projectboard.core.base.updater.ProjectDatabaseUpdater
      */

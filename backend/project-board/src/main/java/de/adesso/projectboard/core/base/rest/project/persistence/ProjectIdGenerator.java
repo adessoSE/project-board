@@ -15,7 +15,7 @@ import java.util.stream.Stream;
  * {@link IdentifierGenerator} strategy to generate a {@link String} ID for {@link Project}
  * entities if the ID is not set already.
  * <p>
- *     IDs are generated in a <i>[prefix][sequence number]</i> form.
+ *     IDs are generated in a {@code [prefix]-[sequence number]} form.
  * </p>
  *
  * @see Project
@@ -93,7 +93,7 @@ public class ProjectIdGenerator implements IdentifierGenerator, Configurable {
         // generator
         String prefixIdRegex = prefix + ".+";
 
-        // get the highest long after the prefix
+        // get the highest long value after the prefix
         Optional idOptional = idStream
                 .map(Object::toString)
                 .filter(id -> ((String) id).matches(prefixIdRegex))

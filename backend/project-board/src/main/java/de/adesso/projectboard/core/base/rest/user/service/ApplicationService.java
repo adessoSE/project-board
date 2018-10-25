@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 /**
+ * {@link Service} to to provide functionality to manage {@link ProjectApplication}s.
  *
  * @see UserService
  * @see ProjectService

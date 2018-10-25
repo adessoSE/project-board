@@ -27,7 +27,7 @@ public class UpdaterHealthIndicator implements HealthIndicator {
     /**
      *
      * @return
-     *          The {@link Health} of the {@link ProjectDatabaseUpdater}, gives additional
+     *          The {@link Health} of the {@link ProjectDatabaseUpdater}. Gives additional
      *          details about the status.
      */
     @Override

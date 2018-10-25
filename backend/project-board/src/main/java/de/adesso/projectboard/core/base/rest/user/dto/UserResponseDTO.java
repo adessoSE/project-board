@@ -82,14 +82,16 @@ public class UserResponseDTO implements Serializable {
 
         // create new staff/projects link when it is necessary
         if(user instanceof SuperUser) {
+            SuperUser sUser = (SuperUser) user;
+
             CollectionLink staffLink = new CollectionLink();
-            staffLink.setCount(user.getStaffMembers().size());
-            staffLink.setPath(String.format("/users/%s/staff", user.getId()));
+            staffLink.setCount(sUser.getStaffMembers().size());
+            staffLink.setPath(String.format("/users/%s/staff", sUser.getId()));
             userDTO.setStaff(staffLink);
 
             CollectionLink projectsLink = new CollectionLink();
-            projectsLink.setCount(user.getCreatedProjects().size());
-            projectsLink.setPath(String.format("/users/%s/projects", user.getId()));
+            projectsLink.setCount(sUser.getCreatedProjects().size());
+            projectsLink.setPath(String.format("/users/%s/projects", sUser.getId()));
             userDTO.setProjects(projectsLink);
         }
 

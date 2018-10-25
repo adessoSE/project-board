@@ -4,11 +4,12 @@ import de.adesso.projectboard.core.base.rest.exceptions.UserNotFoundException;
 import de.adesso.projectboard.core.base.rest.user.UserAccessController;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import de.adesso.projectboard.core.base.rest.user.useraccess.dto.UserAccessInfoRequestDTO;
+import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.AccessInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * {@link Service} to give access to/remove access from {@link User}s.
+ * {@link Service} to to provide functionality to manage {@link AccessInfo}.
  *
  * @see UserAccessController
  */

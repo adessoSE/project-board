@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
+ * {@link Service} to provide functionality to manage {@link Project}s.
  *
  * @see ProjectRepository
  * @see UserService
@@ -58,8 +59,10 @@ public class ProjectService {
      *          The {@link Project} with the given {@code projectId}.
      *
      * @throws ProjectNotFoundException
-     *          When no {@link Project} with the given {@code projectId} is
+     *          When no {@link Project} with the given {@code projectId} was
      *          found.
+     *
+     * @see ProjectRepository#findById(Object)
      */
     public Project getProjectById(String projectId) throws ProjectNotFoundException {
         Optional<Project> projectOptional = projectRepo.findById(projectId);
@@ -89,7 +92,7 @@ public class ProjectService {
     /**
      *
      * @param userId
-     *          The id of the {@link User}
+     *          The id of the {@link User}.
      *
      * @param projectId
      *          The id of the {@link Project}.
@@ -114,7 +117,7 @@ public class ProjectService {
     }
 
     /**
-     * Gets all projects the user is authorized to see. {@link SuperUser} get all
+     * Gets all projects the user is authorized to see. {@link SuperUser}s get all
      * {@link Project}s with the status <i>offen</i> and <i>eskaliert</i>. Normal
      * {@link User}s only see {@link Project}s with the status <i>eskaliert</i>
      * and <i>offen</i>, if the {@link Project#lob} of the project is the same
@@ -153,7 +156,7 @@ public class ProjectService {
      *          The {@link Sort} to apply.
      *
      * @return
-     *          The {@link List} of all {@link Project}s contatining the keyword in the
+     *          The {@link List} of all {@link Project}s containing the keyword in the
      *          {@link Project#title}, {@link Project#description}, {@link Project#job}
      *          or {@link Project#skills} field matching the same authorization as described
      *          in the {{@link #getProjectsForUser(User, Sort)}} documentation.
@@ -168,7 +171,7 @@ public class ProjectService {
     }
 
     /**
-     * Creates or updates a {@link Project} from a {@link ProjectRequestDTO}.
+     * Creates a new or updates a existing {@link Project} from a {@link ProjectRequestDTO}.
      *
      * @param projectDTO
      *          The {@link ProjectRequestDTO} to create the {@link Project from}.
@@ -219,7 +222,7 @@ public class ProjectService {
      *          The updated {@link Project}.
      *
      * @throws ProjectNotFoundException
-     *          When no {@link Project} with the given {@code projectId} is found.
+     *          When no {@link Project} with the given {@code projectId} was found.
      *
      * @throws ProjectNotEditableException
      *          When the {@link Project} exists but it's {@link Project#getOrigin() origin}
@@ -236,7 +239,7 @@ public class ProjectService {
     }
 
     /**
-     * Creates {@link Project} from a {@link ProjectRequestDTO}. The id is automatically
+     * Creates {@link Project} from a {@link ProjectRequestDTO}. The ID is automatically
      * generated.
      *
      * @param projectDTO
@@ -265,6 +268,8 @@ public class ProjectService {
     }
 
     /**
+     * Deletes a {@link Project} by its ID. Removes it from all {@link User#createdProjects created projects},
+     * {@link User#bookmarks bookmarks} and removes all {@link ProjectApplication}s referring to the project.
      *
      * @param projectId
      *          The id of the {@link Project} to delete.
@@ -274,7 +279,7 @@ public class ProjectService {
      *
      * @throws ProjectNotEditableException
      *          When the project's {@link Project#origin} with the given {@code projectId} is
-     *          not equal to {@link ProjectOrigin#CUSTOM}.
+     *          not equal to {@link ProjectOrigin#CUSTOM} (it's not editable).
      */
     public void deleteProjectById(String projectId) throws ProjectNotFoundException, ProjectNotEditableException {
         Project existingProject = getProjectById(projectId);

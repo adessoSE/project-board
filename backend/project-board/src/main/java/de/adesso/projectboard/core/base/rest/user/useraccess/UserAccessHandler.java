@@ -17,7 +17,6 @@ public interface UserAccessHandler {
      *
      * @param user
      *          The {@link User} who has been granted access.
-     *
      */
     void onAccessGranted(User user);
 

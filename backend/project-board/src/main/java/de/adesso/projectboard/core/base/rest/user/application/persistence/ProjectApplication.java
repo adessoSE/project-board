@@ -9,7 +9,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
- * Entity to persist project application logs.
+ * Entity to persist project application data.
  */
 @Table
 @Entity
@@ -19,7 +19,7 @@ public class ProjectApplication {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     /**
      * The project the user applied for.

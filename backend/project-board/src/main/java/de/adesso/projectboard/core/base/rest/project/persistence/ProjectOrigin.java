@@ -5,5 +5,5 @@ package de.adesso.projectboard.core.base.rest.project.persistence;
  */
 public enum ProjectOrigin {
     JIRA,
-    CUSTOM;
+    CUSTOM
 }

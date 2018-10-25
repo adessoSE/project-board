@@ -7,7 +7,13 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@link ProjectReader} implementation that performs no action.
+ * {@link ProjectReader} implementation that performs no action and returns a {@link Collections#emptyList() empty list}
+ * in both {@link ProjectReader#getAllProjectsSince(LocalDateTime)} and {@link ProjectReader#getInitialProjects()}
+ * implementations.
+ *
+ * <p>
+ *     Auto-configured {@link ProjectReader} bean when no other bean is present.
+ * </p>
  *
  * @see ProjectReader
  */

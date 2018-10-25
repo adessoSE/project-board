@@ -181,27 +181,28 @@ public class JiraProjectReader implements ProjectReader {
     }
 
     /**
-     * Method used to cut string values of a project to a persistable.
+     * Method used to cut string values of a project to a persistable length.
      *
      * @param project
      *          The {@link Project}.
      *
      * @return
-     *          A {@link Project} with a limited String size.
+     *          The {@link Project} with a persistable string length.
      *
      */
     private Project cutStrings(Project project) {
         // 256 character limit
-        project.setStatus(cutAndAppendDotsIfRequired(project.getStatus(), 256));
-        project.setTitle(cutAndAppendDotsIfRequired(project.getTitle(), 256));
-        project.setLob(cutAndAppendDotsIfRequired(project.getLob(), 256));
-        project.setCustomer(cutAndAppendDotsIfRequired(project.getCustomer(), 256));
-        project.setLocation(cutAndAppendDotsIfRequired(project.getLocation(), 256));
-        project.setOperationStart(cutAndAppendDotsIfRequired(project.getOperationStart(), 256));
-        project.setOperationEnd(cutAndAppendDotsIfRequired(project.getOperationEnd(), 256));
-        project.setEffort(cutAndAppendDotsIfRequired(project.getEffort(), 256));
-        project.setFreelancer(cutAndAppendDotsIfRequired(project.getFreelancer(), 256));
-        project.setElongation(cutAndAppendDotsIfRequired(project.getElongation(), 256));
+        project
+                .setStatus(cutAndAppendDotsIfRequired(project.getStatus(), 256))
+                .setTitle(cutAndAppendDotsIfRequired(project.getTitle(), 256))
+                .setLob(cutAndAppendDotsIfRequired(project.getLob(), 256))
+                .setCustomer(cutAndAppendDotsIfRequired(project.getCustomer(), 256))
+                .setLocation(cutAndAppendDotsIfRequired(project.getLocation(), 256))
+                .setOperationStart(cutAndAppendDotsIfRequired(project.getOperationStart(), 256))
+                .setOperationEnd(cutAndAppendDotsIfRequired(project.getOperationEnd(), 256))
+                .setEffort(cutAndAppendDotsIfRequired(project.getEffort(), 256))
+                .setFreelancer(cutAndAppendDotsIfRequired(project.getFreelancer(), 256))
+                .setElongation(cutAndAppendDotsIfRequired(project.getElongation(), 256));
 
         List<String> cutLabels = project.getLabels().stream()
                 .map(label -> cutAndAppendDotsIfRequired(label, 256))
@@ -209,10 +210,11 @@ public class JiraProjectReader implements ProjectReader {
         project.setLabels(cutLabels);
 
         // 8192 character limit
-        project.setJob(cutAndAppendDotsIfRequired(project.getJob(), 8192));
-        project.setSkills(cutAndAppendDotsIfRequired(project.getSkills(), 8192));
-        project.setDescription(cutAndAppendDotsIfRequired(project.getDescription(), 8192));
-        project.setOther(cutAndAppendDotsIfRequired(project.getOther(), 8192));
+        project
+                .setJob(cutAndAppendDotsIfRequired(project.getJob(), 8192))
+                .setSkills(cutAndAppendDotsIfRequired(project.getSkills(), 8192))
+                .setDescription(cutAndAppendDotsIfRequired(project.getDescription(), 8192))
+                .setOther(cutAndAppendDotsIfRequired(project.getOther(), 8192));
 
         return project;
     }

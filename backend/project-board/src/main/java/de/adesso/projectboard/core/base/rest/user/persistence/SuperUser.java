@@ -139,7 +139,6 @@ public class SuperUser extends User {
      * @return
      *          A <b>unmodifiable</b> {@link Set} of the {@link User staff members}.
      */
-    @Override
     public Set<User> getStaffMembers() {
         return Collections.unmodifiableSet(staffMembers);
     }

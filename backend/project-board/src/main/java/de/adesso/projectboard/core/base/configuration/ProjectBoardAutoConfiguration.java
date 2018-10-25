@@ -4,7 +4,7 @@ import de.adesso.projectboard.core.base.reader.NoActionProjectReader;
 import de.adesso.projectboard.core.base.reader.ProjectReader;
 import de.adesso.projectboard.core.base.rest.security.AllowAccessExpressionEvaluator;
 import de.adesso.projectboard.core.base.rest.security.AuthenticationInfo;
-import de.adesso.projectboard.core.base.rest.security.EmptyUserIdAuthenticationInfo;
+import de.adesso.projectboard.core.base.rest.security.DefaultAuthenticationInfo;
 import de.adesso.projectboard.core.base.rest.security.ExpressionEvaluator;
 import de.adesso.projectboard.core.base.rest.user.application.NoActionApplicationHandler;
 import de.adesso.projectboard.core.base.rest.user.application.ProjectApplicationHandler;
@@ -43,8 +43,8 @@ public class ProjectBoardAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(AuthenticationInfo.class)
-    public AuthenticationInfo emptyUserIdAuthenticationInfo() {
-        return new EmptyUserIdAuthenticationInfo();
+    public AuthenticationInfo defaultAuthenticationInfo() {
+        return new DefaultAuthenticationInfo();
     }
 
 }

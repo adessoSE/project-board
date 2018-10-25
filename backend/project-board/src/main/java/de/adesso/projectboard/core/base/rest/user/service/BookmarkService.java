@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Set;
 
 /**
+ * {@link Service} to to provide functionality to manage {@link Project Project Bookmarks}.
  *
  * @see UserService
  * @see ProjectService
