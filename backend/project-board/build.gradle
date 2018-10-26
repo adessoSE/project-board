@@ -7,6 +7,7 @@ buildscript {
 		lombokVersion = '1.18.2'
 		hsqlVersion = '2.4.1'
 		keycloakVersion = '4.3.0.Final'
+		springLdapVersion = '2.3.2.RELEASE'
 	}
 	repositories {
 		mavenCentral()
@@ -47,6 +48,8 @@ dependencies {
 			[group: 'org.keycloak', name: 'keycloak-spring-security-adapter', version: "${keycloakVersion}"],
 			[group: 'org.keycloak', name: 'keycloak-spring-boot-starter', version: "${keycloakVersion}"]
 	)
+	compile group: 'org.springframework.ldap', name: 'spring-ldap-core', version: "${springLdapVersion}"
+
 
 	compileOnly(group: 'org.springframework.boot', name: 'spring-boot-configuration-processor', version: "${springBootVersion}")
 	compileOnly(group: 'org.projectlombok', name: 'lombok', version: "${lombokVersion}")
