@@ -90,6 +90,16 @@ task dockerBuild(dependsOn: build) {
 			}
 
 			from('docker') {
+				include 'application-adesso-ad.properties'
+
+				filter(ReplaceTokens, tokens: [
+				        ldapUrl: System.getProperty('ldapUrl'),
+						ldapUsername: System.getProperty('ldapUsername'),
+						ldapPassword: System.getProperty('ldapPassword')
+				])
+			}
+
+			from('docker') {
 				include 'application-adesso-keycloak.properties'
 
 				filter(ReplaceTokens, tokens: [
