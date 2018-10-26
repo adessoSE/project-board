@@ -69,6 +69,14 @@ task dockerBuild(dependsOn: build) {
 	doLast {
 		copy {
 			from('docker') {
+				include 'application.properties'
+
+				filter(ReplaceTokens, tokens: [
+						serverPort: System.getProperty('serverPort')
+				])
+			}
+
+			from('docker') {
 				include 'application-adesso-jira.properties'
 
 				filter(ReplaceTokens, tokens: [
@@ -84,7 +92,9 @@ task dockerBuild(dependsOn: build) {
 				filter(ReplaceTokens, tokens: [
 						keycloakUrl: System.getProperty('keycloakUrl'),
 						keycloakRealm: System.getProperty('keycloakRealm'),
-						keycloakClient: System.getProperty('keycloakClient')
+						keycloakClient: System.getProperty('keycloakClient'),
+						keycloakPrincipalAttr: System.getProperty('keycloakPrincipalAttr'),
+						keycloakCorsEnabled: System.getProperty('keycloakCorsEnabled')
 				])
 			}
 
@@ -92,6 +102,7 @@ task dockerBuild(dependsOn: build) {
 				include 'Dockerfile'
 
 				filter(ReplaceTokens, tokens: [
+						serverPort: System.getProperty('serverPort'),
 						jarName: jar.archiveName
 				])
 			}
