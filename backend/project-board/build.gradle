@@ -96,7 +96,8 @@ task dockerBuild(dependsOn: build) {
 				filter(ReplaceTokens, tokens: [
 				        ldapUrl: System.getProperty('ldapUrl'),
 						ldapUsername: System.getProperty('ldapUsername'),
-						ldapPassword: System.getProperty('ldapPassword')
+						ldapPassword: System.getProperty('ldapPassword'),
+						ldapBase: System.getProperty('ldapBase')
 				])
 			}
 
