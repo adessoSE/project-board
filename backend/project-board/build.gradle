@@ -76,7 +76,11 @@ task dockerBuild(dependsOn: build) {
 				include 'application.properties'
 
 				filter(ReplaceTokens, tokens: [
-						serverPort: System.getProperty('serverPort')
+						serverPort: System.getProperty('serverPort'),
+						activeProfiles: System.getProperty('serverPort'),
+						datasourceUrl: System.getProperty('datasourceUrl'),
+						datasourceUsername: System.getProperty('datasourceUsername'),
+						datasourcePassword: System.getProperty('datasourcePassword')
 				])
 			}
 
