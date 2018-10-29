@@ -19,6 +19,7 @@ import java.util.*;
  * @see ProjectApplication
  */
 @Entity
+@Table(name = "PB_USER")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Getter
 @Setter

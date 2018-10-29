@@ -4,7 +4,31 @@ import java.util.Iterator;
 
 /**
  * {@link Iterator} implementation to iterate a {@link TreeNode} in a
- * {@code node} - {@code child} order.
+ * {@code node} - {@code child} order. The child nodes are then iterated
+ * in a {@code node} - {@code child} order in return.
+ * <br><br>
+ * <p>
+ *
+ *     <b>Example Iteration</b> (<i>A</i> is the node this iterator originated from):
+ *     <pre>
+ *
+ *            A
+ *          / | \
+ *         /  E  \
+ *        /       F
+ *       B
+ *      / \
+ *     C   D
+ *
+ *     </pre>
+ *
+ *     The iterator returns the node of the iterator first and then the child nodes,
+ *     so the iteration order is this example
+ *     is <i>A - B - C - D - E - F - G</i> although it may vary due to the
+ *     random iteration order of the {@link java.util.HashSet} used to store the
+ *     child nodes.
+ * </p>
+ *
  *
  * @param <T>
  *          The type of the {@link TreeNode}'s {@link TreeNode#content content}.
@@ -68,7 +92,13 @@ public class RootFirstTreeIterator<T> implements Iterator<TreeNode<T>> {
 
             return node;
         } else {
-            return currentChildNodeIterator.next();
+            if(currentChildNodeIterator != null) {
+                return currentChildNodeIterator.next();
+            } else {
+                currentChildNodeIterator = childrenIterator.next().iterator();
+
+                return currentChildNodeIterator.next();
+            }
         }
     }
 

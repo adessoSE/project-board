@@ -56,8 +56,15 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
      *
      * @param content
      *          The content of this node.
+     *
+     * @throws IllegalArgumentException
+     *          If {@code content} is {@code null}.
      */
-    public TreeNode(T content) {
+    public TreeNode(T content) throws IllegalArgumentException {
+        if(content == null) {
+            throw new IllegalArgumentException("Content can't be null!");
+        }
+
         this.children = new HashSet<>();
 
         this.content = content;
@@ -71,8 +78,15 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
      *
      * @param child
      *          The child to add.
+     *
+     * @throws IllegalArgumentException
+     *          When the {@code child} is equal to {@code this}.
      */
-    public void addChild(TreeNode<T> child) {
+    public void addChild(TreeNode<T> child) throws IllegalArgumentException {
+        if(equals(child)) {
+            throw new IllegalArgumentException("A node can't have itself as a child!");
+        }
+
         if(child.parent != null) {
             parent.children.remove(child);
         }
@@ -89,8 +103,15 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
      *
      * @param newParent
      *          The new parent node.
+     *
+     * @throws IllegalArgumentException
+     *          When the new parent node is equal to {@code this}.
      */
-    public void setParent(TreeNode<T> newParent) {
+    public void setParent(TreeNode<T> newParent) throws IllegalArgumentException {
+        if(equals(newParent)) {
+            throw new IllegalArgumentException();
+        }
+
         if(parent != null) {
             parent.children.remove(this);
         }
@@ -120,7 +141,7 @@ public class TreeNode<T> implements Iterable<TreeNode<T>> {
     }
 
     /**
-     * Traverses the tree upwards until the parent is reached.
+     * Walks up the parent nodes until the root is reached.
      *
      * @return
      *          {@code this}, when the node {@link #isRoot() is a root}
