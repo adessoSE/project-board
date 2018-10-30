@@ -2,6 +2,8 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { faBookmark } from '@fortawesome/free-regular-svg-icons/faBookmark';
 import { faGraduationCap } from '@fortawesome/free-solid-svg-icons/faGraduationCap';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { EmployeeService } from '../_services/employee.service';
@@ -22,6 +24,8 @@ export class ProjectDetailsComponent implements OnInit {
   bmTooltip = 'Du hast ein Lesezeichen an diesem Projekt.';
   studTooltip = 'Studentisches Projekt';
 
+  destroy$ = new Subject<void>();
+
   constructor(private router: Router,
               private alertService: AlertService,
               private projectService: ProjectService,
@@ -37,6 +41,7 @@ export class ProjectDetailsComponent implements OnInit {
 
   addBookmark() {
     this.employeeService.addBookmark(this.authService.username, this.selectedProject.id)
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.bookmarkChanged.emit(this.selectedProject),
         () => this.alertService.error('Es gab einen Fehler. Das Lesezeichen konnte nicht hinzugefügt werden.')
       );
@@ -44,6 +49,7 @@ export class ProjectDetailsComponent implements OnInit {
 
   removeBookmark() {
     this.employeeService.removeBookmark(this.authService.username, this.selectedProject.id)
+      .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.bookmarkChanged.emit(this.selectedProject),
         () => this.alertService.error('Es gab einen Fehler. Das Lesezeichen konnte nicht entfernt werden.')
       );

@@ -1,5 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AlertService } from '../../_services/alert.service';
 
 
@@ -9,21 +10,20 @@ import { AlertService } from '../../_services/alert.service';
   styleUrls: ['./alert.component.scss']
 })
 
-export class AlertComponent implements OnInit, OnDestroy {
-  private subscription: Subscription;
+export class AlertComponent implements OnInit {
   message: any;
+
+  destroy$ = new Subject<void>();
 
   constructor(private alertService: AlertService) {
   }
 
   ngOnInit() {
-    this.subscription = this.alertService.getMessage().subscribe(message => {
-      this.message = message;
-    });
-  }
-
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
+    this.alertService.getMessage()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(message => {
+        this.message = message;
+      });
   }
 
   clearAlert() {

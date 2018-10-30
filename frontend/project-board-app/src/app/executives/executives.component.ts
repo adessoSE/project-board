@@ -2,6 +2,8 @@ import { Location } from '@angular/common';
 import { AfterViewChecked, Component, HostListener, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import * as $ from 'jquery';
+import { combineLatest, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Employee, EmployeeService } from '../_services/employee.service';
 
 @Component({
@@ -15,6 +17,8 @@ export class ExecutivesComponent implements OnInit, AfterViewChecked {
   mobile = false;
   scroll = true;
 
+  destroy$ = new Subject<void>();
+
   @HostListener('window:resize') onResize() {
     this.mobile = window.screen.width < 768;
   }
@@ -26,21 +30,22 @@ export class ExecutivesComponent implements OnInit, AfterViewChecked {
 
   ngOnInit() {
     this.mobile = window.screen.width <= 768;
-    this.route.data.subscribe((data: { employees: Employee[] }) => {
-      this.employees = data.employees.map(e => {
-        if (e.accessInfo.hasAccess) {
-          e.duration = this.daysUntil(e.accessInfo.accessEnd);
-        } else {
-          e.duration = 0;
-        }
-        return e;
-      }).sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
-      this.route.params.subscribe(params => {
-        if (params.id) {
-          this.setSelectedEmployee(params.id);
-        }
+
+    combineLatest(this.route.data, this.route.params)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
+        this.employees = data[0].employees
+          .map(e => {
+            if (e.accessInfo.hasAccess) {
+              e.duration = this.daysUntil(e.accessInfo.accessEnd);
+            } else {
+              e.duration = 0;
+            }
+            return e;
+          })
+          .sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
+        this.setSelectedEmployee(data[1].id);
       });
-    });
   }
 
   private setSelectedEmployee(employeeId) {

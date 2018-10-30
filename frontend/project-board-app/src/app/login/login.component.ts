@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { first } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { first, takeUntil } from 'rxjs/operators';
 import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 
@@ -17,6 +18,8 @@ export class LoginComponent implements OnInit {
   loading = false;
   submitted = false;
   returnUrl: string;
+
+  destroy$ = new Subject<void>();
 
   constructor(
     private formBuilder: FormBuilder,
@@ -60,11 +63,10 @@ export class LoginComponent implements OnInit {
 
     this.loading = true;
     this.authenticationService.login(this.f.username.value, this.f.password.value)
+      .pipe(takeUntil(this.destroy$))
       .pipe(first())
       .subscribe(
-        () => {
-          this.router.navigate([this.returnUrl]);
-        },
+        () => this.router.navigate([this.returnUrl]),
         error => {
           if (error.status === 401) {
             this.alertService.error('Benutzername oder Passwort sind falsch');
