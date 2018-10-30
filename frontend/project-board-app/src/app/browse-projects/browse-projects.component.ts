@@ -8,6 +8,7 @@ import * as $ from 'jquery';
 import { combineLatest, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AlertService } from '../_services/alert.service';
+import { EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
 
 @Component({
@@ -30,6 +31,7 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
   selectedProject: Project;
   mobile = false;
   scroll = true;
+  isUserBoss = false;
 
   destroy$ = new Subject<void>();
 
@@ -37,11 +39,12 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
     this.mobile = window.screen.width <= 425;
   }
 
-  constructor(private projectsService: ProjectService,
+  constructor(private employeeService: EmployeeService,
+              private projectsService: ProjectService,
               private alertService: AlertService,
               private route: ActivatedRoute,
-              private router: Router,
-              private location: Location) { }
+              private location: Location,
+              private router: Router) { }
 
   ngOnInit() {
     this.mobile = window.screen.width < 768;
@@ -55,30 +58,11 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
         // extract projects from applications
         this.appliedProjects = data[0].applications ? data[0].applications.map(app => app.project) : [];
         this.bookmarks = data[0].bookmarks;
+        this.isUserBoss = data[0].isUserBoss;
 
         // set selected project
         this.setSelectedProject(data[1].id);
       });
-    // this.route.data
-    //   .pipe(takeUntil(this.destroy$))
-    //   .subscribe(data => {
-    //     this.projects = data.projects;
-    //     this.filteredProjects = this.projects;
-    //
-    //     // extract projects from applications
-    //     this.appliedProjects = data.applications ? data.applications.map(app => app.project) : [];
-    //     this.bookmarks = data.bookmarks;
-    //     this.route.params
-    //       .pipe(takeUntil(this.destroy$))
-    //       .subscribe(params => {
-    //         if (params.id) {
-    //           this.setSelectedProject(params.id);
-    //           if (!this.selectedProject) {
-    //             this.alertService.info('Das angegebene Projekt wurde nicht gefunden.');
-    //           }
-    //         }
-    //       });
-    //   });
   }
 
   filterProjects(filterInput) {
@@ -130,9 +114,8 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
   }
 
   private setSelectedProject(projectId: string) {
-    if (!!projectId) {
+    if (!projectId) {
       this.selectedProject = null;
-      this.alertService.info('Das angegebene Projekt wurde nicht gefunden.');
       return;
     }
 
@@ -142,6 +125,7 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
         return;
       }
     }
+    this.alertService.info('Das angegebene Projekt wurde nicht gefunden.');
   }
 
   projectClicked(project) {

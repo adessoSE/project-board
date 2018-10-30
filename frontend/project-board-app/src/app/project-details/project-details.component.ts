@@ -18,6 +18,7 @@ export class ProjectDetailsComponent implements OnInit {
   @Input() selectedProject: Project;
   @Input() applicable;
   @Input() bookmark = false;
+  @Input() isUserBoss = false;
   @Output() bookmarkChanged = new EventEmitter();
   faBookmark = faBookmark;
   faGradCap = faGraduationCap;

@@ -22,6 +22,6 @@
     </div>
   </div>
   <div *ngIf="!mobile" class="col-md-6">
-    <app-project-details [bookmark]="isProjectBookmarked(selectedProject?.id)" [applicable]="isProjectApplicable(selectedProject?.id)" (bookmarkChanged)="handleBookmark($event)" [selectedProject]="selectedProject"></app-project-details>
+    <app-project-details [bookmark]="isProjectBookmarked(selectedProject?.id)" [isUserBoss]="isUserBoss" [applicable]="isProjectApplicable(selectedProject?.id)" (bookmarkChanged)="handleBookmark($event)" [selectedProject]="selectedProject"></app-project-details>
   </div>
 </div>
