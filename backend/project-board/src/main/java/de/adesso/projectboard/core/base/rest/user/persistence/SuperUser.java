@@ -1,6 +1,8 @@
 package de.adesso.projectboard.core.base.rest.user.persistence;
 
 import de.adesso.projectboard.core.base.rest.project.persistence.Project;
+import de.adesso.projectboard.core.base.rest.user.application.persistence.ProjectApplication;
+import de.adesso.projectboard.core.base.rest.user.useraccess.persistence.AccessInfo;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,7 +14,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * User representing a manager.
+ * User representing a managerDN.
  *
  * @see User
  */
@@ -29,7 +31,7 @@ public class SuperUser extends User {
             orphanRemoval = true,
             mappedBy = "boss"
     )
-    private Set<User> staffMembers;
+    Set<User> staffMembers;
 
     /**
      * Constructs a new instance. The boss is set to {@code this}
@@ -70,13 +72,49 @@ public class SuperUser extends User {
     public SuperUser(String userId, SuperUser boss) {
         this();
 
-        this.setId(userId);
+        this.id = userId;
         boss.addStaffMember(this);
+    }
+
+    /**
+     * Creates a new instance based on a {@link User}
+     * instance. Copies all field values and adds the
+     * created instance to the boss' staff members by using
+     * the {@link SuperUser#addStaffMember(User)} method. All
+     * {@link ProjectApplication applications} and {@link AccessInfo access info}
+     * are copied over and are <b>removed</b> from the given {@code user}.
+     *
+     * @param user
+     *          The user to create the instance from.
+     */
+    public SuperUser(User user) {
+        this();
+
+        // copy field values
+        this.id = user.id;
+        this.firstName = user.firstName;
+        this.lastName = user.lastName;
+        this.email = user.email;
+        this.lob = user.email;
+
+        this.bookmarks.addAll(user.bookmarks);
+        this.createdProjects.addAll(user.createdProjects);
+
+        // copy over the access info list
+        user.accessInfoList.forEach(info -> info.setUser(this));
+        this.accessInfoList.addAll(user.accessInfoList);
+        user.accessInfoList.clear();
+
+        // copy over the applications
+        user.applications.forEach(application -> application.setUser(this));
+        this.applications.addAll(user.applications);
+        user.applications.clear();
+
+        user.getBoss().addStaffMember(this);
     }
 
     protected SuperUser() {
         // protected no-arg constructor for JPA
-
         this.staffMembers = new LinkedHashSet<>();
     }
 
@@ -95,12 +133,12 @@ public class SuperUser extends User {
      */
     public boolean addStaffMember(User user) {
         if(staffMembers.add(user)) {
-            SuperUser oldBoss = user.getBoss();
+            SuperUser oldBoss = user.boss;
             if(oldBoss != null) {
                 oldBoss.staffMembers.remove(user);
             }
 
-            user.setBoss(this);
+            user.boss = this;
 
             return true;
         }
@@ -126,7 +164,7 @@ public class SuperUser extends User {
      */
     public boolean removeStaffMember(User user) {
         if(staffMembers.remove(user)) {
-            user.setBoss(null);
+            user.boss = null;
 
             return true;
         }
@@ -141,16 +179,6 @@ public class SuperUser extends User {
      */
     public Set<User> getStaffMembers() {
         return Collections.unmodifiableSet(staffMembers);
-    }
-
-    /**
-     *
-     * @return
-     *          A {@link Set} of the created {@link Project}s of this user.
-     */
-    @Override
-    public Set<Project> getCreatedProjects() {
-        return Collections.unmodifiableSet(createdProjects);
     }
 
     /**

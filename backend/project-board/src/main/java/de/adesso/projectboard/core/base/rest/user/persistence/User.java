@@ -19,6 +19,7 @@ import java.util.*;
  * @see ProjectApplication
  */
 @Entity
+@Table(name = "PB_USER")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Getter
 @Setter
@@ -29,31 +30,31 @@ public class User {
      * of the user.
      */
     @Id
-    private String id;
+    String id;
 
     /**
      * The first name of the user.
      */
     @Column(nullable = false)
-    private String firstName;
+    String firstName;
 
     /**
      * The last name of the user.
      */
     @Column(nullable = false)
-    private String lastName;
+    String lastName;
 
     /**
      * The <b>unique</b> email address of the user.
      */
     @Column(unique = true, nullable = false)
-    private String email;
+    String email;
 
     /**
      * The LoB of the user.
      */
     @Column(nullable = false)
-    private String lob;
+    String lob;
 
     /**
      * The bookmarked {@link Project}s of the
@@ -61,7 +62,7 @@ public class User {
      */
     @ManyToMany
     @JoinTable(name = "USER_BOOKMARKS")
-    private Set<Project> bookmarks;
+    Set<Project> bookmarks;
 
     /**
      * The {@link ProjectApplication applications} of the
@@ -71,7 +72,7 @@ public class User {
             cascade = CascadeType.ALL,
             mappedBy = "user"
     )
-    private Set<ProjectApplication> applications;
+    Set<ProjectApplication> applications;
 
     /**
      * The user's created {@link Project}s.
@@ -86,7 +87,7 @@ public class User {
             cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE},
             optional = false
     )
-    private SuperUser boss;
+    SuperUser boss;
 
     /**
      * The user's {@link AccessInfo} objects to evaluate
@@ -96,7 +97,7 @@ public class User {
             cascade = CascadeType.ALL,
             mappedBy = "user"
     )
-    private List<AccessInfo> accessInfoList;
+    List<AccessInfo> accessInfoList;
 
     /**
      * Constructs a new instance. Sets the ID and adds the user
@@ -305,18 +306,21 @@ public class User {
      *
      * @param boss
      *          The boss of the user.
+     *
+     * @see SuperUser#addStaffMember(User)
      */
-    protected void setBoss(SuperUser boss) {
-        this.boss = boss;
+    public void setBoss(SuperUser boss) {
+        boss.addStaffMember(this);
     }
 
     /**
      *
      * @return
-     *          A empty {@link Set} of all created {@link Project}s.
+     *          A <i>unmodifiable</i> {@link Set} of the created
+     *          {@link Project}s of the user.
      */
     public Set<Project> getCreatedProjects() {
-        return Collections.emptySet();
+        return Collections.unmodifiableSet(createdProjects);
     }
 
     /**
