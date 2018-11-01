@@ -1,7 +1,6 @@
 package de.adesso.projectboard.util;
 
-import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
-import de.adesso.projectboard.core.base.rest.user.persistence.User;
+import de.adesso.projectboard.base.user.persistence.User;
 import lombok.Getter;
 
 @Getter

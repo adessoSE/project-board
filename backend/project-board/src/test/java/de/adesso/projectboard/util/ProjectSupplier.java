@@ -1,7 +1,7 @@
 package de.adesso.projectboard.util;
 
-import de.adesso.projectboard.core.base.rest.project.persistence.Project;
-import de.adesso.projectboard.core.base.rest.project.persistence.ProjectOrigin;
+import de.adesso.projectboard.base.project.persistence.Project;
+import de.adesso.projectboard.base.project.persistence.ProjectOrigin;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
