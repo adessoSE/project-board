@@ -3,6 +3,7 @@ package de.adesso.projectboard.core.crawler;
 import de.adesso.projectboard.core.base.rest.user.persistence.SuperUser;
 import de.adesso.projectboard.core.base.rest.user.persistence.User;
 import de.adesso.projectboard.core.base.rest.user.persistence.UserRepository;
+import de.adesso.projectboard.core.base.rest.user.service.UserService;
 import de.adesso.projectboard.core.crawler.configuration.CrawlerConfigurationProperties;
 import de.adesso.projectboard.core.crawler.util.LdapUser;
 import de.adesso.projectboard.core.crawler.util.LdapUserMapper;
@@ -23,17 +24,21 @@ import static org.springframework.ldap.query.LdapQueryBuilder.query;
 @Service
 public class UserCrawler {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
+
+    private final UserRepository repository;
 
     private final LdapTemplate ldapTemplate;
 
     private final CrawlerConfigurationProperties properties;
 
     @Autowired
-    public UserCrawler(UserRepository userRepository,
+    public UserCrawler(UserService userService,
+                       UserRepository repository,
                        LdapTemplate ldapTemplate,
                        CrawlerConfigurationProperties properties) {
-        this.userRepository = userRepository;
+        this.userService = userService;
+        this.repository = repository;
         this.ldapTemplate = ldapTemplate;
         this.properties = properties;
     }
@@ -41,8 +46,16 @@ public class UserCrawler {
     // executed every day at 4am
     @Scheduled(cron = "0 4 * * * *")
     public void crawlUsers() {
+        Collection<User> users = getUsersFromLdap();
+    }
+
+    private Collection<User> getUsersFromLdap() {
+        List<User> users = new ArrayList<>();
+
         HashSet<TreeNode<LdapUser>> userTreeRoots = getUserTreeRoots();
 
+        // create User instances for each node
+        // from root to leaf
         userTreeRoots.forEach(root -> {
             // maps dn -> SuperUser
             Map<String, SuperUser> dnSuperUserMap = new HashMap<>();
@@ -62,7 +75,7 @@ public class UserCrawler {
                     // store in map
                     dnSuperUserMap.put(rootUser.getDistinguishedName(), rootSuperUser);
 
-                    userRepository.save(rootSuperUser);
+                    users.add(rootSuperUser);
                 } else {
                     LdapUser nodeUser = node.getContent();
                     String userId = nodeUser.getSAMAccountName();
@@ -89,10 +102,12 @@ public class UserCrawler {
                             .setEmail(email)
                             .setLob(lob);
 
-                    userRepository.save(newUser);
+                    users.add(newUser);
                 }
             });
         });
+
+        return users;
     }
 
     /**
