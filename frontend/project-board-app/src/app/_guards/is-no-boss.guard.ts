@@ -23,7 +23,7 @@ export class IsNoBossGuard implements CanActivate {
         map(isBoss => {
           if (isBoss) {
             this.alertService.info('Führungskräfte dürfen keine Projekte über dieses Tool anfragen.', true);
-            const projectId = state.url.match('(STF|STD)-[\\d]*')[0];
+            const projectId = state.url.match('(STF|AD)-[\\d]*')[0];
             if (projectId) {
               this.router.navigate([`/browse/${projectId}`]);
             } else {

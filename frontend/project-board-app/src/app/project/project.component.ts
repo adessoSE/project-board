@@ -47,7 +47,7 @@ export class ProjectComponent implements OnInit {
 
         if (this.project.labels.length > 0) {
           for (let i = 0; i < this.project.labels.length - 1; i++) {
-            this.labelsInput += this.project.labels[i] + ' ';
+            this.labelsInput += this.project.labels[i] + ', ';
           }
           this.labelsInput += this.project.labels[this.project.labels.length - 1];
         }
@@ -65,8 +65,8 @@ export class ProjectComponent implements OnInit {
     this.project.status = this.f.status.value;
     this.project.lob = this.f.lob.value;
     this.project.description = this.f.description.value;
-    this.project.labels = this.labelsInput.split(' ');
-
+    this.project.labels = this.stringToArray(this.labelsInput, ',');
+    this.project.skills = this.stringToArray(this.project.skills, ',').join(', ');
     if (this.edit) {
       this.projectService.updateProject(this.project)
         .pipe(takeUntil(this.destroy$))
@@ -93,6 +93,20 @@ export class ProjectComponent implements OnInit {
 
   get f() {
     return this.form.controls;
+  }
+
+  stringToArray(string: string, separator: string | RegExp): string[] {
+    return string
+      .split(separator)
+      .map(str => {
+        return str
+          .replace(/^\s+/, '')
+          .replace(/\s+$/, '')
+          .replace(/\s{2,}/, ' ')
+          .split(' ')
+          .map(token => token.charAt(0).toUpperCase() + token.slice(1).toLowerCase())
+          .join(' ');
+      });
   }
 
   resetProject() {
