@@ -2,10 +2,10 @@ package de.adesso.projectboard.rest.security;
 
 import de.adesso.projectboard.base.access.persistence.AccessInfo;
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.project.service.ProjectService;
+import de.adesso.projectboard.base.project.service.ProjectServiceImpl;
 import de.adesso.projectboard.base.security.ExpressionEvaluator;
 import de.adesso.projectboard.base.user.persistence.User;
-import de.adesso.projectboard.base.user.service.UserServiceImpl;
+import de.adesso.projectboard.ldap.user.LdapUserService;
 import de.adesso.projectboard.service.ApplicationServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -24,22 +24,22 @@ import java.util.Set;
  * </p>
  *
  * @see ExpressionEvaluator
- * @see UserServiceImpl
- * @see ProjectService
+ * @see LdapUserService
+ * @see ProjectServiceImpl
  */
 @Profile("user-access")
 @Service
 public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
 
-    private final UserServiceImpl userService;
+    private final LdapUserService userService;
 
-    private final ProjectService projectService;
+    private final ProjectServiceImpl projectService;
 
     private final ApplicationServiceImpl applicationService;
 
     @Autowired
-    public UserAccessExpressionEvaluator(UserServiceImpl userService,
-                                         ProjectService projectService,
+    public UserAccessExpressionEvaluator(LdapUserService userService,
+                                         ProjectServiceImpl projectService,
                                          ApplicationServiceImpl applicationService) {
         this.userService = userService;
         this.projectService = projectService;
@@ -47,7 +47,7 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
     }
 
     /**
-     * Gets the currently authenticated user from the {@link UserServiceImpl}
+     * Gets the currently authenticated user from the {@link LdapUserService}
      * and retrieves the latest {@link AccessInfo} object for that user.
      * When the {@link AccessInfo#getAccessEnd() access end date} is
      * <b>after</b> the {@link LocalDateTime#now() current} date the user has access.
@@ -83,7 +83,7 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      * @return
      *          {@code true}, when the given {@code user}
      *          {@link ApplicationServiceImpl#userHasAppliedForProject(String, Project) applied}
-     *          for the project, {@link ProjectService#userHasProject(String, String) created}
+     *          for the project, {@link ProjectServiceImpl#userHasProject(String, String) created}
      *          it or {@link #hasAccessToProjects(Authentication, User) has access} to projects
      *          and the project's {@link Project#status status} is set to "<i>eskaliert</i>".
      *          Also returns {@code true}, when the {@code user} is a {@link SuperUser} and the
@@ -194,9 +194,9 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          The id of the {@link Project} the user wants to update.
      *
      * @return
-     *          The result of {@link ProjectService#userHasProject(String, String)}.
+     *          The result of {@link ProjectServiceImpl#userHasProject(String, String)}.
      *
-     * @see ProjectService#userHasProject(String, String)
+     * @see ProjectServiceImpl#userHasProject(String, String)
      */
     @Override
     public boolean hasPermissionToEditProject(Authentication authentication, User user, String projectId) {

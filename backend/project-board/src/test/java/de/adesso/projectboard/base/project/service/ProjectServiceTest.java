@@ -10,7 +10,7 @@ import de.adesso.projectboard.base.project.persistence.ProjectOrigin;
 import de.adesso.projectboard.base.project.persistence.ProjectRepository;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
-import de.adesso.projectboard.base.user.service.UserServiceImpl;
+import de.adesso.projectboard.ldap.user.LdapUserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,10 +44,10 @@ public class ProjectServiceTest {
     private ProjectApplicationRepository applicationRepo;
 
     @Mock
-    private UserServiceImpl userService;
+    private LdapUserService userService;
 
     @InjectMocks
-    private ProjectService projectService;
+    private ProjectServiceImpl projectService;
 
     private final Sort sort = Sort.unsorted();
 

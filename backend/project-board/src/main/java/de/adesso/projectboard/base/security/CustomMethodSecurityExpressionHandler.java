@@ -1,6 +1,6 @@
 package de.adesso.projectboard.base.security;
 
-import de.adesso.projectboard.base.user.service.UserServiceImpl;
+import de.adesso.projectboard.ldap.user.LdapUserService;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
@@ -13,17 +13,17 @@ import org.springframework.stereotype.Component;
  * method invocations (e.g. via {@link org.springframework.security.access.prepost.PreAuthorize})
  *
  * @see ExpressionEvaluator
- * @see UserServiceImpl
+ * @see LdapUserService
  */
 @Component
 public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurityExpressionHandler {
 
     private final ExpressionEvaluator evaluator;
 
-    private final UserServiceImpl userService;
+    private final LdapUserService userService;
 
     @Autowired
-    public CustomMethodSecurityExpressionHandler(ExpressionEvaluator evaluator, UserServiceImpl userService) {
+    public CustomMethodSecurityExpressionHandler(ExpressionEvaluator evaluator, LdapUserService userService) {
         this.evaluator = evaluator;
         this.userService = userService;
     }

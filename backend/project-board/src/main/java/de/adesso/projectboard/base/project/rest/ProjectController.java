@@ -7,11 +7,11 @@ import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.base.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.persistence.ProjectOrigin;
-import de.adesso.projectboard.base.project.service.ProjectService;
+import de.adesso.projectboard.base.project.service.ProjectServiceImpl;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.rest.BookmarkController;
 import de.adesso.projectboard.base.user.rest.UserController;
-import de.adesso.projectboard.base.user.service.UserServiceImpl;
+import de.adesso.projectboard.ldap.user.LdapUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
@@ -32,12 +32,12 @@ import javax.validation.Valid;
 @RequestMapping(path = "/projects")
 public class ProjectController {
 
-    private final ProjectService projectService;
+    private final ProjectServiceImpl projectService;
 
-    private final UserServiceImpl userService;
+    private final LdapUserService userService;
 
     @Autowired
-    public ProjectController(ProjectService projectService, UserServiceImpl userService) {
+    public ProjectController(ProjectServiceImpl projectService, LdapUserService userService) {
         this.projectService = projectService;
         this.userService = userService;
     }
@@ -68,7 +68,7 @@ public class ProjectController {
      * @return
      *          A {@link Iterable} of {@link Project}s.
      *
-     * @see ProjectService#getProjectsForUser(User, Sort)
+     * @see ProjectServiceImpl#getProjectsForUser(User, Sort)
      */
     @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
     @GetMapping
@@ -84,7 +84,7 @@ public class ProjectController {
      * @return
      *          The created {@link Project}.
      *
-     * @see ProjectService#createProject(ProjectRequestDTO, String)
+     * @see ProjectServiceImpl#createProject(ProjectRequestDTO, String)
      */
     @PreAuthorize("hasPermissionToCreateProjects() || hasRole('admin')")
     @PostMapping
@@ -110,7 +110,7 @@ public class ProjectController {
      *          When the {@link Project} exists but it's {@link Project#getOrigin() origin}
      *          is not equal to {@link ProjectOrigin#CUSTOM}.
      *
-     * @see ProjectService#updateProject(ProjectRequestDTO, String)
+     * @see ProjectServiceImpl#updateProject(ProjectRequestDTO, String)
      */
     @PreAuthorize("hasPermissionToEditProject(#projectId) || hasRole('admin')")
     @PutMapping(path = "/{projectId}")
@@ -131,7 +131,7 @@ public class ProjectController {
      *          A {@link Iterable} of {@link Project}s sorted accordingly.
      *
      * @see #getAllForUser(Sort)
-     * @see ProjectService#getProjectsForUserContainingKeyword(User, String, Sort)
+     * @see ProjectServiceImpl#getProjectsForUserContainingKeyword(User, String, Sort)
      */
     @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
     @GetMapping(path = "/search", params = "keyword")

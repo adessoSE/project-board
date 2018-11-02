@@ -4,6 +4,7 @@ import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.security.AuthenticationInfo;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
+import de.adesso.projectboard.ldap.user.LdapUserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class UserServiceImplTest {
+public class LdapUserServiceTest {
 
     @Mock
     private UserRepository userRepository;
@@ -33,7 +34,7 @@ public class UserServiceImplTest {
     private AuthenticationInfo authInfo;
 
     @InjectMocks
-    private UserServiceImpl userService;
+    private LdapUserService userService;
 
     private SuperUser superUser;
 

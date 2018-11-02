@@ -2,11 +2,11 @@ package de.adesso.projectboard.crawler;
 
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
-import de.adesso.projectboard.base.user.service.UserServiceImpl;
 import de.adesso.projectboard.crawler.util.LdapUser;
 import de.adesso.projectboard.crawler.util.LdapUserMapper;
 import de.adesso.projectboard.crawler.util.tree.TreeNode;
 import de.adesso.projectboard.ldap.configuration.LdapConfigurationProperties;
+import de.adesso.projectboard.ldap.user.LdapUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.ldap.core.LdapTemplate;
@@ -23,7 +23,7 @@ import static org.springframework.ldap.query.LdapQueryBuilder.query;
 @Service
 public class UserCrawler {
 
-    private final UserServiceImpl userService;
+    private final LdapUserService userService;
 
     private final UserRepository repository;
 
@@ -32,7 +32,7 @@ public class UserCrawler {
     private final LdapConfigurationProperties properties;
 
     @Autowired
-    public UserCrawler(UserServiceImpl userService,
+    public UserCrawler(LdapUserService userService,
                        UserRepository repository,
                        LdapTemplate ldapTemplate,
                        LdapConfigurationProperties properties) {

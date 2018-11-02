@@ -5,7 +5,7 @@ import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.persistence.structure.OrganizationStructure;
-import de.adesso.projectboard.base.util.Sort;
+import de.adesso.projectboard.base.util.Sorting;
 
 import java.util.List;
 
@@ -55,8 +55,11 @@ public interface UserService {
      * @return
      *          {@code true}, iff a {@link User} with the given {@code userId}
      *          exists and is a manager.
+     *
+     * @throws UserNotFoundException
+     *          When no {@link User} with the given {@code userId} was found.
      */
-    boolean isManager(String userId);
+    boolean isManager(String userId) throws UserNotFoundException;
 
     /**
      *
@@ -122,8 +125,8 @@ public interface UserService {
      *          The {@link User#id ID} of the {@link User} to get the
      *          staff members of.
      *
-     * @param sorts
-     *          A {@link List} of {@link Sort} instances to sort by.
+     * @param sortings
+     *          A {@link List} of {@link Sorting} instances to sort by.
      *
      * @return
      *          A {@link List} of staff members belonging to the {@link User}.
@@ -132,7 +135,7 @@ public interface UserService {
      *          When no {@link User} with the given {@code userId}
      *          was found.
      */
-    List<User> getStaffMembersOfUser(String userId, List<Sort> sorts) throws UserNotFoundException;
+    List<User> getStaffMembersOfUser(String userId, List<Sorting> sortings) throws UserNotFoundException;
 
     /**
      *

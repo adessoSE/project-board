@@ -31,24 +31,7 @@ public class LdapUser {
 
     public String getLastName() {
         if(name != null && givenName != null) {
-            String lastName = name.replace(givenName, "");
 
-            // remove ','
-            if(lastName.contains(",")) {
-                lastName = lastName.replace(",", "");
-            }
-
-            // remove leading whitespace
-            if(lastName.charAt(0) == ' ') {
-                lastName = lastName.substring(1);
-            }
-
-            // remove trailing whitespace
-            if(lastName.charAt(lastName.length() - 1) == ' ') {
-                lastName = lastName.substring(0, lastName.length() - 1);
-            }
-
-            return lastName;
         }
 
         return name;

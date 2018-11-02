@@ -1,9 +1,8 @@
 package de.adesso.projectboard.base.user.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import de.adesso.projectboard.base.access.dto.UserAccessInfoResponseDTO;
-import de.adesso.projectboard.base.access.persistence.AccessInfo;
+import de.adesso.projectboard.base.access.dto.AccessInfoResponseDTO;
 import de.adesso.projectboard.base.user.persistence.User;
+import de.adesso.projectboard.base.user.persistence.data.UserData;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,7 +11,6 @@ import java.io.Serializable;
  * The DTO of a {@link User} send back to the user.
  */
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserResponseDTO implements Serializable {
 
     private String id;
@@ -27,74 +25,41 @@ public class UserResponseDTO implements Serializable {
 
     private boolean isBoss;
 
-    private UserAccessInfoResponseDTO accessInfo;
+    private AccessInfoResponseDTO accessInfo;
 
     private CollectionLink applications;
 
     private CollectionLink bookmarks;
 
-    private CollectionLink staff;
-
     private CollectionLink projects;
 
-    /**
-     *
-     * @param user
-     *          The {@link User} to convert to a DTO.
-     *
-     * @return
-     *          The DTO.
-     */
-    public static UserResponseDTO fromUser(User user) {
-        // create new applications link to break circular reference to applications
-        // user -> application -> user -> application -> ....
-        CollectionLink applicationsLink = new CollectionLink();
-        applicationsLink.setCount(user.getApplications().size());
-        applicationsLink.setPath(String.format("/users/%s/applications", user.getId()));
+    public static UserResponseDTO fromUser(UserData userData, boolean isBoss) {
+        User user = userData.getUser();
 
-        // create new bookmarks link
-        CollectionLink bookmarksLink = new CollectionLink();
-        bookmarksLink.setCount(user.getBookmarks().size());
-        bookmarksLink.setPath(String.format("/users/%s/bookmarks", user.getId()));
+        CollectionLink applications = new CollectionLink(user.getApplications().size());
+        CollectionLink bookmarks = new CollectionLink(user.getBookmarks().size());
+        CollectionLink projects = new CollectionLink(user.getCreatedProjects().size());
 
-        // create a new access info dto to break circular reference
-        // user -> accessInfoList -> user
-        UserAccessInfoResponseDTO infoDTO;
-        if(user.hasAccess()) {
-            AccessInfo activeInfo = user.getLatestAccessInfo();
-            infoDTO = UserAccessInfoResponseDTO.fromAccessInfo(activeInfo);
+        AccessInfoResponseDTO accessDTO;
+        if(user.getLatestAccessInfo() != null) {
+            accessDTO = AccessInfoResponseDTO.fromAccessInfo(user.getLatestAccessInfo());
         } else {
-            infoDTO = UserAccessInfoResponseDTO.noAccess();
+            accessDTO = AccessInfoResponseDTO.noAccess();
         }
 
-        // create new UserResponseDTO object to return
-        UserResponseDTO userDTO = new UserResponseDTO()
-            .setId(user.getId())
-            .setFirstName(user.getFirstName())
-            .setLastName(user.getLastName())
-            .setEmail(user.getEmail())
-            .setLob(user.getLob())
-            .setApplications(applicationsLink)
-            .setBookmarks(bookmarksLink)
-            .setAccessInfo(infoDTO)
-            .setBoss(user instanceof SuperUser);
+        UserResponseDTO dto = new UserResponseDTO()
+                .setId(user.getId())
+                .setFirstName(userData.getFirstName())
+                .setLastName(userData.getLastName())
+                .setEmail(userData.getEmail())
+                .setLob(userData.getLob())
+                .setBoss(isBoss)
+                .setAccessInfo(accessDTO)
+                .setApplications(applications)
+                .setBookmarks(bookmarks)
+                .setProjects(projects);
 
-        // create new staff/projects link when it is necessary
-        if(user instanceof SuperUser) {
-            SuperUser sUser = (SuperUser) user;
-
-            CollectionLink staffLink = new CollectionLink();
-            staffLink.setCount(sUser.getStaffMembers().size());
-            staffLink.setPath(String.format("/users/%s/staff", sUser.getId()));
-            userDTO.setStaff(staffLink);
-
-            CollectionLink projectsLink = new CollectionLink();
-            projectsLink.setCount(sUser.getCreatedProjects().size());
-            projectsLink.setPath(String.format("/users/%s/projects", sUser.getId()));
-            userDTO.setProjects(projectsLink);
-        }
-
-        return userDTO;
+        return dto;
     }
 
     @Data
@@ -102,7 +67,9 @@ public class UserResponseDTO implements Serializable {
 
         private long count;
 
-        private String path;
+        public CollectionLink(long count) {
+            this.count = count;
+        }
 
     }
 

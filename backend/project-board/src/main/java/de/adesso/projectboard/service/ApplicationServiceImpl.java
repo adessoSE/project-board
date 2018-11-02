@@ -7,9 +7,9 @@ import de.adesso.projectboard.base.exceptions.AlreadyAppliedException;
 import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.project.service.ProjectService;
+import de.adesso.projectboard.base.project.service.ProjectServiceImpl;
 import de.adesso.projectboard.base.user.persistence.User;
-import de.adesso.projectboard.base.user.service.UserServiceImpl;
+import de.adesso.projectboard.ldap.user.LdapUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,20 +18,20 @@ import java.util.Set;
 /**
  * {@link Service} to to provide functionality to manage {@link ProjectApplication}s.
  *
- * @see UserServiceImpl
- * @see ProjectService
+ * @see LdapUserService
+ * @see ProjectServiceImpl
  */
 @Service
 public class ApplicationServiceImpl {
 
-    private final UserServiceImpl userService;
+    private final LdapUserService userService;
 
     private final ProjectApplicationRepository applicationRepo;
 
-    private final ProjectService projectService;
+    private final ProjectServiceImpl projectService;
 
     @Autowired
-    public ApplicationServiceImpl(UserServiceImpl userService, ProjectApplicationRepository applicationRepo, ProjectService projectService) {
+    public ApplicationServiceImpl(LdapUserService userService, ProjectApplicationRepository applicationRepo, ProjectServiceImpl projectService) {
         this.userService = userService;
         this.applicationRepo = applicationRepo;
         this.projectService = projectService;
@@ -106,7 +106,7 @@ public class ApplicationServiceImpl {
      * @throws UserNotFoundException
      *          When no {@link User} with the given {@code userId} was found.
      *
-     * @see UserServiceImpl#getUserById(String)
+     * @see LdapUserService#getUserById(String)
      */
     public Set<ProjectApplication> getApplicationsOfUser(String userId) throws UserNotFoundException {
         return userService.getUserById(userId).getApplications();

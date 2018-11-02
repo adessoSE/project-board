@@ -1,11 +1,11 @@
-package de.adesso.projectboard.user.service;
+package de.adesso.projectboard.ldap.access;
 
 import de.adesso.projectboard.base.access.dto.UserAccessInfoRequestDTO;
 import de.adesso.projectboard.base.access.persistence.AccessInfo;
 import de.adesso.projectboard.base.access.rest.UserAccessController;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.user.persistence.User;
-import de.adesso.projectboard.base.user.service.UserServiceImpl;
+import de.adesso.projectboard.ldap.user.LdapUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +17,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserAccessServiceImpl {
 
-    private final UserServiceImpl userService;
+    private final LdapUserService userService;
 
     @Autowired
-    public UserAccessServiceImpl(UserServiceImpl userService) {
+    public UserAccessServiceImpl(LdapUserService userService) {
         this.userService = userService;
     }
 

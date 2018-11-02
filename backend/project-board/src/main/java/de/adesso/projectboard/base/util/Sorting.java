@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.lang.reflect.Field;
 import java.util.Comparator;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Sort {
+public class Sorting {
 
     private String fieldName;
 
@@ -23,11 +24,10 @@ public class Sort {
         DESCENDING
     }
 
-    public static <T> Comparator<T> toComparator(Class<T> comparatorClass, List<Sort> sorts) {
-        sorts.forEach(sort -> {
+    public static <T> Comparator<T> toComparator(Class<T> comparatorClass, List<Sorting> sortings) {
+        sortings.forEach(sorting -> {
             try {
-                comparatorClass.getDeclaredField(sort.getFieldName());
-
+                Field field = comparatorClass.getDeclaredField(sorting.getFieldName());
 
             } catch (NoSuchFieldException e) {
                 e.printStackTrace();

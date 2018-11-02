@@ -9,7 +9,7 @@ import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.rest.ProjectController;
 import de.adesso.projectboard.base.user.bookmark.dto.BookmarkRequestDTO;
 import de.adesso.projectboard.base.user.persistence.User;
-import de.adesso.projectboard.base.user.service.BookmarkService;
+import de.adesso.projectboard.ldap.user.BookmarkServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -28,10 +28,10 @@ import javax.validation.Valid;
 @RequestMapping("/users")
 public class BookmarkController {
 
-    private final BookmarkService bookmarkService;
+    private final BookmarkServiceImpl bookmarkService;
 
     @Autowired
-    public BookmarkController(BookmarkService bookmarkService) {
+    public BookmarkController(BookmarkServiceImpl bookmarkService) {
         this.bookmarkService = bookmarkService;
     }
 
@@ -52,7 +52,7 @@ public class BookmarkController {
      * @throws BookmarkNotFoundException
      *          When no the user has no bookmark for this project.
      *
-     * @see BookmarkService#removeBookmarkFromUser(String, String)
+     * @see BookmarkServiceImpl#removeBookmarkFromUser(String, String)
      */
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @DeleteMapping(value = "/{userId}/bookmarks/{projectId}")
@@ -73,7 +73,7 @@ public class BookmarkController {
      *          When no {@link Project project} is found for the
      *          given {@link BookmarkRequestDTO#getProjectId() id}.
      *
-     * @see BookmarkService#addBookmarkToUser(String, String)
+     * @see BookmarkServiceImpl#addBookmarkToUser(String, String)
      */
     @PreAuthorize("(hasPermissionToAccessUser(#userId) && hasAccessToProjects()) || hasRole('admin')")
     @PostMapping(value = "/{userId}/bookmarks")
@@ -95,7 +95,7 @@ public class BookmarkController {
      * @throws UserNotFoundException
      *          When no {@link User} with the given {@code userId} is found.
      *
-     * @see BookmarkService#getBookmarksOfUser(String)
+     * @see BookmarkServiceImpl#getBookmarksOfUser(String)
      */
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @GetMapping(path = "/{userId}/bookmarks")

@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
  * @see UserAccessController
  */
 @Data
-public class UserAccessInfoResponseDTO implements Serializable {
+public class AccessInfoResponseDTO implements Serializable {
 
     private boolean hasAccess;
 
@@ -27,12 +27,12 @@ public class UserAccessInfoResponseDTO implements Serializable {
      *          The {@link AccessInfo} object.
      *
      * @return
-     *          A new {@link UserAccessInfoResponseDTO} with the information of
+     *          A new {@link AccessInfoResponseDTO} with the information of
      *          the given {@link AccessInfo} object.
      *
      */
-    public static UserAccessInfoResponseDTO fromAccessInfo(AccessInfo info) {
-        UserAccessInfoResponseDTO responseDTO = new UserAccessInfoResponseDTO();
+    public static AccessInfoResponseDTO fromAccessInfo(AccessInfo info) {
+        AccessInfoResponseDTO responseDTO = new AccessInfoResponseDTO();
 
         responseDTO.setAccessStart(info.getAccessStart());
         responseDTO.setAccessEnd(info.getAccessEnd());
@@ -46,11 +46,11 @@ public class UserAccessInfoResponseDTO implements Serializable {
     /**
      *
      * @return
-     *          A new {@link UserAccessInfoResponseDTO} with {@link #hasAccess}
+     *          A new {@link AccessInfoResponseDTO} with {@link #hasAccess}
      *          set to {@code false}.
      */
-    public static UserAccessInfoResponseDTO noAccess() {
-        UserAccessInfoResponseDTO responseDTO = new UserAccessInfoResponseDTO();
+    public static AccessInfoResponseDTO noAccess() {
+        AccessInfoResponseDTO responseDTO = new AccessInfoResponseDTO();
 
         responseDTO.setHasAccess(false);
 

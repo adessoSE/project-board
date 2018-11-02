@@ -1,156 +1,90 @@
 package de.adesso.projectboard.base.user.service;
 
-import de.adesso.projectboard.base.exceptions.BookmarkNotFoundException;
 import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.project.service.ProjectService;
+import de.adesso.projectboard.base.project.service.ProjectServiceImpl;
 import de.adesso.projectboard.base.user.persistence.User;
-import de.adesso.projectboard.base.user.persistence.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.Set;
+import java.util.List;
 
 /**
- * {@link Service} to to provide functionality to manage {@link Project Project Bookmarks}.
+ * Service interface to provide functionality to manage bookmarks
+ * of {@link User}s.
  *
- * @see UserServiceImpl
- * @see ProjectService
+ * @see UserService
+ * @see ProjectServiceImpl
  */
-@Service
-public class BookmarkService {
-
-    private final UserRepository userRepo;
-
-    private final UserServiceImpl userService;
-
-    private final ProjectService projectService;
-
-    @Autowired
-    public BookmarkService(UserRepository userRepo,
-                           UserServiceImpl userService,
-                           ProjectService projectService) {
-        this.userRepo = userRepo;
-        this.userService = userService;
-        this.projectService = projectService;
-    }
+public interface BookmarkService {
 
     /**
-     * Adds a new bookmark to the {@link User#getBookmarks() user's bookmarks} and
-     * persists the updated entity.
      *
      * @param userId
-     *          The id of the {@link User} to add the bookmark to.
+     *          The {@link User#id ID} of the {@link User}.
      *
      * @param projectId
-     *          The id of the {@link Project} to add a bookmark for.
+     *          The {@link Project#id ID} of the {@link Project}
+     *          to add a bookmark for.
      *
      * @return
-     *          The {@link Project} added to the bookmarks.
+     *          The bookmarked {@link Project}.
      *
      * @throws UserNotFoundException
-     *          When no {@link User} is found for the given {@code userId}.
+     *          When no {@link User} with the given {@code userId}
+     *          was found.
      *
      * @throws ProjectNotFoundException
-     *          When no {@link Project} is found for the given {@code projectId}.
-     *
+     *          When no {@link Project} with the given {@code projectId}
+     *          was found.
      */
-    public Project addBookmarkToUser(String userId, String projectId) throws UserNotFoundException, ProjectNotFoundException {
-
-        // get the user/project with the given id
-        User user = userService.getUserById(userId);
-        Project project = projectService.getProjectById(projectId);
-
-        // add the project and persist the entity
-        user.addBookmark(project);
-        userRepo.save(user);
-
-        return project;
-    }
+    Project addBookmarkToUser(String userId, String projectId) throws UserNotFoundException, ProjectNotFoundException;
 
     /**
-     * Removes a bookmarked {@link Project} from the users bookmarks
-     * and persists the updated entity.
      *
      * @param userId
-     *          The id of the {@link User} to remove the bookmark from.
+     *          The {@link User#id ID} of the {@link User}.
      *
      * @param projectId
-     *          The id of the bookmarked {@link Project}.
+     *          The {@link Project#id ID} of the {@link Project} to
+     *          remove the bookmark of.
      *
      * @throws UserNotFoundException
-     *          When no {@link User} is found for the given {@code userId}.
+     *          When no {@link User} with the given {@code userId}
+     *          was found.
      *
      * @throws ProjectNotFoundException
-     *          When no {@link Project} is found for the given {@code projectId}.
-     *
-     * @throws BookmarkNotFoundException
-     *          When the user has not bookmarked the {@link Project}.
-     *
+     *          When no {@link Project} with the given {@code projectId}
+     *          was found.
      */
-    public void removeBookmarkFromUser(String userId, String projectId) throws UserNotFoundException, ProjectNotFoundException, BookmarkNotFoundException {
-
-        // get the user/project with the given id
-        User user = userService.getUserById(userId);
-        Project project = projectService.getProjectById(projectId);
-
-        if(userRepo.existsByIdAndBookmarksContaining(userId, project)) {
-
-            // remove the bookmark and update the entity
-            user.removeBookmark(project);
-            userRepo.save(user);
-
-        } else {
-            throw new BookmarkNotFoundException();
-        }
-    }
+    void removeBookmarkFromUser(String userId, String projectId) throws UserNotFoundException, ProjectNotFoundException;
 
     /**
      *
      * @param userId
-     *          The id of the {@link User} to get the bookmarks from.
+     *          The {@link User#id ID} of the {@link User}.
      *
      * @return
-     *          The bookmarked {@link Project}s of the user.
+     *          A {@link List} of the bookmarked {@link Project}s
+     *          of the user.
      *
      * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId} was found.
-     *
-     * @see UserServiceImpl#getUserById(String)
+     *          When no {@link User} with the given {@code userId}
+     *          was found.
      */
-    public Set<Project> getBookmarksOfUser(String userId) throws UserNotFoundException {
-        return userService.getUserById(userId).getBookmarks();
-    }
+    List<Project> getBookmarksOfUser(String userId) throws UserNotFoundException;
 
     /**
      *
      * @param userId
-     *          The id of the {@link User} to check for the bookmark.
+     *          The {@link User#id ID} of the {@link User}.
      *
      * @param projectId
-     *          The id of the {@link Project}
-     *          the bookmark refers to.
+     *          The {@link Project#id ID} of the {@link Project}.
      *
      * @return
-     *          {@code true}, when a {@link Project} with the the given
-     *          {@code projectId} exists and the user's {@link User#getBookmarks() bookmarks}
-     *          contains the project.
-     *          <br>
-     *          {@code false} when the project/user with the given id does
-     *          not exist or the the user's {@link User#getBookmarks() bookmarks} don't contain
-     *          the project.
-     *
-     * @see UserRepository#existsByIdAndBookmarksContaining(String, Project)
+     *          {@code true}, iff the user has bookmarked a project
+     *          with the given {@code projectId}.
      */
-    public boolean userHasBookmark(String userId, String projectId) {
-        if(projectService.projectExists(projectId)) {
-            Project project = projectService.getProjectById(projectId);
-
-            return userRepo.existsByIdAndBookmarksContaining(userId, project);
-        }
-
-        return false;
-    }
+    boolean userHasBookmark(String userId, String projectId);
 
 }

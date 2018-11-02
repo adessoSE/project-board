@@ -17,7 +17,6 @@ import java.util.*;
  */
 @Entity
 @Table(name = "PB_USER")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @Getter
 @Setter
 public class User {
