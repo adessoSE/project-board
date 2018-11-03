@@ -15,7 +15,6 @@ import de.adesso.projectboard.ldap.service.util.data.StringStructure;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -129,20 +128,27 @@ public class LdapUserService implements UserService {
      *          with the given {@code userId}.
      *
      * @see #getUserById(String)
+     * @see LdapService#getIdStructure(User)
      */
     @Override
     public OrganizationStructure getStructureForUser(String userId) throws UserNotFoundException {
-        StringStructure idStructure = ldapService.getIdStructure(getUserById(userId));
+        User user = getUserById(userId);
 
-        // get the corresponding User instances
-        User user = idStructure.getUser();
-        User manager = getUserById(idStructure.getManager());
-        Set<User> staffMembers = idStructure.getStaffMembers()
-                .stream()
-                .map(this::getUserById)
-                .collect(Collectors.toSet());
+        // return the structure saved in the repo if one is present
+        // or get the latest structure from the AD
+        return structureRepo.findByUser(user).orElseGet(() -> {
+            StringStructure idStructure = ldapService.getIdStructure(user);
 
-        return new OrganizationStructure(user, manager, staffMembers);
+            // get the corresponding User instances
+            User manager = getUserById(idStructure.getManager());
+            Set<User> staffMembers = idStructure.getStaffMembers()
+                    .stream()
+                    .map(this::getUserById)
+                    .collect(Collectors.toSet());
+
+            // return the persisted instance
+            return structureRepo.save(new OrganizationStructure(user, manager, staffMembers));
+        });
     }
 
     /**
@@ -236,12 +242,15 @@ public class LdapUserService implements UserService {
     }
 
     @Override
-    public List<User> getStaffMembersOfUser(String userId, List<Sorting> sortings) throws UserNotFoundException {
-        List<User> staffMembers = new ArrayList<>(getStructureForUser(userId).getStaffMembers());
+    public List<UserData> getStaffMemberDataOfUser(String userId, Sorting sorting) throws UserNotFoundException {
+        OrganizationStructure structureForUser = getStructureForUser(userId);
 
-        staffMembers.sort(Sorting.toComparator(User.class, sortings));
+        // assure that data of all users is present in the repo
+        structureForUser
+                .getStaffMembers()
+                .forEach(user -> getUserData(user.getId()));
 
-        return staffMembers;
+        return dataRepo.findAllByUser(structureForUser.getStaffMembers(), sorting.toSort());
     }
 
     /**
@@ -260,6 +269,11 @@ public class LdapUserService implements UserService {
     @Override
     public void delete(User user) {
         // TODO: implement delete() in LdapUserService
+    }
+
+    @Override
+    public void deleteUserById(String userId) throws UserNotFoundException {
+        // intentionally left blank
     }
 
 }

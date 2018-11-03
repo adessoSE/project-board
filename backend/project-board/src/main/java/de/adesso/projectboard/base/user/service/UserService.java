@@ -125,8 +125,8 @@ public interface UserService {
      *          The {@link User#id ID} of the {@link User} to get the
      *          staff members of.
      *
-     * @param sortings
-     *          A {@link List} of {@link Sorting} instances to sort by.
+     * @param sorting
+     *          The {@link Sorting} instance to sort by.
      *
      * @return
      *          A {@link List} of staff members belonging to the {@link User}.
@@ -135,7 +135,7 @@ public interface UserService {
      *          When no {@link User} with the given {@code userId}
      *          was found.
      */
-    List<User> getStaffMembersOfUser(String userId, List<Sorting> sortings) throws UserNotFoundException;
+    List<UserData> getStaffMemberDataOfUser(String userId, Sorting sorting) throws UserNotFoundException;
 
     /**
      *
@@ -154,6 +154,15 @@ public interface UserService {
      */
     void delete(User user);
 
-
+    /**
+     *
+     * @param userId
+     *          The {@link User#id ID} of the {@link User} to delete.
+     *
+     * @throws UserNotFoundException
+     *          When no {@link User} with the given {@code userId}
+     *          was found.
+     */
+    void deleteUserById(String userId) throws UserNotFoundException;
 
 }

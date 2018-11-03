@@ -161,10 +161,10 @@ public class LdapUserServiceTest {
     public void testGetStaffMembersOfUser() {
         Sort sort = Sort.unsorted();
 
-        List<User> userStaff = userService.getStaffMembersOfUser(user, sort);
+        List<User> userStaff = userService.getStaffMemberDataOfUser(user, sort);
         assertEquals(0L, userStaff.size());
 
-        List<User> superUserStaff = userService.getStaffMembersOfUser(superUser, Sort.unsorted());
+        List<User> superUserStaff = userService.getStaffMemberDataOfUser(superUser, Sort.unsorted());
         assertEquals(2L, superUserStaff.size());
         assertTrue(superUserStaff.contains(user));
         assertTrue(superUserStaff.contains(superUser));
