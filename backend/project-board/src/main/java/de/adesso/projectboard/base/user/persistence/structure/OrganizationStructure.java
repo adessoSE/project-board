@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table
+@Table(name = "ORG_STRUCTURE")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,21 +19,35 @@ public class OrganizationStructure {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    Long id;
 
-    @Column(nullable = false)
-    private User user;
+    @OneToOne
+    @JoinColumn(
+            name = "USER_ID",
+            nullable = false
+    )
+    User user;
 
-    @Column(nullable = false)
-    private User manager;
+    @ManyToOne
+    @JoinColumn(
+            name = "USER_MANAGER_ID",
+            nullable = false
+    )
+    User manager;
 
-    @OneToMany
-    private Set<User> staffMembers = new HashSet<>();
+    // ManyToMany to allow inconsistencies
+    @ManyToMany
+    @JoinTable(
+            name = "ORG_STRUCTURE_STAFF",
+            joinColumns = @JoinColumn(name = "ORG_STRUCTURE_ID"),
+            inverseJoinColumns = @JoinColumn(name = "USER_ID")
+    )
+    Set<User> staffMembers = new HashSet<>();
 
     /**
      *
      * @param user
-     *          The {@link User} this instance belongs to.
+     *          The {@link User} this structure belongs to.
      *
      * @param manager
      *          The manager of the user.

@@ -101,7 +101,7 @@ public class BookmarkServiceTest {
         when(userRepo.existsByIdAndBookmarksContaining(eq("testUser"), eq(testProject))).thenReturn(true);
 
         // call the tested method
-        bookmarkService.removeBookmarkFromUser(testUser.getId(), testProject.getId());
+        bookmarkService.removeBookmarkOfUser(testUser.getId(), testProject.getId());
 
         verify(userRepo).save(testUser);
         assertEquals(0L, testUser.getBookmarks().size());
@@ -111,17 +111,17 @@ public class BookmarkServiceTest {
     public void testRemoveBookmarkFromUser_BookmarkNotFound() {
         assertFalse(testUser.getBookmarks().contains(testProject));
 
-        bookmarkService.removeBookmarkFromUser(testUser.getId(), testProject.getId());
+        bookmarkService.removeBookmarkOfUser(testUser.getId(), testProject.getId());
     }
 
     @Test(expected = UserNotFoundException.class)
     public void testRemoveBookmarkFromUser_UserNotExists() {
-        bookmarkService.removeBookmarkFromUser("non-existent-user", testProject.getId());
+        bookmarkService.removeBookmarkOfUser("non-existent-user", testProject.getId());
     }
 
     @Test(expected = ProjectNotFoundException.class)
     public void testRemoveBookmarkFromUser_ProjectNotExists() {
-        bookmarkService.removeBookmarkFromUser(testUser.getId(), "non-existent-project");
+        bookmarkService.removeBookmarkOfUser(testUser.getId(), "non-existent-project");
     }
 
     @Test

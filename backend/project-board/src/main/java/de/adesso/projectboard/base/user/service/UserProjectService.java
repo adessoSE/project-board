@@ -75,7 +75,7 @@ public interface UserProjectService {
 
     /**
      * Creates a {@link Project} and adds it to the {@link User}'s
-     * {@link User#createdProjects created projects}.
+     * {@link User#ownedProjects owned projects}.
      *
      * @param projectDTO
      *          The {@link ProjectRequestDTO} to create the {@link Project}
@@ -95,7 +95,7 @@ public interface UserProjectService {
 
     /**
      * Adds a {@link Project} to the the {@link User}'s
-     * {@link User#createdProjects created projects}.
+     * {@link User#ownedProjects owned projects}.
      *
      * @param userId
      *          The {@link User#id ID} of the {@link User} to add the {@link Project}

@@ -11,43 +11,48 @@ import java.time.LocalDateTime;
 /**
  * Entity to persist project application data.
  */
-@Table
 @Entity
+@Table(name = "PROJECT_APPLICATION")
 @Data
 @NoArgsConstructor
 public class ProjectApplication {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    Long id;
 
     /**
      * The project the user applied for.
      */
-    @ManyToOne(optional = false)
-    private Project project;
+    @ManyToOne
+    @JoinColumn(
+            name = "PROJECT_ID",
+            nullable = false
+    )
+    Project project;
 
     /**
      * The user this application belongs to.
      */
-    @ManyToOne(
-            cascade = {CascadeType.REFRESH, CascadeType.DETACH, CascadeType.MERGE},
-            optional = false
+    @ManyToOne
+    @JoinColumn(
+            name = "USER_ID",
+            nullable = false
     )
-    private User user;
+    User user;
 
     /**
      * The comment of the application.
      */
-    @Column(length = 4096)
     @Lob
-    private String comment;
+    @Column(length = 4096)
+    String comment;
 
     /**
      * The date of the application.
      */
     @Column(nullable = false)
-    private LocalDateTime applicationDate;
+    LocalDateTime applicationDate;
 
     /**
      * Constructs a new instance. Adds the application to the user's

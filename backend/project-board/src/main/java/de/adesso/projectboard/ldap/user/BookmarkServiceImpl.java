@@ -94,7 +94,7 @@ public class BookmarkServiceImpl implements BookmarkService {
      *
      */
     @Override
-    public void removeBookmarkFromUser(String userId, String projectId) throws UserNotFoundException, ProjectNotFoundException, BookmarkNotFoundException {
+    public void removeBookmarkOfUser(String userId, String projectId) throws UserNotFoundException, ProjectNotFoundException, BookmarkNotFoundException {
 
         // get the user/project with the given id
         User user = userService.getUserById(userId);

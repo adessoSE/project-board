@@ -19,12 +19,16 @@ public class LdapConfigurationProperties {
 
     /**
      * The base path to crawl users from.
+     *
+     * default: <i>DC=adesso,DC=local</i>
      */
     @NotEmpty
-    private String ldapBase;
+    private String ldapBase = "DC=adesso,DC=local";
 
     /**
      * The AD attribute used as the user ID.
+     *
+     * default: <i>sAMAccountName</i>
      */
     @NotEmpty
     private String userIdAttribute = "sAMAccountName";

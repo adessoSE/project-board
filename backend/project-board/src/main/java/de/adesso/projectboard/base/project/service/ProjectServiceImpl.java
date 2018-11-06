@@ -28,7 +28,7 @@ import java.util.Set;
  * @see LdapUserService
  */
 @Service
-public class ProjectServiceImpl {
+public class ProjectServiceImpl implements ProjectService {
 
     private final ProjectRepository projectRepo;
 
@@ -103,13 +103,13 @@ public class ProjectServiceImpl {
      *
      * @see #projectExists(String)
      * @see #getProjectById(String)
-     * @see UserRepository#existsByIdAndCreatedProjectsContaining(String, Project)
+     * @see UserRepository#existsByIdAndOwnedProjectsContaining(String, Project)
      */
     public boolean userHasProject(String userId, String projectId) {
         if(projectExists(projectId)) {
             Project project = getProjectById(projectId);
 
-            return userRepo.existsByIdAndCreatedProjectsContaining(userId, project);
+            return userRepo.existsByIdAndOwnedProjectsContaining(userId, project);
         } else {
             return false;
         }
@@ -260,7 +260,7 @@ public class ProjectServiceImpl {
 
         Project createdProject = createOrUpdateProject(projectDTO, null);
 
-        creatingUser.addCreatedProject(createdProject);
+        creatingUser.addOwnedProject(createdProject);
         userService.save(creatingUser);
 
         return createdProject;
@@ -286,9 +286,9 @@ public class ProjectServiceImpl {
         if(ProjectOrigin.CUSTOM.equals(existingProject.getOrigin())) {
             // remove it from the user's created projects
             List<User> creators
-                    = userRepo.findAllByCreatedProjectsContaining(existingProject);
+                    = userRepo.findAllByOwnedProjectsContaining(existingProject);
             creators.forEach(user -> {
-                user.removeCreatedProject(existingProject);
+                user.removeOwnedProject(existingProject);
 
                 userService.save(user);
             });

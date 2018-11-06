@@ -56,7 +56,7 @@ public interface BookmarkService {
      *          When no {@link Project} with the given {@code projectId}
      *          was found.
      */
-    void removeBookmarkFromUser(String userId, String projectId) throws UserNotFoundException, ProjectNotFoundException;
+    void removeBookmarkOfUser(String userId, String projectId) throws UserNotFoundException, ProjectNotFoundException;
 
     /**
      *

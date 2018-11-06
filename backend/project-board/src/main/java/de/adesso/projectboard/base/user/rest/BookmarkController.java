@@ -9,6 +9,7 @@ import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.rest.ProjectController;
 import de.adesso.projectboard.base.user.bookmark.dto.BookmarkRequestDTO;
 import de.adesso.projectboard.base.user.persistence.User;
+import de.adesso.projectboard.base.user.service.BookmarkService;
 import de.adesso.projectboard.ldap.user.BookmarkServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,10 +29,10 @@ import javax.validation.Valid;
 @RequestMapping("/users")
 public class BookmarkController {
 
-    private final BookmarkServiceImpl bookmarkService;
+    private final BookmarkService bookmarkService;
 
     @Autowired
-    public BookmarkController(BookmarkServiceImpl bookmarkService) {
+    public BookmarkController(BookmarkService bookmarkService) {
         this.bookmarkService = bookmarkService;
     }
 
@@ -52,13 +53,13 @@ public class BookmarkController {
      * @throws BookmarkNotFoundException
      *          When no the user has no bookmark for this project.
      *
-     * @see BookmarkServiceImpl#removeBookmarkFromUser(String, String)
+     * @see BookmarkServiceImpl#removeBookmarkOfUser(String, String)
      */
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @DeleteMapping(value = "/{userId}/bookmarks/{projectId}")
     public void deleteBookmarkOfUser(@PathVariable("userId") String userId, @PathVariable("projectId") String projectId)
             throws UserNotFoundException, ProjectNotFoundException, BookmarkNotFoundException {
-        bookmarkService.removeBookmarkFromUser(userId, projectId);
+        bookmarkService.removeBookmarkOfUser(userId, projectId);
     }
 
     /**

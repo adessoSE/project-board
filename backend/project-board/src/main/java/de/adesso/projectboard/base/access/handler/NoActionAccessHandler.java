@@ -15,7 +15,7 @@ public class NoActionAccessHandler implements UserAccessHandler {
 
     @Override
     public void onAccessGranted(User user) {
-        logger.debug(String.format("Access granted for %s!", user.getFullName()));
+        logger.debug(String.format("Access granted for %s!", user.getId()));
     }
 
 }

@@ -86,9 +86,9 @@ public class ProjectServiceTest {
             return (Project) args[0];
         });
 
-        when(userRepo.existsByIdAndCreatedProjectsContaining(anyString(), any(Project.class))).thenReturn(false);
+        when(userRepo.existsByIdAndOwnedProjectsContaining(anyString(), any(Project.class))).thenReturn(false);
 
-        when(userRepo.findAllByCreatedProjectsContaining(any(Project.class))).thenReturn(Collections.emptyList());
+        when(userRepo.findAllByOwnedProjectsContaining(any(Project.class))).thenReturn(Collections.emptyList());
     }
 
     @Test
@@ -118,7 +118,7 @@ public class ProjectServiceTest {
         assertTrue(superUser.getCreatedProjects().contains(editableProject));
 
         // override mock behaviour
-        when(userRepo.existsByIdAndCreatedProjectsContaining(eq(superUser.getId()), eq(editableProject)))
+        when(userRepo.existsByIdAndOwnedProjectsContaining(eq(superUser.getId()), eq(editableProject)))
                 .thenReturn(true);
 
         assertTrue(projectService.userHasProject(superUser.getId(), editableProject.getId()));
@@ -282,7 +282,7 @@ public class ProjectServiceTest {
         assertTrue(superUser.getCreatedProjects().contains(editableProject));
 
         // override mock
-        when(userRepo.findAllByCreatedProjectsContaining(editableProject))
+        when(userRepo.findAllByOwnedProjectsContaining(editableProject))
                 .thenReturn(Collections.singletonList(superUser));
 
         projectService.deleteProjectById(editableProject.getId());

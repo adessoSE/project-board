@@ -3,7 +3,7 @@ package de.adesso.projectboard.base.user.service;
 import de.adesso.projectboard.base.access.dto.UserAccessInfoRequestDTO;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.user.persistence.User;
-import de.adesso.projectboard.ldap.access.UserAccessServiceImpl;
+import de.adesso.projectboard.ldap.access.LdapUserAccessService;
 import de.adesso.projectboard.ldap.user.LdapUserService;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +28,7 @@ public class UserAccessServiceTest {
     private LdapUserService userService;
 
     @InjectMocks
-    private UserAccessServiceImpl accessService;
+    private LdapUserAccessService accessService;
 
     private User testUser;
 

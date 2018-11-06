@@ -7,7 +7,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Entity to persist information about users.
@@ -26,15 +29,19 @@ public class User {
      * of the user.
      */
     @Id
-    private String id;
+    String id;
 
     /**
      * The bookmarked {@link Project}s of the
      * user.
      */
     @ManyToMany
-    @JoinTable(name = "PB_USER_BOOKMARKS")
-    private Set<Project> bookmarks;
+    @JoinTable(
+            name = "USER_BOOKMARKS",
+            joinColumns = @JoinColumn(name = "USER_ID"),
+            inverseJoinColumns = @JoinColumn(name = "PROJECT_ID")
+    )
+    Set<Project> bookmarks;
 
     /**
      * The {@link ProjectApplication applications} of the
@@ -44,13 +51,18 @@ public class User {
             cascade = CascadeType.ALL,
             mappedBy = "user"
     )
-    private Set<ProjectApplication> applications;
+    Set<ProjectApplication> applications;
 
     /**
-     * The user's created {@link Project}s.
+     * The user's owned {@link Project}s.
      */
-    @OneToMany(cascade = CascadeType.ALL)
-    private Set<Project> createdProjects;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "USER_OWNED_PROJECTS",
+            joinColumns = @JoinColumn(name = "USER_ID"),
+            inverseJoinColumns = @JoinColumn(name = "PROJECT_ID")
+    )
+    Set<Project> ownedProjects;
 
     /**
      * The user's {@link AccessInfo} objects to evaluate
@@ -60,7 +72,7 @@ public class User {
             cascade = CascadeType.ALL,
             mappedBy = "user"
     )
-    private List<AccessInfo> accessInfoList;
+    List<AccessInfo> accessInfoList;
 
     /**
      *
@@ -79,7 +91,7 @@ public class User {
         this.accessInfoList = new LinkedList<>();
         this.applications = new LinkedHashSet<>();
         this.bookmarks = new LinkedHashSet<>();
-        this.createdProjects = new LinkedHashSet<>();
+        this.ownedProjects = new LinkedHashSet<>();
     }
 
     /**
@@ -158,16 +170,6 @@ public class User {
 
     /**
      *
-     * @return
-     *          A <i>unmodifiable</i> {@link Set} of the created
-     *          {@link Project}s of the user.
-     */
-    public Set<Project> getCreatedProjects() {
-        return Collections.unmodifiableSet(createdProjects);
-    }
-
-    /**
-     *
      * @param project
      *          The {@link Project} to add to the created projects.
      *
@@ -175,8 +177,8 @@ public class User {
      *          {@code true}, when the {@code project} was added to the created
      *          projects.
      */
-    public boolean addCreatedProject(Project project) {
-        return createdProjects.add(project);
+    public boolean addOwnedProject(Project project) {
+        return ownedProjects.add(project);
     }
 
     /**
@@ -188,8 +190,8 @@ public class User {
      *          {@code true}, when the {@code projects} was removed from the created
      *          projects.
      */
-    public boolean removeCreatedProject(Project project) {
-        return createdProjects.remove(project);
+    public boolean removeOwnedProject(Project project) {
+        return ownedProjects.remove(project);
     }
 
 }

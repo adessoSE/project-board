@@ -10,6 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 
 @Entity
+@Table(name = "USER_DATA")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -17,26 +18,26 @@ public class UserData {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    Long id;
 
-    @OneToOne(optional = false)
-    private User user;
+    @OneToOne
+    @JoinColumn(
+            name = "USER_ID",
+            nullable = false
+    )
+    User user;
 
-    @Column(nullable = false)
     @NotEmpty
-    private String firstName;
+    String firstName;
 
-    @Column(nullable = false)
     @NotEmpty
-    private String lastName;
+    String lastName;
 
-    @Column(unique = true)
     @NotEmpty
-    private String email;
+    String email;
 
-    @Column(nullable = false)
     @NotEmpty
-    private String lob;
+    String lob;
 
     /**
      *

@@ -22,16 +22,20 @@ public class AccessInfo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    Long id;
 
-    @ManyToOne(optional = false)
-    private User user;
+    @ManyToOne
+    @JoinColumn(
+            name = "USER_ID",
+            nullable = false
+    )
+    User user;
 
     @Column(nullable = false)
-    private LocalDateTime accessStart;
+    LocalDateTime accessStart;
 
     @Column(nullable = false)
-    private LocalDateTime accessEnd;
+    LocalDateTime accessEnd;
 
     /**
      * Constructs a new entity. The {@link #accessStart access start} is automatically

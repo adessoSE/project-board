@@ -4,6 +4,7 @@ import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.rest.ApplicationController;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.user.dto.UserResponseDTO;
+import de.adesso.projectboard.base.user.persistence.data.UserData;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -35,11 +36,11 @@ public class ProjectApplicationResponseDTO implements Serializable {
      * @return
      *          The DTO.
      */
-    public static ProjectApplicationResponseDTO fromApplication(ProjectApplication application) {
+    public static ProjectApplicationResponseDTO fromApplication(ProjectApplication application, UserData userData, boolean isManager) {
         ProjectApplicationResponseDTO dto = new ProjectApplicationResponseDTO();
 
         dto.setId(application.getId());
-        dto.setUser(UserResponseDTO.fromUser(application.getUser()));
+        dto.setUser(UserResponseDTO.fromUserData(userData, isManager));
         dto.setProject(application.getProject());
         dto.setComment(application.getComment());
         dto.setDate(application.getApplicationDate());

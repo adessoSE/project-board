@@ -67,7 +67,7 @@ public class SuperUserPersistenceTest {
             "classpath:de/adesso/projectboard/core/base/persistence/CreatedProjects.sql"
     })
     public void testFindAllByCreatedProjectsContaining() {
-        List<User> users = userRepository.findAllByCreatedProjectsContaining(project);
+        List<User> users = userRepository.findAllByOwnedProjectsContaining(project);
 
         assertEquals(1L, users.size());
     }
@@ -135,8 +135,8 @@ public class SuperUserPersistenceTest {
             "classpath:de/adesso/projectboard/core/base/persistence/CreatedProjects.sql"
     })
     public void testExistsByIdAndCreatedProjectsContaining() {
-        assertFalse(userRepository.existsByIdAndCreatedProjectsContaining("SuperUser2", project));
-        assertTrue(userRepository.existsByIdAndCreatedProjectsContaining("SuperUser1", project));
+        assertFalse(userRepository.existsByIdAndOwnedProjectsContaining("SuperUser2", project));
+        assertTrue(userRepository.existsByIdAndOwnedProjectsContaining("SuperUser1", project));
     }
 
 }

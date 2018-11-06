@@ -4,7 +4,6 @@ import lombok.Getter;
 import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -23,11 +22,6 @@ public class Sorting {
 
     public void addPair(String fieldName, Order order) {
         propertyOrderMap.put(fieldName, order);
-    }
-
-    public <T> Comparator<T> toComparator(Class<T> comparatorClass) {
-        // TODO: implement
-        return (t1, t2) -> 0;
     }
 
     /**

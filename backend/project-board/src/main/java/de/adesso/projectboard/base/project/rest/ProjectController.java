@@ -7,10 +7,13 @@ import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.base.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.persistence.ProjectOrigin;
+import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.project.service.ProjectServiceImpl;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.rest.BookmarkController;
 import de.adesso.projectboard.base.user.rest.UserController;
+import de.adesso.projectboard.base.user.service.UserProjectService;
+import de.adesso.projectboard.base.util.Sorting;
 import de.adesso.projectboard.ldap.user.LdapUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -32,12 +35,17 @@ import javax.validation.Valid;
 @RequestMapping(path = "/projects")
 public class ProjectController {
 
-    private final ProjectServiceImpl projectService;
+    private final UserProjectService userProjectService;
+
+    private final ProjectService projectService;
 
     private final LdapUserService userService;
 
     @Autowired
-    public ProjectController(ProjectServiceImpl projectService, LdapUserService userService) {
+    public ProjectController(UserProjectService userProjectService,
+                             ProjectService projectService,
+                             LdapUserService userService) {
+        this.userProjectService = userProjectService;
         this.projectService = projectService;
         this.userService = userService;
     }
@@ -73,7 +81,7 @@ public class ProjectController {
     @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
     @GetMapping
     public Iterable<Project> getAllForUser(@SortDefault(direction = Sort.Direction.DESC, sort = "updated") Sort sort) {
-        return projectService.getProjectsForUser(userService.getCurrentUser(), sort);
+        return userProjectService.getProjectsForUser(userService.getAuthenticatedUserId(), Sorting.fromSort(sort));
     }
 
     /**
@@ -89,7 +97,7 @@ public class ProjectController {
     @PreAuthorize("hasPermissionToCreateProjects() || hasRole('admin')")
     @PostMapping
     public Project createProject(@Valid @RequestBody ProjectRequestDTO projectDTO) {
-        return projectService.createProject(projectDTO, userService.getCurrentUserId());
+        return userProjectService.createProjectForUser(projectDTO, userService.getAuthenticatedUserId());
     }
 
     /**
@@ -139,9 +147,9 @@ public class ProjectController {
         if(keyword == null || keyword.isEmpty()) {
             return getAllForUser(sort);
         } else {
-            User currentUser = userService.getCurrentUser();
+            String userId = userService.getAuthenticatedUserId();
 
-            return projectService.getProjectsForUserContainingKeyword(currentUser, keyword, sort);
+            return userProjectService.searchProjectsForUser(userId, keyword, Sorting.fromSort(sort));
         }
     }
 

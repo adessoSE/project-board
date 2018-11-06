@@ -28,7 +28,7 @@ public class UserResponseDTOTest {
         firstUser.addBookmark(project);
         firstUser.addCreatedProject(new Project());
 
-        UserResponseDTO dto = UserResponseDTO.fromUser(firstUser);
+        UserResponseDTO dto = UserResponseDTO.fromUserData(firstUser);
 
         assertEquals(1L, dto.getApplications().getCount());
         assertEquals(1L, dto.getBookmarks().getCount());

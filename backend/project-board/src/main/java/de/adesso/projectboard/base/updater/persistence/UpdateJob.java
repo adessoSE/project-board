@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
  * @see UpdateJobRepository
  */
 @Entity
+@Table(name = "UPDATE_JOB")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -21,17 +22,17 @@ public class UpdateJob {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    Long id;
 
     @Column(nullable = false)
-    private LocalDateTime time;
+    LocalDateTime time;
 
     @Column(nullable = false)
-    private Status status;
+    Status status;
 
     @Lob
     @Column(length = 512)
-    private String failureReason;
+    String failureReason;
 
     protected UpdateJob() {
         // protected no-arg constructor for JPA

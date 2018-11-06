@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.LdapTemplate;
 
-@Profile("adesso-keycloak")
+@Profile("adesso-ad")
 @Configuration
-public class UserCrawlerConfiguration {
+public class LdapConfiguration {
 
     @Bean
     @Autowired

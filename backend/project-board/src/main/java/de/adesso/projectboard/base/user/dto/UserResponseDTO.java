@@ -33,12 +33,12 @@ public class UserResponseDTO implements Serializable {
 
     private CollectionLink projects;
 
-    public static UserResponseDTO fromUser(UserData userData, boolean isBoss) {
+    public static UserResponseDTO fromUserData(UserData userData, boolean isBoss) {
         User user = userData.getUser();
 
         CollectionLink applications = new CollectionLink(user.getApplications().size());
         CollectionLink bookmarks = new CollectionLink(user.getBookmarks().size());
-        CollectionLink projects = new CollectionLink(user.getCreatedProjects().size());
+        CollectionLink projects = new CollectionLink(user.getOwnedProjects().size());
 
         AccessInfoResponseDTO accessDTO;
         if(user.getLatestAccessInfo() != null) {
@@ -47,7 +47,7 @@ public class UserResponseDTO implements Serializable {
             accessDTO = AccessInfoResponseDTO.noAccess();
         }
 
-        UserResponseDTO dto = new UserResponseDTO()
+        return new UserResponseDTO()
                 .setId(user.getId())
                 .setFirstName(userData.getFirstName())
                 .setLastName(userData.getLastName())
@@ -58,8 +58,6 @@ public class UserResponseDTO implements Serializable {
                 .setApplications(applications)
                 .setBookmarks(bookmarks)
                 .setProjects(projects);
-
-        return dto;
     }
 
     @Data

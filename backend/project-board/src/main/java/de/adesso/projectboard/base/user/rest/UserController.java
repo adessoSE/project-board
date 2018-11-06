@@ -59,7 +59,7 @@ public class UserController {
         UserData userData = userService.getUserData(userId);
         boolean isBoss = userService.isManager(userId);
 
-        return UserResponseDTO.fromUser(userData, isBoss);
+        return UserResponseDTO.fromUserData(userData, isBoss);
     }
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
@@ -84,8 +84,8 @@ public class UserController {
      */
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @GetMapping(path = "/{userId}/projects")
-    public Iterable<Project> getCreatedProjectsOfUser(@PathVariable("userId") String userId) throws UserNotFoundException {
-        return userService.getUserById(userId).getCreatedProjects();
+    public Iterable<Project> getOwnedProjectsOfUser(@PathVariable("userId") String userId) throws UserNotFoundException {
+        return userService.getUserById(userId).getOwnedProjects();
     }
 
 }
