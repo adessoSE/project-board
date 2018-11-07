@@ -71,7 +71,7 @@ public interface UserProjectService {
      * @throws ProjectNotFoundException
      *          When no {@link Project} with the given {@code projectId} was found.
      */
-    boolean userHasCreatedProject(String userId, String projectId) throws UserNotFoundException, ProjectNotFoundException;
+    boolean userOwnsProject(String userId, String projectId) throws UserNotFoundException, ProjectNotFoundException;
 
     /**
      * Creates a {@link Project} and adds it to the {@link User}'s

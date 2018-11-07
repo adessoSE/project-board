@@ -59,7 +59,7 @@ public interface UserService {
      * @throws UserNotFoundException
      *          When no {@link User} with the given {@code userId} was found.
      */
-    boolean isManager(String userId) throws UserNotFoundException;
+    boolean userIsManager(String userId) throws UserNotFoundException;
 
     /**
      *
@@ -99,8 +99,7 @@ public interface UserService {
      *          {@link #userExists(String)} returns {@code true}.
      *
      * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId}
-     *          was found.
+     *          When no {@link User} with the given {@code userId} was found.
      */
     User getUserById(String userId) throws UserNotFoundException;
 
@@ -118,6 +117,20 @@ public interface UserService {
      *          {@code staffId}.
      */
     boolean userHasStaffMember(String userId, String staffId);
+
+    /**
+     *
+     * @param userId
+     *          The {@link User#id ID} of the {@link User} to get the
+     *          manager from.
+     *
+     * @return
+     *          The manager of the user.
+     *
+     * @throws UserNotFoundException
+     *          When no {@link User} with the given {@code userId} was found.
+     */
+    User getManagerOfUser(String userId) throws UserNotFoundException;
 
     /**
      *

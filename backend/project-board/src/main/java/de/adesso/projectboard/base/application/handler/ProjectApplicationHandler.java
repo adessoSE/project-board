@@ -19,6 +19,6 @@ public interface ProjectApplicationHandler {
      *          by the user <b>after</b> it has been persisted in the database.
      *
      */
-    void onApplicationReceived(ProjectApplication application) throws RuntimeException;
+    void onApplicationReceived(ProjectApplication application);
 
 }

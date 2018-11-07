@@ -1,5 +1,6 @@
 package de.adesso.projectboard.rest.handler.mail;
 
+import de.adesso.projectboard.base.user.service.UserService;
 import de.adesso.projectboard.rest.handler.mail.persistence.MessageRepository;
 import de.adesso.projectboard.rest.handler.mail.persistence.TemplateMessage;
 import org.slf4j.Logger;
@@ -15,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Service to send {@link SimpleMailMessage}s generated from persisted {@link TemplateMessage}s.
  * <br>
  * Used by {@link MailService} in its scheduled {@link MailService#sendMessage()} method
- * to make method calls to {@link #sendMessages()} go through the object proxy.
+ * to make method calls to {@link #sendMessages()} through the object proxy.
  *
  * @see MailService
  */
@@ -29,10 +30,15 @@ public class MailSenderService {
 
     private final JavaMailSenderImpl mailSender;
 
+    private final UserService userService;
+
     @Autowired
-    public MailSenderService(MessageRepository messageRepository, JavaMailSenderImpl mailSender) {
+    public MailSenderService(MessageRepository messageRepository,
+                             JavaMailSenderImpl mailSender,
+                             UserService userService) {
         this.messageRepository = messageRepository;
         this.mailSender = mailSender;
+        this.userService = userService;
     }
 
     @Transactional
@@ -44,11 +50,11 @@ public class MailSenderService {
                     SimpleMailMessage mailMessage = new SimpleMailMessage();
                     mailMessage.setSubject(message.getSubject());
                     mailMessage.setText(message.getText());
-                    mailMessage.setTo(message.getAddressee().getEmail());
+                    mailMessage.setTo(message.getAddresseeData().getEmail());
 
                     mailSender.send(mailMessage);
 
-                    logger.debug(String.format("Mail sent to %s!", message.getAddressee().getEmail()));
+                    logger.debug(String.format("Mail sent to %s!", message.getAddresseeData().getEmail()));
                 }
 
                 // delete the message when it was sent

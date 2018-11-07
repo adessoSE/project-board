@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import de.adesso.projectboard.base.application.rest.ApplicationController;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -14,8 +15,9 @@ import java.io.Serializable;
  *
  * @see ApplicationController
  */
-@AllArgsConstructor
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProjectApplicationRequestDTO implements Serializable {
 
@@ -23,14 +25,6 @@ public class ProjectApplicationRequestDTO implements Serializable {
     private String projectId;
 
     @Size(max = 4096)
-    private String comment;
-
-    /**
-     * Constructs a new instance. The {@link #comment} is initialized
-     * with a empty string.
-     */
-    public ProjectApplicationRequestDTO() {
-        this.comment = "";
-    }
+    private String comment = "";
 
 }

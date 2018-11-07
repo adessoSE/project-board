@@ -1,19 +1,20 @@
 package de.adesso.projectboard.rest.security;
 
 import de.adesso.projectboard.base.access.persistence.AccessInfo;
+import de.adesso.projectboard.base.application.service.ApplicationService;
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.project.service.ProjectServiceImpl;
+import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.security.ExpressionEvaluator;
 import de.adesso.projectboard.base.user.persistence.User;
+import de.adesso.projectboard.base.user.persistence.data.UserData;
+import de.adesso.projectboard.base.user.service.UserProjectService;
+import de.adesso.projectboard.base.user.service.UserService;
 import de.adesso.projectboard.ldap.user.LdapUserService;
-import de.adesso.projectboard.service.ApplicationServiceImpl;
+import de.adesso.projectboard.project.service.RepositoryProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.Set;
 
 /**
  * A {@link ExpressionEvaluator} implementation that is used to authorize access
@@ -25,32 +26,32 @@ import java.util.Set;
  *
  * @see ExpressionEvaluator
  * @see LdapUserService
- * @see ProjectServiceImpl
+ * @see RepositoryProjectService
  */
 @Profile("user-access")
 @Service
 public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
 
-    private final LdapUserService userService;
+    private final UserService userService;
 
-    private final ProjectServiceImpl projectService;
+    private final ProjectService projectService;
 
-    private final ApplicationServiceImpl applicationService;
+    private final UserProjectService userProjectService;
+
+    private final ApplicationService applicationService;
 
     @Autowired
-    public UserAccessExpressionEvaluator(LdapUserService userService,
-                                         ProjectServiceImpl projectService,
-                                         ApplicationServiceImpl applicationService) {
+    public UserAccessExpressionEvaluator(UserService userService,
+                                         ProjectService projectService,
+                                         UserProjectService userProjectService,
+                                         ApplicationService applicationService) {
         this.userService = userService;
         this.projectService = projectService;
+        this.userProjectService = userProjectService;
         this.applicationService = applicationService;
     }
 
     /**
-     * Gets the currently authenticated user from the {@link LdapUserService}
-     * and retrieves the latest {@link AccessInfo} object for that user.
-     * When the {@link AccessInfo#getAccessEnd() access end date} is
-     * <b>after</b> the {@link LocalDateTime#now() current} date the user has access.
      *
      * @param authentication
      *          The {@link Authentication} object.
@@ -59,13 +60,18 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          The {@link User} object of the currently authenticated user.
      *
      * @return
-     *          The result of {@link User#hasAccess()}.
-     *
-     * @see User#hasAccess()
+     *          {@code true}, iff the {@code user}'s latest access info instance
+     *          is active or the user is a manager.
      */
     @Override
     public boolean hasAccessToProjects(Authentication authentication, User user) {
-        return user.hasAccess() || user instanceof SuperUser;
+        AccessInfo latestAccessInfo = user.getLatestAccessInfo();
+
+        if(latestAccessInfo != null) {
+            return latestAccessInfo.isCurrentlyActive();
+        } else {
+            return userService.userIsManager(user.getId());
+        }
     }
 
     /**
@@ -81,45 +87,53 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          the user wants to access.
      *
      * @return
-     *          {@code true}, when the given {@code user}
-     *          {@link ApplicationServiceImpl#userHasAppliedForProject(String, Project) applied}
-     *          for the project, {@link ProjectServiceImpl#userHasProject(String, String) created}
-     *          it or {@link #hasAccessToProjects(Authentication, User) has access} to projects
-     *          and the project's {@link Project#status status} is set to "<i>eskaliert</i>".
-     *          Also returns {@code true}, when the {@code user} is a {@link SuperUser} and the
-     *          project's {@link Project#status status} is set to "<i>offen</i>" or the
-     *          project's {@link Project#status status} is set to "<i>offen</i>" and the project
-     *          is of the {@link Project#lob LOB} as the user or has no lob set ({@code null}).
-     *          {@code false} otherwise.
+     *          {@code true}, iff the no project with the given {@code projectId} exists,
+     *          {@link ApplicationService#userHasAppliedForProject(String, String)} returns {@code true},
+     *          {@link UserProjectService#userOwnsProject(String, String)} returns {@code true} or
+     *          {@link #hasAccessToProjects(Authentication, User)} returns {@code true}
+     *          and at least one of the following conditions is true:
+     *
+     *          <ul>
+     *              <li>
+     *                  The user is a manager and the project's status is set to <i>offen</i> or <i>eskaliert</i>.
+     *              </li>
+     *
+     *              <li>
+     *                  The user is not a manager and the project's status is set to <i>eskaliert</i> or <i>offen</i>
+     *                  and the project's LoB is equal to the user's LoB.
+     *              </li>
+     *          </ul>
+     *
      */
     @Override
     public boolean hasAccessToProject(Authentication authentication, User user, String projectId) {
-        if(!projectService.projectExists(projectId)) {
+        // return true if the project does not exist, the user owns the project or
+        // the user has applied for the project
+        if(!projectService.projectExists(projectId) ||
+                userProjectService.userOwnsProject(user.getId(), projectId) ||
+                applicationService.userHasAppliedForProject(user.getId(), projectId)) {
+
             return true;
         }
 
         Project project = projectService.getProjectById(projectId);
 
         if(hasAccessToProjects(authentication, user)) {
-            boolean isSuperUser = user instanceof SuperUser;
+            UserData userData = userService.getUserData(user.getId());
+
+            boolean isManager = userService.userIsManager(user.getId());
             boolean isOpen = "offen".equalsIgnoreCase(project.getStatus());
             boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
-            boolean sameLobAsUser = user.getLob().equalsIgnoreCase(project.getLob());
+            boolean sameLobAsUser = userData.getLob().equalsIgnoreCase(project.getLob());
             boolean noLob = project.getLob() == null;
 
             // escalated || isOpen <-> (sameLob || noLob)
             // equivalence because implication is not enough
             // when the status is neither "eskaliert" nor "offen"
-            return isEscalated || (isOpen && isSuperUser) || ((isOpen && (sameLobAsUser || noLob)) || (!isOpen && !(sameLobAsUser || noLob)));
+            return isEscalated || (isOpen && isManager) || ((isOpen && (sameLobAsUser || noLob)) || (!isOpen && !(sameLobAsUser || noLob)));
         }
 
-        boolean hasAppliedForProject = applicationService.userHasAppliedForProject(user.getId(), project);
-        if(hasAppliedForProject) {
-            return true;
-        }
-
-        boolean hasProject = projectService.userHasProject(user.getId(), projectId);
-        return hasProject;
+        return false;
     }
 
     /**
@@ -149,14 +163,11 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          The {@link User} object of the currently authenticated user.
      *
      * @param userId
-     *          The id of the {@link User}
-     *          the current user wants to access.
+     *          The id of the {@link User} the current user wants to access.
      *
      * @return
      *          {@code true}, when the currently authenticated user has the same {@link User#getId() id}
      *          or the result of {@link #hasElevatedAccessToUser(Authentication, User, String)}.
-     *
-     * @see SuperUser#getStaffMembers()
      */
     @Override
     public boolean hasPermissionToAccessUser(Authentication authentication, User user, String userId) {
@@ -172,17 +183,17 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          The {@link User} object of the currently authenticated user.
      *
      * @return
-     *          {@code true}, if the given {@link User} is a {@link SuperUser},
+     *          {@code true}, if the given {@link User} is a manager,
      *          {@code false} otherwise.
      */
     @Override
     public boolean hasPermissionToCreateProjects(Authentication authentication, User user) {
-        return user instanceof SuperUser;
+        return userService.userIsManager(user.getId());
     }
 
     /**
      * A {@link User} has the permission to edit a {@link Project} when it is
-     * present in the {@link User#createdProjects created projects} of the user.
+     * present in the {@link User#ownedProjects owned projects} of the user.
      *
      * @param authentication
      *          The {@link Authentication} object.
@@ -194,13 +205,11 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          The id of the {@link Project} the user wants to update.
      *
      * @return
-     *          The result of {@link ProjectServiceImpl#userHasProject(String, String)}.
-     *
-     * @see ProjectServiceImpl#userHasProject(String, String)
+     *          The result of {@link UserProjectService#userOwnsProject(String, String)}.
      */
     @Override
     public boolean hasPermissionToEditProject(Authentication authentication, User user, String projectId) {
-        return projectService.userHasProject(user.getId(), projectId);
+        return userProjectService.userOwnsProject(user.getId(), projectId);
     }
 
     /**
@@ -216,19 +225,11 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          the current user wants to access.
      *
      * @return
-     *          {@code true}, when the {@code user} is a {@link SuperUser} and a user with the given
-     *          {@code userId} is included in the {@link Set} of the
-     *          {@link SuperUser#getStaffMembers() user's staff members}, {@code false} otherwise.
-     *
-     * @see SuperUser
+     *          The result of {@link UserService#userHasStaffMember(String, String)}.
      */
     @Override
     public boolean hasElevatedAccessToUser(Authentication authentication, User user, String userId) {
-        if(user instanceof SuperUser) {
-            return userService.userHasStaffMember((SuperUser) user, userId);
-        } else {
-            return false;
-        }
+        return userService.userHasStaffMember(user.getId(), userId);
     }
 
 }

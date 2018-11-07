@@ -1,6 +1,6 @@
 package de.adesso.projectboard.rest.handler.mail.persistence;
 
-import de.adesso.projectboard.base.user.persistence.User;
+import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.rest.handler.mail.MailService;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.springframework.mail.SimpleMailMessage;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 /**
  * Entity used to persist template mail message contents. The {@link MailService} persists them in
@@ -26,20 +27,30 @@ public abstract class TemplateMessage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    protected Long id;
 
-    @ManyToOne(optional = false)
-    private User referencedUser;
+    @ManyToOne
+    @JoinColumn(
+            name = "REF_USER_DATA_ID",
+            nullable = false
+    )
+    protected UserData referencedUserData;
 
-    @ManyToOne(optional = false)
-    private User addressee;
+    @ManyToOne
+    @JoinColumn(
+            name = "ADDRESSEE_USER_DATA_ID",
+            nullable = false
+    )
+    protected UserData addresseeData;
 
     @Lob
-    @Column(length = 512, nullable = false)
-    private String text = "Template text.";
+    @Column(length = 512)
+    @NotEmpty
+    protected String text;
 
-    @Column(nullable = false)
-    private String subject = "Template subject.";
+    @Column
+    @NotEmpty
+    protected String subject;
 
     /**
      * Constructs a new instance.
@@ -49,23 +60,21 @@ public abstract class TemplateMessage {
      *     to be set afterwards!
      * </p>
      *
-     * @param referencedUser
-     *          The user this message refers to.
+     * @param referencedUserData
+     *          The {@link UserData} of the user this message refers to.
      *
-     * @param addressee
-     *          The addressee of this message.
-     *
+     * @param addresseeData
+     *          The {@link UserData} of the addressee of this message.
      */
-    protected TemplateMessage(User referencedUser, User addressee) {
-        this.referencedUser = referencedUser;
-        this.addressee = addressee;
+    protected TemplateMessage(UserData referencedUserData, UserData addresseeData) {
+        this.referencedUserData = referencedUserData;
+        this.addresseeData = addresseeData;
     }
 
     /**
      *
      * @return
-     *          {@code true}, when the message is still relevant at the
-     *          current moment, {@code false} otherwise
+     *          {@code true}, iff the message is still relevant.
      */
     public abstract boolean isStillRelevant();
 

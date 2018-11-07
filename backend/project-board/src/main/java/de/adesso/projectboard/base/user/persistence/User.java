@@ -49,6 +49,7 @@ public class User {
      */
     @OneToMany(
             cascade = CascadeType.ALL,
+            orphanRemoval = true,
             mappedBy = "user"
     )
     Set<ProjectApplication> applications;
@@ -70,6 +71,7 @@ public class User {
      */
     @OneToMany(
             cascade = CascadeType.ALL,
+            orphanRemoval = true,
             mappedBy = "user"
     )
     List<AccessInfo> accessInfoList;

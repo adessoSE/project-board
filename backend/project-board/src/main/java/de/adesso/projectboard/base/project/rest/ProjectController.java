@@ -2,19 +2,14 @@ package de.adesso.projectboard.base.project.rest;
 
 import de.adesso.projectboard.base.access.rest.UserAccessController;
 import de.adesso.projectboard.base.application.rest.ApplicationController;
-import de.adesso.projectboard.base.exceptions.ProjectNotEditableException;
-import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.base.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.project.persistence.ProjectOrigin;
 import de.adesso.projectboard.base.project.service.ProjectService;
-import de.adesso.projectboard.base.project.service.ProjectServiceImpl;
-import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.rest.BookmarkController;
 import de.adesso.projectboard.base.user.rest.UserController;
 import de.adesso.projectboard.base.user.service.UserProjectService;
+import de.adesso.projectboard.base.user.service.UserService;
 import de.adesso.projectboard.base.util.Sorting;
-import de.adesso.projectboard.ldap.user.LdapUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
@@ -39,108 +34,41 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
-    private final LdapUserService userService;
+    private final UserService userService;
 
     @Autowired
     public ProjectController(UserProjectService userProjectService,
                              ProjectService projectService,
-                             LdapUserService userService) {
+                             UserService userService) {
         this.userProjectService = userProjectService;
         this.projectService = projectService;
         this.userService = userService;
     }
 
-    /**
-     *
-     * @param projectId
-     *          The id of the {@link Project} to retrieve.
-     *
-     * @return
-     *          The {@link Project} with the given {@code projectId}.
-     *
-     * @throws ProjectNotFoundException
-     *          When no {@link Project} with the given {@code projectId} was found.
-     */
     @PreAuthorize("hasAccessToProject(#projectId) || hasRole('admin')")
     @GetMapping(path = "/{projectId}")
-    public Project getById(@PathVariable String projectId) throws ProjectNotFoundException {
+    public Project getById(@PathVariable String projectId) {
         return projectService.getProjectById(projectId);
     }
 
-    /**
-     *
-     * @param sort
-     *          The {@link Sort} to apply. Sorted in descending order
-     *          by {@link Project#updated} by default.
-     *
-     * @return
-     *          A {@link Iterable} of {@link Project}s.
-     *
-     * @see ProjectServiceImpl#getProjectsForUser(User, Sort)
-     */
     @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
     @GetMapping
     public Iterable<Project> getAllForUser(@SortDefault(direction = Sort.Direction.DESC, sort = "updated") Sort sort) {
         return userProjectService.getProjectsForUser(userService.getAuthenticatedUserId(), Sorting.fromSort(sort));
     }
 
-    /**
-     *
-     * @param projectDTO
-     *          The {@link ProjectRequestDTO} sent by the client.
-     *
-     * @return
-     *          The created {@link Project}.
-     *
-     * @see ProjectServiceImpl#createProject(ProjectRequestDTO, String)
-     */
     @PreAuthorize("hasPermissionToCreateProjects() || hasRole('admin')")
     @PostMapping
     public Project createProject(@Valid @RequestBody ProjectRequestDTO projectDTO) {
         return userProjectService.createProjectForUser(projectDTO, userService.getAuthenticatedUserId());
     }
 
-    /**
-     *
-     * @param projectId
-     *          The id of the {@link Project} to update.
-     *
-     * @param projectDTO
-     *          The {@link ProjectRequestDTO} sent by the client.
-     *
-     * @return
-     *          The updated {@link Project}.
-     *
-     * @throws ProjectNotFoundException
-     *          When no {@link Project} with the given {@code projectId} was found.
-     *
-     * @throws ProjectNotEditableException
-     *          When the {@link Project} exists but it's {@link Project#getOrigin() origin}
-     *          is not equal to {@link ProjectOrigin#CUSTOM}.
-     *
-     * @see ProjectServiceImpl#updateProject(ProjectRequestDTO, String)
-     */
     @PreAuthorize("hasPermissionToEditProject(#projectId) || hasRole('admin')")
     @PutMapping(path = "/{projectId}")
-    public Project updateProject(@PathVariable String projectId, @Valid @RequestBody ProjectRequestDTO projectDTO)
-            throws ProjectNotFoundException, ProjectNotEditableException {
+    public Project updateProject(@PathVariable String projectId, @Valid @RequestBody ProjectRequestDTO projectDTO) {
             return projectService.updateProject(projectDTO, projectId);
     }
 
-    /**
-     *
-     * @param keyword
-     *          The keyword to search by.
-     *
-     * @param sort
-     *          The {@link Sort} to apply.
-     *
-     * @return
-     *          A {@link Iterable} of {@link Project}s sorted accordingly.
-     *
-     * @see #getAllForUser(Sort)
-     * @see ProjectServiceImpl#getProjectsForUserContainingKeyword(User, String, Sort)
-     */
     @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
     @GetMapping(path = "/search", params = "keyword")
     public Iterable<Project> searchByKeyword(@RequestParam String keyword, @SortDefault(direction = Sort.Direction.DESC, sort = "updated") Sort sort) {
@@ -153,21 +81,9 @@ public class ProjectController {
         }
     }
 
-    /**
-     *
-     * @param projectId
-     *          The id of the {@link Project} to delete.
-     *
-     * @throws ProjectNotFoundException
-     *          When no {@link Project} with the given id was found.
-     *
-     * @throws ProjectNotEditableException
-     *          When the {@link Project} exists but it's {@link Project#getOrigin() origin}
-     *          is not equal to {@link ProjectOrigin#CUSTOM}.
-     */
     @PreAuthorize("hasPermissionToEditProject(#projectId) || hasRole('admin')")
     @DeleteMapping(path = "/{projectId}")
-    public void deleteProject(@PathVariable String projectId) throws ProjectNotFoundException, ProjectNotEditableException {
+    public void deleteProject(@PathVariable String projectId) {
         projectService.deleteProjectById(projectId);
     }
 

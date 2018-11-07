@@ -2,9 +2,9 @@ package de.adesso.projectboard.rest.security;
 
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.project.service.ProjectServiceImpl;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.ldap.user.LdapUserService;
+import de.adesso.projectboard.project.service.RepositoryProjectService;
 import de.adesso.projectboard.service.ApplicationServiceImpl;
 import de.adesso.projectboard.util.ProjectSupplier;
 import de.adesso.projectboard.util.UserSupplier;
@@ -30,7 +30,7 @@ public class UserAccessExpressionEvaluatorTest {
     private LdapUserService userService;
 
     @Mock
-    private ProjectServiceImpl projectService;
+    private RepositoryProjectService projectService;
 
     @Mock
     private ApplicationServiceImpl applicationService;

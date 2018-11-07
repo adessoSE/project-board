@@ -3,8 +3,8 @@ package de.adesso.projectboard.base.user.service;
 import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.project.service.ProjectServiceImpl;
 import de.adesso.projectboard.base.user.persistence.User;
+import de.adesso.projectboard.project.service.RepositoryProjectService;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
  * of {@link User}s.
  *
  * @see UserService
- * @see ProjectServiceImpl
+ * @see RepositoryProjectService
  */
 public interface BookmarkService {
 

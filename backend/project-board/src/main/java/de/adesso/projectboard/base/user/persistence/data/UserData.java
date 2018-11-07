@@ -64,4 +64,13 @@ public class UserData {
         this.lob = lob;
     }
 
+    /**
+     *
+     * @return
+     *          The full name in a {@code [first name]-[last name]} form.
+     */
+    public String getFullName() {
+        return String.format("%s %s", firstName, lastName);
+    }
+
 }

@@ -15,7 +15,7 @@ public class NoActionApplicationHandler implements ProjectApplicationHandler {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
-    public void onApplicationReceived(ProjectApplication application) throws RuntimeException {
+    public void onApplicationReceived(ProjectApplication application) {
         logger.debug(String.format("Application received! (User: %s)", application.getUser().getId()));
     }
 

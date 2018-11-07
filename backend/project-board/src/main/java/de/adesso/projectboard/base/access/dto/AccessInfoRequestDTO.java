@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UserAccessInfoRequestDTO {
+public class AccessInfoRequestDTO {
 
     @Future
     @NotNull

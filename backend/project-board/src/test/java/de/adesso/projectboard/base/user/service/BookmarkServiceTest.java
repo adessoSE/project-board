@@ -4,11 +4,11 @@ import de.adesso.projectboard.base.exceptions.BookmarkNotFoundException;
 import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.project.service.ProjectServiceImpl;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
 import de.adesso.projectboard.ldap.user.BookmarkServiceImpl;
 import de.adesso.projectboard.ldap.user.LdapUserService;
+import de.adesso.projectboard.project.service.RepositoryProjectService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +33,7 @@ public class BookmarkServiceTest {
     private LdapUserService userService;
 
     @Mock
-    private ProjectServiceImpl projectService;
+    private RepositoryProjectService projectService;
 
     @InjectMocks
     private BookmarkServiceImpl bookmarkService;

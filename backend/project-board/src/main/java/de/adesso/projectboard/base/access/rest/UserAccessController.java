@@ -1,16 +1,15 @@
 package de.adesso.projectboard.base.access.rest;
 
-import de.adesso.projectboard.base.access.dto.UserAccessInfoRequestDTO;
+import de.adesso.projectboard.base.access.dto.AccessInfoRequestDTO;
 import de.adesso.projectboard.base.access.handler.UserAccessHandler;
 import de.adesso.projectboard.base.access.service.UserAccessService;
 import de.adesso.projectboard.base.application.rest.ApplicationController;
-import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.project.rest.ProjectController;
+import de.adesso.projectboard.base.user.dto.UserDtoFactory;
 import de.adesso.projectboard.base.user.dto.UserResponseDTO;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.rest.BookmarkController;
 import de.adesso.projectboard.base.user.rest.UserController;
-import de.adesso.projectboard.base.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -31,64 +30,36 @@ public class UserAccessController {
 
     private final UserAccessService userAccessService;
 
-    private final UserService userService;
-
     private final UserAccessHandler userAccessHandler;
+
+    private final UserDtoFactory userDtoFactory;
 
     @Autowired
     public UserAccessController(UserAccessService userAccessService,
-                                UserService userService,
-                                UserAccessHandler userAccessHandler) {
+                                UserAccessHandler userAccessHandler,
+                                UserDtoFactory userDtoFactory) {
         this.userAccessService = userAccessService;
-        this.userService = userService;
         this.userAccessHandler = userAccessHandler;
+        this.userDtoFactory = userDtoFactory;
     }
 
-    /**
-     *
-     * @param infoDTO
-     *          The {@link UserAccessInfoRequestDTO} supplied by the client.
-     *
-     * @param userId
-     *          The id of the {@link User} to grant access.
-     *
-     * @return
-     *          The {@link UserResponseDTO} representing the user.
-     *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId} was found.
-     *
-     */
     @PreAuthorize("hasElevatedAccessToUser(#userId) || hasRole('admin')")
     @PostMapping(path = "/{userId}/access")
-    public UserResponseDTO createAccessForUser(@Valid @RequestBody UserAccessInfoRequestDTO infoDTO, @PathVariable("userId") String userId)
-            throws UserNotFoundException {
+    public UserResponseDTO createAccessForUser(@Valid @RequestBody AccessInfoRequestDTO infoDTO, @PathVariable("userId") String userId) {
         User updatedUser = userAccessService.giveUserAccessUntil(userId, infoDTO.getAccessEnd());
 
         // call handler method
         userAccessHandler.onAccessGranted(updatedUser);
 
-        return UserResponseDTO.fromUserData(userService.getUserData(userId), userService.isManager(userId));
+        return userDtoFactory.createDto(updatedUser);
     }
 
-    /**
-     *
-     * @param userId
-     *          The id of the {@link User} to revoke access from.
-     *
-     * @return
-     *          The {@link UserResponseDTO} representing the user.
-     *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId} was found.
-     *
-     */
     @PreAuthorize("hasElevatedAccessToUser(#userId) || hasRole('admin')")
     @DeleteMapping(path = "/{userId}/access")
-    public UserResponseDTO deleteAccessForUser(@PathVariable("userId") String userId) throws UserNotFoundException {
-        userAccessService.removeAccessFromUser(userId);
+    public UserResponseDTO deleteAccessForUser(@PathVariable("userId") String userId) {
+        User user = userAccessService.removeAccessFromUser(userId);
 
-        return UserResponseDTO.fromUserData(userService.getUserData(userId), userService.isManager(userId));
+        return userDtoFactory.createDto(user);
     }
 
 }

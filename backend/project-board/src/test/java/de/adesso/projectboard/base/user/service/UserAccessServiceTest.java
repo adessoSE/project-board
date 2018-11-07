@@ -1,6 +1,6 @@
 package de.adesso.projectboard.base.user.service;
 
-import de.adesso.projectboard.base.access.dto.UserAccessInfoRequestDTO;
+import de.adesso.projectboard.base.access.dto.AccessInfoRequestDTO;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.ldap.access.LdapUserAccessService;
@@ -76,7 +76,7 @@ public class UserAccessServiceTest {
     @Test
     public void testCreateAccessForUser_OK() {
         LocalDateTime accessEndTime = LocalDateTime.now().plus(2L, ChronoUnit.DAYS);
-        UserAccessInfoRequestDTO dto = new UserAccessInfoRequestDTO(accessEndTime);
+        AccessInfoRequestDTO dto = new AccessInfoRequestDTO(accessEndTime);
 
         User returnedUser = accessService.createAccessForUser(dto, testUser.getId());
         verify(userService).save(testUser);
@@ -88,7 +88,7 @@ public class UserAccessServiceTest {
     @Test(expected = UserNotFoundException.class)
     public void testCreateAccessForUser_UserNotExists() {
         LocalDateTime accessEndTime = LocalDateTime.now().plus(2L, ChronoUnit.DAYS);
-        UserAccessInfoRequestDTO dto = new UserAccessInfoRequestDTO(accessEndTime);
+        AccessInfoRequestDTO dto = new AccessInfoRequestDTO(accessEndTime);
 
         accessService.createAccessForUser(dto, "non-existent-user");
     }

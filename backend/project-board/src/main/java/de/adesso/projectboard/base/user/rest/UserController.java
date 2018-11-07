@@ -5,11 +5,10 @@ import de.adesso.projectboard.base.application.rest.ApplicationController;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.rest.ProjectController;
+import de.adesso.projectboard.base.user.dto.UserDtoFactory;
 import de.adesso.projectboard.base.user.dto.UserResponseDTO;
 import de.adesso.projectboard.base.user.persistence.User;
-import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.service.UserService;
-import de.adesso.projectboard.ldap.user.LdapUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
@@ -35,31 +34,20 @@ public class UserController {
 
     private final UserService userService;
 
+    private final UserDtoFactory userDtoFactory;
+
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserDtoFactory userDtoFactory) {
         this.userService = userService;
+        this.userDtoFactory = userDtoFactory;
     }
 
-    /**
-     *
-     * @param userId
-     *          The if of the {@link User}.
-     *
-     * @return
-     *          A {@link UserResponseDTO} of the user.
-     *
-     * @throws UserNotFoundException
-     *          When no user is found with the given {@code userId}.
-     *
-     * @see LdapUserService#getUserById(String)
-     */
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @GetMapping(path = "/{userId}")
     public UserResponseDTO getUserById(@PathVariable("userId") String userId) throws UserNotFoundException {
-        UserData userData = userService.getUserData(userId);
-        boolean isBoss = userService.isManager(userId);
+        User user = userService.getUserById(userId);
 
-        return UserResponseDTO.fromUserData(userData, isBoss);
+        return userDtoFactory.createDto(user);
     }
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
@@ -69,19 +57,6 @@ public class UserController {
         return Collections.emptyList();
     }
 
-    /**
-     *
-     * @param userId
-     *          The id of the {@link User} to get the created {@link Project}s from.
-     *
-     * @return
-     *          A {@link Iterable} of all {@link Project}s the user created.
-     *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId} was found.
-     *
-     * @see LdapUserService#getUserById(String)
-     */
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @GetMapping(path = "/{userId}/projects")
     public Iterable<Project> getOwnedProjectsOfUser(@PathVariable("userId") String userId) throws UserNotFoundException {

@@ -2,6 +2,7 @@ package de.adesso.projectboard.rest.handler.mail.persistence;
 
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.project.persistence.Project;
+import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.rest.handler.application.ProjectBoardApplicationHandler;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 /**
@@ -31,10 +33,14 @@ public class ApplicationTemplateMessage extends TemplateMessage {
     private static final String COMMENT_PATTERN = "\n\nZusätzlicher Kommentar vom Nutzer:\n\n\"%s\"\n\n";
 
     @ManyToOne
-    private ProjectApplication application;
+    @JoinColumn(
+            name = "APPLICATION_ID",
+            nullable = false
+    )
+    ProjectApplication application;
 
-    public ApplicationTemplateMessage(ProjectApplication application) {
-        super(application.getUser(), application.getUser().getBoss());
+    public ApplicationTemplateMessage(ProjectApplication application, UserData adresseData, UserData referencedUserData) {
+        super();
         this.application = application;
 
         setSubject(String.format(SUBJECT_PATTERN, application.getProject().getId()));
@@ -43,7 +49,7 @@ public class ApplicationTemplateMessage extends TemplateMessage {
 
     private String buildText() {
         String mainText = String.format(MAIN_TEXT_PATTERN,
-                application.getUser().getFullName(),
+                referencedUserData.getFullName(),
                 application.getProject().getTitle());
 
         if(application.getComment() != null && !application.getComment().isEmpty()) {

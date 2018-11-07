@@ -4,11 +4,11 @@ import de.adesso.projectboard.base.exceptions.BookmarkNotFoundException;
 import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.project.service.ProjectServiceImpl;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
 import de.adesso.projectboard.base.user.service.BookmarkService;
 import de.adesso.projectboard.base.user.service.UserService;
+import de.adesso.projectboard.project.service.RepositoryProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +19,7 @@ import java.util.List;
  * {@link Service} to to provide functionality to manage {@link Project Project Bookmarks}.
  *
  * @see LdapUserService
- * @see ProjectServiceImpl
+ * @see RepositoryProjectService
  */
 @Service
 public class BookmarkServiceImpl implements BookmarkService {
@@ -28,12 +28,12 @@ public class BookmarkServiceImpl implements BookmarkService {
 
     private final UserService userService;
 
-    private final ProjectServiceImpl projectService;
+    private final RepositoryProjectService projectService;
 
     @Autowired
     public BookmarkServiceImpl(UserRepository userRepo,
                                UserService userService,
-                               ProjectServiceImpl projectService) {
+                               RepositoryProjectService projectService) {
         this.userRepo = userRepo;
         this.userService = userService;
         this.projectService = projectService;

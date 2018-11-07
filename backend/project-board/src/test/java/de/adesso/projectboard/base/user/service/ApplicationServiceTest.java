@@ -7,9 +7,9 @@ import de.adesso.projectboard.base.exceptions.AlreadyAppliedException;
 import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.project.service.ProjectServiceImpl;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.ldap.user.LdapUserService;
+import de.adesso.projectboard.project.service.RepositoryProjectService;
 import de.adesso.projectboard.service.ApplicationServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,7 +37,7 @@ public class ApplicationServiceTest {
     private ProjectApplicationRepository applicationRepo;
 
     @Mock
-    private ProjectServiceImpl projectService;
+    private RepositoryProjectService projectService;
 
     @InjectMocks
     private ApplicationServiceImpl applicationService;

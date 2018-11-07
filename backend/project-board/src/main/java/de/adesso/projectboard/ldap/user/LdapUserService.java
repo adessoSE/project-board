@@ -106,7 +106,7 @@ public class LdapUserService implements UserService {
      * @see LdapService#isManager(User)
      */
     @Override
-    public boolean isManager(String userId) {
+    public boolean userIsManager(String userId) {
         User user = getUserById(userId);
 
         Optional<OrganizationStructure> structureOptional =
@@ -241,6 +241,29 @@ public class LdapUserService implements UserService {
         return false;
     }
 
+    /**
+     *  Returns the referenced manager of the persisted {@link OrganizationStructure}
+     *  for the {@link User} with the given {@code userId} in case it is present and
+     *  returns the manager with the ID of the structure returned by
+     *  {@link LdapService#getIdStructure(User)}.
+     *
+     *  {@inheritDoc}
+     */
+    @Override
+    public User getManagerOfUser(String userId) throws UserNotFoundException {
+        User user = getUserById(userId);
+        Optional<OrganizationStructure> userStructure = structureRepo.findByUser(user);
+
+        if(userStructure.isPresent()) {
+            return userStructure.get().getManager();
+        } else {
+            StringStructure stringStructure = ldapService.getIdStructure(user);
+            String managerId = stringStructure.getManager();
+
+            return getUserById(managerId);
+        }
+    }
+
     @Override
     public List<UserData> getStaffMemberDataOfUser(String userId, Sorting sorting) throws UserNotFoundException {
         OrganizationStructure structureForUser = getStructureForUser(userId);
@@ -268,7 +291,7 @@ public class LdapUserService implements UserService {
 
     @Override
     public void delete(User user) {
-        // TODO: implement delete() in LdapUserService
+        // intentionally left blank
     }
 
     @Override
