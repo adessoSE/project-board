@@ -42,7 +42,7 @@ public class UserController {
         this.userDtoFactory = userDtoFactory;
     }
 
-    @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
+    @PreAuthorize("hasRole('admin') || hasPermissionToAccessUser(#userId)")
     @GetMapping(path = "/{userId}")
     public UserResponseDTO getUserById(@PathVariable("userId") String userId) throws UserNotFoundException {
         User user = userService.getUserById(userId);

@@ -252,13 +252,12 @@ public class LdapUserService implements UserService {
     @Override
     public User getManagerOfUser(String userId) throws UserNotFoundException {
         User user = getUserById(userId);
-        Optional<OrganizationStructure> userStructure = structureRepo.findByUser(user);
+        Optional<OrganizationStructure> structureOptional = structureRepo.findByUser(user);
 
-        if(userStructure.isPresent()) {
-            return userStructure.get().getManager();
+        if(structureOptional.isPresent()) {
+            return structureOptional.get().getManager();
         } else {
-            StringStructure stringStructure = ldapService.getIdStructure(user);
-            String managerId = stringStructure.getManager();
+            String managerId = ldapService.getManagerId(user);
 
             return getUserById(managerId);
         }

@@ -59,7 +59,11 @@ public class LdapService {
                 .and(idAttribute).isPresent()
                 .and(idAttribute).is(userId);
 
-        return !ldapTemplate.search(query, (AttributesMapper<String>) attributes -> (String) attributes.get(idAttribute).get()).isEmpty();
+        List<String> resultList = ldapTemplate.search(query, (AttributesMapper<String>) attributes -> {
+            return (String) attributes.get(idAttribute).get();
+        });
+
+        return !resultList.isEmpty();
     }
 
     /**
@@ -163,6 +167,41 @@ public class LdapService {
         String managerID = getUserIdByDN(dnStructure.getManager());
 
         return new StringStructure(user, managerID, staffMemberIDs);
+    }
+
+    /**
+     *
+     * @param user
+     *          The {@link User} to get the manager's {@link User#id ID}
+     *          of.
+     *
+     * @return
+     *          The manager's ID.
+     *
+     * @throws IllegalStateException
+     *          When the query result length differed from {@code 1}.
+     *
+     * @see #getUserIdByDN(String)
+     */
+    public String getManagerId(User user) throws IllegalStateException {
+        String idAttribute = ldapProperties.getUserIdAttribute();
+        String base = ldapProperties.getLdapBase();
+
+        LdapQuery query = query()
+                .countLimit(1)
+                .base(base)
+                .attributes(idAttribute, "objectClass", "manager")
+                .where("objectClass").is("person")
+                .and(idAttribute).isPresent()
+                .and(idAttribute).is(user.getId());
+
+        List<String> managerList = ldapTemplate.search(query, (AttributesMapper<String>) attributes -> {
+            return (String) attributes.get("manager").get();
+        });
+
+        validateResult(managerList, 1);
+
+        return getUserIdByDN(managerList.get(0));
     }
 
     /**
