@@ -1,12 +1,18 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { Project } from './project.service';
 
 @Injectable()
 export class EmployeeService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
+
+  isUserBoss(userId) {
+    return this.getEmployeeWithId(userId)
+      .pipe(map(empl => empl.boss));
+  }
 
   getEmployeesForSuperUser(superUserId) {
     return this.http.get<Employee[]>(`${environment.resourceServer}/users/${superUserId}/staff`);

@@ -13,13 +13,14 @@ h4 {
 }
 
 .sticky {
-  top: 5rem;
+  top: 4rem;
   position: sticky;
 }
 
 .clip {
-  max-height: $line-height-base * 8rem;
+  max-height: 90vh;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* width */

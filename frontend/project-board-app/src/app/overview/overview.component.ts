@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { Application, Employee } from '../_services/employee.service';
 import { Project } from '../_services/project.service';
 
@@ -14,14 +16,18 @@ export class OverviewComponent implements OnInit {
   applications: Application[];
   projects: Project[];
 
+  destroy$ = new Subject<void>();
+
   constructor(private route: ActivatedRoute) { }
 
   ngOnInit() {
-    this.route.data.subscribe(data => {
-      this.user = data.user;
-      this.bookmarks = data.bookmarks;
-      this.applications = data.applications;
-      this.projects = data.projects;
-    });
+    this.route.data
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
+        this.user = data.user;
+        this.bookmarks = data.bookmarks;
+        this.applications = data.applications;
+        this.projects = data.projects;
+      });
   }
 }

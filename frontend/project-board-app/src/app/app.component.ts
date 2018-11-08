@@ -1,6 +1,7 @@
 import { Component, HostListener } from '@angular/core';
 import { faChevronUp } from '@fortawesome/free-solid-svg-icons/faChevronUp';
 import { AuthConfig, JwksValidationHandler, OAuthService } from 'angular-oauth2-oidc';
+import { environment } from '../environments/environment';
 import { AlertService } from './_services/alert.service';
 import { AuthenticationService } from './_services/authentication.service';
 
@@ -59,7 +60,7 @@ export class AppComponent {
 export const authConfig: AuthConfig = {
 
   // Url of the Identity Provider
-  issuer: 'http://localhost:8080/auth/realms/adesso',
+  issuer: `${environment.authHost}/auth/realms/adesso`,
 
   // URL of the SPA to redirect the user to after login
   redirectUri: window.location.origin + '/index.html',

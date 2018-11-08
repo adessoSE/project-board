@@ -5,7 +5,10 @@ import { faBookmark } from '@fortawesome/free-regular-svg-icons';
 import { faEnvelope } from '@fortawesome/free-regular-svg-icons/faEnvelope';
 import { faGraduationCap } from '@fortawesome/free-solid-svg-icons/faGraduationCap';
 import * as $ from 'jquery';
+import { combineLatest, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AlertService } from '../_services/alert.service';
+import { EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
 
 @Component({
@@ -28,36 +31,38 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
   selectedProject: Project;
   mobile = false;
   scroll = true;
+  isUserBoss = false;
+
+  destroy$ = new Subject<void>();
 
   @HostListener('window:resize') onResize() {
     this.mobile = window.screen.width <= 425;
   }
 
-  constructor(private projectsService: ProjectService,
+  constructor(private employeeService: EmployeeService,
+              private projectsService: ProjectService,
               private alertService: AlertService,
               private route: ActivatedRoute,
-              private router: Router,
-              private location: Location) { }
+              private location: Location,
+              private router: Router) { }
 
   ngOnInit() {
     this.mobile = window.screen.width < 768;
 
-    this.route.data.subscribe(data => {
-      this.projects = data.projects;
-      this.filteredProjects = this.projects;
+    combineLatest(this.route.data, this.route.params)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
+        this.projects = data[0].projects;
+        this.filteredProjects = this.projects;
 
-      // extract projects from applications
-      this.appliedProjects = data.applications ? data.applications.map(app => app.project) : [];
-      this.bookmarks = data.bookmarks;
-      this.route.params.subscribe(params => {
-        if (params.id) {
-          this.setSelectedProject(params.id);
-          if (!this.selectedProject) {
-            this.alertService.info('Das angegebene Projekt wurde nicht gefunden.');
-          }
-        }
+        // extract projects from applications
+        this.appliedProjects = data[0].applications ? data[0].applications.map(app => app.project) : [];
+        this.bookmarks = data[0].bookmarks;
+        this.isUserBoss = data[0].isUserBoss;
+
+        // set selected project
+        this.setSelectedProject(data[1].id);
       });
-    });
   }
 
   filterProjects(filterInput) {
@@ -109,16 +114,21 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
   }
 
   private setSelectedProject(projectId: string) {
+    if (!projectId) {
+      this.selectedProject = null;
+      return;
+    }
+
     for (const p of this.filteredProjects) {
       if (p.id === projectId) {
         this.selectedProject = p;
         return;
       }
     }
-    this.selectedProject = null;
+    this.alertService.info('Das angegebene Projekt wurde nicht gefunden.');
   }
 
-  projectClicked(project) {
+  projectClicked(project, ph) {
     if (this.selectedProject === project) {
       this.location.replaceState(`/browse`);
       this.selectedProject = null;
@@ -127,6 +137,7 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
       this.location.replaceState(`/browse/${project.id}`);
       this.selectedProject = project;
       this.scroll = true;
+      this.scrollBeneathHeader(ph);
     }
   }
 
@@ -136,6 +147,12 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
       // navbar has 56 pixels height
       $('html, body').animate({scrollTop: $(btn).offset().top - 56}, 'slow');
       this.scroll = false;
+    }
+  }
+
+  scrollBeneathHeader(leftColumn) {
+    if (!this.mobile && !(document.body.scrollTop > 281 || document.documentElement.scrollTop > 281)) {
+      $('html, body').animate({scrollTop: $(leftColumn).offset().top - 64}, 'slow');
     }
   }
 

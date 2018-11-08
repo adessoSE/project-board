@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AlertService } from '../_services/alert.service';
 import { Project, ProjectService } from '../_services/project.service';
 
@@ -18,6 +20,8 @@ export class ProjectComponent implements OnInit {
   edit = false;
   navigateOnSubmit = false;
 
+  destroy$ = new Subject<void>();
+
   constructor(private projectService: ProjectService,
               private alertService: AlertService,
               private formBuilder: FormBuilder,
@@ -25,27 +29,29 @@ export class ProjectComponent implements OnInit {
               private router: Router) { }
 
   ngOnInit() {
-    this.route.data.subscribe(data => {
-      this.resetProject();
-      if (data.project) {
-        this.project = data.project;
-        this.edit = true;
-      }
-      this.form = this.formBuilder.group({
-        title: [this.project.title, Validators.required],
-        status: [this.project.status, Validators.required],
-        description: [this.project.description, Validators.required],
-        lob: [this.project.lob, Validators.required],
-        issuetype: [this.project.issuetype, Validators.required]
-      });
-
-      if (this.project.labels.length > 0) {
-        for (let i = 0; i < this.project.labels.length - 1; i++) {
-          this.labelsInput += this.project.labels[i] + ' ';
+    this.route.data
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
+        this.resetProject();
+        if (data.project) {
+          this.project = data.project;
+          this.edit = true;
         }
-        this.labelsInput += this.project.labels[this.project.labels.length - 1];
-      }
-    });
+        this.form = this.formBuilder.group({
+          title: [this.project.title, Validators.required],
+          status: [this.project.status, Validators.required],
+          description: [this.project.description, Validators.required],
+          lob: [this.project.lob, Validators.required],
+          issuetype: [this.project.issuetype, Validators.required]
+        });
+
+        if (this.project.labels.length > 0) {
+          for (let i = 0; i < this.project.labels.length - 1; i++) {
+            this.labelsInput += this.project.labels[i] + ', ';
+          }
+          this.labelsInput += this.project.labels[this.project.labels.length - 1];
+        }
+      });
   }
 
   onSubmit() {
@@ -59,30 +65,48 @@ export class ProjectComponent implements OnInit {
     this.project.status = this.f.status.value;
     this.project.lob = this.f.lob.value;
     this.project.description = this.f.description.value;
-    this.project.labels = this.labelsInput.split(' ');
-
+    this.project.labels = this.stringToArray(this.labelsInput, ',');
+    this.project.skills = this.stringToArray(this.project.skills, ',').join(', ');
     if (this.edit) {
-      this.projectService.updateProject(this.project).subscribe(() => {
-        this.alertService.success('Änderungen wurden gespeichert.', true);
-        this.router.navigate(['/overview']);
-      });
-    } else {
-      this.projectService.createProject(this.project).subscribe(() => {
-        this.alertService.success('Projekt erfolgreich erstellt.', !this.navigateOnSubmit);
-        if (!this.navigateOnSubmit) {
+      this.projectService.updateProject(this.project)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(() => {
+          this.alertService.success('Änderungen wurden gespeichert.', true);
           this.router.navigate(['/overview']);
-        } else {
-          this.submitted = false;
-          this.resetProject();
-          document.body.scrollTop = 0;
-          document.documentElement.scrollTop = 0;
-        }
-      });
+        });
+    } else {
+      this.projectService.createProject(this.project)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(() => {
+          this.alertService.success('Projekt erfolgreich erstellt.', !this.navigateOnSubmit);
+          if (!this.navigateOnSubmit) {
+            this.router.navigate(['/overview']);
+          } else {
+            this.submitted = false;
+            this.resetProject();
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+          }
+        });
     }
   }
 
   get f() {
     return this.form.controls;
+  }
+
+  stringToArray(string: string, separator: string | RegExp): string[] {
+    return string
+      .split(separator)
+      .map(str => {
+        return str
+          .replace(/^\s+/, '')
+          .replace(/\s+$/, '')
+          .replace(/\s{2,}/, ' ')
+          .split(' ')
+          .map(token => token.charAt(0).toUpperCase() + token.slice(1).toLowerCase())
+          .join(' ');
+      });
   }
 
   resetProject() {

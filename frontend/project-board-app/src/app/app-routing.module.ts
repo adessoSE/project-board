@@ -5,10 +5,12 @@ import { AdminGuard } from './_guards/admin.guard';
 import { AlreadyAppliedGuard } from './_guards/already-applied.guard';
 import { AuthGuard } from './_guards/auth.guard';
 import { EditableGuard } from './_guards/editable.guard';
+import { IsNoBossGuard } from './_guards/is-no-boss.guard';
 import { ApplicationsResolverService } from './_services/applications-resolver.service';
 import { BookmarksResolverService } from './_services/bookmarks-resolver.service';
 import { CreatedProjectsResolverService } from './_services/created-projects-resolver.service';
 import { EmployeeResolverService } from './_services/employee-resolver.service';
+import { IsBossResolverService } from './_services/is-boss-resolver.service';
 import { ProjectResolverService } from './_services/project-resolver.service';
 import { ProjectsResolverService } from './_services/projects-resolver.service';
 import { UserResolverService } from './_services/user-resolver.service';
@@ -31,7 +33,10 @@ const routes: Routes = [
     resolve: {
       employees: EmployeeResolverService
     },
-    canActivate: [AuthGuard, AdminGuard]
+    canActivate: [
+      AuthGuard,
+      AdminGuard
+    ]
   },
   {
     path: 'admin',
@@ -39,12 +44,18 @@ const routes: Routes = [
     resolve: {
       employees: EmployeeResolverService
     },
-    canActivate: [AuthGuard, AdminGuard]
+    canActivate: [
+      AuthGuard,
+      AdminGuard
+    ]
   },
   {
     path: 'projects/new',
     component: ProjectComponent,
-    canActivate: [AuthGuard, AdminGuard]
+    canActivate: [
+      AuthGuard,
+      AdminGuard
+    ]
   },
   {
     path: 'projects/:id/edit',
@@ -52,7 +63,11 @@ const routes: Routes = [
     resolve: {
       project: ProjectResolverService
     },
-    canActivate: [AuthGuard, AdminGuard, EditableGuard]
+    canActivate: [
+      AuthGuard,
+      AdminGuard,
+      EditableGuard
+    ]
   },
   {
     path: 'projects/:id/request',
@@ -60,7 +75,12 @@ const routes: Routes = [
     resolve: {
       project: ProjectResolverService
     },
-    canActivate: [AuthGuard, AccessGuard, AlreadyAppliedGuard]
+    canActivate: [
+      AuthGuard,
+      AccessGuard,
+      AlreadyAppliedGuard,
+      IsNoBossGuard
+    ]
   },
   {
     path: 'browse/:id',
@@ -68,9 +88,13 @@ const routes: Routes = [
     resolve: {
       projects: ProjectsResolverService,
       applications: ApplicationsResolverService,
-      bookmarks: BookmarksResolverService
+      bookmarks: BookmarksResolverService,
+      isUserBoss: IsBossResolverService
     },
-    canActivate: [AuthGuard, AccessGuard]
+    canActivate: [
+      AuthGuard,
+      AccessGuard
+    ]
   },
   {
     path: 'browse',
@@ -78,9 +102,13 @@ const routes: Routes = [
     resolve: {
       projects: ProjectsResolverService,
       applications: ApplicationsResolverService,
-      bookmarks: BookmarksResolverService
+      bookmarks: BookmarksResolverService,
+      isUserBoss: IsBossResolverService
     },
-    canActivate: [AuthGuard, AccessGuard]
+    canActivate: [
+      AuthGuard,
+      AccessGuard
+    ]
   },
   {
     path: 'overview',
@@ -91,7 +119,9 @@ const routes: Routes = [
       applications: ApplicationsResolverService,
       projects: CreatedProjectsResolverService
     },
-    canActivate: [AuthGuard]
+    canActivate: [
+      AuthGuard
+    ]
   },
   {
     path: 'notFound',
@@ -109,8 +139,12 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  imports: [
+    RouterModule.forRoot(routes)
+  ],
+  exports: [
+    RouterModule
+  ]
 })
 export class AppRoutingModule {
 }

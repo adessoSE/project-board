@@ -1,4 +1,4 @@
-<div class="sticky">
+<div class="sticky clip">
   <h4>Projekt-Details
     <fa-icon title="{{studTooltip}}" *ngIf="selectedProject?.issuetype == 'Studentisches Projekt'" class="ml-2" [icon]="faGradCap"></fa-icon>
     <fa-icon title="{{bmTooltip}}" *ngIf="bookmark" class="ml-2" [icon]="faBookmark"></fa-icon>
@@ -6,64 +6,64 @@
   <div *ngIf="selectedProject" class="details">
     <div class="row">
       <div class="col-sm-3 left-side">Schlüssel:</div>
-      <div class="col-sm right-side clip">{{selectedProject.id}}</div>
+      <div class="col-sm right-side">{{selectedProject.id}}</div>
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Titel:</div>
-      <div class="col-sm right-side clip">{{selectedProject.title}}</div>
+      <div class="col-sm right-side">{{selectedProject.title}}</div>
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Typ:</div>
-      <div class="col-sm right-side clip">{{selectedProject.issuetype}}</div>
+      <div class="col-sm right-side">{{selectedProject.issuetype}}</div>
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Stichwörter:</div>
-      <div class="col-sm right-side clip">
+      <div class="col-sm right-side">
         <ng-container *ngFor="let l of selectedProject.labels; index as i">{{l}}{{i < selectedProject.labels.length-1 ? ', ' : ''}}</ng-container>
       </div>
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Aufgabe:</div>
-      <div class="col-sm right-side clip">{{selectedProject.job}}</div>
+      <div class="col-sm right-side">{{selectedProject.job}}</div>
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Zuständige LOB:</div>
-      <div class="col-sm right-side clip">{{selectedProject.lob}}</div>
+      <div class="col-sm right-side">{{selectedProject.lob}}</div>
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Skills:</div>
-      <div class="col-sm right-side clip">{{selectedProject.skills}}</div>
+      <div class="col-sm right-side">{{selectedProject.skills}}</div>
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Kunde:</div>
-      <div class="col-sm right-side clip">{{selectedProject.customer}}</div>
+      <div class="col-sm right-side">{{selectedProject.customer}}</div>
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Einsatzort:</div>
-      <div class="col-sm right-side clip">{{selectedProject.location}}</div>
+      <div class="col-sm right-side">{{selectedProject.location}}</div>
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Beginn Einsatz:</div>
-      <div class="col-sm right-side clip">{{(selectedProject.operationStart)}}</div>
+      <div class="col-sm right-side">{{(selectedProject.operationStart)}}</div>
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Ende Einsatz:</div>
-      <div class="col-sm right-side clip">{{selectedProject.operationEnd}}</div>
+      <div class="col-sm right-side">{{selectedProject.operationEnd}}</div>
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Option auf Verlängerung:</div>
-      <div class="col-sm right-side clip">{{selectedProject.elongation}}</div>
+      <div class="col-sm right-side">{{selectedProject.elongation}}</div>
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Aufwand:</div>
-      <div class="col-sm right-side clip">{{selectedProject.effort}}</div>
+      <div class="col-sm right-side">{{selectedProject.effort}}</div>
     </div>
     <div class="row">
       <div class="col-sm-3 left-side">Beschreibung:</div>
-      <div class="col-sm right-side clip">{{selectedProject.description}}</div>
+      <div class="col-sm right-side">{{selectedProject.description}}</div>
     </div>
 
-    <div class="mt-3">
+    <div class="mt-3" *ngIf="!isUserBoss">
       <div class="appliedInfo" *ngIf="!applicable">
         <small>Du hast dieses Projekt bereits angefragt</small>
       </div>
