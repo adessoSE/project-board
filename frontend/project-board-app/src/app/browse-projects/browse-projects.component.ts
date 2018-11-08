@@ -128,7 +128,7 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
     this.alertService.info('Das angegebene Projekt wurde nicht gefunden.');
   }
 
-  projectClicked(project) {
+  projectClicked(project, ph) {
     if (this.selectedProject === project) {
       this.location.replaceState(`/browse`);
       this.selectedProject = null;
@@ -137,6 +137,7 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
       this.location.replaceState(`/browse/${project.id}`);
       this.selectedProject = project;
       this.scroll = true;
+      this.scrollBeneathHeader(ph);
     }
   }
 
@@ -146,6 +147,12 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
       // navbar has 56 pixels height
       $('html, body').animate({scrollTop: $(btn).offset().top - 56}, 'slow');
       this.scroll = false;
+    }
+  }
+
+  scrollBeneathHeader(leftColumn) {
+    if (!this.mobile && !(document.body.scrollTop > 281 || document.documentElement.scrollTop > 281)) {
+      $('html, body').animate({scrollTop: $(leftColumn).offset().top - 64}, 'slow');
     }
   }
 
