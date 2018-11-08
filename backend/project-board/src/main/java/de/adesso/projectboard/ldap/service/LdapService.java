@@ -112,10 +112,9 @@ public class LdapService {
         LdapQuery query = query()
                 .countLimit(1)
                 .base(base)
-                .attributes(idAttribute, "name", "givenName", "mail", "division")
+                .attributes(idAttribute, "name", "givenName", "userPrincipalName", "mail", "division")
                 .where("name").isPresent()
                 .and("givenName").isPresent()
-                .and("mail").isPresent()
                 .and("division").isPresent()
                 .and(idAttribute).isPresent()
                 .and(idAttribute).is(user.getId());
@@ -145,7 +144,6 @@ public class LdapService {
         String base = ldapProperties.getLdapBase();
 
         LdapQuery query = query()
-                .countLimit(1)
                 .base(base)
                 .attributes(idAttribute, "objectClass", "manager", "directReports")
                 .where("objectClass").is("person")
@@ -161,7 +159,7 @@ public class LdapService {
 
         Set<String> staffMemberIDs = dnStructure.getStaffMembers()
                 .stream()
-                .peek(this::getUserIdByDN)
+                .map(this::getUserIdByDN)
                 .collect(Collectors.toSet());
 
         String managerID = getUserIdByDN(dnStructure.getManager());

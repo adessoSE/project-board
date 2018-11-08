@@ -7,7 +7,8 @@ import org.springframework.ldap.core.AttributesMapper;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.Objects;
 
 /**
  * {@link AttributesMapper} implementation to map LDAP query
@@ -44,26 +45,18 @@ public class StructureMapper implements AttributesMapper<StringStructure> {
         // into a set if it is present
         Attribute directReports = attributes.get("directReports");
         if(directReports != null) {
-            String directReportsString = (String) directReports.get();
+            LinkedHashSet<String> directReportsDn = new LinkedHashSet<>();
 
-            structure.setStaffMembers(splitDn(directReportsString));
+            for(int i = 0; i < directReports.size(); i++) {
+                String dn = (String) directReports.get(i);
+
+                directReportsDn.add(dn);
+            }
+
+            structure.setStaffMembers(directReportsDn);
         }
 
         return structure;
-    }
-
-    /**
-     *
-     * @param composedDn
-     *          A string of distinguished names separated by semicolons.
-     *
-     * @return
-     *          A set of distinguished names.
-     */
-    Set<String> splitDn(String composedDn) {
-        List<String> dnArr = Arrays.asList(composedDn.split(";"));
-
-        return new HashSet<>(dnArr);
     }
 
 }

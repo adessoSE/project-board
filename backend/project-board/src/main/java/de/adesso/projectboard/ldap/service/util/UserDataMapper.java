@@ -13,7 +13,7 @@ import java.util.Objects;
  * to {@link UserData} instances.
  * <p/>
  * <p>
- *     Requires the <i>name, givenName, mail</i> and <i>division</i>
+ *     Requires the <i>name, givenName</i> and <i>division</i>
  *     attributes to be present in the {@link Attributes} to map
  *     the result.
  * </p>
@@ -36,10 +36,17 @@ public class UserDataMapper implements AttributesMapper<UserData> {
     public UserData mapFromAttributes(Attributes attributes) throws NamingException {
         String fullName = (String) attributes.get("name").get();
         String firstName = (String) attributes.get("givenName").get();
-        String email = (String) attributes.get("mail").get();
         String lob = (String) attributes.get("division").get();
-
         String lastName = extractLastName(firstName, fullName);
+
+        // mail attribute not set on every user
+        // use userPrincipalName as a fallback
+        String email = "placeholder";
+        if(attributes.get("mail") != null) {
+            email = (String) attributes.get("mail").get();
+        } else if(attributes.get("userPrincipalName") != null) {
+            email = (String) attributes.get("userPrincipalName").get();
+        }
 
         return new UserData(user, firstName, lastName, email, lob);
     }

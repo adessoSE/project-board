@@ -113,7 +113,7 @@ public class LdapUserService implements UserService {
                 structureRepo.findByUser(user);
 
         return structureOptional.map(organizationStructure -> {
-                    return organizationStructure.getStaffMembers().isEmpty();
+                    return !organizationStructure.getStaffMembers().isEmpty();
                 })
                 .orElseGet(() -> ldapService.isManager(user));
     }
@@ -272,7 +272,7 @@ public class LdapUserService implements UserService {
                 .getStaffMembers()
                 .forEach(user -> getUserData(user.getId()));
 
-        return dataRepo.findAllByUser(structureForUser.getStaffMembers(), sorting.toSort());
+        return dataRepo.findByUserIn(structureForUser.getStaffMembers(), sorting.toSort());
     }
 
     /**

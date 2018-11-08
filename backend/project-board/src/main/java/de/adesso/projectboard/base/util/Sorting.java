@@ -56,10 +56,11 @@ public class Sorting {
         sort.forEach(order -> {
             switch(order.getDirection()) {
                 case ASC:
-
+                    propertyOrderMap.put(order.getProperty(), Order.ASCENDING);
                     break;
 
                 case DESC:
+                    propertyOrderMap.put(order.getProperty(), Order.DESCENDING);
                     break;
             }
         });
