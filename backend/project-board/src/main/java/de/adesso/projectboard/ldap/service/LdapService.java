@@ -136,12 +136,12 @@ public class LdapService {
 
         // query for every user
         LdapQuery query = query()
-                .countLimit(1)
                 .base(base)
-                .attributes(idAttribute, "name", "givenName", "userPrincipalName", "mail", "division")
+                .attributes(idAttribute, "name", "givenName", "userPrincipalName", "mail", "division", "objectClass")
                 .where("name").isPresent()
                 .and("givenName").isPresent()
                 .and("division").isPresent()
+                .and("objectClass").is("person")
                 .and(idAttribute).isPresent()
                 .and(idCriteria);
 
