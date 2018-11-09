@@ -10,10 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.query.ContainerCriteria;
 import org.springframework.ldap.query.LdapQuery;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -68,8 +70,8 @@ public class LdapService {
 
     /**
      *
-     * @param user
-     *          The {@link User}.
+     * @param userId
+     *          The {@link User#id ID} of the {@link User}.
      *
      * @return
      *          {@code true}, iff the LDAP query searching for
@@ -78,7 +80,7 @@ public class LdapService {
      *          is equal to the given {@code userId} and the <i>directReports</i> attribute is
      *          present, is <i>not empty</i>.
      */
-    public boolean isManager(User user) {
+    public boolean isManager(String userId) {
         String idAttribute = ldapProperties.getUserIdAttribute();
         String base = ldapProperties.getLdapBase();
 
@@ -89,26 +91,50 @@ public class LdapService {
                 .where("objectClass").is("person")
                 .and("directReports").isPresent()
                 .and(idAttribute).isPresent()
-                .and(idAttribute).is(user.getId());
+                .and(idAttribute).is(userId);
 
         return !ldapTemplate.search(query, (AttributesMapper<String>) attributes -> (String) attributes.get(idAttribute).get()).isEmpty();
     }
 
     /**
      *
-     * @param user
-     *          The {@link User} to get the data from.
+     * @param users
+     *          The {@link User}s to get the data for.
      *
      * @return
-     *          The {@link UserData} instance for the fiven {@code user}
+     *          The {@link UserData} instances for the given {@code users}.
      *
      * @throws IllegalStateException
      *          When the query results length differed from {@code 1}.
      */
-    public UserData getUserData(User user) throws IllegalStateException {
+    public List<UserData> getUserData(List<User> users) throws IllegalStateException {
+        if(Objects.requireNonNull(users).isEmpty()) {
+            throw new IllegalArgumentException("Users collection can not be empty!");
+        }
+
         String idAttribute = ldapProperties.getUserIdAttribute();
         String base = ldapProperties.getLdapBase();
 
+        // get IDs
+        List<String> userIds = users
+                .stream()
+                .map(User::getId)
+                .collect(Collectors.toList());
+
+        // build a sub criteria to search for every
+        // user ID
+        ContainerCriteria idCriteria = null;
+        for(String userId : userIds) {
+            if(idCriteria == null) {
+                idCriteria = query()
+                        .where(idAttribute)
+                        .is(userId);
+            } else {
+                idCriteria.or(idAttribute).is(userId);
+            }
+        }
+
+        // query for every user
         LdapQuery query = query()
                 .countLimit(1)
                 .base(base)
@@ -117,13 +143,12 @@ public class LdapService {
                 .and("givenName").isPresent()
                 .and("division").isPresent()
                 .and(idAttribute).isPresent()
-                .and(idAttribute).is(user.getId());
+                .and(idCriteria);
 
-        List<UserData> userDataList = ldapTemplate.search(query, new UserDataMapper(user));
+        List<UserData> userDataList = ldapTemplate.search(query, new UserDataMapper(users, idAttribute));
+        validateResult(userDataList, users.size());
 
-        validateResult(userDataList, 1);
-
-        return userDataList.get(0);
+        return userDataList;
     }
 
     /**

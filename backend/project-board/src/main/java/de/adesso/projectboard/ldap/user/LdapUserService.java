@@ -15,6 +15,7 @@ import de.adesso.projectboard.ldap.service.util.data.StringStructure;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -95,7 +96,7 @@ public class LdapUserService implements UserService {
      *          The {@link User#id ID} of the {@link User}.
      *
      * @return
-     *          The result of {@link LdapService#isManager(User)} with the
+     *          The result of {@link LdapService#isManager(String)} with the
      *          corresponding {@link User} to the given {@code userId} as
      *          the argument when no {@link OrganizationStructure} instance
      *          is found for the user. {@code true} when one is present
@@ -103,7 +104,6 @@ public class LdapUserService implements UserService {
      *          collection is empty.
      *
      * @see #getUserById(String)
-     * @see LdapService#isManager(User)
      */
     @Override
     public boolean userIsManager(String userId) {
@@ -115,7 +115,7 @@ public class LdapUserService implements UserService {
         return structureOptional.map(organizationStructure -> {
                     return !organizationStructure.getStaffMembers().isEmpty();
                 })
-                .orElseGet(() -> ldapService.isManager(user));
+                .orElseGet(() -> ldapService.isManager(userId));
     }
 
     /**
@@ -164,7 +164,6 @@ public class LdapUserService implements UserService {
      *          was found.
      *
      * @see #getUserById(String)
-     * @see LdapService#getUserData(User)
      */
     @Override
     public UserData getUserData(String userId) throws UserNotFoundException {
@@ -177,7 +176,7 @@ public class LdapUserService implements UserService {
         if(dataOptional.isPresent()) {
             return dataOptional.get();
         } else {
-            UserData data = ldapService.getUserData(getUserById(userId));
+            UserData data = ldapService.getUserData(Collections.singletonList(user)).get(0);
 
             return dataRepo.save(data);
         }
@@ -234,8 +233,7 @@ public class LdapUserService implements UserService {
         if(userExists(userId)) {
             return getStructureForUser(userId)
                     .getStaffMembers()
-                    .stream()
-                    .anyMatch(user -> user.getId().equals(userId));
+                    .contains(getUserById(userId));
         }
 
         return false;
@@ -266,11 +264,18 @@ public class LdapUserService implements UserService {
     @Override
     public List<UserData> getStaffMemberDataOfUser(String userId, Sorting sorting) throws UserNotFoundException {
         OrganizationStructure structureForUser = getStructureForUser(userId);
+        if(structureForUser.getStaffMembers().isEmpty()) {
+            return Collections.emptyList();
+        }
 
         // assure that data of all users is present in the repo
-        structureForUser
+        List<User> nonCachedUsers = structureForUser
                 .getStaffMembers()
-                .forEach(user -> getUserData(user.getId()));
+                .stream()
+                .filter(user -> !dataRepo.existsByUser(user))
+                .collect(Collectors.toList());
+
+        dataRepo.saveAll(ldapService.getUserData(nonCachedUsers));
 
         return dataRepo.findByUserIn(structureForUser.getStaffMembers(), sorting.toSort());
     }

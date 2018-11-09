@@ -17,4 +17,6 @@ public interface UserDataRepository extends JpaRepository<UserData, Long> {
 
     List<UserData> findByUserIn(Collection<User> users, Sort sort);
 
+    boolean existsByUser(User user);
+
 }

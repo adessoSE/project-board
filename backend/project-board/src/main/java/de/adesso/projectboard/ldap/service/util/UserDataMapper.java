@@ -6,6 +6,7 @@ import org.springframework.ldap.core.AttributesMapper;
 
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -13,27 +14,35 @@ import java.util.Objects;
  * to {@link UserData} instances.
  * <p/>
  * <p>
- *     Requires the <i>name, givenName</i> and <i>division</i>
+ *     Requires the <i>name, givenName, ID Attribute</i> and <i>division</i>
  *     attributes to be present in the {@link Attributes} to map
  *     the result.
  * </p>
  */
 public class UserDataMapper implements AttributesMapper<UserData> {
 
-    private final User user;
+    private final List<User> users;
+
+    private final String idAttribute;
 
     /**
      *
-     * @param user
-     *          The {@link User} the mapped {@link UserData}
+     * @param users
+     *          The {@link User}s the mapped {@link UserData}
      *          instances belong to.
+     *
+     * @param idAttribute
+     *          The attribute name of the attribute used as the
+     *          user ID.
      */
-    public UserDataMapper(User user) {
-        this.user = Objects.requireNonNull(user);
+    public UserDataMapper(List<User> users, String idAttribute) {
+        this.users = Objects.requireNonNull(users);
+        this.idAttribute = Objects.requireNonNull(idAttribute);
     }
 
     @Override
     public UserData mapFromAttributes(Attributes attributes) throws NamingException {
+        String userId = (String) attributes.get(idAttribute).get();
         String fullName = (String) attributes.get("name").get();
         String firstName = (String) attributes.get("givenName").get();
         String lob = (String) attributes.get("division").get();
@@ -48,7 +57,13 @@ public class UserDataMapper implements AttributesMapper<UserData> {
             email = (String) attributes.get("userPrincipalName").get();
         }
 
-        return new UserData(user, firstName, lastName, email, lob);
+        // get the corresponding user from the users list
+        User owningUser = users.stream()
+                .filter(user -> userId.equals(user.getId()))
+                .findFirst()
+                .orElseThrow(IllegalStateException::new);
+
+        return new UserData(owningUser, firstName, lastName, email, lob);
     }
 
     /**
