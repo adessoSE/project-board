@@ -275,7 +275,9 @@ public class LdapUserService implements UserService {
                 .filter(user -> !dataRepo.existsByUser(user))
                 .collect(Collectors.toList());
 
-        dataRepo.saveAll(ldapService.getUserData(nonCachedUsers));
+        if(!nonCachedUsers.isEmpty()) {
+            dataRepo.saveAll(ldapService.getUserData(nonCachedUsers));
+        }
 
         return dataRepo.findByUserIn(structureForUser.getStaffMembers(), sorting.toSort());
     }

@@ -24,14 +24,20 @@ public class UpdateJob {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column(nullable = false)
+    @Column(
+            name = "UPDATE_TIME",
+            nullable = false
+    )
     LocalDateTime time;
 
     @Column(nullable = false)
     Status status;
 
     @Lob
-    @Column(length = 512)
+    @Column(
+            name = "FAILURE_REASON",
+            length = 512
+    )
     String failureReason;
 
     protected UpdateJob() {

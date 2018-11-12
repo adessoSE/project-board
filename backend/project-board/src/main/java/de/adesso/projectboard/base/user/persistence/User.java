@@ -37,7 +37,7 @@ public class User {
      */
     @ManyToMany
     @JoinTable(
-            name = "USER_BOOKMARKS",
+            name = "PB_USER_BOOKMARKS",
             joinColumns = @JoinColumn(name = "USER_ID"),
             inverseJoinColumns = @JoinColumn(name = "PROJECT_ID")
     )
@@ -59,7 +59,7 @@ public class User {
      */
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
-            name = "USER_OWNED_PROJECTS",
+            name = "PB_USER_OWNED_PROJECTS",
             joinColumns = @JoinColumn(name = "USER_ID"),
             inverseJoinColumns = @JoinColumn(name = "PROJECT_ID")
     )

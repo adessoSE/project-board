@@ -10,7 +10,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 
 @Entity
-@Table(name = "USER_DATA")
+@Table(name = "PB_USER_DATA")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,15 +27,19 @@ public class UserData {
     )
     User user;
 
+    @Column(name = "FIRST_NAME")
     @NotEmpty
     String firstName;
 
+    @Column(name = "LAST_NAME")
     @NotEmpty
     String lastName;
 
+    @Column(name = "EMAIL")
     @NotEmpty
     String email;
 
+    @Column(name = "LOB")
     @NotEmpty
     String lob;
 

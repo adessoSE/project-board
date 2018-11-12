@@ -8,7 +8,6 @@ import de.adesso.projectboard.base.project.rest.ProjectController;
 import de.adesso.projectboard.base.user.dto.UserDtoFactory;
 import de.adesso.projectboard.base.user.dto.UserResponseDTO;
 import de.adesso.projectboard.base.user.persistence.User;
-import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.service.UserService;
 import de.adesso.projectboard.base.util.Sorting;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,15 +56,16 @@ public class UserController {
         return userService
                 .getStaffMemberDataOfUser(userId, Sorting.fromSort(sort))
                 .stream()
-                .map(UserData::getUser)
-                .map(userDtoFactory::createDto)
+                .map(userDtoFactory::createDTO)
                 .collect(Collectors.toList());
     }
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @GetMapping(path = "/{userId}/projects")
     public Iterable<Project> getOwnedProjectsOfUser(@PathVariable("userId") String userId) throws UserNotFoundException {
-        return userService.getUserById(userId).getOwnedProjects();
+        return userService
+                .getUserById(userId)
+                .getOwnedProjects();
     }
 
 }

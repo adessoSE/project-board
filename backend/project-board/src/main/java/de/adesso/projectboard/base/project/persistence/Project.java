@@ -40,6 +40,7 @@ public class Project {
     @JsonDeserialize(using = ObjectNameDeserializer.class)
     String status;
 
+    @Column(name = "ISSUE_TYPE")
     @JsonDeserialize(using = ObjectNameDeserializer.class)
     String issuetype;
 
@@ -47,6 +48,11 @@ public class Project {
     String title;
 
     @ElementCollection
+    @CollectionTable(
+            name = "PROJECT_LABELS",
+            joinColumns = @JoinColumn(name = "PROJECT_ID")
+    )
+    @Column(name = "LABEL")
     List<String> labels;
 
     @Lob
@@ -63,6 +69,7 @@ public class Project {
     @Column(length = 8192)
     String description;
 
+    @Column(name = "LOB")
     @JsonDeserialize(using = ObjectValueDeserializer.class)
     @JsonAlias("customfield_10292")
     String lob;
@@ -73,9 +80,11 @@ public class Project {
     @JsonAlias("customfield_10297")
     String location;
 
+    @Column(name = "OPERATION_START")
     @JsonAlias("customfield_10293")
     String operationStart;
 
+    @Column(name = "OPERATION_END")
     @JsonAlias("customfield_10294")
     String operationEnd;
 

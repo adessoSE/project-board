@@ -16,6 +16,7 @@ import java.time.chrono.ChronoLocalDateTime;
  * @see User
  */
 @Entity
+@Table(name = "ACCESS_INFO")
 @Getter
 @Setter
 public class AccessInfo {
@@ -31,10 +32,16 @@ public class AccessInfo {
     )
     User user;
 
-    @Column(nullable = false)
+    @Column(
+            name = "START_TIME",
+            nullable = false
+    )
     LocalDateTime accessStart;
 
-    @Column(nullable = false)
+    @Column(
+            name = "END_TIME",
+            nullable = false
+    )
     LocalDateTime accessEnd;
 
     /**

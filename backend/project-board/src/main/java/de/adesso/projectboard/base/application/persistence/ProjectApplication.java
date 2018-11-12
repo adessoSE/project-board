@@ -45,13 +45,19 @@ public class ProjectApplication {
      * The comment of the application.
      */
     @Lob
-    @Column(length = 4096)
+    @Column(
+            name = "APPLICATION_COMMENT",
+            length = 4096
+    )
     String comment;
 
     /**
      * The date of the application.
      */
-    @Column(nullable = false)
+    @Column(
+            name = "APPLICATION_DATE",
+            nullable = false
+    )
     LocalDateTime applicationDate;
 
     /**
