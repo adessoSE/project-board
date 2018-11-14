@@ -109,6 +109,8 @@ public class LdapUserService implements UserService {
         // return the structure saved in the repo if one is present
         // or get the latest structure from the AD
         return structureRepo.findByUser(user).orElseGet(() -> {
+            validateExistence(user);
+
             StringStructure idStructure = ldapService.getIdStructure(user);
 
             // get the corresponding User instances
