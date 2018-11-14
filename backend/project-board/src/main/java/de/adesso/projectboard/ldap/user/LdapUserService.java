@@ -37,16 +37,16 @@ public class LdapUserService implements UserService {
 
     private final UserDataRepository dataRepo;
 
-    private final OrganizationStructureRepository structureRepo;
-
     private final LdapService ldapService;
+
+    private final OrganizationStructureRepository structureRepo;
 
     private final AuthenticationInfo authInfo;
 
     public LdapUserService(UserRepository userRepo,
                            UserDataRepository dataRepo,
-                           OrganizationStructureRepository structureRepo,
                            LdapService ldapService,
+                           OrganizationStructureRepository structureRepo,
                            AuthenticationInfo authInfo) {
         this.userRepo = userRepo;
         this.dataRepo = dataRepo;
@@ -55,35 +55,20 @@ public class LdapUserService implements UserService {
         this.authInfo = authInfo;
     }
 
-    /**
-     *
-     * @return
-     *          The result of {@link #getUserById(String)} with the ID returned
-     *          by {@link AuthenticationInfo#getUserId()} as the argument.
-     */
     @Override
     public User getAuthenticatedUser() throws UserNotFoundException {
         return getUserById(authInfo.getUserId());
     }
 
-    /**
-     *
-     * @return
-     *          The result of {@link AuthenticationInfo#getUserId()}.
-     */
     @Override
     public String getAuthenticatedUserId() {
         return authInfo.getUserId();
     }
 
     /**
+     * {@inheritDoc}
      *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User}.
-     *
-     * @return
-     *          {@code true}, iff {@link UserRepository#existsById(Object)} or
-     *          {@link LdapService#userExists(String)} returns {@code true}.
+     * @see UserRepository#existsById(Object)
      */
     @Override
     public boolean userExists(String userId) {
@@ -91,49 +76,36 @@ public class LdapUserService implements UserService {
     }
 
     /**
+     * Returns {@code true} iff the persisted {@link OrganizationStructure}'s
+     * {@link OrganizationStructure#getStaffMembers() staff members collection}
+     * is <b>not empty</b> or the result of {@link LdapService#isManager(String)}
+     * if none is present.
      *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User}.
-     *
-     * @return
-     *          The result of {@link LdapService#isManager(String)} with the
-     *          corresponding {@link User} to the given {@code userId} as
-     *          the argument when no {@link OrganizationStructure} instance
-     *          is found for the user. {@code true} when one is present
-     *          and the {@link OrganizationStructure#getStaffMembers() staff members}
-     *          collection is empty.
-     *
-     * @see #getUserById(String)
+     * {@inheritDoc}
      */
     @Override
-    public boolean userIsManager(String userId) {
-        User user = getUserById(userId);
-
+    public boolean userIsManager(User user) {
         Optional<OrganizationStructure> structureOptional =
                 structureRepo.findByUser(user);
 
         return structureOptional.map(organizationStructure -> {
-                    return !organizationStructure.getStaffMembers().isEmpty();
-                })
-                .orElseGet(() -> ldapService.isManager(userId));
+            return !organizationStructure.getStaffMembers().isEmpty();
+        })
+                .orElseGet(() -> ldapService.isManager(user.getId()));
     }
 
     /**
+     * Returns the persisted {@link OrganizationStructure} instance
+     * for the {@code user} or a new instance based on the
+     * returned {@link StringStructure} by {@link LdapService#getIdStructure(User)}
+     * after persisting it if none is present.
+     * <p>
+     * {@inheritDoc}
      *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User}.
-     *
-     * @return
-     *          The {@link OrganizationStructure} instance for the {@link User}
-     *          with the given {@code userId}.
-     *
-     * @see #getUserById(String)
      * @see LdapService#getIdStructure(User)
      */
     @Override
-    public OrganizationStructure getStructureForUser(String userId) throws UserNotFoundException {
-        User user = getUserById(userId);
-
+    public OrganizationStructure getStructureForUser(User user) throws UserNotFoundException {
         // return the structure saved in the repo if one is present
         // or get the latest structure from the AD
         return structureRepo.findByUser(user).orElseGet(() -> {
@@ -152,51 +124,35 @@ public class LdapUserService implements UserService {
     }
 
     /**
+     * Returns the persisted {@link UserData} instance for the {@code user} iff
+     * one is present. Returns the returned instance of {@link LdapService#getUserData(List)}
+     * after persisting it.
+     * <p>
+     * {@inheritDoc}
      *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User}.
-     *
-     * @return
-     *          The {@link UserData} instance for the user.
-     *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId}
-     *          was found.
-     *
-     * @see #getUserById(String)
+     * @see LdapService#getUserData(List)
      */
     @Override
-    public UserData getUserData(String userId) throws UserNotFoundException {
-        User user = getUserById(userId);
-
+    public UserData getUserData(User user) throws UserNotFoundException {
         Optional<UserData> dataOptional = dataRepo.findByUser(user);
 
         // return the persisted instance if it is present
         // or retrieve the data and return it after persisting it
-        if(dataOptional.isPresent()) {
-            return dataOptional.get();
-        } else {
+        return dataOptional.orElseGet(() -> {
+            validateExistence(user);
+
             UserData data = ldapService.getUserData(Collections.singletonList(user)).get(0);
 
             return dataRepo.save(data);
-        }
+        });
     }
 
     /**
      * Lazily initializes a {@link User} when there is no user with the
      * given {@code userId} present in the repository but a user exists
      * in the AD.
-     *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User}.
-     *
-     * @return
-     *          The {@link User} with the corresponding {@code userId}.
-     *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId} was
-     *          found in the repository and there is no user with the {@code userId}
-     *          present in the AD.
+     * <p>
+     * {@inheritDoc}
      *
      * @see LdapService#userExists(String)
      */
@@ -205,56 +161,43 @@ public class LdapUserService implements UserService {
         Optional<User> userOptional = userRepo.findById(userId);
 
         return userOptional.orElseGet(() -> {
-           if(ldapService.userExists(userId)) {
-               return userRepo.save(new User(userId));
-           }
+            if (ldapService.userExists(userId)) {
+                return userRepo.save(new User(userId));
+            }
 
-           throw new UserNotFoundException();
+            throw new UserNotFoundException();
         });
     }
 
     /**
+     * {@inheritDoc}
      *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User} to check.
-     *
-     * @param staffId
-     *          The {@link User#id ID} of the staff member.
-     *
-     * @return
-     *          {@code true}, iff the {@link #userExists(String) user exists}
-     *          and the {@link #getStructureForUser(String) organizational structure}
-     *          of the user contains a user with the given {@code staffId}.
-     *
-     * @see #getStructureForUser(String)
+     * @see #getStructureForUser(User)
      */
     @Override
-    public boolean userHasStaffMember(String userId, String staffId) {
-        if(userExists(userId)) {
-            return getStructureForUser(userId)
-                    .getStaffMembers()
-                    .contains(getUserById(userId));
-        }
-
-        return false;
+    public boolean userHasStaffMember(User user, User staffMember) throws UserNotFoundException {
+        return getStructureForUser(user)
+                .getStaffMembers()
+                .contains(staffMember);
     }
 
     /**
-     *  Returns the referenced manager of the persisted {@link OrganizationStructure}
-     *  for the {@link User} with the given {@code userId} in case it is present and
-     *  returns the manager with the ID of the structure returned by
-     *  {@link LdapService#getIdStructure(User)}.
-     *
-     *  {@inheritDoc}
+     * Returns the referenced manager of the persisted {@link OrganizationStructure}
+     * for the {@link User} with the given {@code userId} in case it is present and
+     * returns the manager with the ID of the structure returned by
+     * {@link LdapService#getIdStructure(User)}.
+     * <p>
+     * {@inheritDoc}
      */
     @Override
-    public User getManagerOfUser(String userId) throws UserNotFoundException {
-        User user = getUserById(userId);
+    public User getManagerOfUser(User user) throws UserNotFoundException {
         Optional<OrganizationStructure> structureOptional = structureRepo.findByUser(user);
 
-        if(structureOptional.isPresent()) {
+        if (structureOptional.isPresent()) {
             return structureOptional.get().getManager();
         } else {
+            validateExistence(user);
+
             String managerId = ldapService.getManagerId(user);
 
             return getUserById(managerId);
@@ -262,9 +205,9 @@ public class LdapUserService implements UserService {
     }
 
     @Override
-    public List<UserData> getStaffMemberDataOfUser(String userId, Sorting sorting) throws UserNotFoundException {
-        OrganizationStructure structureForUser = getStructureForUser(userId);
-        if(structureForUser.getStaffMembers().isEmpty()) {
+    public List<UserData> getStaffMemberDataOfUser(User user, Sorting sorting) throws UserNotFoundException {
+        OrganizationStructure structureForUser = getStructureForUser(user);
+        if (structureForUser.getStaffMembers().isEmpty()) {
             return Collections.emptyList();
         }
 
@@ -272,7 +215,7 @@ public class LdapUserService implements UserService {
         List<User> nonCachedUsers = structureForUser
                 .getStaffMembers()
                 .stream()
-                .filter(user -> !dataRepo.existsByUser(user))
+                .filter(staffMember -> !dataRepo.existsByUser(staffMember))
                 .collect(Collectors.toList());
 
         dataRepo.saveAll(ldapService.getUserData(nonCachedUsers));
@@ -281,12 +224,9 @@ public class LdapUserService implements UserService {
     }
 
     /**
+     * {@inheritDoc}
      *
-     * @param user
-     *          The {@link User} to save.
-     *
-     * @return
-     *          The result of {@link UserRepository#save(Object)}.
+     * @see UserRepository#save(Object)
      */
     @Override
     public User save(User user) {

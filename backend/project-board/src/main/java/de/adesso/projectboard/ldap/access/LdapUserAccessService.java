@@ -3,7 +3,6 @@ package de.adesso.projectboard.ldap.access;
 import de.adesso.projectboard.base.access.persistence.AccessInfo;
 import de.adesso.projectboard.base.access.persistence.AccessInfoRepository;
 import de.adesso.projectboard.base.access.service.UserAccessService;
-import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.ldap.user.LdapUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +27,14 @@ public class LdapUserAccessService implements UserAccessService {
     }
 
     @Override
-    public User giveUserAccessUntil(String userId, LocalDateTime until) throws UserNotFoundException, IllegalArgumentException {
+    public User giveUserAccessUntil(User user, LocalDateTime until) throws IllegalArgumentException {
         if(until.isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("End date must lie in the future!");
         }
 
-        User user = userService.getUserById(userId);
+        // check if a valid user instance was passed
+        userService.validateExistence(user);
+
         AccessInfo latestInfo = user.getLatestAccessInfo();
         List<AccessInfo> infoList = user.getAccessInfoList();
 
@@ -51,8 +52,10 @@ public class LdapUserAccessService implements UserAccessService {
     }
 
     @Override
-    public User removeAccessFromUser(String userId) throws UserNotFoundException {
-        User user = userService.getUserById(userId);
+    public User removeAccessFromUser(User user) {
+        // check if a valid user instance was passed
+        userService.validateExistence(user);
+
         AccessInfo latestInfo = user.getLatestAccessInfo();
 
         if(latestInfo != null && latestInfo.isCurrentlyActive()) {
@@ -64,12 +67,11 @@ public class LdapUserAccessService implements UserAccessService {
     }
 
     @Override
-    public boolean userHasAccess(String userId) {
-        User user = userService.getUserById(userId);
-        AccessInfo lastestInfo = user.getLatestAccessInfo();
+    public boolean userHasAccess(User user) {
+        AccessInfo latestInfo = user.getLatestAccessInfo();
 
-        if(lastestInfo != null) {
-            return lastestInfo.isCurrentlyActive();
+        if(latestInfo != null) {
+            return latestInfo.isCurrentlyActive();
         }
 
         return false;

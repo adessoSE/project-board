@@ -1,7 +1,6 @@
 package de.adesso.projectboard.base.user.service;
 
-import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
-import de.adesso.projectboard.base.exceptions.UserNotFoundException;
+import de.adesso.projectboard.base.exceptions.BookmarkNotFoundException;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.project.service.RepositoryProjectService;
@@ -19,72 +18,53 @@ public interface BookmarkService {
 
     /**
      *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User}.
+     * @param user
+     *          The {@link User}.
      *
-     * @param projectId
-     *          The {@link Project#id ID} of the {@link Project}
-     *          to add a bookmark for.
+     * @param project
+     *          The {@link Project} to add a bookmark for.
      *
      * @return
      *          The bookmarked {@link Project}.
-     *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId}
-     *          was found.
-     *
-     * @throws ProjectNotFoundException
-     *          When no {@link Project} with the given {@code projectId}
-     *          was found.
      */
-    Project addBookmarkToUser(String userId, String projectId) throws UserNotFoundException, ProjectNotFoundException;
+    Project addBookmarkToUser(User user, Project project);
+
+    /**
+     *  @param user
+     *          The {@link User}.
+     *
+     * @param project
+     *          The {@link Project} to remove the bookmark of.
+     *
+     * @throws BookmarkNotFoundException
+     *          When the given {@code user} has not bookmarked the given
+     *          {@code project}.
+     */
+    void removeBookmarkOfUser(User user, Project project) throws BookmarkNotFoundException;
 
     /**
      *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User}.
-     *
-     * @param projectId
-     *          The {@link Project#id ID} of the {@link Project} to
-     *          remove the bookmark of.
-     *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId}
-     *          was found.
-     *
-     * @throws ProjectNotFoundException
-     *          When no {@link Project} with the given {@code projectId}
-     *          was found.
-     */
-    void removeBookmarkOfUser(String userId, String projectId) throws UserNotFoundException, ProjectNotFoundException;
-
-    /**
-     *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User}.
+     * @param user
+     *          The {@link User}.
      *
      * @return
      *          A {@link List} of the bookmarked {@link Project}s
-     *          of the user.
-     *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId}
-     *          was found.
+     *          of the given {@code user}.
      */
-    List<Project> getBookmarksOfUser(String userId) throws UserNotFoundException;
+    List<Project> getBookmarksOfUser(User user);
 
     /**
      *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User}.
+     * @param user
+     *          The {@link User}.
      *
-     * @param projectId
-     *          The {@link Project#id ID} of the {@link Project}.
+     * @param project
+     *          The {@link Project}.
      *
      * @return
-     *          {@code true}, iff the user has bookmarked a project
-     *          with the given {@code projectId}.
+     *          {@code true}, iff the user has bookmarked the given
+     *          {@code project}.
      */
-    boolean userHasBookmark(String userId, String projectId);
+    boolean userHasBookmark(User user, Project project);
 
 }

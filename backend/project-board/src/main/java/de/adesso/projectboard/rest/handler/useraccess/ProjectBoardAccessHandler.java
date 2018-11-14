@@ -26,7 +26,7 @@ public class ProjectBoardAccessHandler implements UserAccessHandler {
 
     @Override
     public void onAccessGranted(User user) {
-        UserData userData = userService.getUserData(user.getId());
+        UserData userData = userService.getUserData(user);
 
         mailService.queueMessage(new AccessTemplateMessage(userData));
     }

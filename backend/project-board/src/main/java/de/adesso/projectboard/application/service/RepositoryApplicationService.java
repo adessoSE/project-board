@@ -40,21 +40,21 @@ public class RepositoryApplicationService implements ApplicationService {
     }
 
     @Override
-    public boolean userHasAppliedForProject(String userId, String projectId) throws UserNotFoundException, ProjectNotFoundException {
-        User user = userService.getUserById(userId);
-        Project project = projectService.getProjectById(projectId);
-
+    public boolean userHasAppliedForProject(User user, Project project) throws UserNotFoundException, ProjectNotFoundException {
         return applicationRepo.existsByUserAndProject(user, project);
     }
 
     @Override
-    public ProjectApplication createApplicationForUser(ProjectApplicationRequestDTO applicationDTO, String userId) throws UserNotFoundException, ProjectNotFoundException {
-        if(userHasAppliedForProject(userId, applicationDTO.getProjectId())) {
+    public ProjectApplication createApplicationForUser(User user, ProjectApplicationRequestDTO applicationDTO) throws AlreadyAppliedException {
+        // check if a valid user instance was passed
+        userService.validateExistence(user);
+
+        Project project = projectService.getProjectById(applicationDTO.getProjectId());
+
+        if(userHasAppliedForProject(user, project)) {
             throw new AlreadyAppliedException();
         }
 
-        Project project =  projectService.getProjectById(applicationDTO.getProjectId());
-        User user = userService.getUserById(userId);
         ProjectApplication application = new ProjectApplication(project, applicationDTO.getComment(), user);
 
         userService.save(user);
@@ -62,8 +62,8 @@ public class RepositoryApplicationService implements ApplicationService {
     }
 
     @Override
-    public List<ProjectApplication> getApplicationsOfUser(String userId) throws UserNotFoundException {
-        return new ArrayList<>(userService.getUserById(userId).getApplications());
+    public List<ProjectApplication> getApplicationsOfUser(User user) throws UserNotFoundException {
+        return new ArrayList<>(user.getApplications());
     }
 
 }

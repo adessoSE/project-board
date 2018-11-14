@@ -10,6 +10,7 @@ import de.adesso.projectboard.base.user.dto.UserResponseDTO;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.rest.BookmarkController;
 import de.adesso.projectboard.base.user.rest.UserController;
+import de.adesso.projectboard.base.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,8 @@ import javax.validation.Valid;
 @RequestMapping("/users")
 public class UserAccessController {
 
+    private final UserService userService;
+
     private final UserAccessService userAccessService;
 
     private final UserAccessHandler userAccessHandler;
@@ -35,9 +38,11 @@ public class UserAccessController {
     private final UserDtoFactory userDtoFactory;
 
     @Autowired
-    public UserAccessController(UserAccessService userAccessService,
+    public UserAccessController(UserService userService,
+                                UserAccessService userAccessService,
                                 UserAccessHandler userAccessHandler,
                                 UserDtoFactory userDtoFactory) {
+        this.userService = userService;
         this.userAccessService = userAccessService;
         this.userAccessHandler = userAccessHandler;
         this.userDtoFactory = userDtoFactory;
@@ -46,7 +51,9 @@ public class UserAccessController {
     @PreAuthorize("hasElevatedAccessToUser(#userId) || hasRole('admin')")
     @PostMapping(path = "/{userId}/access")
     public UserResponseDTO createAccessForUser(@Valid @RequestBody AccessInfoRequestDTO infoDTO, @PathVariable("userId") String userId) {
-        User updatedUser = userAccessService.giveUserAccessUntil(userId, infoDTO.getAccessEnd());
+        User user = userService.getUserById(userId);
+
+        User updatedUser = userAccessService.giveUserAccessUntil(user, infoDTO.getAccessEnd());
 
         // call handler method
         userAccessHandler.onAccessGranted(updatedUser);
@@ -57,9 +64,9 @@ public class UserAccessController {
     @PreAuthorize("hasElevatedAccessToUser(#userId) || hasRole('admin')")
     @DeleteMapping(path = "/{userId}/access")
     public UserResponseDTO deleteAccessForUser(@PathVariable("userId") String userId) {
-        User user = userAccessService.removeAccessFromUser(userId);
+        User user = userService.getUserById(userId);
 
-        return userDtoFactory.createDto(user);
+        return userDtoFactory.createDto(userAccessService.removeAccessFromUser(user));
     }
 
 }

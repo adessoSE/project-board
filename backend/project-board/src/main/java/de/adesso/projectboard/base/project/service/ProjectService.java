@@ -6,6 +6,8 @@ import de.adesso.projectboard.base.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.user.persistence.User;
 
+import java.util.Objects;
+
 /**
  * Service interface to provide functionality to manage {@link Project}s.
  *
@@ -63,7 +65,7 @@ public interface ProjectService {
      *          When no {@link Project} with the given {@code projectId}
      *          was found.
      */
-    Project updateProject(ProjectRequestDTO projectDTO, String projectId) throws ProjectNotFoundException;
+    Project updateProject(ProjectRequestDTO projectDTO, String projectId);
 
     /**
      * @param project
@@ -79,12 +81,39 @@ public interface ProjectService {
      * of all {@link User}s and also removes all {@link ProjectApplication}s referring to the
      * project.
      *
-     * @param projectId The {@link Project#id ID} of the {@link Project}
-     *                  to delete.
-     * @throws ProjectNotFoundException When no {@link Project} with the given {@code projectId}
-     *                                  was found.
+     * @param projectId
+     *          The {@link Project#id ID} of the {@link Project}
+     *          to delete.
+     *
+     * @throws ProjectNotFoundException
+     *          When no {@link Project} with the given {@code projectId}
+     *          was found.
      */
     void deleteProjectById(String projectId) throws ProjectNotFoundException;
 
+    /**
+     * Method to validate the existence of a given {@link Project}
+     * instance.
+     *
+     * @param project
+     *          The {@link Project} to validate.
+     *
+     * @return
+     *          The given {@code project}.
+     *
+     * @throws ProjectNotFoundException
+     *          When the no {@link Project} with the given {@code project}'s
+     *          {@link Project#id ID} exists.
+     *
+     */
+    default Project validateExistence(Project project) throws ProjectNotFoundException {
+        Project givenProject = Objects.requireNonNull(project);
+
+        if(projectExists(givenProject.getId())) {
+            return givenProject;
+        } else {
+            throw new ProjectNotFoundException();
+        }
+    }
 
 }

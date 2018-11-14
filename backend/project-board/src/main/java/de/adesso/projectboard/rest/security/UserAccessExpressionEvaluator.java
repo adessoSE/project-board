@@ -70,7 +70,7 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
         if(latestAccessInfo != null) {
             return latestAccessInfo.isCurrentlyActive();
         } else {
-            return userService.userIsManager(user.getId());
+            return userService.userIsManager(user);
         }
     }
 
@@ -88,8 +88,8 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *
      * @return
      *          {@code true}, iff the no project with the given {@code projectId} exists,
-     *          {@link ApplicationService#userHasAppliedForProject(String, String)} returns {@code true},
-     *          {@link UserProjectService#userOwnsProject(String, String)} returns {@code true} or
+     *          {@link ApplicationService#userHasAppliedForProject(User, Project)} returns {@code true},
+     *          {@link UserProjectService#userOwnsProject(User, Project)} returns {@code true} or
      *          {@link #hasAccessToProjects(Authentication, User)} returns {@code true}
      *          and at least one of the following conditions is true:
      *
@@ -110,8 +110,8 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
         // return true if the project does not exist, the user owns the project or
         // the user has applied for the project
         if(!projectService.projectExists(projectId) ||
-                userProjectService.userOwnsProject(user.getId(), projectId) ||
-                applicationService.userHasAppliedForProject(user.getId(), projectId)) {
+                userProjectService.userOwnsProject(user, projectService.getProjectById(projectId)) ||
+                applicationService.userHasAppliedForProject(user, projectService.getProjectById(projectId))) {
 
             return true;
         }
@@ -119,9 +119,9 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
         Project project = projectService.getProjectById(projectId);
 
         if(hasAccessToProjects(authentication, user)) {
-            UserData userData = userService.getUserData(user.getId());
+            UserData userData = userService.getUserData(user);
 
-            boolean isManager = userService.userIsManager(user.getId());
+            boolean isManager = userService.userIsManager(user);
             boolean isOpen = "offen".equalsIgnoreCase(project.getStatus());
             boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
             boolean sameLobAsUser = userData.getLob().equalsIgnoreCase(project.getLob());
@@ -188,7 +188,7 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      */
     @Override
     public boolean hasPermissionToCreateProjects(Authentication authentication, User user) {
-        return userService.userIsManager(user.getId());
+        return userService.userIsManager(user);
     }
 
     /**
@@ -205,11 +205,11 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          The id of the {@link Project} the user wants to update.
      *
      * @return
-     *          The result of {@link UserProjectService#userOwnsProject(String, String)}.
+     *          The result of {@link UserProjectService#userOwnsProject(User, Project)}.
      */
     @Override
     public boolean hasPermissionToEditProject(Authentication authentication, User user, String projectId) {
-        return userProjectService.userOwnsProject(user.getId(), projectId);
+        return userProjectService.userOwnsProject(user, projectService.getProjectById(projectId));
     }
 
     /**
@@ -225,11 +225,15 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          the current user wants to access.
      *
      * @return
-     *          The result of {@link UserService#userHasStaffMember(String, String)}.
+     *          The result of {@link UserService#userHasStaffMember(User, User)}.
      */
     @Override
     public boolean hasElevatedAccessToUser(Authentication authentication, User user, String userId) {
-        return userService.userHasStaffMember(user.getId(), userId);
+        if(userService.userExists(userId)) {
+            return userService.userHasStaffMember(user, userService.getUserById(userId));
+        }
+
+        return false;
     }
 
 }

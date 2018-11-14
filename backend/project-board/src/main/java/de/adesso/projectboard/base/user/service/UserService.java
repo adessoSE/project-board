@@ -8,6 +8,7 @@ import de.adesso.projectboard.base.user.persistence.structure.OrganizationStruct
 import de.adesso.projectboard.base.util.Sorting;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Service interface to provide functionality to manage {@link User}s and their
@@ -21,12 +22,10 @@ public interface UserService {
      *
      * @return
      *          The currently authenticated {@link User}.
-     *
-     * @throws UserNotFoundException
-     *          When the authenticated user does not have a
-     *          corresponding {@link User} instance.
      */
-    User getAuthenticatedUser() throws UserNotFoundException;
+    default User getAuthenticatedUser() {
+        return getUserById(getAuthenticatedUserId());
+    }
 
     /**
      *
@@ -49,45 +48,35 @@ public interface UserService {
 
     /**
      *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User}.
+     * @param user
+     *          The {@link User}.
      *
      * @return
-     *          {@code true}, iff a {@link User} with the given {@code userId}
-     *          exists and is a manager.
-     *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId} was found.
+     *          {@code true}, iff the {@link User} is a manager.
      */
-    boolean userIsManager(String userId) throws UserNotFoundException;
+    boolean userIsManager(User user);
 
     /**
      *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User}.
+     * @param user
+     *          The {@code User} to get the {@link OrganizationStructure}
+     *          for.
      *
      * @return
-     *          The {@link OrganizationStructure} instance for the {@link User}
-     *          with the given {@code userId}.
-     *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId} was found.
+     *          The {@link OrganizationStructure} instance for the given
+     *          {@code user}.
      */
-    OrganizationStructure getStructureForUser(String userId) throws UserNotFoundException;
+    OrganizationStructure getStructureForUser(User user);
 
     /**
      *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User}.
+     * @param user
+     *          The {@link User} to get the {@link UserData} for.
      *
      * @return
-     *          The {@link UserData user data} for the {@link User}
-     *          with the given {@code userId}.
-     *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId} was found.
+     *          The {@link UserData user data} for the given {@code user}.
      */
-    UserData getUserData(String userId) throws UserNotFoundException;
+    UserData getUserData(User user);
 
     /**
      *
@@ -105,50 +94,42 @@ public interface UserService {
 
     /**
      *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User} to check.
+     * @param user
+     *          The {@link User} to check.
      *
-     * @param staffId
-     *          The {@link User#id ID} of the staff member.
+     * @param staffMember
+     *          The {@link User} instance of the staff member.
      *
      * @return
-     *          {@code true}, iff the {@link User} with the given
-     *          {@code userId} has a staff member with the given
-     *          {@code staffId}.
+     *          {@code true}, iff the {@code user} has the given {@code staffMember}
+     *          as a staff member.
      */
-    boolean userHasStaffMember(String userId, String staffId);
+    boolean userHasStaffMember(User user, User staffMember);
 
     /**
      *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User} to get the
-     *          manager from.
+     * @param user
+     *          The {@link User} to get the manager of.
      *
      * @return
-     *          The manager of the user.
-     *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId} was found.
+     *          The manager of the {@code user}.
      */
-    User getManagerOfUser(String userId) throws UserNotFoundException;
+    User getManagerOfUser(User user);
 
     /**
      *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User} to get the
-     *          staff members of.
+     * @param user
+     *          The {@link User} to get the staff members'
+     *          {@link UserData} of.
      *
      * @param sorting
      *          The {@link Sorting} instance to sort by.
      *
      * @return
-     *          A {@link List} of staff members belonging to the {@link User}.
-     *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId}
-     *          was found.
+     *          A {@link List} of the {@link UserData} belonging to
+     *          the staff members.
      */
-    List<UserData> getStaffMemberDataOfUser(String userId, Sorting sorting) throws UserNotFoundException;
+    List<UserData> getStaffMemberDataOfUser(User user, Sorting sorting);
 
     /**
      *
@@ -171,11 +152,33 @@ public interface UserService {
      *
      * @param userId
      *          The {@link User#id ID} of the {@link User} to delete.
+     */
+    void deleteUserById(String userId);
+
+    /**
+     * Method to validate the existence of a given {@link User}
+     * instance.
+     *
+     * @param user
+     *          The {@link User} to validate.
+     *
+     * @return
+     *          The given {@code user}.
      *
      * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId}
-     *          was found.
+     *          When the no {@link User} with the given {@code user}'s
+     *          {@link User#id ID} exists.
+     *
+     * @see #userExists(String)
      */
-    void deleteUserById(String userId) throws UserNotFoundException;
+    default User validateExistence(User user) throws UserNotFoundException {
+        User givenUser = Objects.requireNonNull(user);
+
+        if(userExists(givenUser.getId())) {
+            return givenUser;
+        } else {
+            throw new UserNotFoundException();
+        }
+    }
 
 }

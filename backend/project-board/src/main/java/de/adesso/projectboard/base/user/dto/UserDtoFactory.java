@@ -30,8 +30,8 @@ public class UserDtoFactory {
      *          The created {@link UserResponseDTO DTO}.
      */
     public UserResponseDTO createDto(User user) {
-        UserData userData = userService.getUserData(user.getId());
-        boolean isManager = userService.userIsManager(user.getId());
+        UserData userData = userService.getUserData(user);
+        boolean isManager = userService.userIsManager(user);
         AccessInfo latestInfo = user.getLatestAccessInfo();
 
         AccessInfoResponseDTO infoDTO = new AccessInfoResponseDTO();
