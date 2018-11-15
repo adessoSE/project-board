@@ -4,9 +4,6 @@ FROM openjdk:8-jdk-alpine
 VOLUME /tmp
 
 # Token is replaced by gradle
-EXPOSE @serverPort@
-
-# Token is replaced by gradle
 ARG JAR_FILE=@jarName@
 
 # Copy jar archive
