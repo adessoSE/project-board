@@ -58,7 +58,7 @@ public class UserController {
         return userService
                 .getStaffMemberDataOfUser(user, Sorting.fromSort(sort))
                 .stream()
-                .map(userDtoFactory::createDTO)
+                .map(userDtoFactory::createDto)
                 .collect(Collectors.toList());
     }
 

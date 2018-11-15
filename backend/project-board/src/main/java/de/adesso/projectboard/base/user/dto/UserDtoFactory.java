@@ -31,6 +31,24 @@ public class UserDtoFactory {
      */
     public UserResponseDTO createDto(User user) {
         UserData userData = userService.getUserData(user);
+
+        return getDto(userData);
+    }
+
+    /**
+     *
+     * @param userData
+     *          The {@link UserData} instance to create a DTO from.
+     *
+     * @return
+     *          The created {@link UserResponseDTO DTO}.
+     */
+    public UserResponseDTO createDto(UserData userData) {
+        return getDto(userData);
+    }
+
+    UserResponseDTO getDto(UserData userData) {
+        User user = userData.getUser();
         boolean isManager = userService.userIsManager(user);
         AccessInfo latestInfo = user.getLatestAccessInfo();
 
