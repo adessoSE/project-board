@@ -105,14 +105,20 @@ public class RepositoryProjectService implements ProjectService, UserProjectServ
         });
 
         // remove applications referring to this project
+        // removed by orphan removal
         List<ProjectApplication> applications =
                 applicationRepo.findAllByProjectEquals(existingProject);
-        applications.forEach(applicationRepo::delete);
+        applications.forEach(application -> {
+            User user = application.getUser();
+            user.removeApplication(application);
+
+            userService.save(user);
+        });
 
         projectRepo.delete(existingProject);
     }
 
-    private Project createOrUpdateProject(ProjectRequestDTO projectDTO, String projectId) {
+    Project createOrUpdateProject(ProjectRequestDTO projectDTO, String projectId) {
         LocalDateTime updateTime = LocalDateTime.now();
         LocalDateTime createTime = LocalDateTime.now();
 
@@ -184,9 +190,6 @@ public class RepositoryProjectService implements ProjectService, UserProjectServ
 
     @Override
     public Project addProjectToUser(User user, Project project) {
-        // check if a valid user instance was passed
-        userService.validateExistence(user);
-
         user.addOwnedProject(project);
         userService.save(user);
 

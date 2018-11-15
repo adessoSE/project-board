@@ -4,7 +4,7 @@ FROM openjdk:8-jdk-alpine
 VOLUME /tmp
 
 # Token is replaced by gradle
-EXPOSE @serverPort@
+EXPOSE 8080
 
 # Token is replaced by gradle
 ARG JAR_FILE=@jarName@

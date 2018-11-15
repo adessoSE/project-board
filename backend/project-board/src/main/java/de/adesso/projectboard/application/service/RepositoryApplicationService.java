@@ -46,9 +46,6 @@ public class RepositoryApplicationService implements ApplicationService {
 
     @Override
     public ProjectApplication createApplicationForUser(User user, ProjectApplicationRequestDTO applicationDTO) throws AlreadyAppliedException {
-        // check if a valid user instance was passed
-        userService.validateExistence(user);
-
         Project project = projectService.getProjectById(applicationDTO.getProjectId());
 
         if(userHasAppliedForProject(user, project)) {
@@ -62,7 +59,7 @@ public class RepositoryApplicationService implements ApplicationService {
     }
 
     @Override
-    public List<ProjectApplication> getApplicationsOfUser(User user) throws UserNotFoundException {
+    public List<ProjectApplication> getApplicationsOfUser(User user) {
         return new ArrayList<>(user.getApplications());
     }
 

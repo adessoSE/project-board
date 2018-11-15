@@ -25,25 +25,13 @@ public class RepositoryBookmarkService implements BookmarkService {
 
     private final UserRepository userRepo;
 
-    private final LdapUserService userService;
-
-    private final RepositoryProjectService projectService;
-
     @Autowired
-    public RepositoryBookmarkService(UserRepository userRepo,
-                                     LdapUserService userService,
-                                     RepositoryProjectService projectService) {
+    public RepositoryBookmarkService(UserRepository userRepo) {
         this.userRepo = userRepo;
-        this.userService = userService;
-        this.projectService = projectService;
     }
 
     @Override
     public Project addBookmarkToUser(User user, Project project) {
-        // check if a valid user/project instance was passed
-        userService.validateExistence(user);
-        projectService.validateExistence(project);
-
         // add the project and persist the entity
         user.addBookmark(project);
         userRepo.save(user);

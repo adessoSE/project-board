@@ -21,7 +21,7 @@ import java.util.Objects;
  */
 public class StructureMapper implements AttributesMapper<StringStructure> {
 
-    private final User user;
+    final User user;
 
     /**
      *

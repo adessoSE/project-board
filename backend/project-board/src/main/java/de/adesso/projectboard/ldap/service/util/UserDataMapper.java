@@ -21,9 +21,9 @@ import java.util.Objects;
  */
 public class UserDataMapper implements AttributesMapper<UserData> {
 
-    private final List<User> users;
+    final List<User> users;
 
-    private final String idAttribute;
+    final String idAttribute;
 
     /**
      *
@@ -67,6 +67,9 @@ public class UserDataMapper implements AttributesMapper<UserData> {
     }
 
     /**
+     * Extracts the last name from the full name with the given
+     * first name. Can handle full names in a <i>[last name], [first name]</i>
+     * and <i>[first name] [last name]</i> pattern.
      *
      * @param givenName
      *          The given name.

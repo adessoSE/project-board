@@ -1,13 +1,12 @@
 package de.adesso.projectboard.base.access.persistence;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
- * {@link CrudRepository} to persist {@link AccessInfo} objects.
+ * {@link JpaRepository} to persist {@link AccessInfo} objects.
  *
  * @see AccessInfo
  */
-public interface AccessInfoRepository extends CrudRepository<AccessInfo, Long> {
-
+public interface AccessInfoRepository extends JpaRepository<AccessInfo, Long> {
 
 }
