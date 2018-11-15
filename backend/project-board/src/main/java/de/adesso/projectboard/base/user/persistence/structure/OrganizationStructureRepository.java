@@ -16,7 +16,7 @@ public interface OrganizationStructureRepository extends JpaRepository<Organizat
 
     boolean existsByUser(User user);
 
-    @Query("SELECT COUNT(o) " +
+    @Query("SELECT CASE WHEN COUNT(o) > 0 THEN true ELSE false END " +
             "FROM OrganizationStructure AS o " +
             "WHERE o.user = :user " +
             "AND o.staffMembers IS NOT EMPTY")
