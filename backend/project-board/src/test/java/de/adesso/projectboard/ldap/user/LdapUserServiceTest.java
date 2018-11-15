@@ -126,12 +126,9 @@ public class LdapUserServiceTest {
 
     @Test
     public void testUserIsManager_Cached_IsManager() {
-        // create new mock for a staff member
-        User staffMember = mock(User.class);
-
-        // set up repo/entity mock
-        when(orgStructRepo.findByUser(user)).thenReturn(Optional.of(orgStruct));
-        when(orgStruct.getStaffMembers()).thenReturn(Collections.singleton(staffMember));
+        // set up repo mock
+        when(orgStructRepo.existsByUser(user)).thenReturn(true);
+        when(orgStructRepo.existsByUserAndStaffMembersNotEmpty(user)).thenReturn(true);
 
         assertTrue(ldapUserService.userIsManager(user));
         verify(ldapService, never()).isManager("user");
@@ -139,9 +136,9 @@ public class LdapUserServiceTest {
 
     @Test
     public void testUserIsManager_Cached_NoManager() {
-        // set up repo/entity mocks
-        when(orgStructRepo.findByUser(user)).thenReturn(Optional.of(orgStruct));
-        when(orgStruct.getStaffMembers()).thenReturn(Collections.emptySet());
+        // set up repo mock
+        when(orgStructRepo.existsByUser(user)).thenReturn(true);
+        when(orgStructRepo.existsByUserAndStaffMembersNotEmpty(user)).thenReturn(false);
 
         assertFalse(ldapUserService.userIsManager(user));
         verify(ldapService, never()).isManager("user");
@@ -149,8 +146,7 @@ public class LdapUserServiceTest {
 
     @Test
     public void testUserIsManager_NotCached_IsManager() {
-        // set up repo/entity mocks
-        when(orgStructRepo.findByUser(user)).thenReturn(Optional.empty());
+        // set up service mock
         when(ldapService.isManager("user")).thenReturn(true);
 
         assertTrue(ldapUserService.userIsManager(user));
@@ -159,8 +155,7 @@ public class LdapUserServiceTest {
 
     @Test
     public void testUserIsManager_NotCached_NoManager() {
-        // set up repo/service mocks
-        when(orgStructRepo.findByUser(user)).thenReturn(Optional.empty());
+        // set up service mocks
         when(ldapService.isManager("user")).thenReturn(false);
 
         assertFalse(ldapUserService.userIsManager(user));

@@ -97,13 +97,13 @@ public class LdapUserService implements UserService {
      * for the {@code user} or a new instance based on the
      * returned {@link StringStructure} by {@link LdapService#getIdStructure(User)}
      * after persisting it if none is present.
-     * <p>
+     *
      * {@inheritDoc}
      *
      * @see LdapService#getIdStructure(User)
      */
     @Override
-    public OrganizationStructure getStructureForUser(User user) throws UserNotFoundException {
+    public OrganizationStructure getStructureForUser(User user) {
         // return the structure saved in the repo if one is present
         // or get the latest structure from the AD
         return structureRepo.findByUser(user).orElseGet(() -> {
@@ -111,11 +111,19 @@ public class LdapUserService implements UserService {
 
             StringStructure idStructure = ldapService.getIdStructure(user);
 
-            // get the corresponding User instances
-            User manager = getUserById(idStructure.getManager());
+            // get the corresponding manager instance
+            String managerId = idStructure.getManager();
+            User manager = userRepo.findById(managerId).orElseGet(() -> {
+                return userRepo.save(new User(managerId));
+            });
+
+            // get the corresponding staff member instances
             Set<User> staffMembers = idStructure.getStaffMembers()
-                    .stream()
-                    .map(this::getUserById)
+                    .parallelStream()
+                    .map(userId -> {
+                        return userRepo.findById(userId)
+                                .orElseGet(() -> userRepo.save(new User(userId)));
+                    })
                     .collect(Collectors.toSet());
 
             // return the persisted instance
@@ -127,13 +135,13 @@ public class LdapUserService implements UserService {
      * Returns the persisted {@link UserData} instance for the {@code user} iff
      * one is present. Returns the returned instance of {@link LdapService#getUserData(List)}
      * after persisting it.
-     * <p>
+     *
      * {@inheritDoc}
      *
      * @see LdapService#getUserData(List)
      */
     @Override
-    public UserData getUserData(User user) throws UserNotFoundException {
+    public UserData getUserData(User user) {
         Optional<UserData> dataOptional = dataRepo.findByUser(user);
 
         // return the persisted instance if it is present
@@ -175,7 +183,7 @@ public class LdapUserService implements UserService {
      * @see #getStructureForUser(User)
      */
     @Override
-    public boolean userHasStaffMember(User user, User staffMember) throws UserNotFoundException {
+    public boolean userHasStaffMember(User user, User staffMember) {
         return getStructureForUser(user)
                 .getStaffMembers()
                 .contains(staffMember);
@@ -186,11 +194,11 @@ public class LdapUserService implements UserService {
      * for the {@link User} with the given {@code userId} in case it is present and
      * returns the manager with the ID of the structure returned by
      * {@link LdapService#getIdStructure(User)}.
-     * <p>
+     *
      * {@inheritDoc}
      */
     @Override
-    public User getManagerOfUser(User user) throws UserNotFoundException {
+    public User getManagerOfUser(User user) {
         Optional<OrganizationStructure> structureOptional = structureRepo.findByUser(user);
 
         if (structureOptional.isPresent()) {
@@ -205,7 +213,7 @@ public class LdapUserService implements UserService {
     }
 
     @Override
-    public List<UserData> getStaffMemberDataOfUser(User user, Sorting sorting) throws UserNotFoundException {
+    public List<UserData> getStaffMemberDataOfUser(User user, Sorting sorting) {
         OrganizationStructure structureForUser = getStructureForUser(user);
         if (structureForUser.getStaffMembers().isEmpty()) {
             return Collections.emptyList();
@@ -241,7 +249,7 @@ public class LdapUserService implements UserService {
     }
 
     @Override
-    public void deleteUserById(String userId) throws UserNotFoundException {
+    public void deleteUserById(String userId) {
         // intentionally left blank
     }
 

@@ -14,9 +14,7 @@ import org.springframework.ldap.query.ContainerCriteria;
 import org.springframework.ldap.query.LdapQuery;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
@@ -142,7 +140,7 @@ public class LdapService {
 
         List<UserData> userDataList = ldapTemplate.search(query, new UserDataMapper(users, idAttribute));
 
-        validateResult(userDataList, users.size());
+        validateQueryResult(userDataList, users.size());
 
         return userDataList;
     }
@@ -157,10 +155,9 @@ public class LdapService {
      *          and {@link StringStructure#manager manager} fields contain the configured
      *          {@link LdapConfigurationProperties#getUserIdAttribute() user ID attribute} value.
      *
-     * @throws IllegalStateException
-     *          When the query results length differed from {@code 1}.
+     * @see StructureMapper
      */
-    public StringStructure getIdStructure(User user) throws IllegalStateException {
+    public StringStructure getIdStructure(User user) {
         LdapQuery query = query()
                 .base(base)
                 .attributes(idAttribute, "objectClass", "manager", "directReports")
@@ -170,17 +167,18 @@ public class LdapService {
 
         List<StringStructure> resultList = ldapTemplate.search(query, new StructureMapper(user));
 
-        validateResult(resultList, 1);
+        validateQueryResult(resultList, 1);
 
         // get the IDs of the user for the corresponding distinguished name
         StringStructure dnStructure = resultList.get(0);
 
-        Set<String> staffMemberIDs = dnStructure.getStaffMembers()
-                .stream()
-                .map(this::getUserIdByDN)
-                .collect(Collectors.toSet());
+        // get the staff member IDs
+        Set<String> staffMemberDns = dnStructure.getStaffMembers();
+        Set<String> staffMemberIDs = new HashSet<>(getUserIdsByDN(staffMemberDns));
 
-        String managerID = getUserIdByDN(dnStructure.getManager());
+        // get the manager ID separately
+        String managerDN = dnStructure.getManager();
+        String managerID = getUserIdsByDN(Collections.singleton(managerDN)).get(0);
 
         return new StringStructure(user, managerID, staffMemberIDs);
     }
@@ -194,12 +192,9 @@ public class LdapService {
      * @return
      *          The manager's ID.
      *
-     * @throws IllegalStateException
-     *          When the query result length differed from {@code 1}.
-     *
-     * @see #getUserIdByDN(String)
+     * @see #getUserIdsByDN(Collection)
      */
-    public String getManagerId(User user) throws IllegalStateException {
+    public String getManagerId(User user) {
         LdapQuery query = query()
                 .countLimit(1)
                 .base(base)
@@ -212,47 +207,75 @@ public class LdapService {
             return (String) attributes.get("manager").get();
         });
 
-        validateResult(managerList, 1);
+        validateQueryResult(managerList, 1);
 
-        return getUserIdByDN(managerList.get(0));
+        return getUserIdsByDN(managerList).get(0);
     }
 
     /**
      *
-     * @param dn
-     *          The distinguished name of the user.
+     * @param dns
+     *          The distinguished names of the users.
      *
      * @return
-     *          The configured {@link LdapConfigurationProperties#getUserIdAttribute() user ID attribute}'s
-     *          value.
-     *
-     * @throws IllegalStateException
-     *          When the query results length differed from {@code 1}.
-     *
+     *          A list of the configured users' {@link LdapConfigurationProperties#userIdAttribute id Attribute}
+     *          for every given DN.
      */
-    String getUserIdByDN(String dn) throws IllegalStateException {
-        LdapQuery query = query()
-                .countLimit(1)
-                .base(dn)
-                .attributes("distinguishedName", idAttribute)
-                .where("distinguishedName").isPresent()
-                .and(idAttribute).isPresent();
+    List<String> getUserIdsByDN(Collection<String> dns) {
+        // build a criteria for all DNs
+        ContainerCriteria dnCriteria = null;
+        for(String dn : dns) {
+            if(dnCriteria == null) {
+                dnCriteria = query()
+                        .where("distinguishedName")
+                        .is(dn);
+            } else {
+                dnCriteria
+                        .or("distinguishedName")
+                        .is(dn);
+            }
+        }
 
-        List<String> idList = ldapTemplate.search(query, (AttributesMapper<String>) attributes -> {
+        // build the main query
+        LdapQuery query = query()
+                .countLimit(dns.size())
+                .base(base)
+                .attributes(idAttribute)
+                .where("distinguishedName").isPresent()
+                .and(idAttribute).isPresent()
+                .and(dnCriteria);
+
+        // get the query result and get the id attribute
+        List<String> userIds = ldapTemplate.search(query, (AttributesMapper<String>) attributes -> {
             return (String) attributes.get(idAttribute).get();
         });
 
-        validateResult(idList, 1);
+        validateQueryResult(userIds, dns.size());
 
-        return idList.get(0);
+        return userIds;
     }
 
-    void validateResult(List<?> resultList, int expectedSize) throws IllegalStateException {
-        if(resultList != null) {
-            if(resultList.size() != expectedSize) {
-                throw new IllegalStateException("Illegal result count: " + resultList.size());
-            }
+    /**
+     *
+     * @param resultList
+     *          The result list to verify.
+     *
+     * @param expectedSize
+     *          The expected result size.
+     *
+     * @param <T>
+     *          The type of the list.
+     *
+     * @throws IllegalStateException
+     *          When the given {@code resultList}'s {@link List#size()}
+     *          differs from the given {@code expectedSize}.
+     */
+    <T> List<T> validateQueryResult(List<T> resultList, int expectedSize) throws IllegalStateException {
+        if(Objects.requireNonNull(resultList).size() != expectedSize) {
+            throw new IllegalStateException("Illegal result count: " + resultList.size());
         }
+
+        return resultList;
     }
 
 }
