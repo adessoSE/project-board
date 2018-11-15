@@ -85,13 +85,11 @@ public class LdapUserService implements UserService {
      */
     @Override
     public boolean userIsManager(User user) {
-        Optional<OrganizationStructure> structureOptional =
-                structureRepo.findByUser(user);
-
-        return structureOptional.map(organizationStructure -> {
-            return !organizationStructure.getStaffMembers().isEmpty();
-        })
-                .orElseGet(() -> ldapService.isManager(user.getId()));
+        if(structureRepo.existsByUser(user)) {
+            return structureRepo.existsByUserAndStaffMembersNotEmpty(user);
+        } else {
+            return ldapService.isManager(user.getId());
+        }
     }
 
     /**

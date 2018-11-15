@@ -27,12 +27,16 @@ public class LdapService {
 
     private final LdapTemplate ldapTemplate;
 
-    private final LdapConfigurationProperties ldapProperties;
+    private final String base;
+
+    private final String idAttribute;
 
     @Autowired
     public LdapService(LdapTemplate ldapTemplate, LdapConfigurationProperties ldapProperties) {
         this.ldapTemplate = ldapTemplate;
-        this.ldapProperties = ldapProperties;
+
+        this.base = ldapProperties.getLdapBase();
+        this.idAttribute = ldapProperties.getUserIdAttribute();
     }
 
     /**
@@ -50,9 +54,6 @@ public class LdapService {
      * @see LdapConfigurationProperties#getUserIdAttribute()
      */
     public boolean userExists(String userId) {
-        String idAttribute = ldapProperties.getUserIdAttribute();
-        String base = ldapProperties.getLdapBase();
-
         LdapQuery query = query()
                 .countLimit(1)
                 .base(base)
@@ -81,9 +82,6 @@ public class LdapService {
      *          present, is <i>not empty</i>.
      */
     public boolean isManager(String userId) {
-        String idAttribute = ldapProperties.getUserIdAttribute();
-        String base = ldapProperties.getLdapBase();
-
         LdapQuery query = query()
                 .countLimit(1)
                 .base(base)
@@ -111,9 +109,6 @@ public class LdapService {
         if(Objects.requireNonNull(users).isEmpty()) {
             throw new IllegalArgumentException("Users collection can not be empty!");
         }
-
-        String idAttribute = ldapProperties.getUserIdAttribute();
-        String base = ldapProperties.getLdapBase();
 
         // get IDs
         List<String> userIds = users
@@ -146,6 +141,7 @@ public class LdapService {
                 .and(idCriteria);
 
         List<UserData> userDataList = ldapTemplate.search(query, new UserDataMapper(users, idAttribute));
+
         validateResult(userDataList, users.size());
 
         return userDataList;
@@ -165,9 +161,6 @@ public class LdapService {
      *          When the query results length differed from {@code 1}.
      */
     public StringStructure getIdStructure(User user) throws IllegalStateException {
-        String idAttribute = ldapProperties.getUserIdAttribute();
-        String base = ldapProperties.getLdapBase();
-
         LdapQuery query = query()
                 .base(base)
                 .attributes(idAttribute, "objectClass", "manager", "directReports")
@@ -207,9 +200,6 @@ public class LdapService {
      * @see #getUserIdByDN(String)
      */
     public String getManagerId(User user) throws IllegalStateException {
-        String idAttribute = ldapProperties.getUserIdAttribute();
-        String base = ldapProperties.getLdapBase();
-
         LdapQuery query = query()
                 .countLimit(1)
                 .base(base)
@@ -241,8 +231,6 @@ public class LdapService {
      *
      */
     String getUserIdByDN(String dn) throws IllegalStateException {
-        String idAttribute = ldapProperties.getUserIdAttribute();
-
         LdapQuery query = query()
                 .countLimit(1)
                 .base(dn)
