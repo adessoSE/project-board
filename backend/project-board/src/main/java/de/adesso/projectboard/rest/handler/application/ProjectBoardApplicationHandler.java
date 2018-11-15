@@ -40,10 +40,10 @@ public class ProjectBoardApplicationHandler implements ProjectApplicationHandler
     @Override
     public void onApplicationReceived(ProjectApplication application) {
         User user = application.getUser();
-        User manager = userService.getManagerOfUser(user.getId());
+        User manager = userService.getManagerOfUser(user);
 
-        UserData userData = userService.getUserData(user.getId());
-        UserData managerData = userService.getUserData(manager.getId());
+        UserData userData = userService.getUserData(user);
+        UserData managerData = userService.getUserData(manager);
 
         TemplateMessage message = new ApplicationTemplateMessage(application, userData, managerData);
 

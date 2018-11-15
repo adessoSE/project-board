@@ -5,6 +5,7 @@ import de.adesso.projectboard.base.application.rest.ApplicationController;
 import de.adesso.projectboard.base.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
+import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.rest.BookmarkController;
 import de.adesso.projectboard.base.user.rest.UserController;
 import de.adesso.projectboard.base.user.service.UserProjectService;
@@ -54,13 +55,13 @@ public class ProjectController {
     @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
     @GetMapping
     public Iterable<Project> getAllForUser(@SortDefault(direction = Sort.Direction.DESC, sort = "updated") Sort sort) {
-        return userProjectService.getProjectsForUser(userService.getAuthenticatedUserId(), Sorting.fromSort(sort));
+        return userProjectService.getProjectsForUser(userService.getAuthenticatedUser(), Sorting.fromSort(sort));
     }
 
     @PreAuthorize("hasPermissionToCreateProjects() || hasRole('admin')")
     @PostMapping
     public Project createProject(@Valid @RequestBody ProjectRequestDTO projectDTO) {
-        return userProjectService.createProjectForUser(projectDTO, userService.getAuthenticatedUserId());
+        return userProjectService.createProjectForUser(projectDTO, userService.getAuthenticatedUser());
     }
 
     @PreAuthorize("hasPermissionToEditProject(#projectId) || hasRole('admin')")
@@ -75,9 +76,9 @@ public class ProjectController {
         if(keyword == null || keyword.isEmpty()) {
             return getAllForUser(sort);
         } else {
-            String userId = userService.getAuthenticatedUserId();
+            User user = userService.getAuthenticatedUser();
 
-            return userProjectService.searchProjectsForUser(userId, keyword, Sorting.fromSort(sort));
+            return userProjectService.searchProjectsForUser(user, keyword, Sorting.fromSort(sort));
         }
     }
 

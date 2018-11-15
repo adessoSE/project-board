@@ -9,8 +9,10 @@ import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.service.ApplicationService;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.project.rest.ProjectController;
+import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.rest.BookmarkController;
 import de.adesso.projectboard.base.user.rest.UserController;
+import de.adesso.projectboard.base.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -33,15 +35,19 @@ public class ApplicationController {
 
     private final ApplicationDtoFactory applicationDtoFactory;
 
+    private final UserService userService;
+
     private final ApplicationService applicationService;
 
     private final ProjectApplicationHandler applicationHandler;
 
     @Autowired
     public ApplicationController(ApplicationDtoFactory applicationDtoFactory,
+                                 UserService userService,
                                  ApplicationService applicationService,
                                  ProjectApplicationHandler applicationHandler) {
         this.applicationDtoFactory = applicationDtoFactory;
+        this.userService = userService;
         this.applicationService = applicationService;
         this.applicationHandler = applicationHandler;
     }
@@ -49,7 +55,9 @@ public class ApplicationController {
     @PreAuthorize("(hasPermissionToAccessUser(#userId) && hasPermissionToApply()) || hasRole('admin')")
     @PostMapping(path = "/{userId}/applications")
     public ProjectApplicationResponseDTO createApplicationForUser(@Valid @RequestBody ProjectApplicationRequestDTO requestDTO, @PathVariable("userId") String userId) {
-        ProjectApplication application = applicationService.createApplicationForUser(requestDTO, userId);
+        User user = userService.getUserById(userId);
+
+        ProjectApplication application = applicationService.createApplicationForUser(user, requestDTO);
 
         // call the handler method
         applicationHandler.onApplicationReceived(application);
@@ -60,7 +68,9 @@ public class ApplicationController {
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @GetMapping(path = "/{userId}/applications")
     public Collection<ProjectApplicationResponseDTO> getApplicationsOfUser(@PathVariable("userId") String userId) throws UserNotFoundException {
-        return applicationService.getApplicationsOfUser(userId).stream()
+        User user = userService.getUserById(userId);
+
+        return applicationService.getApplicationsOfUser(user).stream()
                 .map(applicationDtoFactory::createDto)
                 .collect(Collectors.toList());
     }

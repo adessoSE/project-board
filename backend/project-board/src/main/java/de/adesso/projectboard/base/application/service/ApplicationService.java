@@ -2,8 +2,7 @@ package de.adesso.projectboard.base.application.service;
 
 import de.adesso.projectboard.base.application.dto.ProjectApplicationRequestDTO;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
-import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
-import de.adesso.projectboard.base.exceptions.UserNotFoundException;
+import de.adesso.projectboard.base.exceptions.AlreadyAppliedException;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.user.persistence.User;
 
@@ -16,58 +15,45 @@ public interface ApplicationService {
 
     /**
      *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User}.
+     * @param user
+     *          The {@link User}.
      *
-     * @param projectId
-     *          The {@link Project#id ID} of the {@link Project}.
+     * @param project
+     *          The {@link Project}.
      *
      * @return
      *          {@code true}, iff the user's {@link User#applications applications}
      *          contain an application that refers to the project.
-     *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId} was found.
-     *
-     * @throws ProjectNotFoundException
-     *          When no {@link Project} with the given {@code projectId} was found.
      */
-    boolean userHasAppliedForProject(String userId, String projectId) throws UserNotFoundException, ProjectNotFoundException;
+    boolean userHasAppliedForProject(User user, Project project);
 
     /**
      * Creates a new {@link ProjectApplication} and add it
      * to the user's {@link User#applications applications}.
      *
+     * @param user
+     *          The {@link User} to create an application for.
+     *
      * @param applicationDTO
      *          The {@link ProjectApplicationRequestDTO} instance.
-     *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User} to create an
-     *          application for.
      *
      * @return
      *          The created {@link ProjectApplication}.
      *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId} was found.
-     *
-     * @throws ProjectNotFoundException
-     *          When no {@link Project} with the given {@code projectId} was found.
+     * @throws AlreadyAppliedException
+     *          When the given {@code user} has already applied for the project.
      */
-    ProjectApplication createApplicationForUser(ProjectApplicationRequestDTO applicationDTO, String userId) throws UserNotFoundException, ProjectNotFoundException;
+    ProjectApplication createApplicationForUser(User user, ProjectApplicationRequestDTO applicationDTO) throws AlreadyAppliedException;
 
     /**
      *
-     * @param userId
+     * @param user
      *          The {@link User#id ID} of the {@link User} to get the
      *          applications of.
      *
      * @return
-     *          The user's applications.
-     *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId} was found.
+     *          The user's {@link ProjectApplication applications}.
      */
-    List<ProjectApplication> getApplicationsOfUser(String userId) throws UserNotFoundException;
+    List<ProjectApplication> getApplicationsOfUser(User user);
 
 }

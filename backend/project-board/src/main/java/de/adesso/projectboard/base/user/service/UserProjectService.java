@@ -1,7 +1,5 @@
 package de.adesso.projectboard.base.user.service;
 
-import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
-import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.user.persistence.User;
@@ -18,9 +16,8 @@ public interface UserProjectService {
 
     /**
      *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User} to get the
-     *          {@link Project}s for.
+     * @param user
+     *          The {@link User} to get the {@link Project}s for.
      *
      * @param sorting
      *          The {@link Sorting} to apply.
@@ -28,16 +25,13 @@ public interface UserProjectService {
      * @return
      *          A {@link List} of {@link Project}s sorted accordingly.
      *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId} was found.
      */
-    List<Project> getProjectsForUser(String userId, Sorting sorting) throws UserNotFoundException;
+    List<Project> getProjectsForUser(User user, Sorting sorting);
 
     /**
      *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User} to get the
-     *          {@link Project}s for.
+     * @param user
+     *          The {@link User} to get the {@link Project}s for.
      *
      * @param keyword
      *          The keyword to search for.
@@ -47,31 +41,22 @@ public interface UserProjectService {
      *
      * @return
      *          A {@link List} of {@link Project}s sorted accordingly.
-     *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId} was found.
      */
-    List<Project> searchProjectsForUser(String userId, String keyword, Sorting sorting) throws UserNotFoundException;
+    List<Project> searchProjectsForUser(User user, String keyword, Sorting sorting);
 
     /**
      *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User}.
+     * @param user
+     *          The {@link User}.
      *
-     * @param projectId
-     *          The {@link Project#id ID} of the {@link Project}.
+     * @param project
+     *          The {@link Project}.
      *
      * @return
-     *          {@code true}, iff the user with the given {@code userId} has
-     *          created the project with the given {@code projectId}.
-     *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId} was found.
-     *
-     * @throws ProjectNotFoundException
-     *          When no {@link Project} with the given {@code projectId} was found.
+     *          {@code true}, iff the given {@code user} owns the
+     *          given {@code project}.
      */
-    boolean userOwnsProject(String userId, String projectId) throws UserNotFoundException, ProjectNotFoundException;
+    boolean userOwnsProject(User user, Project project);
 
     /**
      * Creates a {@link Project} and adds it to the {@link User}'s
@@ -81,40 +66,31 @@ public interface UserProjectService {
      *          The {@link ProjectRequestDTO} to create the {@link Project}
      *          from.
      *
-     * @param userId
-     *          The {@link User#id ID} of the {@link User} to create the {@link Project}
+     * @param user
+     *          The {@link User} to create the {@link Project}
      *          for.
      *
      * @return
      *          The created {@link Project}.
-     *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId} was found.
      */
-    Project createProjectForUser(ProjectRequestDTO projectDTO, String userId) throws UserNotFoundException;
+    Project createProjectForUser(ProjectRequestDTO projectDTO, User user);
 
     /**
-     * Adds a {@link Project} to the the {@link User}'s
+     * Adds a existing {@link Project} to the the {@link User}'s
      * {@link User#ownedProjects owned projects}.
      *
-     * @param userId
+     * @param user
      *          The {@link User#id ID} of the {@link User} to add the {@link Project}
      *          to.
      *
-     * @param projectId
-     *          The {@link Project#id ID} of the {@link Project}.
+     * @param project
+     *          The existing {@link Project}.
      *
      * @return
      *          The added {@link Project}.
      *
-     * @throws UserNotFoundException
-     *          When no {@link User} with the given {@code userId} was found.
-     *
-     * @throws ProjectNotFoundException
-     *          When no {@link Project} with the given {@code projectId} was found.
-     *
-     * @see #createProjectForUser(ProjectRequestDTO, String)
+     * @see #createProjectForUser(ProjectRequestDTO, User)
      */
-    Project addProjectToUser(String userId, String projectId) throws UserNotFoundException, ProjectNotFoundException;
+    Project addProjectToUser(User user, Project project);
 
 }

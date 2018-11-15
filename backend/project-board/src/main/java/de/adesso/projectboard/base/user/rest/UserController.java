@@ -53,8 +53,10 @@ public class UserController {
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @GetMapping(path = "/{userId}/staff")
     public Iterable<UserResponseDTO> getStaffMembersOfUser(@PathVariable("userId") String userId, Sort sort) throws UserNotFoundException {
+        User user = userService.getUserById(userId);
+
         return userService
-                .getStaffMemberDataOfUser(userId, Sorting.fromSort(sort))
+                .getStaffMemberDataOfUser(user, Sorting.fromSort(sort))
                 .stream()
                 .map(userDtoFactory::createDTO)
                 .collect(Collectors.toList());

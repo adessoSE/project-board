@@ -148,30 +148,32 @@ public class RepositoryProjectService implements ProjectService, UserProjectServ
     }
 
     @Override
-    public List<Project> getProjectsForUser(String userId, Sorting sorting) throws UserNotFoundException {
-        if(userService.userIsManager(userId)) {
+    public List<Project> getProjectsForUser(User user, Sorting sorting) {
+        if(userService.userIsManager(user)) {
             return projectRepo.findAllByStatusEscalatedOrOpen(sorting.toSort());
         } else {
-            String lob = userService.getUserData(userId).getLob();
+            String lob = userService.getUserData(user).getLob();
 
             return projectRepo.findAllByStatusEscalatedOrOpenOrSameLob(lob, sorting.toSort());
         }
     }
 
     @Override
-    public List<Project> searchProjectsForUser(String userId, String keyword, Sorting sorting) throws UserNotFoundException {
+    public List<Project> searchProjectsForUser(User user, String keyword, Sorting sorting) {
         // TODO: implement
         return Collections.emptyList();
     }
 
     @Override
-    public boolean userOwnsProject(String userId, String projectId) throws UserNotFoundException, ProjectNotFoundException {
-        return userRepo.existsByIdAndOwnedProjectsContaining(userId, getProjectById(projectId));
+    public boolean userOwnsProject(User user, Project project) {
+        return userRepo.existsByIdAndOwnedProjectsContaining(user.getId(), project);
     }
 
     @Override
-    public Project createProjectForUser(ProjectRequestDTO projectDTO, String userId) throws UserNotFoundException {
-        User user = userService.getUserById(userId);
+    public Project createProjectForUser(ProjectRequestDTO projectDTO, User user) {
+        // check if a valid user instance was passed
+        userService.validateExistence(user);
+
         Project createdProject = createProject(projectDTO);
 
         user.addOwnedProject(createdProject);
@@ -181,11 +183,12 @@ public class RepositoryProjectService implements ProjectService, UserProjectServ
     }
 
     @Override
-    public Project addProjectToUser(String userId, String projectId) throws UserNotFoundException, ProjectNotFoundException {
-        User user = userService.getUserById(userId);
-        Project project = getProjectById(projectId);
+    public Project addProjectToUser(User user, Project project) {
+        // check if a valid user instance was passed
+        userService.validateExistence(user);
 
         user.addOwnedProject(project);
+        userService.save(user);
 
         return project;
     }
