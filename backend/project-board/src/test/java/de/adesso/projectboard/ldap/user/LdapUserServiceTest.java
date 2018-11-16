@@ -128,7 +128,7 @@ public class LdapUserServiceTest {
     public void testUserIsManager_Cached_IsManager() {
         // set up repo mock
         when(orgStructRepo.existsByUser(user)).thenReturn(true);
-        when(orgStructRepo.existsByUserAndStaffMembersNotEmpty(user)).thenReturn(true);
+        when(orgStructRepo.existsByUserAndIsManager(user)).thenReturn(true);
 
         assertTrue(ldapUserService.userIsManager(user));
         verify(ldapService, never()).isManager("user");
@@ -138,7 +138,7 @@ public class LdapUserServiceTest {
     public void testUserIsManager_Cached_NoManager() {
         // set up repo mock
         when(orgStructRepo.existsByUser(user)).thenReturn(true);
-        when(orgStructRepo.existsByUserAndStaffMembersNotEmpty(user)).thenReturn(false);
+        when(orgStructRepo.existsByUserAndIsManager(user)).thenReturn(false);
 
         assertFalse(ldapUserService.userIsManager(user));
         verify(ldapService, never()).isManager("user");
@@ -196,6 +196,7 @@ public class LdapUserServiceTest {
         assertEquals(manager, structureForUser.getManager());
         assertEquals(1, structureForUser.getStaffMembers().size());
         assertTrue(structureForUser.getStaffMembers().contains(staffMember));
+        assertTrue(structureForUser.isManager());
 
         verify(orgStructRepo).save(any());
     }

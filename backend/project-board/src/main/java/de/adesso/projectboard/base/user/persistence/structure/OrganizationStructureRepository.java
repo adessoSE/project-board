@@ -2,8 +2,6 @@ package de.adesso.projectboard.base.user.persistence.structure;
 
 import de.adesso.projectboard.base.user.persistence.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
@@ -16,10 +14,6 @@ public interface OrganizationStructureRepository extends JpaRepository<Organizat
 
     boolean existsByUser(User user);
 
-    @Query("SELECT CASE WHEN COUNT(o) > 0 THEN true ELSE false END " +
-            "FROM OrganizationStructure AS o " +
-            "WHERE o.user = :user " +
-            "AND o.staffMembers IS NOT EMPTY")
-   boolean existsByUserAndStaffMembersNotEmpty(@Param("user") User user);
+    boolean existsByUserAndUserIsManager(User user, boolean manager);
 
 }

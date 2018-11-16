@@ -122,7 +122,7 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
             UserData userData = userService.getUserData(user);
 
             boolean isManager = userService.userIsManager(user);
-            boolean isOpen = "offen".equalsIgnoreCase(project.getStatus());
+            boolean isOpen = "open".equalsIgnoreCase(project.getStatus());
             boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
             boolean sameLobAsUser = userData.getLob().equalsIgnoreCase(project.getLob());
             boolean noLob = project.getLob() == null;

@@ -86,7 +86,7 @@ public class LdapUserService implements UserService {
     @Override
     public boolean userIsManager(User user) {
         if(structureRepo.existsByUser(user)) {
-            return structureRepo.existsByUserAndStaffMembersNotEmpty(user);
+            return structureRepo.existsByUserAndUserIsManager(user, true);
         } else {
             return ldapService.isManager(user.getId());
         }
@@ -126,8 +126,11 @@ public class LdapUserService implements UserService {
                     })
                     .collect(Collectors.toSet());
 
-            // return the persisted instance
-            return structureRepo.save(new OrganizationStructure(user, manager, staffMembers));
+            // a user is a manager when he has at least one staff member
+            OrganizationStructure structure = new OrganizationStructure(user, manager, staffMembers, !staffMembers.isEmpty());
+
+            // return the newly created, persisted instance
+            return structureRepo.save(structure);
         });
     }
 

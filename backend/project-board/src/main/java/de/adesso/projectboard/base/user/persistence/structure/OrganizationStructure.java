@@ -44,6 +44,9 @@ public class OrganizationStructure {
     )
     Set<User> staffMembers = new HashSet<>();
 
+    @Column(name = "USER_IS_MANAGER")
+    boolean userIsManager;
+
     /**
      *
      * @param user
@@ -54,11 +57,15 @@ public class OrganizationStructure {
      *
      * @param staffMembers
      *          The staff members of the user.
+     *
+     * @param userIsManager
+     *          Whether or not the user is a manager himself.
      */
-    public OrganizationStructure(User user, User manager, Set<User> staffMembers) {
+    public OrganizationStructure(User user, User manager, Set<User> staffMembers, boolean userIsManager) {
         this.user = user;
         this.manager = manager;
         this.staffMembers = staffMembers;
+        this.userIsManager = userIsManager;
     }
 
 }
