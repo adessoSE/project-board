@@ -52,7 +52,7 @@ public class AccessInfo {
      * set to the current {@link LocalDateTime}.
      *
      * <p>
-     *     <b>Note</b>: The instance <b>is not</b> added to the
+     *     <b>Note</b>: The instance <b>is</b> added to the
      *     {@code user}'s {@link User#getAccessInfoList() info list}.
      * </p>
      *
@@ -70,7 +70,7 @@ public class AccessInfo {
 
     /**
      * <p>
-     *     <b>Note</b>: The instance <b>is not</b> added to the
+     *     <b>Note</b>: The instance <b>is</b> added to the
      *     {@code user}'s {@link User#getAccessInfoList() info list}.
      * </p>
      *
@@ -96,6 +96,8 @@ public class AccessInfo {
         this.user = user;
         this.accessStart = accessStart;
         this.accessEnd = accessEnd;
+
+        user.addAccessInfo(this);
     }
 
     /**

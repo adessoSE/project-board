@@ -1,0 +1,8 @@
+-- Requires Users.sql to be executed first
+
+INSERT INTO ORG_STRUCTURE (ID, USER_ID, USER_MANAGER_ID, USER_IS_MANAGER) VALUES
+(1, 'User2', 'User1', 1);
+
+INSERT INTO ORG_STRUCTURE_STAFF (ORG_STRUCTURE_ID, USER_ID) VALUES
+(1, 'User3'),
+(1, 'User4');

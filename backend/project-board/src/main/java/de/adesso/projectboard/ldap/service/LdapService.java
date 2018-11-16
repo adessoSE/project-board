@@ -101,7 +101,11 @@ public class LdapService {
      *          The {@link UserData} instances for the given {@code users}.
      *
      * @throws IllegalStateException
-     *          When the query results length differed from {@code 1}.
+     *          When the query results length the given {@code users} collection
+     *          length.
+     *
+     * @throws IllegalArgumentException
+     *          When a empty {@code users} collection was passed.
      */
     public List<UserData> getUserData(List<User> users) throws IllegalStateException {
         if(Objects.requireNonNull(users).isEmpty()) {
@@ -130,6 +134,7 @@ public class LdapService {
         // query for every user
         LdapQuery query = query()
                 .base(base)
+                .countLimit(users.size())
                 .attributes(idAttribute, "name", "givenName", "userPrincipalName", "mail", "division", "objectClass")
                 .where("name").isPresent()
                 .and("givenName").isPresent()
@@ -222,6 +227,10 @@ public class LdapService {
      *          for every given DN.
      */
     List<String> getUserIdsByDN(Collection<String> dns) {
+        if(dns.isEmpty()) {
+            return Collections.emptyList();
+        }
+
         // build a criteria for all DNs
         ContainerCriteria dnCriteria = null;
         for(String dn : dns) {

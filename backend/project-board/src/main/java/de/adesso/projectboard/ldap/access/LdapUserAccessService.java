@@ -32,16 +32,13 @@ public class LdapUserAccessService implements UserAccessService {
             throw new IllegalArgumentException("End date must lie in the future!");
         }
 
-        // check if a valid user instance was passed
-        userService.validateExistence(user);
-
         AccessInfo latestInfo = user.getLatestAccessInfo();
         List<AccessInfo> infoList = user.getAccessInfoList();
 
         if(latestInfo == null || !latestInfo.isCurrentlyActive()) {
             AccessInfo info = new AccessInfo(user, LocalDateTime.now(), until);
             infoList.add(info);
-            userService.save(user);
+            return userService.save(user);
         } else {
             latestInfo.setAccessEnd(until);
 
@@ -53,9 +50,6 @@ public class LdapUserAccessService implements UserAccessService {
 
     @Override
     public User removeAccessFromUser(User user) {
-        // check if a valid user instance was passed
-        userService.validateExistence(user);
-
         AccessInfo latestInfo = user.getLatestAccessInfo();
 
         if(latestInfo != null && latestInfo.isCurrentlyActive()) {

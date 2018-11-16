@@ -7,10 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Entity to persist information about users.
@@ -67,7 +64,7 @@ public class User {
 
     /**
      * The user's {@link AccessInfo} objects to evaluate
-     * REST interface access.
+     * access.
      */
     @OneToMany(
             cascade = CascadeType.ALL,
@@ -112,6 +109,18 @@ public class User {
 
     /**
      *
+     * @param project
+     *          The {@link Project} to remove the bookmark for.
+     *
+     * @return
+     *          The result of {@link Set#remove(Object)}.
+     */
+    public boolean removeBookmark(Project project) {
+        return this.bookmarks.remove(project);
+    }
+
+    /**
+     *
      * @param application
      *          The {@link ProjectApplication} to add to this user.
      *
@@ -130,18 +139,6 @@ public class User {
         }
 
         return applications.add(application);
-    }
-
-    /**
-     *
-     * @param project
-     *          The {@link Project} to remove the bookmark for.
-     *
-     * @return
-     *          The result of {@link Set#remove(Object)}.
-     */
-    public boolean removeBookmark(Project project) {
-        return this.bookmarks.remove(project);
     }
 
     /**
@@ -194,6 +191,40 @@ public class User {
      */
     public boolean removeOwnedProject(Project project) {
         return ownedProjects.remove(project);
+    }
+
+    /**
+     *
+     * @param info
+     *          The {@link AccessInfo} to add.
+     *
+     * @return
+     *          The result of {@link List#add(Object)}.
+     *
+     * @throws IllegalArgumentException
+     *          When the given {@code info}'s {@link AccessInfo#user user}
+     *          is not equal to {@code this} user.
+     */
+    public boolean addAccessInfo(AccessInfo info) throws IllegalArgumentException {
+        Objects.requireNonNull(info);
+
+        if(!this.equals(info.getUser())) {
+            throw new IllegalArgumentException("Info instance belongs to a different or no user!");
+        }
+
+        return accessInfoList.add(info);
+    }
+
+    /**
+     *
+     * @param info
+     *          The {@link AccessInfo} to remove.
+     *
+     * @return
+     *          The result of {@link List#remove(Object)}.
+     */
+    public boolean removeAccessInfo(AccessInfo info) {
+        return accessInfoList.remove(info);
     }
 
 }

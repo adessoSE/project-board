@@ -53,8 +53,6 @@ public class RepositoryApplicationService implements ApplicationService {
         }
 
         ProjectApplication application = new ProjectApplication(project, applicationDTO.getComment(), user);
-
-        userService.save(user);
         return applicationRepo.save(application);
     }
 
