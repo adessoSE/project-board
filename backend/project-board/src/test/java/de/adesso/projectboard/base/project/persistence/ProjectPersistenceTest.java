@@ -5,32 +5,57 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Sort;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
+@TestPropertySource("classpath:application-persistence-test.properties")
 public class ProjectPersistenceTest {
 
     @Autowired
-    private ProjectRepository projectRepository;
+    ProjectRepository projectRepository;
 
     private final Sort sort = Sort.unsorted();
 
     @Test
-    @Sql("classpath:de/adesso/projectboard/core/base/persistence/Projects.sql")
-    public void testSave_OK() {
-        Optional<Project> projectOptional = projectRepository.findById("STF-1");
-        assertTrue(projectOptional.isPresent());
+    public void testSave() {
+        LocalDateTime created = LocalDateTime.of(2018, 2, 1, 13, 37);
+        LocalDateTime updated = LocalDateTime.of(2018, 2, 2, 13, 37);
 
-        Project retrievedProject = projectOptional.get();
+        Project project = new Project()
+                .setId("STF-1")
+                .setStatus("eskaliert")
+                .setIssuetype("Issuetype")
+                .setTitle("Title")
+                .setLabels(Arrays.asList("Label 1", "Label 2", "Label 3"))
+                .setJob("Job")
+                .setSkills("Skills")
+                .setDescription("Description")
+                .setLob("LOB Test")
+                .setCustomer("Customer")
+                .setLocation("Location")
+                .setOperationStart("OperationStart")
+                .setOperationEnd("OperationEnd")
+                .setEffort("Effort")
+                .setCreated(created)
+                .setUpdated(updated)
+                .setFreelancer("Freelancer")
+                .setElongation("Elongation")
+                .setOther("Other")
+                .setOrigin(ProjectOrigin.CUSTOM);
+
+        projectRepository.save(project);
+        Project retrievedProject = projectRepository.findById("STF-1").orElseThrow(EntityNotFoundException::new);
 
         assertEquals("STF-1", retrievedProject.getId());
         assertEquals("eskaliert", retrievedProject.getStatus());
@@ -45,8 +70,8 @@ public class ProjectPersistenceTest {
         assertEquals("OperationStart", retrievedProject.getOperationStart());
         assertEquals("OperationEnd", retrievedProject.getOperationEnd());
         assertEquals("Effort", retrievedProject.getEffort());
-        assertEquals(LocalDateTime.of(2018, 2, 1, 13, 37), retrievedProject.getCreated());
-        assertEquals(LocalDateTime.of(2018, 2, 2, 13, 37), retrievedProject.getUpdated());
+        assertEquals(created, retrievedProject.getCreated());
+        assertEquals(updated, retrievedProject.getUpdated());
         assertEquals("Freelancer", retrievedProject.getFreelancer());
         assertEquals("Elongation", retrievedProject.getElongation());
         assertEquals("Other", retrievedProject.getOther());
@@ -106,21 +131,21 @@ public class ProjectPersistenceTest {
     }
 
     @Test
-    @Sql("classpath:de/adesso/projectboard/core/base/persistence/Projects.sql")
+    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
     public void testFindAllByEscalatedOrOpenOrSameLob() {
         // get a list of all projects for a user of the lob "LOB Test"
         List<Project> allForUser = projectRepository.findAllByStatusEscalatedOrOpenOrSameLob("LOB Test", sort);
 
         boolean allEscalatedOrFromSameLobOrNoLob = allForUser.stream()
                 .allMatch(project -> {
-                    boolean isOpen = "offen".equalsIgnoreCase(project.getStatus());
+                    boolean isOpen = "open".equalsIgnoreCase(project.getStatus());
                     boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
                     boolean sameLobAsUser = "LOB Test".equalsIgnoreCase(project.getLob());
                     boolean noLob = project.getLob() == null;
 
                     // escalated || isOpen <-> (sameLob || noLob)
                     // equivalence because implication is not enough
-                    // when the status is neither "eskaliert" nor "offen"
+                    // when the status is neither "eskaliert" nor "open"
                     return isEscalated || (isOpen && (sameLobAsUser || noLob) || (!isOpen && !(sameLobAsUser || noLob)));
                 });
 
@@ -130,7 +155,7 @@ public class ProjectPersistenceTest {
     }
 
     @Test
-    @Sql("classpath:de/adesso/projectboard/core/base/persistence/Projects.sql")
+    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
     public void testFindAllByEscalatedOrOpen() {
         // get a list of all projects for a superuser
         List<Project> allForUser = projectRepository.findAllByStatusEscalatedOrOpen(sort);
@@ -139,7 +164,7 @@ public class ProjectPersistenceTest {
         boolean allEscalatedOrOpen =
                 allForUser.stream()
                         .allMatch(project -> {
-                            boolean isOpen = "offen".equalsIgnoreCase(project.getStatus());
+                            boolean isOpen = "open".equalsIgnoreCase(project.getStatus());
                             boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
 
                             return isOpen || isEscalated;

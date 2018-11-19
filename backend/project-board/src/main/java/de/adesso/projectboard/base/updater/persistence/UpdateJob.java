@@ -1,8 +1,6 @@
 package de.adesso.projectboard.base.updater.persistence;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -18,6 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UpdateJob {
 
     @Id
@@ -39,10 +38,6 @@ public class UpdateJob {
             length = 512
     )
     String failureReason;
-
-    protected UpdateJob() {
-        // protected no-arg constructor for JPA
-    }
 
     public UpdateJob(LocalDateTime time, Status status) {
         this.time = time;

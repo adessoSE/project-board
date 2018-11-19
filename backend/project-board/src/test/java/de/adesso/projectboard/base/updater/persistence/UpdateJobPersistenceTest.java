@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -15,28 +16,27 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
+@TestPropertySource("classpath:application-persistence-test.properties")
 public class UpdateJobPersistenceTest {
 
     @Autowired
-    private UpdateJobRepository jobRepo;
+    UpdateJobRepository jobRepo;
 
     @Test
-    @Sql("classpath:de/adesso/projectboard/core/base/persistence/UpdateJobs.sql")
-    public void testSave_OK() {
+    public void testSave() {
         LocalDateTime time = LocalDateTime.of(2018, 1, 1, 13, 37);
+        UpdateJob updateJob = new UpdateJob(time, UpdateJob.Status.FAILURE);
+        updateJob.setFailureReason("Testreason");
 
-        Optional<UpdateJob> jobOptional = jobRepo.findById(1L);
-        assertTrue(jobOptional.isPresent());
+        UpdateJob persistedjob = jobRepo.save(updateJob);
 
-        UpdateJob job = jobOptional.get();
-
-        assertEquals(UpdateJob.Status.FAILURE, job.getStatus());
-        assertEquals(time, job.getTime());
-        assertEquals("Testreason", job.getFailureReason());
+        assertEquals(UpdateJob.Status.FAILURE, persistedjob.getStatus());
+        assertEquals(time, persistedjob.getTime());
+        assertEquals("Testreason", persistedjob.getFailureReason());
     }
 
     @Test
-    @Sql("classpath:de/adesso/projectboard/core/base/persistence/UpdateJobs.sql")
+    @Sql("classpath:de/adesso/projectboard/persistence/UpdateJobs.sql")
     public void testFindFirstByStatusOrderByTimeDesc() {
         Optional<UpdateJob> jobOptional
                 = jobRepo.findFirstByStatusOrderByTimeDesc(UpdateJob.Status.SUCCESS);
@@ -55,7 +55,7 @@ public class UpdateJobPersistenceTest {
     }
 
     @Test
-    @Sql("classpath:de/adesso/projectboard/core/base/persistence/UpdateJobs.sql")
+    @Sql("classpath:de/adesso/projectboard/persistence/UpdateJobs.sql")
     public void testFindLatest() {
         Optional<UpdateJob> latestOptional = jobRepo.findLatest();
         assertTrue(latestOptional.isPresent());
@@ -66,7 +66,7 @@ public class UpdateJobPersistenceTest {
     }
 
     @Test
-    @Sql("classpath:de/adesso/projectboard/core/base/persistence/UpdateJobs.sql")
+    @Sql("classpath:de/adesso/projectboard/persistence/UpdateJobs.sql")
     public void testCountByStatus() {
         assertEquals(3L, jobRepo.countByStatus(UpdateJob.Status.FAILURE));
         assertEquals(2L, jobRepo.countByStatus(UpdateJob.Status.SUCCESS));

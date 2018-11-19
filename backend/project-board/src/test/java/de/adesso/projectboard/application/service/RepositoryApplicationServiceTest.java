@@ -7,7 +7,6 @@ import de.adesso.projectboard.base.exceptions.AlreadyAppliedException;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.user.persistence.User;
-import de.adesso.projectboard.base.user.service.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,9 +30,6 @@ public class RepositoryApplicationServiceTest {
     ProjectService projectService;
 
     @Mock
-    UserService userService;
-
-    @Mock
     ProjectApplicationRepository applicationRepo;
 
     @InjectMocks
@@ -54,11 +50,6 @@ public class RepositoryApplicationServiceTest {
             Object[] args = invocation.getArguments();
 
             return (ProjectApplication) args[0];
-        });
-        when(userService.save(any(User.class))).thenAnswer((Answer<User>) invocation -> {
-            Object[] args = invocation.getArguments();
-
-            return (User) args[0];
         });
     }
 
@@ -94,7 +85,6 @@ public class RepositoryApplicationServiceTest {
         assertEquals(user, applicationForUser.getUser());
         assertEquals(project, applicationForUser.getProject());
 
-        verify(userService).save(user);
         verify(applicationRepo).save(any());
     }
 

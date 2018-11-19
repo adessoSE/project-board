@@ -97,7 +97,7 @@ public class LdapUserServiceTest {
     }
 
     @Test
-    public void testGetAutheticatedUserId() {
+    public void testGetAuthenticatedUserId() {
         // set up mock
         when(authInfo.getUserId()).thenReturn("user-id");
 
