@@ -9,10 +9,10 @@ import de.adesso.projectboard.base.user.persistence.data.UserDataRepository;
 import de.adesso.projectboard.base.user.persistence.structure.OrganizationStructure;
 import de.adesso.projectboard.base.user.persistence.structure.OrganizationStructureRepository;
 import de.adesso.projectboard.base.user.service.UserService;
-import de.adesso.projectboard.base.util.Sorting;
 import de.adesso.projectboard.ldap.service.LdapService;
 import de.adesso.projectboard.ldap.service.util.data.StringStructure;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -216,7 +216,7 @@ public class LdapUserService implements UserService {
     }
 
     @Override
-    public List<UserData> getStaffMemberDataOfUser(User user, Sorting sorting) {
+    public List<UserData> getStaffMemberDataOfUser(User user, Sort sort) {
         OrganizationStructure structureForUser = getStructureForUser(user);
         if (structureForUser.getStaffMembers().isEmpty()) {
             return Collections.emptyList();
@@ -233,7 +233,7 @@ public class LdapUserService implements UserService {
             dataRepo.saveAll(ldapService.getUserData(nonCachedUsers));
         }
 
-        return dataRepo.findByUserIn(structureForUser.getStaffMembers(), sorting.toSort());
+        return dataRepo.findByUserIn(structureForUser.getStaffMembers(), sort);
     }
 
     /**

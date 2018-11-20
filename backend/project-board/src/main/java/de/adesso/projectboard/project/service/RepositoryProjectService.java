@@ -12,19 +12,20 @@ import de.adesso.projectboard.base.project.persistence.ProjectRepository;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
-import de.adesso.projectboard.base.user.service.UserProjectService;
+import de.adesso.projectboard.base.user.service.PageableUserProjectService;
 import de.adesso.projectboard.base.user.service.UserService;
-import de.adesso.projectboard.base.util.Sorting;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class RepositoryProjectService implements ProjectService, UserProjectService {
+public class RepositoryProjectService implements ProjectService, PageableUserProjectService {
 
     private final ProjectRepository projectRepo;
 
@@ -154,20 +155,25 @@ public class RepositoryProjectService implements ProjectService, UserProjectServ
     }
 
     @Override
-    public List<Project> getProjectsForUser(User user, Sorting sorting) {
+    public List<Project> getProjectsForUser(User user, Sort sort) {
         if(userService.userIsManager(user)) {
-            return projectRepo.findAllByStatusEscalatedOrOpen(sorting.toSort());
+            return projectRepo.findAllForManager(sort);
         } else {
             String lob = userService.getUserData(user).getLob();
 
-            return projectRepo.findAllByStatusEscalatedOrOpenOrSameLob(lob, sorting.toSort());
+            return projectRepo.findAllForUser(lob, sort);
         }
     }
 
     @Override
-    public List<Project> searchProjectsForUser(User user, String keyword, Sorting sorting) {
-        // TODO: implement
-        return Collections.emptyList();
+    public List<Project> searchProjectsForUser(User user, String keyword, Sort sort) {
+        if(userService.userIsManager(user)) {
+            return projectRepo.findAllForManagerByKeyword(keyword, sort);
+        } else {
+            String lob = userService.getUserData(user).getLob();
+
+            return projectRepo.findAllForUserByKeyword(lob, keyword, sort);
+        }
     }
 
     @Override
@@ -194,6 +200,28 @@ public class RepositoryProjectService implements ProjectService, UserProjectServ
         userService.save(user);
 
         return project;
+    }
+
+    @Override
+    public Page<Project> getProjectsForUserPaginated(User user, Pageable pageable) {
+        if(userService.userIsManager(user)) {
+            return projectRepo.findAllForManagerPageable(pageable);
+        } else {
+            String lob = userService.getUserData(user).getLob();
+
+            return projectRepo.findAllForUserPageable(lob, pageable);
+        }
+    }
+
+    @Override
+    public Page<Project> searchProjectsForUserPaginated(String keyword, User user, Pageable pageable) {
+        if(userService.userIsManager(user)) {
+            return projectRepo.findAllForManagerByKeywordPageable(keyword, pageable);
+        } else {
+            String lob = userService.getUserData(user).getLob();
+
+            return projectRepo.findAllForUserByKeywordPageable(lob, keyword, pageable);
+        }
     }
 
 }

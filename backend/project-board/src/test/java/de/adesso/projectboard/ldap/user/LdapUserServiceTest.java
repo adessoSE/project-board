@@ -8,7 +8,6 @@ import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.persistence.data.UserDataRepository;
 import de.adesso.projectboard.base.user.persistence.structure.OrganizationStructure;
 import de.adesso.projectboard.base.user.persistence.structure.OrganizationStructureRepository;
-import de.adesso.projectboard.base.util.Sorting;
 import de.adesso.projectboard.ldap.service.LdapService;
 import de.adesso.projectboard.ldap.service.util.data.StringStructure;
 import org.junit.Before;
@@ -326,14 +325,13 @@ public class LdapUserServiceTest {
         User secondStaffMember = mock(User.class);
         UserData secondUserData = mock(UserData.class);
 
-        Sorting sorting = mock(Sorting.class);
+        Sort sorting = mock(Sort.class);
 
         // set up repo/service mock
         when(orgStructRepo.findByUser(user)).thenReturn(Optional.of(orgStruct));
         when(orgStruct.getStaffMembers()).thenReturn(new HashSet<>(Arrays.asList(firstStaffMember, secondStaffMember)));
         when(userDataRepo.existsByUser(firstStaffMember)).thenReturn(true);
         when(ldapService.getUserData(anyList())).thenReturn(Collections.singletonList(secondUserData));
-        when(sorting.toSort()).thenReturn(Sort.unsorted());
 
         ldapUserService.getStaffMemberDataOfUser(user, sorting);
 

@@ -3,7 +3,7 @@ package de.adesso.projectboard.base.user.service;
 import de.adesso.projectboard.base.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.user.persistence.User;
-import de.adesso.projectboard.base.util.Sorting;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -19,14 +19,14 @@ public interface UserProjectService {
      * @param user
      *          The {@link User} to get the {@link Project}s for.
      *
-     * @param sorting
-     *          The {@link Sorting} to apply.
+     * @param sort
+     *          The {@link Sort} to apply.
      *
      * @return
      *          A {@link List} of {@link Project}s sorted accordingly.
      *
      */
-    List<Project> getProjectsForUser(User user, Sorting sorting);
+    List<Project> getProjectsForUser(User user, Sort sort);
 
     /**
      *
@@ -36,13 +36,13 @@ public interface UserProjectService {
      * @param keyword
      *          The keyword to search for.
      *
-     * @param sorting
-     *          The {@link Sorting} to apply.
+     * @param sort
+     *          The {@link Sort} to apply.
      *
      * @return
      *          A {@link List} of {@link Project}s sorted accordingly.
      */
-    List<Project> searchProjectsForUser(User user, String keyword, Sorting sorting);
+    List<Project> searchProjectsForUser(User user, String keyword, Sort sort);
 
     /**
      *

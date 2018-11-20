@@ -12,7 +12,6 @@ import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.service.UserService;
-import de.adesso.projectboard.base.util.Sorting;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
@@ -174,31 +174,28 @@ public class RepositoryProjectServiceTest {
         assertNotNull(returnedProject.getCreated());
         assertNotNull(returnedProject.getUpdated());
         assertEquals(returnedProject.getUpdated(), returnedProject.getCreated());
-
     }
 
     @Test
     public void testGetAllProjectsForUser_Manager() {
         // create new mock
-        Sorting sorting = mock(Sorting.class);
-        when(sorting.toSort()).thenReturn(Sort.unsorted());
+        Sort sorting = mock(Sort.class);
 
         // set up service mock
         when(userService.userIsManager(user)).thenReturn(true);
 
         projectService.getProjectsForUser(user, sorting);
 
-        verify(projectRepo).findAllByStatusEscalatedOrOpen(any());
+        verify(projectRepo).findAllForManager(any());
     }
 
     @Test
     public void testGetAllProjectsForUser_NoManager() {
         // create new mock
-        Sorting sorting = mock(Sorting.class);
+        Sort sorting = mock(Sort.class);
         UserData userData = mock(UserData.class);
 
         // set up mocks
-        when(sorting.toSort()).thenReturn(Sort.unsorted());
         when(userData.getLob()).thenReturn("LoB");
 
         // set up service mock
@@ -207,17 +204,65 @@ public class RepositoryProjectServiceTest {
 
         projectService.getProjectsForUser(user, sorting);
 
-        verify(projectRepo).findAllByStatusEscalatedOrOpenOrSameLob(matches("LoB"), any());
+        verify(projectRepo).findAllForUser(matches("LoB"), any());
     }
 
     @Test
     public void testSearchForProjectsForUser_Manager() {
-        // implement when searchProjectsForUser is implemented
+        // set up service mock
+        when(userService.userIsManager(user)).thenReturn(true);
+
+        Sort sort = Sort.unsorted();
+
+        projectService.searchProjectsForUser(user, "Test", sort);
+
+        verify(projectRepo).findAllForManagerByKeyword("Test", sort);
     }
 
     @Test
     public void testSearchProjectsForUser_NoManager() {
-        // implement when searchProjectsForUser is implemented
+        // create new mock
+        UserData userData = mock(UserData.class);
+        when(userData.getLob()).thenReturn("LOB Test");
+
+        // set up service mock
+        when(userService.userIsManager(user)).thenReturn(false);
+        when(userService.getUserData(user)).thenReturn(userData);
+
+        Sort sort = Sort.unsorted();
+
+        projectService.searchProjectsForUser(user, "Test", sort);
+
+        verify(projectRepo).findAllForUserByKeyword("LOB Test", "Test", sort);
+    }
+
+    @Test
+    public void testSearchProjectsForUserPaginated_Manager() {
+        // set up service mock
+        when(userService.userIsManager(user)).thenReturn(true);
+
+        PageRequest pageable = PageRequest.of(0, 10);
+
+        projectService.searchProjectsForUserPaginated("Test", user, pageable);
+
+        verify(projectRepo).findAllForManagerByKeywordPageable("Test", pageable);
+    }
+
+    @Test
+    public void testSearchProjectsForUserPaginated_NoManager() {
+        // create new mock
+        UserData userData = mock(UserData.class);
+        when(userData.getLob()).thenReturn("LOB Test");
+
+        // set up service mock
+        when(userService.userIsManager(user)).thenReturn(false);
+        when(userService.getUserData(user)).thenReturn(userData);
+
+        PageRequest pageable = PageRequest.of(0, 10);
+
+        projectService.searchProjectsForUserPaginated("Test", user, pageable);
+
+        verify(projectRepo).findAllForUserByKeywordPageable("LOB Test", "Test", pageable);
     }
 
     @Test

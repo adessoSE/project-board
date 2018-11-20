@@ -5,7 +5,7 @@ import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.persistence.structure.OrganizationStructure;
-import de.adesso.projectboard.base.util.Sorting;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.Objects;
@@ -122,14 +122,14 @@ public interface UserService {
      *          The {@link User} to get the staff members'
      *          {@link UserData} of.
      *
-     * @param sorting
-     *          The {@link Sorting} instance to sort by.
+     * @param sort
+     *          The {@link Sort} instance to sort by.
      *
      * @return
      *          A {@link List} of the {@link UserData} belonging to
      *          the staff members.
      */
-    List<UserData> getStaffMemberDataOfUser(User user, Sorting sorting);
+    List<UserData> getStaffMemberDataOfUser(User user, Sort sort);
 
     /**
      *

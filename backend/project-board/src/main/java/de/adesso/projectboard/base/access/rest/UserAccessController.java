@@ -4,7 +4,7 @@ import de.adesso.projectboard.base.access.dto.AccessInfoRequestDTO;
 import de.adesso.projectboard.base.access.handler.UserAccessHandler;
 import de.adesso.projectboard.base.access.service.UserAccessService;
 import de.adesso.projectboard.base.application.rest.ApplicationController;
-import de.adesso.projectboard.base.project.rest.ProjectController;
+import de.adesso.projectboard.base.project.rest.NonPageableProjectController;
 import de.adesso.projectboard.base.user.dto.UserDtoFactory;
 import de.adesso.projectboard.base.user.dto.UserResponseDTO;
 import de.adesso.projectboard.base.user.persistence.User;
@@ -20,7 +20,7 @@ import javax.validation.Valid;
 /**
  * {@link RestController REST Controller} to grant access to {@link User}s.
  *
- * @see ProjectController
+ * @see NonPageableProjectController
  * @see ApplicationController
  * @see BookmarkController
  * @see UserController

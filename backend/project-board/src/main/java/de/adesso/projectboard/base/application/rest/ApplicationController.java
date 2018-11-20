@@ -8,7 +8,7 @@ import de.adesso.projectboard.base.application.handler.ProjectApplicationHandler
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.service.ApplicationService;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
-import de.adesso.projectboard.base.project.rest.ProjectController;
+import de.adesso.projectboard.base.project.rest.NonPageableProjectController;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.rest.BookmarkController;
 import de.adesso.projectboard.base.user.rest.UserController;
@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 /**
  * {@link RestController REST Controller} for {@link ProjectApplication}s.
  *
- * @see ProjectController
+ * @see NonPageableProjectController
  * @see BookmarkController
  * @see UserAccessController
  * @see UserController

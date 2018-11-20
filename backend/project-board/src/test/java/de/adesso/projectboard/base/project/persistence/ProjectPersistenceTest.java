@@ -4,6 +4,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
@@ -132,10 +134,39 @@ public class ProjectPersistenceTest {
 
     @Test
     @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void testFindAllByEscalatedOrOpenOrSameLob() {
+    public void testFindAllForUser() {
         // get a list of all projects for a user of the lob "LOB Test"
-        List<Project> allForUser = projectRepository.findAllByStatusEscalatedOrOpenOrSameLob("LOB Test", sort);
+        List<Project> allForUser = projectRepository.findAllForUser("LOB Test", sort);
 
+        testProjectsForUser(allForUser);
+    }
+
+    @Test
+    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void testFindAllForUserPageable() {
+        Page<Project> allForUser = projectRepository.findAllForUserPageable("LOB Test", PageRequest.of(0, 100));
+
+        testProjectsForUser(allForUser.getContent());
+    }
+
+    @Test
+    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void testFindAllForManager() {
+        // get a list of all projects for a manager
+        List<Project> allForManager = projectRepository.findAllForManager(sort);
+
+        testProjectsForManager(allForManager);
+    }
+
+    @Test
+    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void testFindAllForManagerPageable() {
+        Page<Project> allForManager = projectRepository.findAllForManagerPageable(PageRequest.of(0, 100));
+
+        testProjectsForManager(allForManager.getContent());
+    }
+
+    void testProjectsForUser(List<Project> allForUser) {
         boolean allEscalatedOrFromSameLobOrNoLob = allForUser.stream()
                 .allMatch(project -> {
                     boolean isOpen = "open".equalsIgnoreCase(project.getStatus());
@@ -150,29 +181,22 @@ public class ProjectPersistenceTest {
                 });
 
         assertTrue(allEscalatedOrFromSameLobOrNoLob);
-
         assertEquals(5L, allForUser.size());
     }
 
-    @Test
-    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void testFindAllByEscalatedOrOpen() {
-        // get a list of all projects for a superuser
-        List<Project> allForUser = projectRepository.findAllByStatusEscalatedOrOpen(sort);
-
-        // superusers can see all open/escalated projects
+    void testProjectsForManager(List<Project> allForManager) {
+        // managers can see all open/escalated projects
         boolean allEscalatedOrOpen =
-                allForUser.stream()
+                allForManager.stream()
                         .allMatch(project -> {
                             boolean isOpen = "open".equalsIgnoreCase(project.getStatus());
                             boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
 
                             return isOpen || isEscalated;
                         });
+
         assertTrue(allEscalatedOrOpen);
-
-        assertEquals(6L, allForUser.size());
+        assertEquals(6L, allForManager.size());
     }
-
 
 }

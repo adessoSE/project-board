@@ -4,16 +4,15 @@ import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.user.persistence.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 
 /**
  * {@link UserProjectService} extension to support pagination for {@link Project}s. Uses
- * the Spring Data classes {@link Sort} and {@link PageRequest} to handle pagination and
+ * the Spring Data class {@link PageRequest} to handle pagination and
  * sorting.
  *
  * @see UserProjectService
  * @see PageRequest
- * @see Sort
  */
 public interface PageableUserProjectService extends UserProjectService {
 
@@ -22,16 +21,13 @@ public interface PageableUserProjectService extends UserProjectService {
      * @param user
      *          The {@link User} to get the {@link Project}s for.
      *
-     * @param sort
-     *          The {@link Sort} to apply.
-     *
-     * @param pageRequest
-     *          The {@link PageRequest} to pass pagination information.
+     * @param pageable
+     *          The {@link Pageable} to pass pagination information.
      *
      * @return
      *          A {@link Page} of {@link Project}s.
      */
-    Page<Project> getProjectsForUserPaginated(User user, Sort sort, PageRequest pageRequest);
+    Page<Project> getProjectsForUserPaginated(User user, Pageable pageable);
 
     /**
      *
@@ -41,15 +37,12 @@ public interface PageableUserProjectService extends UserProjectService {
      * @param user
      *          The {@link User} to search the {@link Project}s for.
      *
-     * @param sort
-     *          The {@link Sort} to apply.
-     *
-     * @param pageRequest
-     *          The {@link PageRequest} to pass pagination information.
+     * @param pageable
+     *          The {@link Pageable} to pass pagination information.
      *
      * @return
      *          A {@link Page} of {@link Project}s.
      */
-    Page<Project> searchProjectsForUser(String keyword, User user, Sort sort, PageRequest pageRequest);
+    Page<Project> searchProjectsForUserPaginated(String keyword, User user, Pageable pageable);
 
 }

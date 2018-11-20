@@ -3,7 +3,7 @@ package de.adesso.projectboard.base.user.rest;
 import de.adesso.projectboard.base.access.rest.UserAccessController;
 import de.adesso.projectboard.base.application.rest.ApplicationController;
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.project.rest.ProjectController;
+import de.adesso.projectboard.base.project.rest.NonPageableProjectController;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.user.bookmark.dto.BookmarkRequestDTO;
 import de.adesso.projectboard.base.user.persistence.User;
@@ -18,7 +18,7 @@ import javax.validation.Valid;
 /**
  * {@link RestController REST Controller} to manage {@link Project} bookmarks.
  *
- * @see ProjectController
+ * @see NonPageableProjectController
  * @see ApplicationController
  * @see UserAccessController
  * @see UserController

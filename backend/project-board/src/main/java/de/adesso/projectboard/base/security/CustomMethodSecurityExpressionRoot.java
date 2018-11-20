@@ -2,7 +2,7 @@ package de.adesso.projectboard.base.security;
 
 import de.adesso.projectboard.base.access.rest.UserAccessController;
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.project.rest.ProjectController;
+import de.adesso.projectboard.base.project.rest.NonPageableProjectController;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.rest.UserController;
 import de.adesso.projectboard.base.user.service.UserService;
@@ -72,7 +72,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
      *          when the user is authenticated (a {@link User} object is present), {@code false} otherwise.
      *
      * @see ExpressionEvaluator#hasAccessToProjects(Authentication, User)
-     * @see ProjectController
+     * @see NonPageableProjectController
      */
     public boolean hasAccessToProjects() {
         // check if the user has a corresponding User object
@@ -94,7 +94,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
                 when the user is authenticated (a {@link User} object is present), {@code false} otherwise.
      *
      * @see ExpressionEvaluator#hasAccessToProject(Authentication, User, String)
-     * @see ProjectController
+     * @see NonPageableProjectController
      */
     public boolean hasAccessToProject(String projectId) {
         // check if the user has a corresponding User object
@@ -173,7 +173,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
      *          when the user is authenticated (a {@link User} object is present), {@code false} otherwise.
      *
      * @see ExpressionEvaluator#hasPermissionToCreateProjects(Authentication, User)
-     * @see ProjectController
+     * @see NonPageableProjectController
      */
     public boolean hasPermissionToCreateProjects() {
         // check if the user has a corresponding User object
@@ -194,7 +194,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
      *          when the user is authenticated (a {@link User} object is present), {@code false} otherwise.
      *
      * @see ExpressionEvaluator#hasPermissionToEditProject(Authentication, User, String)
-     * @see ProjectController
+     * @see NonPageableProjectController
      */
     public boolean hasPermissionToEditProject(String projectId) {
         // check if the user has a corresponding User object
