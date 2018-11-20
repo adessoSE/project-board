@@ -18,7 +18,8 @@ h4 {
 }
 
 .clip {
-  max-height: 90vh;
+  max-height: calc(100vh/* total view height */ - 4rem/* top property from sticky class */ - 16px /* margin-top from details-header */
+  );
   overflow-y: auto;
   overflow-x: hidden;
 }

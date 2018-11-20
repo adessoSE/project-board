@@ -6,6 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { OAuthModule } from 'angular-oauth2-oidc';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { AlertComponent } from './_directives/alert/alert.component';
 import { AuthGuard } from './_guards/auth.guard';
 import { TokenInterceptor } from './_helpers/token.interceptor';
@@ -53,7 +54,8 @@ registerLocaleData(localeDe, 'de');
     HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
-    OAuthModule.forRoot()
+    OAuthModule.forRoot(),
+    InfiniteScrollModule
   ],
   providers: [
     {provide: LOCALE_ID, useValue: 'de'},

@@ -1,12 +1,12 @@
 import { Location } from '@angular/common';
 import { AfterViewChecked, Component, HostListener, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { faBookmark } from '@fortawesome/free-regular-svg-icons';
 import { faEnvelope } from '@fortawesome/free-regular-svg-icons/faEnvelope';
 import { faGraduationCap } from '@fortawesome/free-solid-svg-icons/faGraduationCap';
 import * as $ from 'jquery';
 import { combineLatest, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { debounceTime, switchMap, takeUntil } from 'rxjs/operators';
 import { AlertService } from '../_services/alert.service';
 import { EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
@@ -25,35 +25,55 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
   faGradCap = faGraduationCap;
 
   projects: Project[] = [];
-  filteredProjects: Project[] = [];
   appliedProjects: Project[] = [];
   bookmarks: Project[] = [];
   selectedProject: Project;
   mobile = false;
   scroll = true;
   isUserBoss = false;
+  currentPage = 0;
+  searchText = '';
+  loadingProjects = false;
+  projectsFound: number;
+  infiniteScrollDisabled = false;
+
+  private divToScroll;
 
   destroy$ = new Subject<void>();
+  private searchText$ = new Subject<string>();
 
   @HostListener('window:resize') onResize() {
-    this.mobile = window.screen.width <= 425;
+    this.mobile = document.body.clientWidth < 768;
   }
 
   constructor(private employeeService: EmployeeService,
               private projectsService: ProjectService,
               private alertService: AlertService,
               private route: ActivatedRoute,
-              private location: Location,
-              private router: Router) { }
+              private location: Location) { }
 
   ngOnInit() {
-    this.mobile = window.screen.width < 768;
+    this.mobile = document.body.clientWidth < 768;
+
+    this.searchText$
+      .pipe(
+        takeUntil(this.destroy$),
+        debounceTime(500),
+        switchMap(searchText => {
+          return this.projectsService.searchPaginated(searchText, this.currentPage, 20);
+        }))
+      .subscribe(projects => {
+        this.loadingProjects = false;
+        this.projects = projects.content;
+        this.projectsFound = projects.totalElements;
+      });
 
     combineLatest(this.route.data, this.route.params)
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
-        this.projects = data[0].projects;
-        this.filteredProjects = this.projects;
+        if (data[0].projects) {
+          this.projects = data[0].projects.content;
+        }
 
         // extract projects from applications
         this.appliedProjects = data[0].applications ? data[0].applications.map(app => app.project) : [];
@@ -63,54 +83,16 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
         // set selected project
         this.setSelectedProject(data[1].id);
       });
+
+    this.divToScroll = document.getElementById('divToScroll');
   }
 
-  filterProjects(filterInput) {
-    const filter = filterInput.toLowerCase().split(' ').filter(e => e.length > 2);
-    if (filter.length > 0) {
-      this.location.replaceState(`/browse`);
-      this.selectedProject = null;
-      const filtered: { project: Project, hitCount: number }[] = [];
-      this.projects.forEach(p => {
-        for (const f of filter) {
-          if (p.title && p.title.toLowerCase().includes(f)) {
-            let o;
-            if (o = filtered.find(e => e.project.id === p.id)) {
-              o.hitCount++;
-            } else {
-              filtered.push({'project': p, 'hitCount': 1});
-            }
-          }
-          if (p.job && p.job.toLowerCase().includes(f)) {
-            let o;
-            if (o = filtered.find(e => e.project.id === p.id)) {
-              o.hitCount++;
-            } else {
-              filtered.push({'project': p, 'hitCount': 1});
-            }
-          }
-          if (p.description && p.description.toLowerCase().includes(f)) {
-            let o;
-            if (o = filtered.find(e => e.project.id === p.id)) {
-              o.hitCount++;
-            } else {
-              filtered.push({'project': p, 'hitCount': 1});
-            }
-          }
-          if (p.skills && p.skills.toLowerCase().includes(f)) {
-            let o;
-            if (o = filtered.find(e => e.project.id === p.id)) {
-              o.hitCount++;
-            } else {
-              filtered.push({'project': p, 'hitCount': 1});
-            }
-          }
-        }
-      });
-      this.filteredProjects = filtered.sort((a, b) => a.hitCount >= b.hitCount ? -1 : 1).map(e => e.project);
-    } else {
-      this.filteredProjects = this.projects;
-    }
+  searchProjects() {
+    this.infiniteScrollDisabled = false;
+    this.loadingProjects = true;
+    this.projects = [];
+    this.currentPage = 0;
+    this.searchText$.next(this.searchText);
   }
 
   private setSelectedProject(projectId: string) {
@@ -119,16 +101,20 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
       return;
     }
 
-    for (const p of this.filteredProjects) {
+    for (const p of this.projects) {
       if (p.id === projectId) {
         this.selectedProject = p;
         return;
       }
     }
-    this.alertService.info('Das angegebene Projekt wurde nicht gefunden.');
+    this.projectsService.getProjectWithID(projectId)
+      .subscribe(
+        project => this.selectedProject = project,
+        () => this.alertService.info('Das angegebene Projekt wurde nicht gefunden.')
+      );
   }
 
-  projectClicked(project, ph) {
+  projectClicked(project) {
     if (this.selectedProject === project) {
       this.location.replaceState(`/browse`);
       this.selectedProject = null;
@@ -137,22 +123,27 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
       this.location.replaceState(`/browse/${project.id}`);
       this.selectedProject = project;
       this.scroll = true;
-      this.scrollBeneathHeader(ph);
+      this.scrollBeneathHeader(this.divToScroll);
     }
   }
 
   ngAfterViewChecked() {
-    if (this.mobile && this.scroll && this.selectedProject) {
-      const btn = $(`#${this.selectedProject.id}`);
-      // navbar has 56 pixels height
-      $('html, body').animate({scrollTop: $(btn).offset().top - 56}, 'slow');
-      this.scroll = false;
+    if (this.scroll && this.selectedProject) {
+      if (this.mobile) {
+        const btn = $(`#${this.selectedProject.id}`);
+        // navbar has 56 pixels height
+        $('html, body').animate({scrollTop: $(btn).offset().top - 56}, 'slow');
+        this.scroll = false;
+      } else {
+        this.scrollBeneathHeader(this.divToScroll);
+        this.scroll = false;
+      }
     }
   }
 
-  scrollBeneathHeader(leftColumn) {
+  scrollBeneathHeader(divToScroll) {
     if (!this.mobile && !(document.body.scrollTop > 281 || document.documentElement.scrollTop > 281)) {
-      $('html, body').animate({scrollTop: $(leftColumn).offset().top - 64}, 'slow');
+      $('html, body').animate({scrollTop: $(divToScroll).offset().top - 64}, 'slow');
     }
   }
 
@@ -170,6 +161,36 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
       this.bookmarks.splice(index, 1);
     } else {
       this.bookmarks.push(project);
+    }
+  }
+
+  // this method gets called when infinite-scroll's scrolling event triggers
+  onScroll() {
+    this.loadingProjects = true;
+    // load next page from all projects pool, when searchText is empty
+    if (this.searchText === '') {
+      this.projectsService.getAllProjectsPaginated(++this.currentPage, 20)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(newPage => {
+          if (newPage.last) {
+            this.infiniteScrollDisabled = true;
+          }
+          this.projects = this.projects.concat(newPage.content);
+          this.loadingProjects = false;
+          }
+        );
+    } else {
+      // otherwise load next page from projects pool corresponding to the searchText
+      this.projectsService.searchPaginated(this.searchText, ++this.currentPage, 20)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(newPage => {
+          if (newPage.last) {
+            this.infiniteScrollDisabled = true;
+          }
+          this.projects = this.projects.concat(newPage.content);
+          this.loadingProjects = false;
+          }
+        );
     }
   }
 }

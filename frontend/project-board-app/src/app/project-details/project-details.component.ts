@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { faBookmark } from '@fortawesome/free-regular-svg-icons/faBookmark';
 import { faGraduationCap } from '@fortawesome/free-solid-svg-icons/faGraduationCap';
@@ -14,7 +14,7 @@ import { Project, ProjectService } from '../_services/project.service';
   templateUrl: './project-details.component.html',
   styleUrls: ['./project-details.component.scss']
 })
-export class ProjectDetailsComponent implements OnInit {
+export class ProjectDetailsComponent implements OnInit, OnChanges {
   @Input() selectedProject: Project;
   @Input() applicable;
   @Input() bookmark = false;
@@ -34,6 +34,10 @@ export class ProjectDetailsComponent implements OnInit {
               private authService: AuthenticationService) { }
 
   ngOnInit() {
+  }
+
+  ngOnChanges() {
+    document.getElementById('scrollable-area').scrollTop = 0;
   }
 
   requestProject() {

@@ -20,7 +20,7 @@ export class ExecutivesComponent implements OnInit, AfterViewChecked {
   destroy$ = new Subject<void>();
 
   @HostListener('window:resize') onResize() {
-    this.mobile = window.screen.width < 768;
+    this.mobile = document.body.clientWidth < 768;
   }
 
   constructor(private employeeService: EmployeeService,
@@ -29,7 +29,7 @@ export class ExecutivesComponent implements OnInit, AfterViewChecked {
               private location: Location) { }
 
   ngOnInit() {
-    this.mobile = window.screen.width <= 768;
+    this.mobile = document.body.clientWidth < 768;
 
     combineLatest(this.route.data, this.route.params)
       .pipe(takeUntil(this.destroy$))
