@@ -18,12 +18,10 @@ import javax.validation.constraints.NotEmpty;
 public class LdapConfigurationProperties {
 
     /**
-     * The base path to crawl users from.
-     *
-     * default: <i>DC=adesso,DC=local</i>
+     * The base path to begin searching at.
      */
     @NotEmpty
-    private String ldapBase = "DC=adesso,DC=local";
+    private String ldapBase;
 
     /**
      * The AD attribute used as the user ID.

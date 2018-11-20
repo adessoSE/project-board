@@ -10,7 +10,6 @@ import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.user.persistence.User;
-import de.adesso.projectboard.base.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,16 +25,12 @@ public class RepositoryApplicationService implements ApplicationService {
 
     private final ProjectService projectService;
 
-    private final UserService userService;
-
     private final ProjectApplicationRepository applicationRepo;
 
     @Autowired
     public RepositoryApplicationService(ProjectService projectService,
-                                        UserService userService,
                                         ProjectApplicationRepository applicationRepo) {
         this.projectService = projectService;
-        this.userService = userService;
         this.applicationRepo = applicationRepo;
     }
 
