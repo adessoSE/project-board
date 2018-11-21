@@ -9,8 +9,6 @@ import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.service.UserProjectService;
 import de.adesso.projectboard.base.user.service.UserService;
-import de.adesso.projectboard.ldap.user.LdapUserService;
-import de.adesso.projectboard.project.service.RepositoryProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
@@ -25,8 +23,6 @@ import org.springframework.stereotype.Service;
  * </p>
  *
  * @see ExpressionEvaluator
- * @see LdapUserService
- * @see RepositoryProjectService
  */
 @Profile("user-access")
 @Service
@@ -95,11 +91,11 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *
      *          <ul>
      *              <li>
-     *                  The user is a manager and the project's status is set to <i>offen</i> or <i>eskaliert</i>.
+     *                  The user is a manager and the project's status is set to <i>open</i> or <i>eskaliert</i>.
      *              </li>
      *
      *              <li>
-     *                  The user is not a manager and the project's status is set to <i>eskaliert</i> or <i>offen</i>
+     *                  The user is not a manager and the project's status is set to <i>eskaliert</i> or <i>open</i>
      *                  and the project's LoB is equal to the user's LoB.
      *              </li>
      *          </ul>
