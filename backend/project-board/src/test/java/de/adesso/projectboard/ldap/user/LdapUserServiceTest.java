@@ -19,10 +19,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.springframework.data.domain.Sort;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -344,6 +343,36 @@ public class LdapUserServiceTest {
 
         assertEquals(user, returnedUser);
         verify(userRepo).save(user);
+    }
+
+    @Test
+    public void testUsersAreManagers() {
+        // create new entity mocks
+        User cachedManager = mock(User.class);
+        User nonCachedManager = mock(User.class);
+        User nonCachedUser = mock(User.class);
+        OrganizationStructure cachedManagerStructure = mock(OrganizationStructure.class);
+
+        // set up new entity mocks
+        when(nonCachedManager.getId()).thenReturn("non-cached-manager");
+        when(nonCachedUser.getId()).thenReturn("non-cached-user");
+
+        when(cachedManagerStructure.isUserIsManager()).thenReturn(true);
+        when(cachedManagerStructure.getUser()).thenReturn(cachedManager);
+
+        // set up service/repo mocks
+        when(orgStructRepo.findAllByUserIn(any())).thenReturn(Arrays.asList(cachedManagerStructure));
+        when(ldapService.isManager("non-cached-manager")).thenReturn(true);
+        when(ldapService.isManager("non-cached-user")).thenReturn(false);
+
+        // call tested method
+        Set<User> userSet = Stream.of(cachedManager, nonCachedManager, nonCachedUser).collect(Collectors.toSet());
+        Map<User, Boolean> userManagerMap = ldapUserService.usersAreManagers(userSet);
+
+        assertEquals(3, userManagerMap.entrySet().size());
+        assertTrue(userManagerMap.get(cachedManager));
+        assertTrue(userManagerMap.get(nonCachedManager));
+        assertFalse(userManagerMap.get(nonCachedUser));
     }
 
 }

@@ -15,10 +15,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -254,6 +251,38 @@ public class LdapUserService implements UserService {
     @Override
     public void deleteUserById(String userId) {
         // intentionally left blank
+    }
+
+    @Override
+    public Map<User, Boolean> usersAreManagers(Set<User> users) {
+        Map<User, Boolean> userManagerMap = new HashMap<>();
+
+        if(Objects.requireNonNull(users).isEmpty()) {
+            return userManagerMap;
+        }
+
+        // get the cached OrganizationStructure instance for every user
+        // does NOT have to contain every instance
+        List<OrganizationStructure> existingStructures = structureRepo.findAllByUserIn(users);
+
+        // add it to the map for every existing instance
+        existingStructures.forEach(structure -> userManagerMap.put(structure.getUser(), structure.isUserIsManager()));
+
+        // remove all users that have a cached structure
+        List<User> usersWithStructs = users.stream()
+                .filter(user -> existingStructures.stream()
+                        .anyMatch(struct -> struct.getUser().equals(user))
+                )
+                .collect(Collectors.toList());
+        users.removeAll(usersWithStructs);
+
+        // call the ldap service method for every user that has no
+        // cached instance and add it to the map
+        Map<User, Boolean> ldapMap = users.parallelStream()
+                .collect(Collectors.toMap(user -> user, user -> ldapService.isManager(user.getId())));
+        userManagerMap.putAll(ldapMap);
+
+        return userManagerMap;
     }
 
 }

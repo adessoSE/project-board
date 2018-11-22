@@ -7,8 +7,7 @@ import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.persistence.structure.OrganizationStructure;
 import org.springframework.data.domain.Sort;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Service interface to provide functionality to manage {@link User}s and their
@@ -179,6 +178,30 @@ public interface UserService {
         } else {
             throw new UserNotFoundException();
         }
+    }
+
+    /**
+     * Method similar to {@link #userIsManager(User)} but for
+     * multiple {@link User}s at once.
+     *
+     * @param users
+     *          The users to check.
+     *
+     * @return
+     *          A {@link Map} that maps a {@link User} to
+     *          a boolean value that indicates whether the user is
+     *          a manager or not.
+     *
+     * @see #userIsManager(User)
+     */
+    default Map<User, Boolean> usersAreManagers(Set<User> users) {
+        Objects.requireNonNull(users);
+
+        Map<User, Boolean> returnMap = new HashMap<>();
+
+        users.forEach(user -> returnMap.put(user, userIsManager(user)));
+
+        return returnMap;
     }
 
 }

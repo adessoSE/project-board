@@ -3,6 +3,8 @@ package de.adesso.projectboard.base.user.persistence.structure;
 import de.adesso.projectboard.base.user.persistence.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -11,6 +13,8 @@ import java.util.Optional;
 public interface OrganizationStructureRepository extends JpaRepository<OrganizationStructure, Long> {
 
     Optional<OrganizationStructure> findByUser(User user);
+
+    List<OrganizationStructure> findAllByUserIn(Collection<User> users);
 
     boolean existsByUser(User user);
 
