@@ -17,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class StructureMapperTest {
+public class DnStructureMapperTest {
 
     @Mock
     User user;
@@ -29,34 +29,31 @@ public class StructureMapperTest {
     Attribute managerAttr;
 
     @Mock
-    Attribute directReportsAttr;
+    Attribute distinguishedNameAttr;
 
-    StructureMapper structureMapper;
+    DnStructureMapper structureMapper;
 
     @Before
     public void setUp() {
-        this.structureMapper = new StructureMapper(user);
+        this.structureMapper = new DnStructureMapper(user);
 
         // set up attributes mock
         when(attributes.get("manager")).thenReturn(managerAttr);
-        when(attributes.get("directReports")).thenReturn(directReportsAttr);
+        when(attributes.get("distinguishedName")).thenReturn(distinguishedNameAttr);
     }
 
     @Test
     public void testMapFromAttributes() throws NamingException {
         // set up attribute mocks
-        when(managerAttr.get()).thenReturn("manager-ID");
-        when(directReportsAttr.size()).thenReturn(2);
-        when(directReportsAttr.get(0)).thenReturn("member-1-ID");
-        when(directReportsAttr.get(1)).thenReturn("member-2-ID");
+        when(managerAttr.get()).thenReturn("managerDN");
+        when(distinguishedNameAttr.get()).thenReturn("selfDN");
 
         StringStructure stringStructure = structureMapper.mapFromAttributes(attributes);
 
-        assertEquals(user, stringStructure.getUser());
-        assertEquals("manager-ID", stringStructure.getManager());
-        assertEquals(2, stringStructure.getStaffMembers().size());
-        assertTrue(stringStructure.getStaffMembers().stream().anyMatch("member-1-ID"::equals));
-        assertTrue(stringStructure.getStaffMembers().stream().anyMatch("member-2-ID"::equals));
+        assertEquals(user, stringStructure.getOwner());
+        assertEquals("managerDN", stringStructure.getManager());
+        assertEquals("selfDN", stringStructure.getUser());
+        assertTrue(stringStructure.getStaffMembers().isEmpty());
     }
 
 }
