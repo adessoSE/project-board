@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.persistence.EntityNotFoundException;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.*;
@@ -82,6 +83,21 @@ public class OrganizationStructurePersistenceTest {
 
         assertTrue(structureRepo.existsByUserAndUserIsManager(first, true));
         assertFalse(structureRepo.existsByUserAndUserIsManager(first, false));
+    }
+
+    @Test
+    @Sql({
+            "classpath:de/adesso/projectboard/persistence/Users.sql",
+            "classpath:de/adesso/projectboard/persistence/OrgStructure.sql"
+    })
+    public void testFindAllByUserIn() {
+        User first = userRepo.findById("User1").orElseThrow(EntityNotFoundException::new);
+        User second = userRepo.findById("User2").orElseThrow(EntityNotFoundException::new);
+
+        List<OrganizationStructure> allByUserIn = structureRepo.findAllByUserIn(Arrays.asList(first, second));
+
+        assertEquals(1, allByUserIn.size());
+        assertEquals(first, allByUserIn.get(0).getUser());
     }
 
 }
