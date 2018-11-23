@@ -12,6 +12,7 @@ import { AuthenticationService } from './_services/authentication.service';
 })
 export class AppComponent {
   faChevronUp = faChevronUp;
+  username = "default";
 
   constructor(private oAuthService: OAuthService,
               private authenticationService: AuthenticationService,
@@ -24,6 +25,14 @@ export class AppComponent {
     this.oAuthService.tokenValidationHandler = new JwksValidationHandler();
     this.oAuthService.setupAutomaticSilentRefresh();
     this.oAuthService.loadDiscoveryDocumentAndLogin();
+  }
+
+  getUsername(){
+    return this.authenticationService.username;
+  }
+
+  ngDoCheck(){
+    this.username = this.getUsername();
   }
 
   logout() {

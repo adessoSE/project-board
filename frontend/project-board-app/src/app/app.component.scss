@@ -20,17 +20,115 @@
   margin: 0 -15px;
   min-height: 2px;
   z-index: 1020;
-  background-image: linear-gradient(to right, blue, #e3f2fd);
+  background-image: linear-gradient(to right, #006ec7, #e3f2fd);
+}
+
+.nav-item a:hover{
+  color: inherit;
+}
+
+.active-link{
+  color: rgba(0, 0, 0, 1) !important;
 }
 
 .back-to-top-badge {
   display: none;
 }
 
+#side-nav{
+  display: none;
+}
+
+/deep/ .mat-drawer-backdrop{
+  display: none !important;
+}
+
+.mat-drawer-container{
+  background-color: transparent !important;
+}
+
+@include media-breakpoint-up(lg) {
+  #logout{
+    position: absolute;
+    right: 10px;
+  }
+}
+
+@include media-breakpoint-down(lg) {
+
+  .custom-navbar {
+    position: fixed;
+    width: 100%;
+  }
+
+  .navbar-divider{
+    position: fixed;
+    top: 56px;
+    width: 100%;
+  }
+
+  #brand-logo {
+    margin: -18px -28px -13px;
+  }
+
+  #navbarContent{
+    display: none;
+  }
+
+  #belowNavbar{
+    margin-top: 58px;
+  }
+
+  #side-nav{
+    display: block;
+    position: fixed;
+    top: 58px;
+  }
+
+  /deep/ .mat-drawer-backdrop{
+    display: block !important;
+  }
+
+  .active-link{
+    color: rgba(0, 0, 0, 0.5) !important;
+  }
+
+  .side-link{
+    padding: 15px;
+    margin-left: 5px;
+    margin-right: 5px;
+    border-bottom: 1px dotted #E0E0E0;
+  }
+
+  #side-username{
+    padding: 20px;
+    font-size: 120%;
+    font-weight: bold;
+    max-width: 300px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #006ec7;
+    text-align: center;
+    border-bottom: 1px solid grey;
+  }
+
+  #side-logout{
+    border-top: 1px solid grey;
+    border-bottom: 0;
+  }
+
+  .nav-icon{
+    float: left;
+    margin-top: -2px;
+    margin-right: 10px;
+  }
+}
+
 @include media-breakpoint-down(sm) {
   .back-to-top-badge {
     position: fixed;
-    top: 105px;
+    bottom: 25px;
     right: 15px;
     z-index: 100;
     width: 50px;

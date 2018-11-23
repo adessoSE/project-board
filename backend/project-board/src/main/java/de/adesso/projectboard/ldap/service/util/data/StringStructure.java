@@ -15,7 +15,9 @@ import java.util.Set;
 @AllArgsConstructor
 public class StringStructure {
 
-    private User user;
+    private User owner;
+
+    private String user;
 
     private String manager;
 
