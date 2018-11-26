@@ -48,27 +48,8 @@ public class AccessInfo {
     LocalDateTime accessEnd;
 
     /**
-     * Constructs a new entity. The {@link #accessStart access start} is automatically
-     * set to the current {@link LocalDateTime}.
+     * Constructs a new instance.
      *
-     * <p>
-     *     <b>Note</b>: The instance <b>is</b> added to the
-     *     {@code user}'s {@link User#getAccessInfoList() info list}.
-     * </p>
-     *
-     * @param user
-     *          The {@link User} the instance belongs to.
-     *
-     * @param accessEnd
-     *          The {@link LocalDateTime} of when the access should end.
-     *
-     * @see AccessInfo#AccessInfo(User, LocalDateTime, LocalDateTime)
-     */
-    public AccessInfo(User user, LocalDateTime accessEnd) {
-        this(user, LocalDateTime.now(), accessEnd);
-    }
-
-    /**
      * <p>
      *     <b>Note</b>: The instance <b>is</b> added to the
      *     {@code user}'s {@link User#getAccessInfoList() info list}.
@@ -98,19 +79,6 @@ public class AccessInfo {
         this.accessEnd = accessEnd;
 
         user.addAccessInfo(this);
-    }
-
-    /**
-     *
-     * @return
-     *          {@code true} if the {@link #accessStart} is equal to or before the
-     *          {@link LocalDateTime#now() current date} and the {@link #accessEnd} is after the
-     *          {@link LocalDateTime#now() current date}.
-     */
-    public boolean isCurrentlyActive() {
-        LocalDateTime now = LocalDateTime.now();
-
-        return (now.equals(accessStart) || now.isAfter(accessStart)) && now.isBefore(accessEnd);
     }
 
 }

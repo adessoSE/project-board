@@ -2,7 +2,6 @@ package de.adesso.projectboard.base.project.service;
 
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
-import de.adesso.projectboard.base.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.user.persistence.User;
 
@@ -42,17 +41,19 @@ public interface ProjectService {
     boolean projectExists(String projectId);
 
     /**
-     * @param projectDTO
-     *          The {@link ProjectRequestDTO} instance to create a {@link Project}
+     * @param project
+     *          The {@link Project} to create a new {@link Project}
      *          from.
+     *
      * @return
      *          The created {@link Project}.
      */
-    Project createProject(ProjectRequestDTO projectDTO);
+    Project createProject(Project project);
 
     /**
-     * @param projectDTO
-     *          The {@link ProjectRequestDTO} instance.
+     * @param project
+     *          The {@link Project} to update the exising
+     *          project from
      *
      * @param projectId
      *          The {@link Project#id ID} of the {@link Project}
@@ -61,11 +62,8 @@ public interface ProjectService {
      * @return
      *          The updated {@link Project}.
      *
-     * @throws ProjectNotFoundException
-     *          When no {@link Project} with the given {@code projectId}
-     *          was found.
      */
-    Project updateProject(ProjectRequestDTO projectDTO, String projectId);
+    Project updateProject(Project project, String projectId);
 
     /**
      * @param project
@@ -84,12 +82,8 @@ public interface ProjectService {
      * @param projectId
      *          The {@link Project#id ID} of the {@link Project}
      *          to delete.
-     *
-     * @throws ProjectNotFoundException
-     *          When no {@link Project} with the given {@code projectId}
-     *          was found.
      */
-    void deleteProjectById(String projectId) throws ProjectNotFoundException;
+    void deleteProjectById(String projectId);
 
     /**
      * Method to validate the existence of a given {@link Project}

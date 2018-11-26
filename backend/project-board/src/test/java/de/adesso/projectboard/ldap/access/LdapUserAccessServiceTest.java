@@ -4,18 +4,23 @@ import de.adesso.projectboard.base.access.persistence.AccessInfo;
 import de.adesso.projectboard.base.access.persistence.AccessInfoRepository;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.ldap.user.LdapUserService;
+import org.assertj.core.api.SoftAssertions;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -27,101 +32,151 @@ public class LdapUserAccessServiceTest {
     @Mock
     AccessInfoRepository infoRepo;
 
-    @InjectMocks
+    @Mock
+    User userMock;
+
+    @Mock
+    AccessInfo accessInfoMock;
+
+    Clock clock;
+
     LdapUserAccessService accessService;
 
-    @Mock
-    User user;
+    @Before
+    public void setUp() {
+        Instant instant = Instant.parse("2018-01-01T13:00:00.00Z");
+        ZoneId zoneId = ZoneId.systemDefault();
 
-    @Mock
-    AccessInfo accessInfo;
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testGiveUserAccessUntil_IllegalArgument() {
-        accessService.giveUserAccessUntil(user, LocalDateTime.now().minus(10L, ChronoUnit.DAYS));
+        this.clock = Clock.fixed(instant, zoneId);
+        this.accessService = new LdapUserAccessService(userService, infoRepo, clock);
     }
 
     @Test
-    public void testGiveUserAccessUntil_LatestNull_NewInstance() {
-        LocalDateTime accessEnd = LocalDateTime.now().plus(5L ,ChronoUnit.DAYS);
+    public void giveUserAccessUntilThrowsExceptionWhenTimeIsInThePast() {
+        // given
+        LocalDateTime endTime = LocalDateTime.now(clock).minus(1L, ChronoUnit.MINUTES);
 
-        // set up user mock
-        when(user.getLatestAccessInfo()).thenReturn(null);
-
-        accessService.giveUserAccessUntil(user, accessEnd);
-
-        verify(userService).save(user);
-        verify(user).addAccessInfo(any());
+        // when
+        assertThatThrownBy(() -> accessService.giveUserAccessUntil(userMock, endTime))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("End date must lie in the future!");
     }
 
     @Test
-    public void testGiveUserAccessUntil_LatestNotInActive_NewInstance() {
-        LocalDateTime accessEnd = LocalDateTime.now().plus(5L ,ChronoUnit.DAYS);
+    public void giveUserAccessUntilUserHasActiveAccess() {
+        // given
+        LocalDateTime expectedStartTime = LocalDateTime.now(clock).minus(1L, ChronoUnit.DAYS);
+        LocalDateTime initialEndTime = LocalDateTime.now(clock).plus(10L, ChronoUnit.MINUTES);
+        LocalDateTime expectedEndTime = LocalDateTime.now(clock).plus(20L, ChronoUnit.MINUTES);
 
-        // set up entity mocks
-        when(accessInfo.isCurrentlyActive()).thenReturn(false);
-        when(user.getLatestAccessInfo()).thenReturn(accessInfo);
+        given(userMock.getLatestAccessInfo()).willReturn(accessInfoMock);
 
-        accessService.giveUserAccessUntil(user, accessEnd);
+        given(accessInfoMock.getAccessStart()).willReturn(expectedStartTime);
+        given(accessInfoMock.getAccessEnd()).willReturn(initialEndTime);
 
-        verify(userService).save(user);
-        verify(user).addAccessInfo(any());
+        // when
+        accessService.giveUserAccessUntil(userMock, expectedEndTime);
+
+        // then
+        verify(accessInfoMock).setAccessEnd(expectedEndTime);
+        verify(infoRepo).save(accessInfoMock);
     }
 
     @Test
-    public void testGiveUserAccessUntil_LatestActive_NoNewInstance() {
-        LocalDateTime accessEnd = LocalDateTime.now().plus(5L ,ChronoUnit.DAYS);
+    public void giveUserAccessUntilUserHasNoActiveAccess() {
+        // given
+        LocalDateTime inactiveStartTime = LocalDateTime.now(clock).minus(10L, ChronoUnit.DAYS);
+        LocalDateTime inactiveEndTime = LocalDateTime.now(clock).minus(1L, ChronoUnit.DAYS);
 
-        // set up entity mocks
-        when(accessInfo.isCurrentlyActive()).thenReturn(true);
-        when(user.getLatestAccessInfo()).thenReturn(accessInfo);
+        LocalDateTime expectedStartTime = LocalDateTime.now(clock);
+        LocalDateTime expectedEndTime = LocalDateTime.now(clock).plus(10L , ChronoUnit.DAYS);
 
-        accessService.giveUserAccessUntil(user, accessEnd);
+        given(userMock.getLatestAccessInfo()).willReturn(accessInfoMock);
+        given(accessInfoMock.getAccessStart()).willReturn(inactiveStartTime);
+        given(accessInfoMock.getAccessEnd()).willReturn(inactiveEndTime);
 
-        verify(user, never()).addAccessInfo(any());
-        verify(accessInfo).setAccessEnd(accessEnd);
-        verify(infoRepo).save(accessInfo);
+        // when
+        accessService.giveUserAccessUntil(userMock, expectedEndTime);
+
+        // then
+        ArgumentCaptor<AccessInfo> argument = ArgumentCaptor.forClass(AccessInfo.class);
+        verify(userMock, times(2)).addAccessInfo(argument.capture());
+
+        AccessInfo createdAccessInfo = argument.getValue();
+
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(createdAccessInfo.getUser()).isEqualTo(userMock);
+        softly.assertThat(createdAccessInfo.getAccessStart()).isEqualTo(expectedStartTime);
+        softly.assertThat(createdAccessInfo.getAccessEnd()).isEqualTo(expectedEndTime);
+
+        softly.assertAll();
+
+        verify(userService).save(userMock);
     }
 
     @Test
-    public void testRemoveAccessFromUser_HasAccess() {
-        // set up entity mocks
-        when(accessInfo.isCurrentlyActive()).thenReturn(true);
-        when(user.getLatestAccessInfo()).thenReturn(accessInfo);
+    public void giveUserAccessUntilUserHasNoAccessInstance() {
+        // given
+        LocalDateTime expectedStartTime = LocalDateTime.now(clock);
+        LocalDateTime expectedEndTime = LocalDateTime.now(clock).plus(10L , ChronoUnit.DAYS);
 
-        accessService.removeAccessFromUser(user);
+        given(userMock.getLatestAccessInfo()).willReturn(null);
 
-        verify(accessInfo).setAccessEnd(any());
-        verify(infoRepo).save(accessInfo);
+        // when
+        accessService.giveUserAccessUntil(userMock, expectedEndTime);
+
+        // then
+        ArgumentCaptor<AccessInfo> accessInfoArgumentCaptor = ArgumentCaptor.forClass(AccessInfo.class);
+        verify(userMock, times(2)).addAccessInfo(accessInfoArgumentCaptor.capture());
+
+        AccessInfo createdAccessInfo = accessInfoArgumentCaptor.getValue();
+
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(createdAccessInfo.getUser()).isEqualTo(userMock);
+        softly.assertThat(createdAccessInfo.getAccessStart()).isEqualTo(expectedStartTime);
+        softly.assertThat(createdAccessInfo.getAccessEnd()).isEqualTo(expectedEndTime);
+
+        softly.assertAll();
+
+        verify(userService).save(userMock);
     }
 
     @Test
-    public void testRemoveAccessFromUser_NoAccess() {
-        // set up entity mocks
-        when(accessInfo.isCurrentlyActive()).thenReturn(false);
-        when(user.getLatestAccessInfo()).thenReturn(accessInfo);
+    public void removeAccessFromUserNoActiveAccessInfoPresent() {
+        // given
+        LocalDateTime inactiveStartTime = LocalDateTime.now(clock).minus(10L, ChronoUnit.DAYS);
+        LocalDateTime inactiveEndTime = LocalDateTime.now(clock).minus(1L, ChronoUnit.DAYS);
 
-        accessService.removeAccessFromUser(user);
+        given(userMock.getLatestAccessInfo()).willReturn(accessInfoMock);
+        given(accessInfoMock.getAccessStart()).willReturn(inactiveStartTime);
+        given(accessInfoMock.getAccessEnd()).willReturn(inactiveEndTime);
 
-        verify(accessInfo, never()).setAccessEnd(any());
-        verify(infoRepo, never()).save(accessInfo);
+        // when
+        accessService.removeAccessFromUser(userMock);
+
+        // then
+        verify(accessInfoMock, never()).setAccessEnd(any());
     }
 
     @Test
-    public void testUserHasAccess_ActiveInfo() {
-        // set up entity mocks
-        when(accessInfo.isCurrentlyActive()).thenReturn(true);
-        when(user.getLatestAccessInfo()).thenReturn(accessInfo);
+    public void removeAccessFromUserActiveAccessInfoPresent() {
+        // given
+        LocalDateTime activeStartTime = LocalDateTime.now(clock).minus(10L, ChronoUnit.DAYS);
+        LocalDateTime activeEndTime = LocalDateTime.now(clock).plus(1L, ChronoUnit.WEEKS);
+        LocalDateTime expectedEndTime = LocalDateTime.now(clock);
 
-        assertTrue(accessService.userHasAccess(user));
-    }
+        given(userMock.getLatestAccessInfo()).willReturn(accessInfoMock);
+        given(accessInfoMock.getAccessStart()).willReturn(activeStartTime);
+        given(accessInfoMock.getAccessEnd()).willReturn(activeEndTime);
 
-    @Test
-    public void testUserHasAccess_NoActiveInfo() {
-        // set up user/service mock
-        when(user.getLatestAccessInfo()).thenReturn(null);
+        // when
+        accessService.removeAccessFromUser(userMock);
 
-        assertFalse(accessService.userHasAccess(user));
+        // then
+        verify(accessInfoMock).setAccessEnd(expectedEndTime);
+        verify(infoRepo).save(accessInfoMock);
     }
 
 }

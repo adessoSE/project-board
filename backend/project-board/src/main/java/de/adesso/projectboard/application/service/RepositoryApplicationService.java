@@ -5,8 +5,6 @@ import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.persistence.ProjectApplicationRepository;
 import de.adesso.projectboard.base.application.service.ApplicationService;
 import de.adesso.projectboard.base.exceptions.AlreadyAppliedException;
-import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
-import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.user.persistence.User;
@@ -35,7 +33,7 @@ public class RepositoryApplicationService implements ApplicationService {
     }
 
     @Override
-    public boolean userHasAppliedForProject(User user, Project project) throws UserNotFoundException, ProjectNotFoundException {
+    public boolean userHasAppliedForProject(User user, Project project) {
         return applicationRepo.existsByUserAndProject(user, project);
     }
 

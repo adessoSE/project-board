@@ -4,7 +4,7 @@ import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.persistence.ProjectApplicationRepository;
 import de.adesso.projectboard.base.exceptions.ProjectNotEditableException;
 import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
-import de.adesso.projectboard.base.exceptions.UserNotFoundException;
+import de.adesso.projectboard.base.project.dto.ProjectDtoMapper;
 import de.adesso.projectboard.base.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.persistence.ProjectOrigin;
@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +36,8 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
 
     private final UserService userService;
 
+    private final Clock clock;
+
     @Autowired
     public RepositoryProjectService(ProjectRepository projectRepo,
                                     ProjectApplicationRepository applicationRepo,
@@ -44,6 +47,39 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
         this.applicationRepo = applicationRepo;
         this.userRepo = userRepo;
         this.userService = userService;
+
+        this.clock = Clock.systemDefaultZone();
+    }
+
+    /**
+     * Package private default constructor for testing purposes.
+     *
+     * @param projectRepo
+     *          The {@link ProjectRepository}.
+     *
+     * @param applicationRepo
+     *          The {@link ProjectApplicationRepository}.
+     *
+     * @param userRepo
+     *          The {@link UserRepository}.
+     *
+     * @param userService
+     *          The {@link UserService}.
+     *
+     * @param clock
+     *          The {@link Clock} to use to generate the
+     *          current time with.
+     */
+    RepositoryProjectService(ProjectRepository projectRepo,
+                             ProjectApplicationRepository applicationRepo,
+                             UserRepository userRepo,
+                             UserService userService,
+                             Clock clock) {
+        this.projectRepo = projectRepo;
+        this.applicationRepo = applicationRepo;
+        this.userRepo = userRepo;
+        this.userService = userService;
+        this.clock = clock;
     }
 
     @Override
@@ -58,12 +94,29 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
         return projectRepo.existsById(projectId);
     }
 
+    /**
+     *
+     * @param project
+     *          The {@link Project} to update the exising
+     *          project from
+     *
+     * @param projectId
+     *          The {@link Project#id ID} of the {@link Project}
+     *          to update.
+     *
+     * @return
+     *          The updated {@link Project}.
+     *
+     * @throws ProjectNotEditableException
+     *          When the {@link Project}'s {@link Project#origin origin} is not set to
+     *          {@link ProjectOrigin#CUSTOM}.
+     */
     @Override
-    public Project updateProject(ProjectRequestDTO projectDTO, String projectId) throws ProjectNotFoundException, ProjectNotEditableException {
+    public Project updateProject(Project project, String projectId) throws ProjectNotEditableException {
         Project existingProject = getProjectById(projectId);
 
         if(ProjectOrigin.CUSTOM.equals(existingProject.getOrigin())) {
-            return createOrUpdateProject(projectDTO, projectId);
+            return createOrUpdateProject(project, projectId);
         } else {
             throw new ProjectNotEditableException();
         }
@@ -75,12 +128,12 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
     }
 
     @Override
-    public Project createProject(ProjectRequestDTO projectDTO) throws UserNotFoundException {
-        return createOrUpdateProject(projectDTO, null);
+    public Project createProject(Project project) {
+        return createOrUpdateProject(project, null);
     }
 
     @Override
-    public void deleteProjectById(String projectId) throws ProjectNotFoundException, ProjectNotEditableException {
+    public void deleteProjectById(String projectId) throws ProjectNotEditableException {
         Project existingProject = getProjectById(projectId);
 
         if(ProjectOrigin.JIRA.equals(existingProject.getOrigin())) {
@@ -119,37 +172,39 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
         projectRepo.delete(existingProject);
     }
 
-    Project createOrUpdateProject(ProjectRequestDTO projectDTO, String projectId) {
-        LocalDateTime updateTime = LocalDateTime.now();
-        LocalDateTime createTime = LocalDateTime.now();
+    /**
+     *
+     * @param project
+     *          The {@link Project} to create/update a project from.
+     *
+     * @param projectId
+     *          The {@link Project#id ID} of the {@link Project}
+     *          to update. If {@code null} or no {@link Project}
+     *          with the given {@code projectId} exists, a new
+     *          one is created.
+     *
+     * @return
+     *          The <b>persisted</b> updated/created {@link Project}.
+     *          
+     * @see ProjectDtoMapper#toProject(ProjectRequestDTO)
+     */
+    Project createOrUpdateProject(Project project, String projectId) {
+        Optional<Project> existingProjectOptional = projectId != null ? projectRepo.findById(projectId) : Optional.empty();
 
-        if(projectId != null && projectExists(projectId)) {
-            Project existingProject = getProjectById(projectId);
+        LocalDateTime updatedTime = LocalDateTime.now(clock);
 
-            createTime = existingProject.getCreated();
+        project.setOrigin(ProjectOrigin.CUSTOM);
+        project.setUpdated(updatedTime);
+
+        if(existingProjectOptional.isPresent()) {
+            Project existingProject = existingProjectOptional.get();
+
+            project.setId(existingProject.getId());
+            project.setCreated(existingProject.getCreated());
+        } else {
+            project.setId(null);
+            project.setCreated(updatedTime);
         }
-
-        Project project = new Project()
-                .setId(projectId)
-                .setStatus(projectDTO.getStatus())
-                .setIssuetype(projectDTO.getIssuetype())
-                .setTitle(projectDTO.getTitle())
-                .setLabels(projectDTO.getLabels())
-                .setJob(projectDTO.getJob())
-                .setSkills(projectDTO.getSkills())
-                .setDescription(projectDTO.getDescription())
-                .setLob(projectDTO.getLob())
-                .setCustomer(projectDTO.getCustomer())
-                .setLocation(projectDTO.getLocation())
-                .setOperationStart(projectDTO.getOperationStart())
-                .setOperationEnd(projectDTO.getOperationEnd())
-                .setEffort(projectDTO.getEffort())
-                .setCreated(createTime)
-                .setUpdated(updateTime)
-                .setFreelancer(projectDTO.getFreelancer())
-                .setElongation(projectDTO.getElongation())
-                .setOther(projectDTO.getOther())
-                .setOrigin(ProjectOrigin.CUSTOM);
 
         return projectRepo.save(project);
     }
@@ -182,11 +237,8 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
     }
 
     @Override
-    public Project createProjectForUser(ProjectRequestDTO projectDTO, User user) {
-        // check if a valid user instance was passed
-        userService.validateExistence(user);
-
-        Project createdProject = createProject(projectDTO);
+    public Project createProjectForUser(Project project, User user) {
+        Project createdProject = createProject(project);
 
         user.addOwnedProject(createdProject);
         userService.save(user);

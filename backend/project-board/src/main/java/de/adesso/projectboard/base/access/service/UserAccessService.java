@@ -48,8 +48,10 @@ public interface UserAccessService {
      *          The {@link User}.
      *
      * @return
-     *          {@code true}, iff the given {@code user} has access.
+     *          {@code true}, iff the given {@link User}'s latest
+     *          {@link de.adesso.projectboard.base.access.persistence.AccessInfo} instance
+     *          is currently active (the current time is in the interval {@code [start, end]}).
      */
-    boolean userHasAccess(User user);
+    boolean userHasActiveAccessInfo(User user);
 
 }

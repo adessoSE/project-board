@@ -2,6 +2,7 @@ package de.adesso.projectboard.base.user.dto;
 
 import de.adesso.projectboard.base.access.dto.AccessInfoResponseDTO;
 import de.adesso.projectboard.base.access.persistence.AccessInfo;
+import de.adesso.projectboard.base.access.service.UserAccessService;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.service.UserService;
@@ -23,9 +24,12 @@ public class UserDtoFactory {
 
     private final UserService userService;
 
+    private final UserAccessService userAccessService;
+
     @Autowired
-    public UserDtoFactory(UserService userService) {
+    public UserDtoFactory(UserService userService, UserAccessService userAccessService) {
         this.userService = userService;
+        this.userAccessService = userAccessService;
     }
 
     /**
@@ -92,11 +96,12 @@ public class UserDtoFactory {
 
     UserResponseDTO getDto(UserData userData, boolean isManager) {
         User user = userData.getUser();
-        AccessInfo latestInfo = user.getLatestAccessInfo();
 
         AccessInfoResponseDTO infoDTO = new AccessInfoResponseDTO();
-        if(latestInfo != null) {
-            infoDTO.setHasAccess(latestInfo.isCurrentlyActive())
+        if(userAccessService.userHasActiveAccessInfo(user)) {
+            AccessInfo latestInfo = user.getLatestAccessInfo();
+
+            infoDTO.setHasAccess(true)
                     .setAccessStart(latestInfo.getAccessStart())
                     .setAccessEnd(latestInfo.getAccessEnd());
         }

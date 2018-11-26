@@ -1,5 +1,6 @@
 package de.adesso.projectboard.base.project.rest;
 
+import de.adesso.projectboard.base.project.dto.ProjectDtoMapper;
 import de.adesso.projectboard.base.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
@@ -29,11 +30,17 @@ public class BaseProjectController {
 
     private final UserService userService;
 
+    private final ProjectDtoMapper projectDtoMapper;
+
     @Autowired
-    public BaseProjectController(ProjectService projectService, UserProjectService userProjectService, UserService userService) {
+    public BaseProjectController(ProjectService projectService,
+                                 UserProjectService userProjectService,
+                                 UserService userService,
+                                 ProjectDtoMapper projectDtoMapper) {
         this.projectService = projectService;
         this.userProjectService = userProjectService;
         this.userService = userService;
+        this.projectDtoMapper = projectDtoMapper;
     }
 
     @PreAuthorize("hasAccessToProject(#projectId) || hasRole('admin')")
@@ -47,13 +54,13 @@ public class BaseProjectController {
     public Project createProject(@Valid @RequestBody ProjectRequestDTO projectDTO) {
         User user = userService.getAuthenticatedUser();
 
-        return userProjectService.createProjectForUser(projectDTO, user);
+        return userProjectService.createProjectForUser(projectDtoMapper.toProject(projectDTO), user);
     }
 
     @PreAuthorize("hasPermissionToEditProject(#projectId) || hasRole('admin')")
     @PutMapping(path = "/{projectId}")
     public Project updateProject(@PathVariable String projectId, @Valid @RequestBody ProjectRequestDTO projectDTO) {
-        return projectService.updateProject(projectDTO, projectId);
+        return projectService.updateProject(projectDtoMapper.toProject(projectDTO), projectId);
     }
 
     @PreAuthorize("hasPermissionToEditProject(#projectId) || hasRole('admin')")

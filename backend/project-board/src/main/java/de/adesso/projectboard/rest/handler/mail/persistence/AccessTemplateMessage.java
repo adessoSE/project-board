@@ -37,7 +37,7 @@ public class AccessTemplateMessage extends TemplateMessage {
     public boolean isStillRelevant() {
         AccessInfo latestInfo = referencedUserData.getUser().getLatestAccessInfo();
 
-        return latestInfo != null && latestInfo.isCurrentlyActive();
+        return latestInfo != null && latestInfo.getAccessEnd().isAfter(LocalDateTime.now());
     }
 
 }

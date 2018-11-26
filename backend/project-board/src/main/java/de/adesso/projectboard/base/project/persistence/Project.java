@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.adesso.projectboard.base.project.deserializer.date.CreatedUpdatedDateDeserializer;
 import de.adesso.projectboard.base.project.deserializer.field.ObjectNameDeserializer;
 import de.adesso.projectboard.base.project.deserializer.field.ObjectValueDeserializer;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -24,6 +26,8 @@ import java.util.List;
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class Project {
 
     @Id
