@@ -3,6 +3,7 @@ package de.adesso.projectboard.base.user.persistence;
 import de.adesso.projectboard.base.access.persistence.AccessInfo;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.project.persistence.Project;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,6 +20,7 @@ import java.util.*;
 @Table(name = "PB_USER")
 @Getter
 @Setter
+@EqualsAndHashCode
 public class User {
 
     /**
@@ -98,13 +100,10 @@ public class User {
      * @param project
      *          The {@link Project} to add a bookmark for.
      *
-     * @return
-     *          The result of {@link Set#add(Object)}.
-     *
      * @see #addApplication(ProjectApplication)
      */
-    public boolean addBookmark(Project project) {
-        return bookmarks.add(project);
+    public void addBookmark(Project project) {
+        this.bookmarks.add(project);
     }
 
     /**
@@ -112,11 +111,9 @@ public class User {
      * @param project
      *          The {@link Project} to remove the bookmark for.
      *
-     * @return
-     *          The result of {@link Set#remove(Object)}.
      */
-    public boolean removeBookmark(Project project) {
-        return this.bookmarks.remove(project);
+    public void removeBookmark(Project project) {
+        this.bookmarks.remove(project);
     }
 
     /**
@@ -124,21 +121,18 @@ public class User {
      * @param application
      *          The {@link ProjectApplication} to add to this user.
      *
-     * @return
-     *          The result of {@link Set#add(Object)}.
-     *
      * @throws IllegalArgumentException
      *          When the user the application {@link ProjectApplication#user belongs to}
      *          is not {@code this} user.
      *
      * @see #addBookmark(Project)
      */
-    public boolean addApplication(ProjectApplication application) throws IllegalArgumentException {
+    public void addApplication(ProjectApplication application) throws IllegalArgumentException {
         if(!this.equals(application.getUser())) {
             throw new IllegalArgumentException("The application belongs to another user!");
         }
 
-        return applications.add(application);
+        applications.add(application);
     }
 
     /**
@@ -146,11 +140,9 @@ public class User {
      * @param application
      *          The {@link ProjectApplication} to remove.
      *
-     * @return
-     *          The result of {@link Set#remove(Object)}.
      */
-    public boolean removeApplication(ProjectApplication application) {
-        return this.applications.remove(application);
+    public void removeApplication(ProjectApplication application) {
+        this.applications.remove(application);
     }
 
     /**
@@ -172,12 +164,9 @@ public class User {
      * @param project
      *          The {@link Project} to add to the created projects.
      *
-     * @return
-     *          {@code true}, when the {@code project} was added to the created
-     *          projects.
      */
-    public boolean addOwnedProject(Project project) {
-        return ownedProjects.add(project);
+    public void addOwnedProject(Project project) {
+        ownedProjects.add(project);
     }
 
     /**
@@ -185,12 +174,9 @@ public class User {
      * @param project
      *          The {@link Project} to remove from the created projects.
      *
-     * @return
-     *          {@code true}, when the {@code projects} was removed from the created
-     *          projects.
      */
-    public boolean removeOwnedProject(Project project) {
-        return ownedProjects.remove(project);
+    public void removeOwnedProject(Project project) {
+        ownedProjects.remove(project);
     }
 
     /**
@@ -198,21 +184,18 @@ public class User {
      * @param info
      *          The {@link AccessInfo} to add.
      *
-     * @return
-     *          The result of {@link List#add(Object)}.
-     *
      * @throws IllegalArgumentException
      *          When the given {@code info}'s {@link AccessInfo#user user}
      *          is not equal to {@code this} user.
      */
-    public boolean addAccessInfo(AccessInfo info) throws IllegalArgumentException {
+    public void addAccessInfo(AccessInfo info) throws IllegalArgumentException {
         Objects.requireNonNull(info);
 
         if(!this.equals(info.getUser())) {
             throw new IllegalArgumentException("Info instance belongs to a different or no user!");
         }
 
-        return accessInfoList.add(info);
+        accessInfoList.add(info);
     }
 
     /**
@@ -220,11 +203,9 @@ public class User {
      * @param info
      *          The {@link AccessInfo} to remove.
      *
-     * @return
-     *          The result of {@link List#remove(Object)}.
      */
-    public boolean removeAccessInfo(AccessInfo info) {
-        return accessInfoList.remove(info);
+    public void removeAccessInfo(AccessInfo info) {
+        accessInfoList.remove(info);
     }
 
 }

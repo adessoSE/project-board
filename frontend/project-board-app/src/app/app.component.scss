@@ -52,6 +52,10 @@
     position: absolute;
     right: 10px;
   }
+
+  .back-to-top-badge {
+    display: none !important;
+  }
 }
 
 @include media-breakpoint-down(lg) {

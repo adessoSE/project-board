@@ -19,7 +19,7 @@
             <!--<b>{{p.id}}:</b> -->{{p.title}}
           </span>
           </button>
-          <app-project-details *ngIf="mobile && p.id == selectedProject?.id" [bookmark]="isProjectBookmarked(p.id)" [isUserBoss]="isUserBoss" [applicable]="isProjectApplicable(p.id)" (bookmarkChanged)="handleBookmark($event)" [selectedProject]="selectedProject"></app-project-details>
+          <app-project-details id="detailContainer" *ngIf="mobile && p.id == selectedProject?.id" [bookmark]="isProjectBookmarked(p.id)" [isUserBoss]="isUserBoss" [applicable]="isProjectApplicable(p.id)" (bookmarkChanged)="handleBookmark($event)" [selectedProject]="selectedProject"></app-project-details>
         </ng-container>
       </div>
     </div>

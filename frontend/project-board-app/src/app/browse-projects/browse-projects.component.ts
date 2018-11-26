@@ -28,6 +28,7 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
   appliedProjects: Project[] = [];
   bookmarks: Project[] = [];
   selectedProject: Project;
+  below = false;
   mobile = false;
   scroll = true;
   isUserBoss = false;
@@ -115,12 +116,26 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
   }
 
   projectClicked(project) {
+
+    const newProjectOffset = $(`#${project.id}`).offset().top;
+
     if (this.selectedProject === project) {
       this.location.replaceState(`/browse`);
       this.selectedProject = null;
       this.scroll = false;
+      this.below = false;
     } else {
       this.location.replaceState(`/browse/${project.id}`);
+        if(this.selectedProject){
+
+          const oldProjectOffset = $(`#${this.selectedProject.id}`).offset().top;
+          
+         if(oldProjectOffset > newProjectOffset){
+          this.below = false;
+          } else {
+          this.below = true;
+        }
+      }
       this.selectedProject = project;
       this.scroll = true;
       this.scrollBeneathHeader(this.divToScroll);
@@ -132,7 +147,11 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
       if (this.mobile) {
         const btn = $(`#${this.selectedProject.id}`);
         // navbar has 56 pixels height
-        $('html, body').animate({scrollTop: $(btn).offset().top - 56}, 'slow');
+        if(this.below){
+          $('html, body').animate({scrollTop: $(btn).offset().top - (document.getElementById('detailContainer').scrollHeight + 56)}, 'slow');
+        } else {
+          $('html, body').animate({scrollTop: $(btn).offset().top -  56}, 'slow');
+        }
         this.scroll = false;
       } else {
         this.scrollBeneathHeader(this.divToScroll);
@@ -142,8 +161,8 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
   }
 
   scrollBeneathHeader(divToScroll) {
-    if (!this.mobile && !(document.body.scrollTop > 281 || document.documentElement.scrollTop > 281)) {
-      $('html, body').animate({scrollTop: $(divToScroll).offset().top - 64}, 'slow');
+    if (!this.mobile && (document.body.scrollTop > 230 || document.documentElement.scrollTop > 230)) {
+      $('html, body').animate({scrollTop: $(divToScroll).offset().top - 10}, 'slow');
     }
   }
 

@@ -12,7 +12,7 @@
 
           {{e.lastName}}, {{e.firstName}}
         </button>
-        <div *ngIf="mobile && selectedEmployee?.id == e.id" style="padding: 0 15px 15px 15px">
+        <div *ngIf="mobile && selectedEmployee?.id == e.id" style="padding: 0 15px 15px 15px" id="managementContainer">
           <app-employee-management [selectedEmployee]="selectedEmployee"></app-employee-management>
         </div>
       </ng-container>
