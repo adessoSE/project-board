@@ -16,6 +16,7 @@ export class ExecutivesComponent implements OnInit, AfterViewChecked {
   selectedEmployee: Employee;
   mobile = false;
   scroll = true;
+  below = false;
 
   destroy$ = new Subject<void>();
 
@@ -59,12 +60,26 @@ export class ExecutivesComponent implements OnInit, AfterViewChecked {
   }
 
   employeeClicked(employee) {
+
+    const newEmployeeOffset = $(`#${employee.id}`).offset().top;
+
     if (this.selectedEmployee === employee) {
       this.location.replaceState(`/admin`);
       this.selectedEmployee = null;
       this.scroll = false;
+      this.below = false;
     } else {
       this.location.replaceState(`/admin/${employee.id}`);
+      if(this.selectedEmployee){
+
+        const oldEmployeeOffset = $(`#${this.selectedEmployee.id}`).offset().top;
+        console.log("alt: " + oldEmployeeOffset + " neu: " + newEmployeeOffset);
+       if(oldEmployeeOffset > newEmployeeOffset){
+        this.below = false;
+        } else {
+        this.below = true;
+      }
+    }
       this.selectedEmployee = employee;
       this.scroll = true;
     }
@@ -74,7 +89,13 @@ export class ExecutivesComponent implements OnInit, AfterViewChecked {
     if (this.mobile && this.scroll && this.selectedEmployee) {
       const btn = $(`#${this.selectedEmployee.id}`);
       // navbar has 56 pixels height
-      $('html, body').animate({scrollTop: $(btn).offset().top - 56}, 'slow');
+
+      if(this.below){
+        console.log("true");
+        $('html, body').animate({scrollTop: $(btn).offset().top - (document.getElementById('managementContainer').scrollHeight + 56)}, 'slow');
+      } else {
+        $('html, body').animate({scrollTop: $(btn).offset().top -  56}, 'slow');
+      }
       this.scroll = false;
     }
   }
