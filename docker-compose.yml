@@ -1,15 +1,18 @@
-version: '3.7'
+version: '3'
 
 services:
-
   keycloak:
-    image: jboss/keycloak
-    command: "-b 0.0.0.0 -Dkeycloak.import=/keycloak/adesso-realm.json"
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
     volumes:
-      - /keycloak/adesso-realm.json:/keycloak/adesso-realm.json
+      - '/keycloak/adesso-realm.JSON:/keycloak/adesso-realm.JSON'
+    image: jboss/keycloak:4.6.0.Final
+    command:
+      - "-Dkeycloak.migration.action=import -Dkeycloak.migration.provider=dir -Dkeycloak.migration.dir=/keycloak/ -Dkeycloak.migration.strategy=OVERWRITE_EXISTING"
     ports:
       - 8080:8080
-
+    
 #  backend:
 #    build:
 #      context: ./backend/project-board
@@ -33,9 +36,5 @@ services:
 #      - backend
 
 volumes:
-  postgres_data:
+  mysql_data:
     driver: local
-
-networks:
-  project_board_network:
-      driver: bridge
