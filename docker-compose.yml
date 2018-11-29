@@ -1,4 +1,4 @@
-version: '3'
+version: '3.7'
 
 services:
   keycloak:
@@ -8,33 +8,26 @@ services:
     volumes:
       - '/keycloak/adesso-realm.JSON:/keycloak/adesso-realm.JSON'
     image: jboss/keycloak:4.6.0.Final
+    container_name: keycloak
     command:
       - "-Dkeycloak.migration.action=import -Dkeycloak.migration.provider=dir -Dkeycloak.migration.dir=/keycloak/ -Dkeycloak.migration.strategy=OVERWRITE_EXISTING"
     ports:
       - 8080:8080
-    
-#  backend:
-#    build:
-#      context: ./backend/project-board
-#      dockerfile: docker/Dockerfile
-#    image: backend:0.0.1
-#    container_name: backend
-#    networks:
-#      - project_board_network
 
-#  frontend:
-#    build:
-#      context: ./frontend/project-board-app
-#      dockerfile: Dockerfile
-#    image: frontend:0.0.1
-#    container_name: frontend
-#    ports:
-#      - 4200:80
-#    networks:
-#      - project_board_network
-#    depends_on:
-#      - backend
+  backend:
+    build:
+      context: ./backend/project-board
+      dockerfile: Dockerfile
+    image: backend:0.0.1
+    container_name: backend
 
-volumes:
-  mysql_data:
-    driver: local
+  frontend:
+    build:
+      context: ./frontend/project-board-app
+      dockerfile: Dockerfile
+    image: frontend:0.0.1
+    container_name: frontend
+    ports:
+      - 4200:80
+    depends_on:
+      - backend
