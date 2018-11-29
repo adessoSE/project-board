@@ -15,6 +15,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,7 +28,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RepositoryApplicationServiceTest {
@@ -43,11 +48,17 @@ public class RepositoryApplicationServiceTest {
     @Mock
     Project projectMock;
 
+    Clock clock;
+
     RepositoryApplicationService applicationService;
 
     @Before
     public void setUp() {
-        this.applicationService = new RepositoryApplicationService(projectService, applicationRepo);
+        Instant instant = Instant.parse("2018-01-01T10:00:00.00Z");
+        ZoneId zoneId = ZoneId.systemDefault();
+
+        this.clock = Clock.fixed(instant, zoneId);
+        this.applicationService = new RepositoryApplicationService(projectService, applicationRepo, clock);
     }
 
     @Test
@@ -78,10 +89,11 @@ public class RepositoryApplicationServiceTest {
     public void testCreateApplicationForUser() {
         // given
         String expectedComment = "Comment!";
+        LocalDateTime expectedDate = LocalDateTime.now(clock);
 
         ProjectApplicationRequestDTO dto = mock(ProjectApplicationRequestDTO.class);
-        when(dto.getComment()).thenReturn(expectedComment);
-        when(dto.getProjectId()).thenReturn(PROJECT_ID);
+        given(dto.getComment()).willReturn(expectedComment);
+        given(dto.getProjectId()).willReturn(PROJECT_ID);
 
         given(applicationRepo.existsByUserAndProject(userMock, projectMock)).willReturn(false);
         given(projectService.getProjectById(PROJECT_ID)).willReturn(projectMock);
@@ -100,6 +112,7 @@ public class RepositoryApplicationServiceTest {
         SoftAssertions softly = new SoftAssertions();
 
         softly.assertThat(createdApplication.getComment()).isEqualTo(expectedComment);
+        softly.assertThat(createdApplication.getApplicationDate()).isEqualTo(expectedDate);
         softly.assertThat(createdApplication.getUser()).isEqualTo(userMock);
         softly.assertThat(createdApplication.getProject()).isEqualTo(projectMock);
 

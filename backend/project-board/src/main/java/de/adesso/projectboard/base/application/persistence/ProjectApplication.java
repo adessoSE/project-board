@@ -77,18 +77,17 @@ public class ProjectApplication {
      *
      * @param user
      *          The {@link User} this project belongs to.
+     *
+     * @param applicationDate
+     *          The {@link LocalDateTime date} of the application.
      */
-    public ProjectApplication(Project project, String comment, User user) {
+    public ProjectApplication(Project project, String comment, User user, LocalDateTime applicationDate) {
         this.project = project;
         this.comment = comment;
         this.user = user;
+        this.applicationDate = applicationDate;
 
         user.addApplication(this);
-    }
-
-    @PrePersist
-    private void setApplicationDateToNow() {
-        this.applicationDate = LocalDateTime.now();
     }
 
 }
