@@ -1,21 +1,27 @@
-# Stage 1
-FROM node:8.11.2-alpine as node
-
-WORKDIR /usr/src/app
+### STAGE 1: Build ###
+# We label our stage as ‘node’
+FROM node:11.3.0 as node
 
 COPY package.json ./
 COPY yarn.lock ./
 
-RUN yarn install
+## Storing node modules on a separate layer will prevent unnecessary npm installs at each build
+RUN yarn install && mkdir /ng-app && mv ./node_modules ./ng-app
+
+WORKDIR /ng-app
 
 COPY . .
 
+## Build the angular app in production mode and store the artifacts in dist folder
 RUN yarn run build --prod
 
-# Stage 2
-FROM nginx:1.13.12-alpine
+### STAGE 2: Setup ###
+FROM nginx:1.14.1-alpine
 
-COPY --from=node /usr/src/app/dist/project-board-app /usr/share/nginx/html
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+## Copy our default nginx config
+COPY ./nginx.conf /etc/nginx/conf.d/
 
-EXPOSE 4200
+## Remove default nginx website
+RUN rm -rf /usr/share/nginx/html/*
+
+COPY --from=node /ng-app/dist/project-board-app /usr/share/nginx/html
