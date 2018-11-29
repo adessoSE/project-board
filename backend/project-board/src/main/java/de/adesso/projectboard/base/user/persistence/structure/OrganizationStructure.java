@@ -1,10 +1,7 @@
 package de.adesso.projectboard.base.user.persistence.structure;
 
 import de.adesso.projectboard.base.user.persistence.User;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -14,6 +11,7 @@ import java.util.Set;
 @Table(name = "ORG_STRUCTURE")
 @Getter
 @Setter
+@EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrganizationStructure {
 

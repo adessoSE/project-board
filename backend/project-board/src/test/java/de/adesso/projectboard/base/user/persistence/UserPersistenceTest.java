@@ -1,8 +1,12 @@
 package de.adesso.projectboard.base.user.persistence;
 
+import de.adesso.projectboard.base.access.persistence.AccessInfo;
 import de.adesso.projectboard.base.access.persistence.AccessInfoRepository;
+import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.persistence.ProjectApplicationRepository;
+import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.persistence.ProjectRepository;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +15,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertTrue;
+import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -19,25 +24,50 @@ import static org.junit.Assert.assertTrue;
 public class UserPersistenceTest {
 
     @Autowired
+    ProjectApplicationRepository applicationRepo;
+
+    @Autowired
+    AccessInfoRepository accessInfoRepo;
+
+    @Autowired
     UserRepository userRepo;
 
     @Autowired
     ProjectRepository projectRepo;
 
-    @Autowired
-    AccessInfoRepository infoRepo;
-
-    @Autowired
-    ProjectApplicationRepository applicationRepo;
-
     @Test
-    @Sql({
-            "classpath:de/adesso/projectboard/persistence/Projects.sql",
-    })
-    public void testSave() {
-        User user = new User("User1");
+    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void save() {
+        // given
+        LocalDateTime applicationDate = LocalDateTime.of(2018, 10, 10, 8, 0);
+        LocalDateTime infoStartDate = LocalDateTime.of(2018, 1, 10, 8, 0);
+        LocalDateTime infoEndDate = LocalDateTime.of(2018, 2, 10, 8, 0);
+        String expectedUserId = "user";
 
-        assertTrue(true);
+        Project project = projectRepo.findById("STF-1").orElseThrow(EntityNotFoundException::new);
+
+        User user = new User(expectedUserId);
+        user.addBookmark(project);
+
+        ProjectApplication application = new ProjectApplication(project, "Comment", user, applicationDate);
+        AccessInfo accessInfo = new AccessInfo(user, infoStartDate, infoEndDate);
+
+        // when
+        userRepo.save(user);
+        User retrievedUser = userRepo.findById(expectedUserId).orElseThrow(EntityNotFoundException::new);
+
+        // then
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(retrievedUser.getId()).isEqualTo(expectedUserId);
+        softly.assertThat(retrievedUser.getAccessInfoList()).containsOnly(accessInfo);
+        softly.assertThat(retrievedUser.getApplications()).containsOnly(application);
+        softly.assertThat(retrievedUser.getBookmarks()).containsOnly(project);
+
+        softly.assertThat(applicationRepo.count()).isEqualTo(1);
+        softly.assertThat(accessInfoRepo.count()).isEqualTo(1);
+
+        // softly.assertAll();
     }
 
 }

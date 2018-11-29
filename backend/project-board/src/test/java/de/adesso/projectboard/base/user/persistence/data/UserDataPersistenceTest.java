@@ -2,6 +2,7 @@ package de.adesso.projectboard.base.user.persistence.data;
 
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +13,12 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -30,18 +33,30 @@ public class UserDataPersistenceTest {
 
     @Test
     @Sql("classpath:de/adesso/projectboard/persistence/Users.sql")
-    public void testSave() {
-        User user = userRepo.findById("User1").orElseThrow(EntityExistsException::new);
+    public void save() {
+        // given
+        User expectedUser = userRepo.findById("User1").orElseThrow(EntityNotFoundException::new);
 
-        UserData userData = new UserData(user, "Test", "User", "test.user@test.com", "LOB Test");
-        UserData persistedData = userDataRepo.save(userData);
+        String expectedFirstName = "First";
+        String expectedLastName = "Last";
+        String expectedEmail = "Email";
+        String expectedLob = "LOB";
 
-        assertNotNull(persistedData.getUser());
-        assertEquals("User1", persistedData.getUser().getId());
-        assertEquals("Test", persistedData.getFirstName());
-        assertEquals("User", persistedData.getLastName());
-        assertEquals("test.user@test.com", persistedData.getEmail());
-        assertEquals("LOB Test", persistedData.getLob());
+        UserData userData = new UserData(expectedUser, expectedFirstName, expectedLastName, expectedEmail, expectedLob);
+
+        // when
+        UserData savedUserData = userDataRepo.save(userData);
+        UserData retrievedUserData = userDataRepo.findById(savedUserData.getId()).orElseThrow(EntityNotFoundException::new);
+
+        // then
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(retrievedUserData.getFirstName()).isEqualTo(expectedFirstName);
+        softly.assertThat(retrievedUserData.getLastName()).isEqualTo(expectedLastName);
+        softly.assertThat(retrievedUserData.getEmail()).isEqualTo(expectedEmail);
+        softly.assertThat(retrievedUserData.getLob()).isEqualTo(expectedLob);
+
+        softly.assertAll();
     }
 
     @Test
@@ -49,12 +64,21 @@ public class UserDataPersistenceTest {
          "classpath:de/adesso/projectboard/persistence/Users.sql",
          "classpath:de/adesso/projectboard/persistence/UserData.sql"
     })
-    public void testFindByUser() {
-        User first = userRepo.findById("User1").orElseThrow(EntityExistsException::new);
-        User third = userRepo.findById("User3").orElseThrow(EntityExistsException::new);
+    public void findByUser() {
+        // given
+        String firstUserId = "User1";
+        String thirdUserId = "User3";
 
-        assertTrue(userDataRepo.findByUser(first).isPresent());
-        assertFalse(userDataRepo.findByUser(third).isPresent());
+        User firstUser = userRepo.findById(firstUserId).orElseThrow(EntityExistsException::new);
+        User thirdUser = userRepo.findById(thirdUserId).orElseThrow(EntityExistsException::new);
+
+        // when
+        Optional<UserData> firstUserDataOptional = userDataRepo.findByUser(firstUser);
+        Optional<UserData> thirdUserDataOptional = userDataRepo.findByUser(thirdUser);
+
+        // then
+        assertThat(firstUserDataOptional).isPresent();
+        assertThat(thirdUserDataOptional).isNotPresent();
     }
 
     @Test
@@ -62,14 +86,23 @@ public class UserDataPersistenceTest {
             "classpath:de/adesso/projectboard/persistence/Users.sql",
             "classpath:de/adesso/projectboard/persistence/UserData.sql"
     })
-    public void testFindByUserIn() {
-        User first = userRepo.findById("User1").orElseThrow(EntityExistsException::new);
-        User second = userRepo.findById("User2").orElseThrow(EntityExistsException::new);
-        User third = userRepo.findById("User3").orElseThrow(EntityExistsException::new);
+    public void findByUserIn() {
+        // given
+        String firstUserId = "User1";
+        String secondUserId = "User2";
+        String thirdUserId = "User3";
 
-        List<UserData> userDataList = userDataRepo.findByUserIn(Arrays.asList(first, second, third), Sort.unsorted());
+        User firstUser = userRepo.findById(firstUserId).orElseThrow(EntityExistsException::new);
+        User secondUser = userRepo.findById(secondUserId).orElseThrow(EntityExistsException::new);
+        User thirdUser = userRepo.findById(thirdUserId).orElseThrow(EntityExistsException::new);
 
-        assertEquals(2, userDataList.size());
+        List<User> userList = Arrays.asList(firstUser, secondUser, thirdUser);
+
+        // when
+        List<UserData> userDataList = userDataRepo.findByUserIn(userList, Sort.unsorted());
+
+        // then
+        assertThat(userDataList).hasSize(2);
     }
 
     @Test
@@ -77,12 +110,21 @@ public class UserDataPersistenceTest {
             "classpath:de/adesso/projectboard/persistence/Users.sql",
             "classpath:de/adesso/projectboard/persistence/UserData.sql"
     })
-    public void testExistsByUser() {
-        User first = userRepo.findById("User1").orElseThrow(EntityExistsException::new);
-        User third = userRepo.findById("User3").orElseThrow(EntityExistsException::new);
+    public void existsByUser() {
+        // given
+        String firstUserId = "User1";
+        String thirdUserId = "User3";
 
-        assertTrue(userDataRepo.existsByUser(first));
-        assertFalse(userDataRepo.existsByUser(third));
+        User firstUser = userRepo.findById(firstUserId).orElseThrow(EntityExistsException::new);
+        User thirdUser = userRepo.findById(thirdUserId).orElseThrow(EntityExistsException::new);
+
+        // when
+        boolean userDataForFirstUserExists = userDataRepo.existsByUser(firstUser);
+        boolean userDataForThirdUserExists = userDataRepo.existsByUser(thirdUser);
+
+        // then
+        assertThat(userDataForFirstUserExists).isTrue();
+        assertThat(userDataForThirdUserExists).isFalse();
     }
 
 }

@@ -10,6 +10,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDateTime;
+import java.util.Objects;
 
 /**
  * Entity to persist info about user access to projects/applications. Used by the
@@ -81,4 +82,37 @@ public class AccessInfo {
         user.addAccessInfo(this);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj) {
+            return true;
+        }
+
+        if(obj instanceof AccessInfo) {
+            AccessInfo other = (AccessInfo) obj;
+
+            // only compare the user IDs because of the cyclic reference: User <-> Application
+            boolean userEquals;
+            if(Objects.nonNull(this.user) && Objects.nonNull(other.user)) {
+                userEquals = Objects.equals(this.user.getId(), other.user.getId());
+            } else {
+                userEquals = Objects.isNull(this.user) && Objects.isNull(other.user);
+            }
+
+            return userEquals &&
+                    Objects.equals(this.id, other.id) &&
+                    Objects.equals(this.accessStart, other.accessStart) &&
+                    Objects.equals(this.accessEnd, other.accessEnd);
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int baseHash = Objects.hash(id, accessStart, accessEnd);
+        int userIdHash = this.user != null ? Objects.hashCode(this.user.getId()) : 0;
+
+        return baseHash + 31 * userIdHash;
+    }
 }

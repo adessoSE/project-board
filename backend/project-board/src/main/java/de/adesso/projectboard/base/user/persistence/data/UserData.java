@@ -1,10 +1,7 @@
 package de.adesso.projectboard.base.user.persistence.data;
 
 import de.adesso.projectboard.base.user.persistence.User;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -13,6 +10,7 @@ import javax.validation.constraints.NotEmpty;
 @Table(name = "PB_USER_DATA")
 @Getter
 @Setter
+@EqualsAndHashCode
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserData {
 
