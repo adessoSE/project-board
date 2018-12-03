@@ -1,6 +1,5 @@
 package de.adesso.projectboard.base.user.service;
 
-import de.adesso.projectboard.base.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.user.persistence.User;
 import org.springframework.data.domain.Sort;
@@ -62,8 +61,8 @@ public interface UserProjectService {
      * Creates a {@link Project} and adds it to the {@link User}'s
      * {@link User#ownedProjects owned projects}.
      *
-     * @param projectDTO
-     *          The {@link ProjectRequestDTO} to create the {@link Project}
+     * @param project
+     *          The {@link Project} to create a new {@link Project}
      *          from.
      *
      * @param user
@@ -73,7 +72,7 @@ public interface UserProjectService {
      * @return
      *          The created {@link Project}.
      */
-    Project createProjectForUser(ProjectRequestDTO projectDTO, User user);
+    Project createProjectForUser(Project project, User user);
 
     /**
      * Adds a existing {@link Project} to the the {@link User}'s
@@ -89,7 +88,7 @@ public interface UserProjectService {
      * @return
      *          The added {@link Project}.
      *
-     * @see #createProjectForUser(ProjectRequestDTO, User)
+     * @see #createProjectForUser(Project, User)
      */
     Project addProjectToUser(User user, Project project);
 

@@ -4,7 +4,6 @@ import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.persistence.ProjectApplicationRepository;
 import de.adesso.projectboard.base.exceptions.ProjectNotEditableException;
 import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
-import de.adesso.projectboard.base.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.persistence.ProjectOrigin;
 import de.adesso.projectboard.base.project.persistence.ProjectRepository;
@@ -12,27 +11,36 @@ import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.service.UserService;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RepositoryProjectServiceTest {
+
+    private final String PROJECT_ID = "project";
+
+    private final String USER_ID = "user";
 
     @Mock
     ProjectRepository projectRepo;
@@ -46,273 +54,467 @@ public class RepositoryProjectServiceTest {
     @Mock
     UserService userService;
 
-    @InjectMocks
+    @Mock
+    Project projectMock;
+
+    @Mock
+    User userMock;
+
+    Clock clock;
+
     RepositoryProjectService projectService;
-
-    @Mock
-    Project project;
-
-    @Mock
-    User user;
 
     @Before
     public void setUp() {
-        // set up repo mock
-        when(projectRepo.findById("project")).thenReturn(Optional.of(project));
-        when(projectRepo.existsById("project")).thenReturn(true);
+        Instant instant = Instant.parse("2018-01-01T10:00:00.00Z");
+        ZoneId zoneId = ZoneId.systemDefault();
 
-        when(projectRepo.save(any(Project.class))).thenAnswer((Answer<Project>) invocation -> {
-            Object[] args = invocation.getArguments();
-
-            return (Project) args[0];
-        });
+        this.clock = Clock.fixed(instant, zoneId);
+        this.projectService = new RepositoryProjectService(projectRepo, applicationRepo, userRepo, userService, clock);
     }
 
     @Test
-    public void testGetProjectById_OK() {
-        // mock already set up in setUp method
-        Project returnedProject = projectService.getProjectById("project");
+    public void getProjectByIdReturnsProjectForExistingProjectForId() {
+        // given
+        given(projectRepo.findById(PROJECT_ID)).willReturn(Optional.of(projectMock));
 
-        assertEquals(project, returnedProject);
-    }
+        // when
+        Project actualProject = projectService.getProjectById(PROJECT_ID);
 
-    @Test(expected = ProjectNotFoundException.class)
-    public void testGetProjectById_NotFound() {
-        projectService.getProjectById("non-existent-project");
-    }
-
-    @Test
-    public void testProjectExists() {
-        // mock already set up in setUp method
-        assertTrue(projectService.projectExists("project"));
-        assertFalse(projectService.projectExists("non-existent-project"));
+        // then
+        assertThat(actualProject).isEqualTo(projectMock);
     }
 
     @Test
-    public void testUpdateProject_Editable() {
-        ProjectRequestDTO dto = getRequestDtoMock();
+    public void getProjectByIdThrowsExceptionForNotExistingProjectForId() {
+        // given
+        when(projectRepo.findById(PROJECT_ID)).thenReturn(Optional.empty());
 
-        // set up entity mock
-        LocalDateTime created = LocalDateTime.now().minus(10L, ChronoUnit.DAYS);
-        when(project.getCreated()).thenReturn(created);
-
-        // set up entity mock
-        when(project.getOrigin()).thenReturn(ProjectOrigin.CUSTOM);
-
-        Project returnedProject = projectService.updateProject(dto, "project");
-
-        assertEquals("project", returnedProject.getId());
-        assertEquals(ProjectOrigin.CUSTOM, returnedProject.getOrigin());
-        assertEquals(created, returnedProject.getCreated());
-        assertTrue(returnedProject.getUpdated().isAfter(created));
-
-        testProject_General(returnedProject);
-    }
-
-    @Test(expected = ProjectNotEditableException.class)
-    public void testUpdateProject_NotEditable() {
-        // create new mock
-        ProjectRequestDTO dto = mock(ProjectRequestDTO.class);
-
-        // set up entity mock
-        when(project.getOrigin()).thenReturn(ProjectOrigin.JIRA);
-
-        projectService.updateProject(dto, "project");
+        // when
+        assertThatThrownBy(() -> projectService.getProjectById(PROJECT_ID))
+                .isInstanceOf(ProjectNotFoundException.class);
     }
 
     @Test
-    public void testDeleteProjectById_OK() {
-        // create new mock
-        ProjectApplication application = mock(ProjectApplication.class);
-        when(application.getUser()).thenReturn(user);
+    public void projectExistsReturnsTrueForExistingProjectForId() {
+        // given
+        when(projectRepo.existsById(PROJECT_ID)).thenReturn(true);
 
-        // set up repo mocks
-        when(userRepo.findAllByBookmarksContaining(project)).thenReturn(Collections.singletonList(user));
-        when(userRepo.findAllByOwnedProjectsContaining(project)).thenReturn(Collections.singletonList(user));
-        when(applicationRepo.findAllByProjectEquals(project)).thenReturn(Collections.singletonList(application));
+        // when
+        boolean actualExists = projectService.projectExists(PROJECT_ID);
 
-        projectService.deleteProjectById("project");
-
-        verify(user).removeBookmark(project);
-        verify(user).removeApplication(application);
-        verify(userService, atLeastOnce()).save(user);
-        verify(projectRepo).delete(project);
+        // then
+        assertThat(actualExists).isTrue();
     }
 
     @Test
-    public void testCreateProject() {
-        testCreateOrUpdateProject_DoesNotExist();
+    public void projectExistsReturnsFalseForNotExistingProjectForId() {
+        // given
+        when(projectRepo.existsById(PROJECT_ID)).thenReturn(false);
+
+        // when
+        boolean actualExists = projectService.projectExists(PROJECT_ID);
+
+        // then
+        assertThat(actualExists).isFalse();
     }
 
     @Test
-    public void testCreateOrUpdateProject_AlreadyExisting() {
-        // create new mock
-        ProjectRequestDTO dto = getRequestDtoMock();
+    public void updateProjectThrowsExceptionForNotEditableExistingProjectForId() {
+        // given
+        given(projectRepo.findById(PROJECT_ID)).willReturn(Optional.of(projectMock));
+        given(projectMock.getOrigin()).willReturn(ProjectOrigin.JIRA);
 
-        // set up entity mock
-        LocalDateTime created = LocalDateTime.now().minus(10L, ChronoUnit.DAYS);
-        when(project.getCreated()).thenReturn(created);
-
-        Project returnedProject = projectService.createOrUpdateProject(dto, "project");
-
-        assertEquals("project", returnedProject.getId());
-        assertEquals(ProjectOrigin.CUSTOM, returnedProject.getOrigin());
-        assertEquals(created, returnedProject.getCreated());
-        assertTrue(returnedProject.getUpdated().isAfter(created));
-
-        testProject_General(returnedProject);
+        // when
+        assertThatThrownBy(() -> projectService.updateProject(new Project(), PROJECT_ID))
+                .isInstanceOf(ProjectNotEditableException.class);
     }
 
     @Test
-    public void testCreateOrUpdateProject_DoesNotExist() {
-        // create new mock
-        ProjectRequestDTO dto = getRequestDtoMock();
+    public void updateProjectThrowsExceptionForNotExistingProjectForId() {
+        // given
+        given(projectRepo.findById(PROJECT_ID)).willReturn(Optional.empty());
 
-        Project returnedProject = projectService.createOrUpdateProject(dto, null);
-
-        assertEquals(ProjectOrigin.CUSTOM, returnedProject.getOrigin());
-        assertNotNull(returnedProject.getCreated());
-        assertNotNull(returnedProject.getUpdated());
-        assertEquals(returnedProject.getUpdated(), returnedProject.getCreated());
+        // when
+        assertThatThrownBy(() -> projectService.updateProject(new Project(), PROJECT_ID))
+                .isInstanceOf(ProjectNotFoundException.class);
     }
 
     @Test
-    public void testGetAllProjectsForUser_Manager() {
-        // create new mock
-        Sort sorting = mock(Sort.class);
+    public void updateProjectUpdatesProjectForExistingEditableProjectForId() {
+        // given
+        String expectedStatus = "Status";
+        String expectedIssueType = "Issue Type";
+        String expectedTitle = "Title";
+        List<String> expectedLabels = Arrays.asList("Label 1", "Label 2");
+        String expectedJob = "Job";
+        String expectedSkills = "Skills";
+        String expectedDescription = "Description";
+        String expectedLob = "LOB Test";
+        String expectedCustomer = "Customer";
+        String expectedLocation = "Anywhere";
+        String expectedOperationStart = "Maybe tomorrow";
+        String expectedOperationEnd = "Maybe never";
+        String expectedEffort = "100h per week";
+        String expectedFreelancer = "Yup";
+        String expectedElongation = "Nope";
+        String expectedOther = "Other stuff";
+        ProjectOrigin expectedOrigin = ProjectOrigin.CUSTOM;
+        LocalDateTime expectedCreatedTime = LocalDateTime.of(2018, 1, 1, 12, 0);
 
-        // set up service mock
-        when(userService.userIsManager(user)).thenReturn(true);
+        Project project = new Project("Other ID", expectedStatus, expectedIssueType, expectedTitle, expectedLabels, expectedJob, expectedSkills,
+                expectedDescription, expectedLob, expectedCustomer,
+                expectedLocation, expectedOperationStart, expectedOperationEnd,
+                expectedEffort, null, null, expectedFreelancer, expectedElongation, expectedOther, ProjectOrigin.JIRA);
 
-        projectService.getProjectsForUser(user, sorting);
+        given(projectRepo.findById(PROJECT_ID)).willReturn(Optional.of(projectMock));
+        given(projectMock.getOrigin()).willReturn(ProjectOrigin.CUSTOM);
+        given(projectMock.getId()).willReturn(PROJECT_ID);
+        given(projectMock.getCreated()).willReturn(expectedCreatedTime);
 
-        verify(projectRepo).findAllForManager(any());
+        given(projectRepo.save(project)).willReturn(project);
+
+        // when
+        Project updatedProject = projectService.updateProject(project, PROJECT_ID);
+
+        // then
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(updatedProject.getId()).isEqualTo(PROJECT_ID);
+        softly.assertThat(updatedProject.getStatus()).isEqualTo(expectedStatus);
+        softly.assertThat(updatedProject.getIssuetype()).isEqualTo(expectedIssueType);
+        softly.assertThat(updatedProject.getTitle()).isEqualTo(expectedTitle);
+        softly.assertThat(updatedProject.getLabels()).isEqualTo(expectedLabels);
+        softly.assertThat(updatedProject.getJob()).isEqualTo(expectedJob);
+        softly.assertThat(updatedProject.getSkills()).isEqualTo(expectedSkills);
+        softly.assertThat(updatedProject.getDescription()).isEqualTo(expectedDescription);
+        softly.assertThat(updatedProject.getLob()).isEqualTo(expectedLob);
+        softly.assertThat(updatedProject.getCustomer()).isEqualTo(expectedCustomer);
+        softly.assertThat(updatedProject.getLocation()).isEqualTo(expectedLocation);
+        softly.assertThat(updatedProject.getOperationStart()).isEqualTo(expectedOperationStart);
+        softly.assertThat(updatedProject.getOperationEnd()).isEqualTo(expectedOperationEnd);
+        softly.assertThat(updatedProject.getEffort()).isEqualTo(expectedEffort);
+        softly.assertThat(updatedProject.getFreelancer()).isEqualTo(expectedFreelancer);
+        softly.assertThat(updatedProject.getElongation()).isEqualTo(expectedElongation);
+        softly.assertThat(updatedProject.getOther()).isEqualTo(expectedOther);
+        softly.assertThat(updatedProject.getCreated()).isEqualTo(expectedCreatedTime);
+        softly.assertThat(updatedProject.getUpdated()).isEqualTo(LocalDateTime.now(clock));
+        softly.assertThat(updatedProject.getOrigin()).isEqualTo(expectedOrigin);
+
+        softly.assertAll();
     }
 
     @Test
-    public void testGetAllProjectsForUser_NoManager() {
-        // create new mock
-        Sort sorting = mock(Sort.class);
-        UserData userData = mock(UserData.class);
+    public void createProject() {
+        // given
+        String expectedStatus = "Status";
+        String expectedIssueType = "Issue Type";
+        String expectedTitle = "Title";
+        List<String> expectedLabels = Arrays.asList("Label 1", "Label 2");
+        String expectedJob = "Job";
+        String expectedSkills = "Skills";
+        String expectedDescription = "Description";
+        String expectedLob = "LOB Test";
+        String expectedCustomer = "Customer";
+        String expectedLocation = "Anywhere";
+        String expectedOperationStart = "Maybe tomorrow";
+        String expectedOperationEnd = "Maybe never";
+        String expectedEffort = "100h per week";
+        String expectedFreelancer = "Yup";
+        String expectedElongation = "Nope";
+        String expectedOther = "Other stuff";
+        ProjectOrigin expectedOrigin = ProjectOrigin.CUSTOM;
 
-        // set up mocks
-        when(userData.getLob()).thenReturn("LoB");
+        Project project = new Project("Other ID", expectedStatus, expectedIssueType, expectedTitle, expectedLabels, expectedJob, expectedSkills,
+                expectedDescription, expectedLob, expectedCustomer,
+                expectedLocation, expectedOperationStart, expectedOperationEnd,
+                expectedEffort, null, null, expectedFreelancer, expectedElongation, expectedOther, ProjectOrigin.JIRA);
 
-        // set up service mock
-        when(userService.userIsManager(user)).thenReturn(false);
-        when(userService.getUserData(user)).thenReturn(userData);
+        given(projectRepo.save(project)).willReturn(project);
 
-        projectService.getProjectsForUser(user, sorting);
+        // when
+        Project createdProject = projectService.createProject(project);
 
-        verify(projectRepo).findAllForUser(matches("LoB"), any());
+        // then
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(createdProject.getStatus()).isEqualTo(expectedStatus);
+        softly.assertThat(createdProject.getIssuetype()).isEqualTo(expectedIssueType);
+        softly.assertThat(createdProject.getTitle()).isEqualTo(expectedTitle);
+        softly.assertThat(createdProject.getLabels()).isEqualTo(expectedLabels);
+        softly.assertThat(createdProject.getJob()).isEqualTo(expectedJob);
+        softly.assertThat(createdProject.getSkills()).isEqualTo(expectedSkills);
+        softly.assertThat(createdProject.getDescription()).isEqualTo(expectedDescription);
+        softly.assertThat(createdProject.getLob()).isEqualTo(expectedLob);
+        softly.assertThat(createdProject.getCustomer()).isEqualTo(expectedCustomer);
+        softly.assertThat(createdProject.getLocation()).isEqualTo(expectedLocation);
+        softly.assertThat(createdProject.getOperationStart()).isEqualTo(expectedOperationStart);
+        softly.assertThat(createdProject.getOperationEnd()).isEqualTo(expectedOperationEnd);
+        softly.assertThat(createdProject.getEffort()).isEqualTo(expectedEffort);
+        softly.assertThat(createdProject.getFreelancer()).isEqualTo(expectedFreelancer);
+        softly.assertThat(createdProject.getElongation()).isEqualTo(expectedElongation);
+        softly.assertThat(createdProject.getOther()).isEqualTo(expectedOther);
+        softly.assertThat(createdProject.getCreated()).isEqualTo(LocalDateTime.now(clock));
+        softly.assertThat(createdProject.getUpdated()).isEqualTo(LocalDateTime.now(clock));
+        softly.assertThat(createdProject.getOrigin()).isEqualTo(expectedOrigin);
+
+        softly.assertAll();
     }
 
     @Test
-    public void testSearchForProjectsForUser_Manager() {
-        // set up service mock
-        when(userService.userIsManager(user)).thenReturn(true);
+    public void deleteProjectByIdThrowsExceptionForNotEditableExistingProjectForId() {
+        // given
+        given(projectRepo.findById(PROJECT_ID)).willReturn(Optional.of(projectMock));
+        given(projectMock.getOrigin()).willReturn(ProjectOrigin.JIRA);
 
+        // when
+        assertThatThrownBy(() -> projectService.deleteProjectById(PROJECT_ID))
+                .isInstanceOf(ProjectNotEditableException.class);
+    }
+
+    @Test
+    public void deleteProjectByIdDeletesProjectForId() {
+        // given
+        ProjectApplication applicationMock = mock(ProjectApplication.class);
+        given(applicationMock.getUser()).willReturn(userMock);
+
+        given(projectMock.getOrigin()).willReturn(ProjectOrigin.CUSTOM);
+        given(projectRepo.findById(PROJECT_ID)).willReturn(Optional.of(projectMock));
+
+        given(userRepo.findAllByOwnedProjectsContaining(projectMock)).willReturn(Collections.singletonList(userMock));
+        given(userRepo.findAllByBookmarksContaining(projectMock)).willReturn(Collections.singletonList(userMock));
+        given(applicationRepo.findAllByProjectEquals(projectMock)).willReturn(Collections.singletonList(applicationMock));
+
+        // when
+        projectService.deleteProjectById(PROJECT_ID);
+
+        // then
+        verify(userMock).removeOwnedProject(projectMock);
+        verify(userMock).removeBookmark(projectMock);
+        verify(userMock).removeApplication(applicationMock);
+        verify(userService, atLeastOnce()).save(userMock);
+
+        verify(projectRepo).delete(projectMock);
+    }
+
+    @Test
+    public void getProjectsForUserReturnsProjectsForManagerWhenUserIsManager() {
+        // given
         Sort sort = Sort.unsorted();
 
-        projectService.searchProjectsForUser(user, "Test", sort);
+        given(userService.userIsManager(userMock)).willReturn(true);
 
-        verify(projectRepo).findAllForManagerByKeyword("Test", sort);
+        // when
+        projectService.getProjectsForUser(userMock, sort);
+
+        // then
+        verify(projectRepo).findAllForManager(sort);
     }
 
     @Test
-    public void testSearchProjectsForUser_NoManager() {
-        // create new mock
-        UserData userData = mock(UserData.class);
-        when(userData.getLob()).thenReturn("LOB Test");
-
-        // set up service mock
-        when(userService.userIsManager(user)).thenReturn(false);
-        when(userService.getUserData(user)).thenReturn(userData);
-
+    public void getProjectsForUserReturnsProjectsForUserWhenUserIsNotAManager() {
+        // given
+        String expectedLob = "LOB Test";
         Sort sort = Sort.unsorted();
 
-        projectService.searchProjectsForUser(user, "Test", sort);
+        UserData userDataMock = mock(UserData.class);
+        given(userDataMock.getLob()).willReturn(expectedLob);
 
-        verify(projectRepo).findAllForUserByKeyword("LOB Test", "Test", sort);
+        given(userService.userIsManager(userMock)).willReturn(false);
+        given(userService.getUserData(userMock)).willReturn(userDataMock);
+
+        // when
+        projectService.getProjectsForUser(userMock, sort);
+
+        // then
+        verify(projectRepo).findAllForUser(expectedLob, sort);
     }
 
     @Test
-    public void testSearchProjectsForUserPaginated_Manager() {
-        // set up service mock
-        when(userService.userIsManager(user)).thenReturn(true);
+    public void searchProjectsForUserReturnsProjectsForManagerWhenUserIsManager() {
+        // given
+        String expectedKeyword = "Keyword";
+        Sort sort = Sort.unsorted();
 
-        PageRequest pageable = PageRequest.of(0, 10);
+        given(userService.userIsManager(userMock)).willReturn(true);
 
-        projectService.searchProjectsForUserPaginated("Test", user, pageable);
+        // when
+        projectService.searchProjectsForUser(userMock, expectedKeyword, sort);
 
-        verify(projectRepo).findAllForManagerByKeywordPageable("Test", pageable);
+        // then
+        verify(projectRepo).findAllForManagerByKeyword(expectedKeyword, sort);
     }
 
     @Test
-    public void testSearchProjectsForUserPaginated_NoManager() {
-        // create new mock
-        UserData userData = mock(UserData.class);
-        when(userData.getLob()).thenReturn("LOB Test");
+    public void searchProjectsForUserReturnsProjectsForUserWhenUserIsNotAManager() {
+        // given
+        String expectedKeyword = "Keyword";
+        String expectedLob = "LOB Test";
+        Sort sort = Sort.unsorted();
 
-        // set up service mock
-        when(userService.userIsManager(user)).thenReturn(false);
-        when(userService.getUserData(user)).thenReturn(userData);
+        UserData userDataMock = mock(UserData.class);
+        given(userDataMock.getLob()).willReturn(expectedLob);
 
-        PageRequest pageable = PageRequest.of(0, 10);
+        given(userService.userIsManager(userMock)).willReturn(false);
+        given(userService.getUserData(userMock)).willReturn(userDataMock);
 
-        projectService.searchProjectsForUserPaginated("Test", user, pageable);
+        // when
+        projectService.searchProjectsForUser(userMock, expectedKeyword, sort);
 
-        verify(projectRepo).findAllForUserByKeywordPageable("LOB Test", "Test", pageable);
+        // then
+        verify(projectRepo).findAllForUserByKeyword(expectedLob, expectedKeyword, sort);
     }
 
     @Test
-    public void testAddProjectToUser() {
-        Project returnedProject = projectService.addProjectToUser(user, this.project);
+    public void userOwnsProject() {
+        // given
+        given(userMock.getId()).willReturn(USER_ID);
 
-        assertEquals(project, returnedProject);
-        verify(userService).save(user);
-        verify(user).addOwnedProject(this.project);
+        // when
+        projectService.userOwnsProject(userMock, projectMock);
+
+        // then
+        verify(userRepo).existsByIdAndOwnedProjectsContaining(USER_ID, projectMock);
     }
 
-    private ProjectRequestDTO getRequestDtoMock() {
-        // create new mock
-        ProjectRequestDTO dto = mock(ProjectRequestDTO.class);
-        when(dto.getCustomer()).thenReturn("Customer");
-        when(dto.getDescription()).thenReturn("Description");
-        when(dto.getEffort()).thenReturn("Effort");
-        when(dto.getElongation()).thenReturn("Elongation");
-        when(dto.getFreelancer()).thenReturn("Freelancer");
-        when(dto.getIssuetype()).thenReturn("Issuetype");
-        when(dto.getJob()).thenReturn("Job");
-        when(dto.getLabels()).thenReturn(Arrays.asList("Label 1", "Label 2"));
-        when(dto.getOperationStart()).thenReturn("Operation Start");
-        when(dto.getOperationEnd()).thenReturn("Operation End");
-        when(dto.getLob()).thenReturn("LoB");
-        when(dto.getLocation()).thenReturn("Location");
-        when(dto.getOther()).thenReturn("Other");
-        when(dto.getSkills()).thenReturn("Skills");
-        when(dto.getStatus()).thenReturn("Status");
-        when(dto.getTitle()).thenReturn("Title");
+    @Test
+    public void createProjectForUser() {
+        // given
+        String expectedStatus = "Status";
+        String expectedIssueType = "Issue Type";
+        String expectedTitle = "Title";
+        List<String> expectedLabels = Arrays.asList("Label 1", "Label 2");
+        String expectedJob = "Job";
+        String expectedSkills = "Skills";
+        String expectedDescription = "Description";
+        String expectedLob = "LOB Test";
+        String expectedCustomer = "Customer";
+        String expectedLocation = "Anywhere";
+        String expectedOperationStart = "Maybe tomorrow";
+        String expectedOperationEnd = "Maybe never";
+        String expectedEffort = "100h per week";
+        String expectedFreelancer = "Yup";
+        String expectedElongation = "Nope";
+        String expectedOther = "Other stuff";
+        ProjectOrigin expectedOrigin = ProjectOrigin.CUSTOM;
 
-        return dto;
+        Project project = new Project("Other ID", expectedStatus, expectedIssueType, expectedTitle, expectedLabels, expectedJob, expectedSkills,
+                expectedDescription, expectedLob, expectedCustomer,
+                expectedLocation, expectedOperationStart, expectedOperationEnd,
+                expectedEffort, null, null, expectedFreelancer, expectedElongation, expectedOther, ProjectOrigin.JIRA);
+
+        given(projectRepo.save(project)).willReturn(project);
+
+        // when
+        Project createdProject = projectService.createProjectForUser(project, userMock);
+
+        // then
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(createdProject.getStatus()).isEqualTo(expectedStatus);
+        softly.assertThat(createdProject.getIssuetype()).isEqualTo(expectedIssueType);
+        softly.assertThat(createdProject.getTitle()).isEqualTo(expectedTitle);
+        softly.assertThat(createdProject.getLabels()).isEqualTo(expectedLabels);
+        softly.assertThat(createdProject.getJob()).isEqualTo(expectedJob);
+        softly.assertThat(createdProject.getSkills()).isEqualTo(expectedSkills);
+        softly.assertThat(createdProject.getDescription()).isEqualTo(expectedDescription);
+        softly.assertThat(createdProject.getLob()).isEqualTo(expectedLob);
+        softly.assertThat(createdProject.getCustomer()).isEqualTo(expectedCustomer);
+        softly.assertThat(createdProject.getLocation()).isEqualTo(expectedLocation);
+        softly.assertThat(createdProject.getOperationStart()).isEqualTo(expectedOperationStart);
+        softly.assertThat(createdProject.getOperationEnd()).isEqualTo(expectedOperationEnd);
+        softly.assertThat(createdProject.getEffort()).isEqualTo(expectedEffort);
+        softly.assertThat(createdProject.getFreelancer()).isEqualTo(expectedFreelancer);
+        softly.assertThat(createdProject.getElongation()).isEqualTo(expectedElongation);
+        softly.assertThat(createdProject.getOther()).isEqualTo(expectedOther);
+        softly.assertThat(createdProject.getCreated()).isEqualTo(LocalDateTime.now(clock));
+        softly.assertThat(createdProject.getUpdated()).isEqualTo(LocalDateTime.now(clock));
+        softly.assertThat(createdProject.getOrigin()).isEqualTo(expectedOrigin);
+
+        softly.assertAll();
+
+        verify(userMock).addOwnedProject(project);
+        verify(userService).save(userMock);
     }
 
-    private void testProject_General(Project p) {
-        assertEquals("Customer", p.getCustomer());
-        assertEquals("Description", p.getDescription());
-        assertEquals("Effort", p.getEffort());
-        assertEquals("Elongation", p.getElongation());
-        assertEquals("Freelancer", p.getFreelancer());
-        assertEquals("Issuetype", p.getIssuetype());
-        assertEquals("Job", p.getJob());
-        assertEquals(Arrays.asList("Label 1", "Label 2"), p.getLabels());
-        assertEquals("Operation Start", p.getOperationStart());
-        assertEquals("LoB", p.getLob());
-        assertEquals("Location", p.getLocation());
-        assertEquals("Other", p.getOther());
-        assertEquals("Skills", p.getSkills());
-        assertEquals("Status", p.getStatus());
-        assertEquals("Title", p.getTitle());
+    @Test
+    public void addProjectToUser() {
+        // given
+
+        // when
+        projectService.addProjectToUser(userMock, projectMock);
+
+        // then
+        verify(userMock).addOwnedProject(projectMock);
+        verify(userService).save(userMock);
+    }
+
+    @Test
+    public void getProjectsForUserPaginatedReturnsProjectsForManagerWhenUserIsManager() {
+        // given
+        Pageable pageable = PageRequest.of(1, 10);
+
+        given(userService.userIsManager(userMock)).willReturn(true);
+
+        // when
+        projectService.getProjectsForUserPaginated(userMock, pageable);
+
+        // then
+        verify(projectRepo).findAllForManagerPageable(pageable);
+    }
+
+    @Test
+    public void getProjectsForUserPaginatedReturnsProjectsForUserWhenUserIsNotAManager() {
+        // given
+        String expectedLob = "LOB Test";
+        Pageable pageable = PageRequest.of(1, 10);
+
+        UserData userDataMock = mock(UserData.class);
+        given(userDataMock.getLob()).willReturn(expectedLob);
+
+        given(userService.getUserData(userMock)).willReturn(userDataMock);
+        given(userService.userIsManager(userMock)).willReturn(false);
+
+        // when
+        projectService.getProjectsForUserPaginated(userMock, pageable);
+
+        // then
+        verify(projectRepo).findAllForUserPageable(expectedLob, pageable);
+    }
+
+    @Test
+    public void searchProjectsForUserPaginatedReturnsProjectsForManagerWhenUserIsManager() {
+        // given
+        String expectedKeyword = "Keyword";
+        Pageable pageable = PageRequest.of(2, 12);
+
+        given(userService.userIsManager(userMock)).willReturn(true);
+
+        // when
+        projectService.searchProjectsForUserPaginated(expectedKeyword, userMock, pageable);
+
+        // then
+        verify(projectRepo).findAllForManagerByKeywordPageable(expectedKeyword, pageable);
+    }
+
+    @Test
+    public void searchProjectsForUserPaginatedReturnsProjectsForUserWhenUserIsNotAManager() {
+        // given
+        String expectedLob = "LOB Test";
+        String expectedKeyword = "Keyword";
+        Pageable pageable = PageRequest.of(2, 12);
+
+        UserData userDataMock = mock(UserData.class);
+        given(userDataMock.getLob()).willReturn(expectedLob);
+
+        given(userService.getUserData(userMock)).willReturn(userDataMock);
+        given(userService.userIsManager(userMock)).willReturn(false);
+
+        // when
+        projectService.searchProjectsForUserPaginated(expectedKeyword, userMock, pageable);
+
+        // then
+        verify(projectRepo).findAllForUserByKeywordPageable(expectedLob, expectedKeyword, pageable);
     }
 
 }

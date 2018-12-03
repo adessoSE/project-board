@@ -5,14 +5,14 @@ import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.persistence.ProjectApplicationRepository;
 import de.adesso.projectboard.base.application.service.ApplicationService;
 import de.adesso.projectboard.base.exceptions.AlreadyAppliedException;
-import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
-import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.user.persistence.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,15 +27,41 @@ public class RepositoryApplicationService implements ApplicationService {
 
     private final ProjectApplicationRepository applicationRepo;
 
+    private final Clock clock;
+
     @Autowired
     public RepositoryApplicationService(ProjectService projectService,
                                         ProjectApplicationRepository applicationRepo) {
         this.projectService = projectService;
         this.applicationRepo = applicationRepo;
+
+        this.clock = Clock.systemDefaultZone();
+    }
+
+    /**
+     * Package private constructor for testing.
+     *
+     * @param projectService
+     *          The {@link ProjectService}.
+     *
+     * @param applicationRepo
+     *          The {@link ProjectApplicationRepository}.
+     *
+     * @param clock
+     *          The {@link Clock} to use when setting the
+     *          {@link ProjectApplication}'s
+     *          {@link ProjectApplication#applicationDate application date}.
+     */
+    RepositoryApplicationService(ProjectService projectService,
+                                 ProjectApplicationRepository applicationRepo,
+                                 Clock clock) {
+        this.projectService = projectService;
+        this.applicationRepo = applicationRepo;
+        this.clock = clock;
     }
 
     @Override
-    public boolean userHasAppliedForProject(User user, Project project) throws UserNotFoundException, ProjectNotFoundException {
+    public boolean userHasAppliedForProject(User user, Project project) {
         return applicationRepo.existsByUserAndProject(user, project);
     }
 
@@ -47,7 +73,10 @@ public class RepositoryApplicationService implements ApplicationService {
             throw new AlreadyAppliedException();
         }
 
-        ProjectApplication application = new ProjectApplication(project, applicationDTO.getComment(), user);
+        // use a clock for testing
+        LocalDateTime applicationDate = LocalDateTime.now(clock);
+        ProjectApplication application = new ProjectApplication(project, applicationDTO.getComment(), user, applicationDate);
+
         return applicationRepo.save(application);
     }
 

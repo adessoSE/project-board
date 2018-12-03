@@ -7,24 +7,34 @@ import de.adesso.projectboard.base.exceptions.AlreadyAppliedException;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.user.persistence.User;
+import org.assertj.core.api.SoftAssertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RepositoryApplicationServiceTest {
+
+    private final String PROJECT_ID = "project";
 
     @Mock
     ProjectService projectService;
@@ -32,88 +42,113 @@ public class RepositoryApplicationServiceTest {
     @Mock
     ProjectApplicationRepository applicationRepo;
 
-    @InjectMocks
+    @Mock
+    User userMock;
+
+    @Mock
+    Project projectMock;
+
+    Clock clock;
+
     RepositoryApplicationService applicationService;
-
-    @Mock
-    User user;
-
-    @Mock
-    Project project;
 
     @Before
     public void setUp() {
-        // set up repo service mock
-        when(projectService.getProjectById("ID")).thenReturn(project);
+        Instant instant = Instant.parse("2018-01-01T10:00:00.00Z");
+        ZoneId zoneId = ZoneId.systemDefault();
 
-        when(applicationRepo.save(any(ProjectApplication.class))).thenAnswer((Answer<ProjectApplication>) invocation -> {
+        this.clock = Clock.fixed(instant, zoneId);
+        this.applicationService = new RepositoryApplicationService(projectService, applicationRepo, clock);
+    }
+
+    @Test
+    public void userHasAppliedForProjectReturnsTrueWhenApplicationIsPresent() {
+        // given
+        given(applicationRepo.existsByUserAndProject(userMock, projectMock)).willReturn(true);
+
+        // when
+        boolean actualApplied = applicationService.userHasAppliedForProject(userMock, projectMock);
+
+        // then
+        assertThat(actualApplied).isTrue();
+    }
+
+    @Test
+    public void userHasAppliedForProjectReturnsFalseWhenApplicationNotPresent() {
+        // given
+        given(applicationRepo.existsByUserAndProject(userMock, projectMock)).willReturn(false);
+
+        // when
+        boolean actualApplied = applicationService.userHasAppliedForProject(userMock, projectMock);
+
+        // then
+        assertThat(actualApplied).isFalse();
+    }
+
+    @Test
+    public void testCreateApplicationForUser() {
+        // given
+        String expectedComment = "Comment!";
+        LocalDateTime expectedDate = LocalDateTime.now(clock);
+
+        ProjectApplicationRequestDTO dto = mock(ProjectApplicationRequestDTO.class);
+        given(dto.getComment()).willReturn(expectedComment);
+        given(dto.getProjectId()).willReturn(PROJECT_ID);
+
+        given(applicationRepo.existsByUserAndProject(userMock, projectMock)).willReturn(false);
+        given(projectService.getProjectById(PROJECT_ID)).willReturn(projectMock);
+        given(applicationRepo.existsByUserAndProject(userMock, projectMock)).willReturn(false);
+
+        given(applicationRepo.save(any(ProjectApplication.class))).willAnswer((Answer<ProjectApplication>) invocation -> {
             Object[] args = invocation.getArguments();
 
             return (ProjectApplication) args[0];
         });
+
+        // when
+        ProjectApplication createdApplication = applicationService.createApplicationForUser(userMock, dto);
+
+        // then
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(createdApplication.getComment()).isEqualTo(expectedComment);
+        softly.assertThat(createdApplication.getApplicationDate()).isEqualTo(expectedDate);
+        softly.assertThat(createdApplication.getUser()).isEqualTo(userMock);
+        softly.assertThat(createdApplication.getProject()).isEqualTo(projectMock);
+
+        softly.assertAll();
+
+        verify(applicationRepo).save(createdApplication);
     }
 
     @Test
-    public void testUserHasAppliedForProject_HasApplied() {
-        // set up repo mock
-        when(applicationRepo.existsByUserAndProject(user, project)).thenReturn(true);
+    public void testCreateApplicationForUserThrowsExceptionWhenAlreadyApplied() {
+        // given
+        ProjectApplicationRequestDTO dtoMock = mock(ProjectApplicationRequestDTO.class);
+        given(dtoMock.getProjectId()).willReturn(PROJECT_ID);
 
-        assertTrue(applicationService.userHasAppliedForProject(user, project));
-    }
+        given(projectService.getProjectById(PROJECT_ID)).willReturn(projectMock);
+        given(applicationRepo.existsByUserAndProject(userMock, projectMock)).willReturn(true);
 
-    @Test
-    public void testUserHasAppliedForProject_HasNotApplied() {
-        // set up repo mock
-        when(applicationRepo.existsByUserAndProject(user, project)).thenReturn(false);
-
-        assertFalse(applicationService.userHasAppliedForProject(user, project));
-    }
-
-    @Test
-    public void testCreateApplicationForUser_OK() {
-        // create and set up new mock
-        ProjectApplicationRequestDTO dto = mock(ProjectApplicationRequestDTO.class);
-        when(dto.getComment()).thenReturn("Comment!");
-        when(dto.getProjectId()).thenReturn("ID");
-
-        // set up repo mock
-        when(applicationRepo.existsByUserAndProject(user, project)).thenReturn(false);
-
-        ProjectApplication applicationForUser = applicationService.createApplicationForUser(user, dto);
-
-        assertEquals("Comment!", applicationForUser.getComment());
-        assertEquals(user, applicationForUser.getUser());
-        assertEquals(project, applicationForUser.getProject());
-
-        verify(applicationRepo).save(any());
-    }
-
-    @Test(expected = AlreadyAppliedException.class)
-    public void testCreateApplicationForUser_AlreadyApplied() {
-        // create new mock
-        ProjectApplicationRequestDTO dto = mock(ProjectApplicationRequestDTO.class);
-        when(dto.getProjectId()).thenReturn("ID");
-
-        // set up repo mock
-        when(applicationRepo.existsByUserAndProject(user, project)).thenReturn(true);
-
-        applicationService.createApplicationForUser(user, dto);
+        // when
+        assertThatThrownBy(() -> applicationService.createApplicationForUser(userMock, dtoMock))
+                .isInstanceOf(AlreadyAppliedException.class);
     }
 
     @Test
     public void testGetApplicationsOfUser() {
-        // create new mocks
-        ProjectApplication firstApplication = mock(ProjectApplication.class);
-        ProjectApplication secondApplication = mock(ProjectApplication.class);
-        Set<ProjectApplication> applications = Stream.of(firstApplication, secondApplication).collect(Collectors.toSet());
+        // given
+        ProjectApplication firstApplicationMock = mock(ProjectApplication.class);
+        ProjectApplication secondApplicationMock = mock(ProjectApplication.class);
+        Set<ProjectApplication> expectedApplications = Stream.of(firstApplicationMock, secondApplicationMock).collect(Collectors.toSet());
 
-        // set up user mock
-        when(user.getApplications()).thenReturn(applications);
+        given(userMock.getApplications()).willReturn(expectedApplications);
 
-        assertTrue(applicationService.getApplicationsOfUser(user).containsAll(applications));
-        assertTrue(applications.containsAll(applicationService.getApplicationsOfUser(user)));
+        // when
+        List<ProjectApplication> actualApplications = applicationService.getApplicationsOfUser(userMock);
+
+        // then
+        assertThat(actualApplications).containsExactlyInAnyOrder(firstApplicationMock, secondApplicationMock);
     }
-
-
 
 }

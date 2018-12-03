@@ -1,6 +1,6 @@
 package de.adesso.projectboard.rest.security;
 
-import de.adesso.projectboard.base.access.persistence.AccessInfo;
+import de.adesso.projectboard.base.access.service.UserAccessService;
 import de.adesso.projectboard.base.application.service.ApplicationService;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
@@ -30,6 +30,8 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
 
     private final UserService userService;
 
+    private final UserAccessService userAccessService;
+
     private final ProjectService projectService;
 
     private final UserProjectService userProjectService;
@@ -38,10 +40,12 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
 
     @Autowired
     public UserAccessExpressionEvaluator(UserService userService,
+                                         UserAccessService userAccessService,
                                          ProjectService projectService,
                                          UserProjectService userProjectService,
                                          ApplicationService applicationService) {
         this.userService = userService;
+        this.userAccessService = userAccessService;
         this.projectService = projectService;
         this.userProjectService = userProjectService;
         this.applicationService = applicationService;
@@ -56,18 +60,15 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          The {@link User} object of the currently authenticated user.
      *
      * @return
-     *          {@code true}, iff the {@code user}'s latest access info instance
-     *          is active or the user is a manager.
+     *          {@code true}, iff the user is a manager or has a active
+     *          access info instance.
+     *
+     * @see UserAccessService#userHasActiveAccessInfo(User)
+     * @see UserService#userIsManager(User)
      */
     @Override
     public boolean hasAccessToProjects(Authentication authentication, User user) {
-        AccessInfo latestAccessInfo = user.getLatestAccessInfo();
-
-        if(latestAccessInfo != null) {
-            return latestAccessInfo.isCurrentlyActive();
-        } else {
-            return userService.userIsManager(user);
-        }
+        return userAccessService.userHasActiveAccessInfo(user) || userService.userIsManager(user);
     }
 
     /**
@@ -125,7 +126,7 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
 
             // escalated || isOpen <-> (sameLob || noLob)
             // equivalence because implication is not enough
-            // when the status is neither "eskaliert" nor "offen"
+            // when the status is neither "eskaliert" nor "open"
             return isEscalated || (isOpen && isManager) || ((isOpen && (sameLobAsUser || noLob)) || (!isOpen && !(sameLobAsUser || noLob)));
         }
 
@@ -205,7 +206,11 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      */
     @Override
     public boolean hasPermissionToEditProject(Authentication authentication, User user, String projectId) {
-        return userProjectService.userOwnsProject(user, projectService.getProjectById(projectId));
+        if(projectService.projectExists(projectId)) {
+            return userProjectService.userOwnsProject(user, projectService.getProjectById(projectId));
+        }
+
+        return true;
     }
 
     /**
@@ -221,7 +226,9 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          the current user wants to access.
      *
      * @return
-     *          The result of {@link UserService#userHasStaffMember(User, User)}.
+     *          The result of {@link UserService#userHasStaffMember(User, User)} iff
+     *          {@link UserService#userExists(String)} returns {@code true}, {@code true}
+     *          otherwise.
      */
     @Override
     public boolean hasElevatedAccessToUser(Authentication authentication, User user, String userId) {
@@ -229,7 +236,7 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
             return userService.userHasStaffMember(user, userService.getUserById(userId));
         }
 
-        return false;
+        return true;
     }
 
 }

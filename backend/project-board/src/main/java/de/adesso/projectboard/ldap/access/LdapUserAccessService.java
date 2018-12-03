@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Profile("adesso-ad")
 @Service
@@ -20,24 +20,47 @@ public class LdapUserAccessService implements UserAccessService {
 
     private final AccessInfoRepository infoRepo;
 
+    private final Clock clock;
+
     @Autowired
     public LdapUserAccessService(LdapUserService userService, AccessInfoRepository infoRepo) {
         this.userService = userService;
         this.infoRepo = infoRepo;
+
+        this.clock = Clock.systemDefaultZone();
+    }
+
+    /**
+     * Package private constructor for testing purposes.
+     *
+     * @param userService
+     *          The {@link LdapUserService}.
+     *
+     * @param infoRepo
+     *          The {@link AccessInfoRepository}.
+     *
+     * @param clock
+     *          The {@link Clock} to get the current time from
+     *          when using {@link LocalDateTime#now(Clock)}.
+     */
+    LdapUserAccessService(LdapUserService userService, AccessInfoRepository infoRepo, Clock clock) {
+        this.userService = userService;
+        this.infoRepo = infoRepo;
+        this.clock = clock;
     }
 
     @Override
     public User giveUserAccessUntil(User user, LocalDateTime until) throws IllegalArgumentException {
-        if(until.isBefore(LocalDateTime.now())) {
+        if(until.isBefore(LocalDateTime.now(clock))) {
             throw new IllegalArgumentException("End date must lie in the future!");
         }
 
         AccessInfo latestInfo = user.getLatestAccessInfo();
-        List<AccessInfo> infoList = user.getAccessInfoList();
 
-        if(latestInfo == null || !latestInfo.isCurrentlyActive()) {
-            AccessInfo info = new AccessInfo(user, LocalDateTime.now(), until);
-            infoList.add(info);
+        if(latestInfo == null || !userHasActiveAccessInfo(user)) {
+            AccessInfo info = new AccessInfo(user, LocalDateTime.now(clock), until);
+            user.addAccessInfo(info);
+
             return userService.save(user);
         } else {
             latestInfo.setAccessEnd(until);
@@ -50,10 +73,10 @@ public class LdapUserAccessService implements UserAccessService {
 
     @Override
     public User removeAccessFromUser(User user) {
-        AccessInfo latestInfo = user.getLatestAccessInfo();
+        if(userHasActiveAccessInfo(user)) {
+            AccessInfo latestInfo = user.getLatestAccessInfo();
 
-        if(latestInfo != null && latestInfo.isCurrentlyActive()) {
-            latestInfo.setAccessEnd(LocalDateTime.now());
+            latestInfo.setAccessEnd(LocalDateTime.now(clock));
             infoRepo.save(latestInfo);
         }
 
@@ -61,11 +84,15 @@ public class LdapUserAccessService implements UserAccessService {
     }
 
     @Override
-    public boolean userHasAccess(User user) {
+    public boolean userHasActiveAccessInfo(User user) {
         AccessInfo latestInfo = user.getLatestAccessInfo();
 
         if(latestInfo != null) {
-            return latestInfo.isCurrentlyActive();
+            LocalDateTime startTime = latestInfo.getAccessStart();
+            LocalDateTime endTime = latestInfo.getAccessEnd();
+            LocalDateTime now = LocalDateTime.now(clock);
+
+            return ((startTime.isEqual(now) || startTime.isBefore(now)) && endTime.isAfter(now));
         }
 
         return false;

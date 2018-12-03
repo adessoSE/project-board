@@ -10,6 +10,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDateTime;
+import java.util.Objects;
 
 /**
  * Entity to persist info about user access to projects/applications. Used by the
@@ -48,27 +49,8 @@ public class AccessInfo {
     LocalDateTime accessEnd;
 
     /**
-     * Constructs a new entity. The {@link #accessStart access start} is automatically
-     * set to the current {@link LocalDateTime}.
+     * Constructs a new instance.
      *
-     * <p>
-     *     <b>Note</b>: The instance <b>is</b> added to the
-     *     {@code user}'s {@link User#getAccessInfoList() info list}.
-     * </p>
-     *
-     * @param user
-     *          The {@link User} the instance belongs to.
-     *
-     * @param accessEnd
-     *          The {@link LocalDateTime} of when the access should end.
-     *
-     * @see AccessInfo#AccessInfo(User, LocalDateTime, LocalDateTime)
-     */
-    public AccessInfo(User user, LocalDateTime accessEnd) {
-        this(user, LocalDateTime.now(), accessEnd);
-    }
-
-    /**
      * <p>
      *     <b>Note</b>: The instance <b>is</b> added to the
      *     {@code user}'s {@link User#getAccessInfoList() info list}.
@@ -100,17 +82,37 @@ public class AccessInfo {
         user.addAccessInfo(this);
     }
 
-    /**
-     *
-     * @return
-     *          {@code true} if the {@link #accessStart} is equal to or before the
-     *          {@link LocalDateTime#now() current date} and the {@link #accessEnd} is after the
-     *          {@link LocalDateTime#now() current date}.
-     */
-    public boolean isCurrentlyActive() {
-        LocalDateTime now = LocalDateTime.now();
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj) {
+            return true;
+        }
 
-        return (now.equals(accessStart) || now.isAfter(accessStart)) && now.isBefore(accessEnd);
+        if(obj instanceof AccessInfo) {
+            AccessInfo other = (AccessInfo) obj;
+
+            // only compare the user IDs because of the cyclic reference: User <-> Application
+            boolean userEquals;
+            if(Objects.nonNull(this.user) && Objects.nonNull(other.user)) {
+                userEquals = Objects.equals(this.user.getId(), other.user.getId());
+            } else {
+                userEquals = Objects.isNull(this.user) && Objects.isNull(other.user);
+            }
+
+            return userEquals &&
+                    Objects.equals(this.id, other.id) &&
+                    Objects.equals(this.accessStart, other.accessStart) &&
+                    Objects.equals(this.accessEnd, other.accessEnd);
+        }
+
+        return false;
     }
 
+    @Override
+    public int hashCode() {
+        int baseHash = Objects.hash(id, accessStart, accessEnd);
+        int userIdHash = this.user != null ? Objects.hashCode(this.user.getId()) : 0;
+
+        return baseHash + 31 * userIdHash;
+    }
 }
