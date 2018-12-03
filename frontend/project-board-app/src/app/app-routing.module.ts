@@ -17,7 +17,7 @@ import { UserResolverService } from './_services/user-resolver.service';
 import { BrowseProjectsComponent } from './browse-projects/browse-projects.component';
 import { ExecutivesComponent } from './executives/executives.component';
 import { LogoutComponent } from './logout/logout.component';
-import { OverviewComponent } from './overview/overview.component';
+import { ProfileComponent } from './profile/profile.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ProjectRequestComponent } from './project-request/project-request.component';
 import { ProjectComponent } from './project/project.component';
@@ -111,8 +111,8 @@ const routes: Routes = [
     ]
   },
   {
-    path: 'overview',
-    component: OverviewComponent,
+    path: 'profile',
+    component: ProfileComponent,
     resolve: {
       user: UserResolverService,
       bookmarks: BookmarksResolverService,

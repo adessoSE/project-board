@@ -6,11 +6,11 @@ import { Application, Employee } from '../_services/employee.service';
 import { Project } from '../_services/project.service';
 
 @Component({
-  selector: 'app-overview',
-  templateUrl: './overview.component.html',
-  styleUrls: ['./overview.component.scss']
+  selector: 'app-profile',
+  templateUrl: './profile.component.html',
+  styleUrls: ['./profile.component.scss']
 })
-export class OverviewComponent implements OnInit {
+export class ProfileComponent implements OnInit {
   user: Employee;
   bookmarks: Project[];
   applications: Application[];
