@@ -8,4 +8,12 @@ import javax.persistence.EntityNotFoundException;
 @ResponseStatus(code = HttpStatus.NOT_FOUND, reason = "User not found!")
 public class UserNotFoundException extends EntityNotFoundException {
 
+    public UserNotFoundException() {
+        super();
+    }
+
+    public UserNotFoundException(String message) {
+        super(message);
+    }
+
 }

@@ -1,7 +1,7 @@
 package de.adesso.projectboard.ldap.user;
 
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
-import de.adesso.projectboard.base.security.AuthenticationInfo;
+import de.adesso.projectboard.base.security.AuthenticationInfoRetriever;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
@@ -14,6 +14,7 @@ import de.adesso.projectboard.ldap.service.util.data.StringStructure;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
  *
  * @see LdapService
  * @see UserRepository
- * @see AuthenticationInfo
+ * @see AuthenticationInfoRetriever
  */
 @Profile("adesso-ad")
 @Service
@@ -38,13 +39,13 @@ public class LdapUserService implements UserService {
 
     private final OrganizationStructureRepository structureRepo;
 
-    private final AuthenticationInfo authInfo;
+    private final AuthenticationInfoRetriever authInfo;
 
     public LdapUserService(UserRepository userRepo,
                            UserDataRepository dataRepo,
                            LdapService ldapService,
                            OrganizationStructureRepository structureRepo,
-                           AuthenticationInfo authInfo) {
+                           AuthenticationInfoRetriever authInfo) {
         this.userRepo = userRepo;
         this.dataRepo = dataRepo;
         this.structureRepo = structureRepo;
@@ -68,6 +69,7 @@ public class LdapUserService implements UserService {
      * @see UserRepository#existsById(Object)
      */
     @Override
+    @Transactional(readOnly = true)
     public boolean userExists(String userId) {
         return userRepo.existsById(userId) || ldapService.userExists(userId);
     }
@@ -81,6 +83,7 @@ public class LdapUserService implements UserService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional(readOnly = true)
     public boolean userIsManager(User user) {
         if(structureRepo.existsByUser(user)) {
             return structureRepo.existsByUserAndUserIsManager(user, true);
@@ -100,10 +103,13 @@ public class LdapUserService implements UserService {
      * @see LdapService#getIdStructure(User)
      */
     @Override
+    @Transactional
     public OrganizationStructure getStructureForUser(User user) {
         // return the structure saved in the repo if one is present
         // or get the latest structure from the AD
         return structureRepo.findByUser(user).orElseGet(() -> {
+            // make sure the given instance actually exists
+            // otherwise the resulting LDAP query is empty
             validateExistence(user);
 
             StringStructure idStructure = ldapService.getIdStructure(user);
@@ -116,7 +122,7 @@ public class LdapUserService implements UserService {
 
             // get the corresponding staff member instances
             Set<User> staffMembers = idStructure.getStaffMembers()
-                    .parallelStream()
+                    .stream()
                     .map(userId -> {
                         return userRepo.findById(userId)
                                 .orElseGet(() -> userRepo.save(new User(userId)));
@@ -141,6 +147,7 @@ public class LdapUserService implements UserService {
      * @see LdapService#getUserData(List)
      */
     @Override
+    @Transactional
     public UserData getUserData(User user) {
         Optional<UserData> dataOptional = dataRepo.findByUser(user);
 
@@ -165,6 +172,7 @@ public class LdapUserService implements UserService {
      * @see LdapService#userExists(String)
      */
     @Override
+    @Transactional
     public User getUserById(String userId) throws UserNotFoundException {
         Optional<User> userOptional = userRepo.findById(userId);
 
@@ -180,13 +188,12 @@ public class LdapUserService implements UserService {
     /**
      * {@inheritDoc}
      *
-     * @see #getStructureForUser(User)
+     * @see OrganizationStructureRepository#existsByUserAndStaffMembersContaining(User, User)
      */
     @Override
+    @Transactional(readOnly = true)
     public boolean userHasStaffMember(User user, User staffMember) {
-        return getStructureForUser(user)
-                .getStaffMembers()
-                .contains(staffMember);
+        return structureRepo.existsByUserAndStaffMembersContaining(user, staffMember);
     }
 
     /**
@@ -198,6 +205,7 @@ public class LdapUserService implements UserService {
      * {@inheritDoc}
      */
     @Override
+    @Transactional(readOnly = true)
     public User getManagerOfUser(User user) {
         Optional<OrganizationStructure> structureOptional = structureRepo.findByUser(user);
 
@@ -213,6 +221,7 @@ public class LdapUserService implements UserService {
     }
 
     @Override
+    @Transactional
     public List<UserData> getStaffMemberDataOfUser(User user, Sort sort) {
         OrganizationStructure structureForUser = getStructureForUser(user);
         if (structureForUser.getStaffMembers().isEmpty()) {
@@ -239,6 +248,7 @@ public class LdapUserService implements UserService {
      * @see UserRepository#save(Object)
      */
     @Override
+    @Transactional
     public User save(User user) {
         return userRepo.save(user);
     }
@@ -254,6 +264,7 @@ public class LdapUserService implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Map<User, Boolean> usersAreManagers(Set<User> users) {
         Map<User, Boolean> userManagerMap = new HashMap<>();
 
@@ -262,13 +273,13 @@ public class LdapUserService implements UserService {
         }
 
         // get the cached OrganizationStructure instance for every user
-        // does NOT have to contain every instance
+        // ! does NOT have to contain every instance !
         List<OrganizationStructure> existingStructures = structureRepo.findAllByUserIn(users);
 
         // add it to the map for every existing instance
         existingStructures.forEach(structure -> userManagerMap.put(structure.getUser(), structure.isUserIsManager()));
 
-        // remove all users that have a cached structure
+        // remove all users that have a persisted structure
         List<User> usersWithStructs = users.stream()
                 .filter(user -> existingStructures.stream()
                         .anyMatch(struct -> struct.getUser().equals(user))
@@ -277,12 +288,38 @@ public class LdapUserService implements UserService {
         users.removeAll(usersWithStructs);
 
         // call the ldap service method for every user that has no
-        // cached instance and add it to the map
+        // persisted instance and add it to the map
         Map<User, Boolean> ldapMap = users.parallelStream()
                 .collect(Collectors.toMap(user -> user, user -> ldapService.isManager(user.getId())));
         userManagerMap.putAll(ldapMap);
 
         return userManagerMap;
+    }
+
+    /**
+     *
+     * @param user
+     *          The {@link User} to validate.
+     *
+     * @return
+     *          {@code true}, iff {@link LdapService#userExists(String)}
+     *          with the {@link User#id ID} of the given {@code user}
+     *          returns {@code true}.
+     *
+     * @throws UserNotFoundException
+     *          When {@link LdapService#userExists(String)}
+     *          with the {@link User#id ID} of the given {@code user}
+     *          returns {@code false}.
+     */
+    @Override
+    public User validateExistence(User user) throws UserNotFoundException {
+        String userId = Objects.requireNonNull(user).getId();
+
+        if(!ldapService.userExists(userId)) {
+            throw new UserNotFoundException("No user with the given ID exists in the AD!");
+        }
+
+        return user;
     }
 
 }

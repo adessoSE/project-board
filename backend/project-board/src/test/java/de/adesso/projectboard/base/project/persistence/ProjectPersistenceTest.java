@@ -1,5 +1,6 @@
 package de.adesso.projectboard.base.project.persistence;
 
+import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -31,11 +31,14 @@ public class ProjectPersistenceTest {
 
     @Test
     public void testSave() {
+        // given
+        String expectedProjectId = "STF-1";
+
         LocalDateTime created = LocalDateTime.of(2018, 2, 1, 13, 37);
         LocalDateTime updated = LocalDateTime.of(2018, 2, 2, 13, 37);
 
-        Project project = new Project()
-                .setId("STF-1")
+        Project expectedProject = new Project()
+                .setId(expectedProjectId)
                 .setStatus("eskaliert")
                 .setIssuetype("Issuetype")
                 .setTitle("Title")
@@ -56,113 +59,150 @@ public class ProjectPersistenceTest {
                 .setOther("Other")
                 .setOrigin(ProjectOrigin.CUSTOM);
 
-        projectRepository.save(project);
-        Project retrievedProject = projectRepository.findById("STF-1").orElseThrow(EntityNotFoundException::new);
+        // when
+        projectRepository.save(expectedProject);
+        Project retrievedProject = projectRepository.findById(expectedProjectId).orElseThrow(EntityNotFoundException::new);
 
-        assertEquals("STF-1", retrievedProject.getId());
-        assertEquals("eskaliert", retrievedProject.getStatus());
-        assertEquals("Issuetype", retrievedProject.getIssuetype());
-        assertEquals("Title", retrievedProject.getTitle());
-        assertEquals("Job", retrievedProject.getJob());
-        assertEquals("Skills", retrievedProject.getSkills());
-        assertEquals("Description", retrievedProject.getDescription());
-        assertEquals("LOB Test", retrievedProject.getLob());
-        assertEquals("Customer", retrievedProject.getCustomer());
-        assertEquals("Location", retrievedProject.getLocation());
-        assertEquals("OperationStart", retrievedProject.getOperationStart());
-        assertEquals("OperationEnd", retrievedProject.getOperationEnd());
-        assertEquals("Effort", retrievedProject.getEffort());
-        assertEquals(created, retrievedProject.getCreated());
-        assertEquals(updated, retrievedProject.getUpdated());
-        assertEquals("Freelancer", retrievedProject.getFreelancer());
-        assertEquals("Elongation", retrievedProject.getElongation());
-        assertEquals("Other", retrievedProject.getOther());
-        assertEquals(ProjectOrigin.CUSTOM, retrievedProject.getOrigin());
-
-        List<String> firstProjectLabels = retrievedProject.getLabels();
-        assertEquals(3, firstProjectLabels.size());
-        assertEquals("Label 1", firstProjectLabels.get(0));
-        assertEquals("Label 2", firstProjectLabels.get(1));
-        assertEquals("Label 3", firstProjectLabels.get(2));
+        // then
+        assertThat(retrievedProject).isEqualTo(expectedProject);
     }
 
     @Test
-    public void testIdGenerator_AlreadySet() {
-        Project project = new Project();
-        project.setId("STF-1234");
+    public void idGeneratorDoesNotSetIdIfAlreadySet() {
+        // given
+        String expectedProjectId = "STF-1234";
 
+        Project project = new Project()
+                .setId(expectedProjectId);
+
+        // when
         Project persistedProject = projectRepository.save(project);
 
-        assertEquals("STF-1234", persistedProject.getId());
+        // then
+        assertThat(persistedProject.getId()).isEqualTo(expectedProjectId);
     }
 
     @Test
-    public void testIdGenerator_NotSet() {
+    public void idGeneratorSetsIdIfNotAlreadySet() {
+        // given
+        String expectedProjectId = "AD-1";
+
         Project project = new Project();
 
+        // when
         Project persistedProject = projectRepository.save(project);
 
-        assertEquals("AD-1", persistedProject.getId());
+        // then
+        assertThat(persistedProject.getId()).isEqualTo(expectedProjectId);
     }
 
     @Test
-    public void testIdGenerator_Increment() {
+    public void idGeneratorAutoIncrementsIds() {
+        // given
+        String expectedFirstId = "AD-1";
+        String expectedSecondId = "AD-2";
+
         Project firstProject = new Project();
         Project secondProject = new Project();
 
+        // when
         Project firstPersisted = projectRepository.save(firstProject);
         Project secondPersisted = projectRepository.save(secondProject);
 
-        assertEquals("AD-1", firstPersisted.getId());
-        assertEquals("AD-2", secondPersisted.getId());
+        // then
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(firstPersisted.getId()).isEqualTo(expectedFirstId);
+        softly.assertThat(secondPersisted.getId()).isEqualTo(expectedSecondId);
+
+        softly.assertAll();
     }
 
     @Test
-    public void testIdGenerator_Remove() {
+    public void idGeneratorReusesIds() {
+        // given
+        String expectedProjectId = "AD-1";
+
         Project firstProject = new Project();
+        Project secondProject = new Project();
+
+        // when
         Project firstPersisted = projectRepository.save(firstProject);
-
-        assertEquals("AD-1", firstPersisted.getId());
-
         projectRepository.delete(firstPersisted);
 
-        Project secondProject = new Project();
         Project secondPersisted = projectRepository.save(secondProject);
 
-        assertEquals("AD-1", secondPersisted.getId());
+        // then
+        assertThat(secondPersisted.getId()).isEqualTo(expectedProjectId);
+    }
+
+    @Test
+    public void idGeneratorIgnoresNonMatchingIds() {
+        String firstProjectId = "AD-T";
+        String expectedProjectId = "AD-1";
+
+        Project firstProject = new Project()
+                .setId(firstProjectId);
+
+        Project secondProject = new Project();
+
+        // when
+        projectRepository.save(firstProject);
+        Project persistedProject = projectRepository.save(secondProject);
+
+        // then
+        assertThat(persistedProject.getId()).isEqualTo(expectedProjectId);
     }
 
     @Test
     @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void testFindAllForUser() {
-        // get a list of all projects for a user of the lob "LOB Test"
+    public void findAllForUser() {
+        // given
+        // SQL script
+
+        // when
         List<Project> allForUser = projectRepository.findAllForUser("LOB Test", sort);
 
+        // then
         testProjectsForUser(allForUser);
     }
 
     @Test
     @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void testFindAllForUserPageable() {
+    public void findAllForUserPageable() {
+        // given
+        // SQL script
+
+        // when
         Page<Project> allForUser = projectRepository.findAllForUserPageable("LOB Test", PageRequest.of(0, 100));
 
+        // then
         testProjectsForUser(allForUser.getContent());
     }
 
     @Test
     @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void testFindAllForManager() {
-        // get a list of all projects for a manager
+    public void findAllForManager() {
+        // given
+        // SQL script
+
+        // when
         List<Project> allForManager = projectRepository.findAllForManager(sort);
 
+        // then
         testProjectsForManager(allForManager);
     }
 
     @Test
     @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void testFindAllForManagerPageable() {
+    public void findAllForManagerPageable() {
+        // given
+        // SQL script
+
+        // when
         Page<Project> allForManager = projectRepository.findAllForManagerPageable(PageRequest.of(0, 100));
 
+        // then
         testProjectsForManager(allForManager.getContent());
     }
 
@@ -180,8 +220,12 @@ public class ProjectPersistenceTest {
                     return isEscalated || (isOpen && (sameLobAsUser || noLob) || (!isOpen && !(sameLobAsUser || noLob)));
                 });
 
-        assertTrue(allEscalatedOrFromSameLobOrNoLob);
-        assertEquals(5L, allForUser.size());
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(allEscalatedOrFromSameLobOrNoLob).isTrue();
+        softly.assertThat(allForUser).hasSize(5);
+
+        softly.assertAll();
     }
 
     void testProjectsForManager(List<Project> allForManager) {
@@ -195,8 +239,12 @@ public class ProjectPersistenceTest {
                             return isOpen || isEscalated;
                         });
 
-        assertTrue(allEscalatedOrOpen);
-        assertEquals(6L, allForManager.size());
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(allEscalatedOrOpen).isTrue();
+        softly.assertThat(allForManager).hasSize(6);
+
+        softly.assertAll();
     }
 
 }

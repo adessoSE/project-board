@@ -8,7 +8,7 @@ import de.adesso.projectboard.base.user.service.UserService;
 import de.adesso.projectboard.rest.handler.mail.MailService;
 import de.adesso.projectboard.rest.handler.mail.persistence.ApplicationTemplateMessage;
 import de.adesso.projectboard.rest.handler.mail.persistence.TemplateMessage;
-import de.adesso.projectboard.rest.security.KeycloakAuthenticationInfo;
+import de.adesso.projectboard.rest.security.KeycloakAuthenticationInfoRetriever;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
  *
  * @see MailService
  * @see ApplicationTemplateMessage
- * @see KeycloakAuthenticationInfo
+ * @see KeycloakAuthenticationInfoRetriever
  */
 @Profile("mail")
 @Service

@@ -20,4 +20,6 @@ public interface OrganizationStructureRepository extends JpaRepository<Organizat
 
     boolean existsByUserAndUserIsManager(User user, boolean manager);
 
+    boolean existsByUserAndStaffMembersContaining(User user, User staffMember);
+
 }

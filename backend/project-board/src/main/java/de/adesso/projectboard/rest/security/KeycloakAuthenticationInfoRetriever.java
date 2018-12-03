@@ -1,6 +1,6 @@
 package de.adesso.projectboard.rest.security;
 
-import de.adesso.projectboard.base.security.AuthenticationInfo;
+import de.adesso.projectboard.base.security.AuthenticationInfoRetriever;
 import org.keycloak.KeycloakPrincipal;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.context.SecurityContext;
@@ -8,14 +8,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 /**
- * {@link AuthenticationInfo} implementation that retrieves the user id from
+ * {@link AuthenticationInfoRetriever} implementation that retrieves the user id from
  * the {@link SecurityContext}.
  *
- * @see AuthenticationInfo
+ * @see AuthenticationInfoRetriever
  */
 @Profile("adesso-keycloak")
 @Service
-public class KeycloakAuthenticationInfo implements AuthenticationInfo {
+public class KeycloakAuthenticationInfoRetriever implements AuthenticationInfoRetriever {
 
     @Override
     public String getUserId() {
