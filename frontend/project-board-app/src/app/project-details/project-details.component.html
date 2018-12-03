@@ -1,4 +1,4 @@
-<div id="scrollable-area" class="sticky clip">
+<div id="scrollable-area" class="sticky clip" (swiperight)="swipebugplaceholder">
   <h4>Projekt-Details
     <fa-icon title="{{studTooltip}}" *ngIf="selectedProject?.issuetype == 'Studentisches Projekt'" class="ml-2" [icon]="faGradCap"></fa-icon>
     <fa-icon title="{{bmTooltip}}" *ngIf="bookmark" class="ml-2" [icon]="faBookmark"></fa-icon>

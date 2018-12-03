@@ -1,9 +1,11 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, ViewChild } from '@angular/core';
 import { faChevronUp } from '@fortawesome/free-solid-svg-icons/faChevronUp';
 import { AuthConfig, JwksValidationHandler, OAuthService } from 'angular-oauth2-oidc';
 import { environment } from '../environments/environment';
 import { AlertService } from './_services/alert.service';
 import { AuthenticationService } from './_services/authentication.service';
+import { MatSidenav } from '@angular/material';
+import * as $ from 'jquery';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +15,7 @@ import { AuthenticationService } from './_services/authentication.service';
 export class AppComponent {
   faChevronUp = faChevronUp;
   username = "default";
+  @ViewChild ('snav') sidenav: MatSidenav;
 
   constructor(private oAuthService: OAuthService,
               private authenticationService: AuthenticationService,
@@ -27,8 +30,33 @@ export class AppComponent {
     this.oAuthService.loadDiscoveryDocumentAndLogin();
   }
 
+  onNavOpen(){
+    if (/Mobi/.test(navigator.userAgent)) {
+    $("body").css("overflow","hidden");
+    document.getElementById('top-badge').style.visibility ="hidden";
+    }
+  }
+
+  onNavClosed(){
+    if (/Mobi/.test(navigator.userAgent)) {
+    $("body").css("overflow","auto");
+    document.getElementById('top-badge').style.visibility ="visible";
+    }
+  }
+
+  onResize(){
+    this.sidenav.close();
+    $("body").css("overflow","auto");
+    document.getElementById('top-badge').style.visibility ="visible";
+  }
+
   getUsername(){
     return this.authenticationService.username;
+  }
+
+  ngOnInit(){
+    this.sidenav.openedStart.subscribe(() => this.onNavOpen());
+    this.sidenav.closedStart.subscribe(() => this.onNavClosed());
   }
 
   ngDoCheck(){

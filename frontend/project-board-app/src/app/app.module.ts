@@ -23,13 +23,28 @@ import { EmployeeManagementComponent } from './employee-management/employee-mana
 import { ExecutivesComponent } from './executives/executives.component';
 import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
-import { OverviewComponent } from './overview/overview.component';
+import { ProfileComponent } from './profile/profile.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ProjectDetailsComponent } from './project-details/project-details.component';
 import { ProjectRequestComponent } from './project-request/project-request.component';
 import { ProjectComponent } from './project/project.component';
 import { MaterialModule } from './material.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {
+  HammerGestureConfig,
+  HAMMER_GESTURE_CONFIG,
+} from '@angular/platform-browser';
+
+declare var Hammer: any;
+
+export class MyHammerConfig extends HammerGestureConfig  {
+  buildHammer(element: HTMLElement) {
+    let mc = new Hammer(element, {
+      touchAction: "pan-y",
+    });
+    return mc;
+  }
+}
 
 registerLocaleData(localeDe, 'de');
 
@@ -45,7 +60,7 @@ registerLocaleData(localeDe, 'de');
     ProjectDetailsComponent,
     EmployeeManagementComponent,
     ProjectRequestComponent,
-    OverviewComponent,
+    ProfileComponent,
     ProjectComponent,
     LogoutComponent
   ],
@@ -67,6 +82,10 @@ registerLocaleData(localeDe, 'de');
     AuthGuard,
     AuthenticationService,
     EmployeeService,
+    {
+      provide: HAMMER_GESTURE_CONFIG,
+      useClass: MyHammerConfig ,
+    },
     ProjectService,
     {provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true}
   ],

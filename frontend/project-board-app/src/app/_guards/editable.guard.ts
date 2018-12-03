@@ -24,7 +24,7 @@ export class EditableGuard implements CanActivate {
       });
       if (project === undefined) {
         this.alertService.info('Du hast keinen Zugriff auf diesen Bereich.', true);
-        this.router.navigate([`/overview}`]);
+        this.router.navigate([`/profile}`]);
       }
       return project !== undefined;
     }));

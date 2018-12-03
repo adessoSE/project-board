@@ -47,7 +47,7 @@ h1 {
 .background-inner {
   background: white;
   box-shadow: 0 0 10px 3px grey;
-  min-height: 100vh;
+  min-height: calc(100vh - 74px); /*100vh Gesamt, 58px Navigationbar, 16px = 1 rem padding*/
   padding-bottom: 1rem;
 }
 
@@ -57,6 +57,7 @@ h1 {
     background: white;
     box-shadow: 0;
     padding-bottom: 0;
+    min-height: calc(100vh - 58px);
   }
 
   .container {
@@ -105,5 +106,7 @@ h1 {
   }
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body { 
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  }
