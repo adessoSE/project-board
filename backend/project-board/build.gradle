@@ -77,8 +77,8 @@ task dockerBuild(dependsOn: build) {
 
 				filter(ReplaceTokens, tokens: [
 						datasourceUrl: System.getProperty('datasourceUrl'),
-						datasourceUsername: CredentialHelper.getUsername('datasourceCredentials'),
-						datasourcePassword: CredentialHelper.getPassword('datasourceCredentials')
+						datasourceUsername: System.getProperty('datasourceUsername'),
+						datasourcePassword: System.getProperty('datasourcePassword')
 				])
 			}
 
@@ -87,8 +87,8 @@ task dockerBuild(dependsOn: build) {
 
 				filter(ReplaceTokens, tokens: [
 						jiraUrl: System.getProperty('jiraUrl'),
-						jiraUsername: CredentialHelper.getUsername('jiraCredentials'),
-						jiraPassword: CredentialHelper.getPassword('jiraCredentials')
+						jiraUsername: System.getProperty('jiraUsername'),
+						jiraPassword: System.getProperty('jiraPassword')
 				])
 			}
 
@@ -96,15 +96,15 @@ task dockerBuild(dependsOn: build) {
 				include 'application-adesso-ad.properties'
 
 				filter(ReplaceTokens, tokens: [
-				        ldapUrl: System.getProperty('ldapUrl'),
-						ldapUsername: CredentialHelper.getUsername('ldapCredentials'),
-						ldapPassword: CredentialHelper.getPassword('ldapCredentials'),
+						ldapUrl: System.getProperty('ldapUrl'),
+						ldapUsername: System.getProperty('ldapUsername'),
+						ldapPassword: System.getProperty('ldapPassword'),
 						ldapBase: System.getProperty('ldapBase')
 				])
 			}
 
 			from('docker') {
-				include 'application-keycloak.properties'
+				include 'application-adesso-keycloak.properties'
 
 				filter(ReplaceTokens, tokens: [
 						keycloakUrl: System.getProperty('keycloakUrl'),
@@ -130,29 +130,4 @@ task dockerBuild(dependsOn: build) {
 
 clean.doFirst {
 	delete 'docker/temp'
-}
-
-// Helper-class to separate username and password
-class CredentialHelper {
-
-	static String getUsername(String propertyName, String regex = ':') {
-		return getSplitAtIndex(propertyName, 0, regex)
-	}
-
-	static String getPassword(String propertyName, String regex = ':') {
-		return getSplitAtIndex(propertyName, 1, regex)
-	}
-
-	private static String getSplitAtIndex(String propertyName, int index, String regex) {
-		String propertyValue = System.getProperty(propertyName)
-
-		if(propertyValue == null) {
-			throw new NullPointerException("System Property '${propertyName}' not defined!")
-		}
-
-		String[] splitPropertyValue = propertyValue.split(regex)
-
-		return splitPropertyValue.length > index ? splitPropertyValue[index] : ''
-	}
-
 }
