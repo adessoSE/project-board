@@ -29,7 +29,7 @@ public class NoActionProjectReader implements ProjectReader {
      *
      */
     @Override
-    public List<? extends Project> getAllProjectsSince(LocalDateTime dateTime) {
+    public List<Project> getAllProjectsSince(LocalDateTime dateTime) {
         return Collections.emptyList();
     }
 
@@ -39,7 +39,7 @@ public class NoActionProjectReader implements ProjectReader {
      *          A empty {@link List} returned by {@link Collections#emptyList()}.
      */
     @Override
-    public List<? extends Project> getInitialProjects() {
+    public List<Project> getInitialProjects() {
         return Collections.emptyList();
     }
 
