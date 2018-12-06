@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
  *
  * @see AuthenticationInfoRetriever
  */
-@Profile("adesso-keycloak")
+@Profile("keycloak")
 @Service
 public class KeycloakAuthenticationInfoRetriever implements AuthenticationInfoRetriever {
 
