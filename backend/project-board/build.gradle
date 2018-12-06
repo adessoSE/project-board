@@ -104,7 +104,7 @@ task dockerBuild(dependsOn: build) {
 			}
 
 			from('docker') {
-				include 'application-adesso-keycloak.properties'
+				include 'application-keycloak.properties'
 
 				filter(ReplaceTokens, tokens: [
 						keycloakUrl: System.getProperty('keycloakUrl'),
