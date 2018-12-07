@@ -19,11 +19,11 @@ export class AccessGuard implements CanActivate {
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
     return this.employeeService.getEmployeeWithId(this.authenticationService.username).pipe(map(user => {
-      if (!user.accessInfo.hasAccess && !user.boss) {
+      if (!user.accessInfo.hasAccess && !user.boss && !this.authenticationService.isAdmin) { //admin has acces too
         this.alertService.info('Du bist nicht für das Project Board freigeschaltet.', true);
         this.router.navigate(['/profile']);
       }
-      return user.accessInfo.hasAccess || user.boss;
+      return user.accessInfo.hasAccess || user.boss || this.authenticationService.isAdmin;
     }));
   }
 }

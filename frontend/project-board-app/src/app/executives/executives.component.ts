@@ -59,9 +59,20 @@ export class ExecutivesComponent implements OnInit, AfterViewChecked {
     this.selectedEmployee = null;
   }
 
+/* creates a valid Id in case it contains a dot*/
+  getValidId(employee){
+    var fixedEmployeeId = employee.id;
+    if((employee.id + "").indexOf(".") == 1){
+      var idAsArray = (employee.id + "").split(".");
+      var fixedId = idAsArray[0] + "\\." + idAsArray[1];
+      fixedEmployeeId = fixedId;
+    }
+    return fixedEmployeeId;
+  }
+
   employeeClicked(employee) {
 
-    const newEmployeeOffset = $(`#${employee.id}`).offset().top;
+    const newEmployeeOffset = $(`#${this.getValidId(employee)}`).offset().top;
 
     if (this.selectedEmployee === employee) {
       this.location.replaceState(`/admin`);
@@ -70,11 +81,12 @@ export class ExecutivesComponent implements OnInit, AfterViewChecked {
       this.below = false;
     } else {
       this.location.replaceState(`/admin/${employee.id}`);
+      
       if(this.selectedEmployee){
 
-        const oldEmployeeOffset = $(`#${this.selectedEmployee.id}`).offset().top;
-        console.log("alt: " + oldEmployeeOffset + " neu: " + newEmployeeOffset);
-       if(oldEmployeeOffset > newEmployeeOffset){
+      const oldEmployeeOffset = $(`#${this.getValidId(this.selectedEmployee)}`).offset().top;
+
+       if(oldEmployeeOffset > newEmployeeOffset){ // set "below" true, if employee is below opened
         this.below = false;
         } else {
         this.below = true;
@@ -87,11 +99,11 @@ export class ExecutivesComponent implements OnInit, AfterViewChecked {
 
   ngAfterViewChecked() {
     if (this.mobile && this.scroll && this.selectedEmployee) {
-      const btn = $(`#${this.selectedEmployee.id}`);
-      // navbar has 56 pixels height
+      
+      const btn = $(`#${this.getValidId(this.selectedEmployee)}`);
 
+      // navbar has 56 pixels height | if opened below selected calculate offset correctly
       if(this.below){
-        console.log("true");
         $('html, body').animate({scrollTop: $(btn).offset().top - (document.getElementById('managementContainer').scrollHeight + 56)}, 'slow');
       } else {
         $('html, body').animate({scrollTop: $(btn).offset().top -  56}, 'slow');
