@@ -63,14 +63,22 @@
       <div class="col-sm right-side">{{selectedProject.description}}</div>
     </div>
 
-    <div class="mt-3" *ngIf="!isUserBoss">
+    <!--<div class="mt-3" *ngIf="!isUserBoss">
       <div class="appliedInfo" *ngIf="!applicable">
         <small>Du hast dieses Projekt bereits angefragt</small>
       </div>
       <button [disabled]="!applicable" class="btn btn-primary mr-3 mb-3" (click)="requestProject()">Projekt anfragen</button>
       <button *ngIf="!bookmark" class="btn btn-outline-secondary mb-3" (click)="addBookmark()">Lesezeichen hinzufügen</button>
       <button *ngIf="bookmark" class="btn btn-outline-secondary mb-3" (click)="removeBookmark()">Lesezeichen entfernen</button>
-    </div>
+    </div>-->
   </div>
   <p *ngIf="!selectedProject">Kein Projekt ausgewählt.</p>
 </div>
+<div class="mt-3" *ngIf="!isUserBoss && selectedProject">
+    <div class="appliedInfo" *ngIf="!applicable">
+      <small>Du hast dieses Projekt bereits angefragt</small>
+    </div>
+    <button [disabled]="!applicable" class="btn btn-primary mr-3 mb-3" (click)="requestProject()">Projekt anfragen</button>
+    <button *ngIf="!bookmark" class="btn btn-outline-secondary mb-3" (click)="addBookmark()">Lesezeichen hinzufügen</button>
+    <button *ngIf="bookmark" class="btn btn-outline-secondary mb-3" (click)="removeBookmark()">Lesezeichen entfernen</button>
+  </div>

@@ -1,15 +1,23 @@
+<!--Scroll Badge -->
 <button id="top-badge" class="btn btn-primary back-to-top-badge" (click)="scrollTop()">
   <fa-icon [icon]="faChevronUp"></fa-icon>
 </button>
 
+<!--Container for Navbar & Content-->
 <div class="container background-inner" style="min-height: 0;">
 
+<!--Navbar-->
 <nav class="navbar navbar-expand-lg navbar-light custom-navbar sticky-top">
-    <button style="border: 0; outline: 0;" class="navbar-toggler" type="button" (click)="snav.toggle()">
+
+<!--BurgerMenuIcon-->
+    <button style="border: 0; outline: 0;" class="navbar-toggler" type="button" (click)="NavToggle()">
       <span class="navbar-toggler-icon"></span>
     </button>
+
+<!--adesso Logo-->
     <a class="navbar-brand" routerLink="/"><img id="brand-logo" src="/assets/Adesso_AG_logo.png"></a>         
 
+<!--NavbarItems for large screens-->
     <div id="navbarContent">
         <ul *ngIf="isUserAuthenticated()" class="navbar-nav mr-auto">
             <li class="nav-item">
@@ -31,12 +39,15 @@
     </div>
   </nav>
 
+<!--2px bar-->
   <div class="navbar-divider"></div>
 
 </div>
 
-  <mat-sidenav-container class="sidenav-container" id="belowNavbar" (swipeleft)="snav.close()" (window:resize)="onResize()">
+<!--Container for Sidenavigation-->
+  <mat-sidenav-container class="sidenav-container" id="belowNavbar" (swipeleft)="closeNav()" (window:resize)="onResize()">
 
+<!--Sidenavigation & Sidenavigation Items-->
     <mat-sidenav #snav id="side-nav">
       <mat-nav-list id="nav-list">
         <div class="side-link" id="side-username">{{username}}</div>
@@ -48,9 +59,10 @@
       </mat-nav-list>
     </mat-sidenav>
 
+<!--Content Window for router-outlet & alert-->
     <mat-sidenav-content class="sidenav-content" id="contentWindow">
 
-    <div class="container background-inner" (swiperight)="snav.open()">
+    <div class="container background-inner" (swiperight)="openNav()">
         
         <app-alert></app-alert>
         <router-outlet></router-outlet>

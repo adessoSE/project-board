@@ -39,7 +39,7 @@
   display: none;
 }
 
-/deep/ .mat-drawer-backdrop{
+.mat-drawer-backdrop{
   display: none !important;
 }
 
@@ -103,6 +103,7 @@
 
   .side-link{
     padding: 15px;
+    padding-top: 20px;
   }
 
   .side-link:focus{

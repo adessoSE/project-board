@@ -161,7 +161,7 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
   }
 
   scrollBeneathHeader(divToScroll) {
-    if (!this.mobile && (document.body.scrollTop > 230 || document.documentElement.scrollTop > 230)) {
+    if (/*!this.mobile && (document.body.scrollTop > 230 || document.documentElement.scrollTop > 230)*/true) {
       $('html, body').animate({scrollTop: $(divToScroll).offset().top - 10}, 'slow');
     }
   }
