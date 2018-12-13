@@ -159,12 +159,28 @@ public class ProjectPersistenceTest {
     public void findAllForUser() {
         // given
         // SQL script
+        String expectedLob = "LOB Test";
 
         // when
-        List<Project> allForUser = projectRepository.findAllForUser("LOB Test", sort);
+        List<Project> allForUser = projectRepository.findAllForUser(expectedLob, sort);
 
         // then
-        testProjectsForUser(allForUser);
+        testProjectsForUser(allForUser, expectedLob);
+    }
+
+    @Test
+    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void findAllForUserWhereUserLobDiffersButMeansTheSame() {
+        // given
+        // SQL script
+        String expectedLob = "LOB Test";
+        String sameLobButDifferentName = "LOB TEST (LT)";
+
+        // when
+        List<Project> allForUser = projectRepository.findAllForUser(sameLobButDifferentName, sort);
+
+        // then
+        testProjectsForUser(allForUser, expectedLob);
     }
 
     @Test
@@ -172,12 +188,28 @@ public class ProjectPersistenceTest {
     public void findAllForUserPageable() {
         // given
         // SQL script
+        String expectedLob = "LOB Test";
 
         // when
-        Page<Project> allForUser = projectRepository.findAllForUserPageable("LOB Test", PageRequest.of(0, 100));
+        Page<Project> allForUser = projectRepository.findAllForUserPageable(expectedLob, PageRequest.of(0, 100));
 
         // then
-        testProjectsForUser(allForUser.getContent());
+        testProjectsForUser(allForUser.getContent(), expectedLob);
+    }
+
+    @Test
+    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void findAllForUserPageableWhereUserLobDiffersButMeansTheSame() {
+        // given
+        // SQL script
+        String expectedLob = "LOB Test";
+        String sameLobButDifferentName = "LOB TEST (LT)";
+
+        // when
+        Page<Project> allForUser = projectRepository.findAllForUserPageable(sameLobButDifferentName, PageRequest.of(0, 100));
+
+        // then
+        testProjectsForUser(allForUser.getContent(), expectedLob);
     }
 
     @Test
@@ -206,19 +238,87 @@ public class ProjectPersistenceTest {
         testProjectsForManager(allForManager.getContent());
     }
 
-    void testProjectsForUser(List<Project> allForUser) {
-        boolean allEscalatedOrFromSameLobOrNoLob = allForUser.stream()
-                .allMatch(project -> {
-                    boolean isOpen = "open".equalsIgnoreCase(project.getStatus());
-                    boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
-                    boolean sameLobAsUser = "LOB Test".equalsIgnoreCase(project.getLob());
-                    boolean noLob = project.getLob() == null;
+    @Test
+    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void findAllForUserByKeyword() {
+        // given
+        // SQL script
+        String keyword = "Special";
+        String expectedLob = "LOB Test";
 
-                    // escalated || isOpen <-> (sameLob || noLob)
-                    // equivalence because implication is not enough
-                    // when the status is neither "eskaliert" nor "open"
-                    return isEscalated || (isOpen && (sameLobAsUser || noLob) || (!isOpen && !(sameLobAsUser || noLob)));
-                });
+        // when
+        List<Project> allForUserByKeyword =
+                projectRepository.findAllForUserByKeyword(expectedLob, keyword, sort);
+
+        // then
+        testProjectsForUserByKeyword(allForUserByKeyword, keyword, expectedLob);
+    }
+
+    @Test
+    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void findAllForUserByKeywordPageable() {
+        // given
+        // SQL script
+        String keyword = "Special";
+        String expectedLob = "LOB Test";
+
+        // when
+        Page<Project> allForUserByKeyword =
+                projectRepository.findAllForUserByKeywordPageable(expectedLob, keyword, PageRequest.of(0, 100));
+
+        // then
+        testProjectsForUserByKeyword(allForUserByKeyword.getContent(), keyword, expectedLob);
+    }
+
+    @Test
+    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void findAllForUserByKeywordPageableWhereUserLobDiffersButMeansTheSame() {
+        // given
+        // SQL script
+        String keyword = "Special";
+        String expectedLob = "LOB Test";
+        String sameLobButDifferentName = "LOB TEST (LT)";
+
+        // when
+        Page<Project> allForUserByKeyword =
+                projectRepository.findAllForUserByKeywordPageable(sameLobButDifferentName, keyword, PageRequest.of(0, 100));
+
+        // then
+        testProjectsForUserByKeyword(allForUserByKeyword.getContent(), keyword, expectedLob);
+    }
+
+    @Test
+    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void findAllForManagerByKeyword() {
+        // given
+        // SQL script
+        String keyword = "Special";
+
+        // when
+        List<Project> allForManagerByKeyword =
+                projectRepository.findAllForManagerByKeyword(keyword, sort);
+
+        // then
+        testProjectsForManagerByKeyword(allForManagerByKeyword, keyword);
+    }
+
+    @Test
+    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void findAllForManagerByKeywordPageable() {
+        // given
+        // SQL script
+        String keyword = "Special";
+
+        // when
+        Page<Project> allForManagerByKeyword =
+                projectRepository.findAllForManagerByKeywordPageable(keyword, PageRequest.of(0, 100));
+
+        // then
+        testProjectsForManagerByKeyword(allForManagerByKeyword.getContent(), keyword);
+    }
+
+    void testProjectsForUser(List<Project> allForUser, String expectedLob) {
+        boolean allEscalatedOrFromSameLobOrNoLob = allEscalatedOrFromSameLobOrNoLob(allForUser, expectedLob);
 
         SoftAssertions softly = new SoftAssertions();
 
@@ -230,14 +330,7 @@ public class ProjectPersistenceTest {
 
     void testProjectsForManager(List<Project> allForManager) {
         // managers can see all open/escalated projects
-        boolean allEscalatedOrOpen =
-                allForManager.stream()
-                        .allMatch(project -> {
-                            boolean isOpen = "open".equalsIgnoreCase(project.getStatus());
-                            boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
-
-                            return isOpen || isEscalated;
-                        });
+        boolean allEscalatedOrOpen = allEscalatedOrOpen(allForManager);
 
         SoftAssertions softly = new SoftAssertions();
 
@@ -245,6 +338,71 @@ public class ProjectPersistenceTest {
         softly.assertThat(allForManager).hasSize(6);
 
         softly.assertAll();
+    }
+
+    void testProjectsForUserByKeyword(List<Project> allForUserByKeyword, String keyword, String expectedLob) {
+        boolean allEscalatedOrFromSameLobOrNoLob = allEscalatedOrFromSameLobOrNoLob(allForUserByKeyword, expectedLob);
+        boolean allContainingKeywordInAnyField = allContainingKeywordInField(allForUserByKeyword, keyword);
+
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(allEscalatedOrFromSameLobOrNoLob).isTrue();
+        softly.assertThat(allContainingKeywordInAnyField).isTrue();
+
+        softly.assertThat(allForUserByKeyword).hasSize(4);
+
+        softly.assertAll();
+    }
+
+    void testProjectsForManagerByKeyword(List<Project> allForManagerByKeyword, String keyword) {
+        boolean allEscalatedOrOpen = allEscalatedOrOpen(allForManagerByKeyword);
+        boolean allContainingKeywordInAnyField = allContainingKeywordInField(allForManagerByKeyword, keyword);
+
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(allEscalatedOrOpen).isTrue();
+        softly.assertThat(allContainingKeywordInAnyField).isTrue();
+
+        softly.assertThat(allForManagerByKeyword).hasSize(4);
+
+        softly.assertAll();
+    }
+
+    boolean allEscalatedOrFromSameLobOrNoLob(List<Project> projects, String expectedLob) {
+        return projects.stream()
+                .allMatch(project -> {
+                    boolean isOpen = "open".equalsIgnoreCase(project.getStatus());
+                    boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
+                    boolean sameLobAsUser = expectedLob.equalsIgnoreCase(project.getLob());
+                    boolean noLob = project.getLob() == null;
+
+                    // escalated || isOpen <-> (sameLob || noLob)
+                    // equivalence because implication is not enough
+                    // when the status is neither "eskaliert" nor "open"
+                    return isEscalated || (isOpen && (sameLobAsUser || noLob) || (!isOpen && !(sameLobAsUser || noLob)));
+                });
+    }
+
+    boolean allEscalatedOrOpen(List<Project> projects) {
+        return projects.stream()
+                .allMatch(project -> {
+                    boolean isOpen = "open".equalsIgnoreCase(project.getStatus());
+                    boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
+
+                    return isOpen || isEscalated;
+                });
+    }
+
+    boolean allContainingKeywordInField(List<Project> projects, String keyword) {
+        return projects.stream()
+                .allMatch(project -> {
+                    boolean titleMatches = project.getTitle().matches(".*" + keyword + ".*");
+                    boolean jobMatches = project.getJob().matches(".*" + keyword + ".*");
+                    boolean skillsMatches = project.getSkills().matches(".*" + keyword + ".*");
+                    boolean descriptionMatches = project.getDescription().matches(".*" + keyword + ".*");
+
+                    return titleMatches || jobMatches || skillsMatches || descriptionMatches;
+                });
     }
 
 }
