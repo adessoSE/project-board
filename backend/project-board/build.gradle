@@ -74,6 +74,7 @@ task dockerBuild(dependsOn: build) {
 				include 'application.properties'
 
 				filter(ReplaceTokens, tokens: [
+						datasourceDialect: System.getProperty('datasourceDialect'),
 						datasourceUrl: System.getProperty('datasourceUrl'),
 						datasourceUsername: System.getProperty('datasourceUsername'),
 						datasourcePassword: System.getProperty('datasourcePassword')
