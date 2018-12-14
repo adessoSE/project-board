@@ -43,18 +43,20 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
   destroy$ = new Subject<void>();
   private searchText$ = new Subject<string>();
 
-  @HostListener('window:resize') onResize() {
-    this.mobile = document.body.clientWidth < 768;
-  }
-
   constructor(private employeeService: EmployeeService,
               private projectsService: ProjectService,
               private alertService: AlertService,
               private route: ActivatedRoute,
               private location: Location) { }
 
+  @HostListener('window:resize') onResize() {
+    this.mobile = document.body.clientWidth < 1200;
+  }
+
+  swipebugplaceholder(){}
+
   ngOnInit() {
-    this.mobile = document.body.clientWidth < 768;
+    this.mobile = document.body.clientWidth < 1200;
 
     this.searchText$
       .pipe(
@@ -138,33 +140,27 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
       }
       this.selectedProject = project;
       this.scroll = true;
-      this.scrollBeneathHeader(this.divToScroll);
     }
   }
 
   ngAfterViewChecked() {
-    if (this.scroll && this.selectedProject) {
-      if (this.mobile) {
-        const btn = $(`#${this.selectedProject.id}`);
-        // navbar has 56 pixels height
-        if(this.below){
-          $('html, body').animate({scrollTop: $(btn).offset().top - (document.getElementById('detailContainer').scrollHeight + 56)}, 'slow');
-        } else {
-          $('html, body').animate({scrollTop: $(btn).offset().top -  56}, 'slow');
-        }
-        this.scroll = false;
-      } else {
-        this.scrollBeneathHeader(this.divToScroll);
-        this.scroll = false;
-      }
-    }
-  }
 
-  scrollBeneathHeader(divToScroll) {
-    if (/*!this.mobile && (document.body.scrollTop > 230 || document.documentElement.scrollTop > 230)*/true) {
-      $('html, body').animate({scrollTop: $(divToScroll).offset().top - 10}, 'slow');
+    document.getElementById('detailContainerLg').scrollTop = 0;
+
+    if (this.scroll && this.selectedProject && this.mobile) {
+      const btn = $(`#${this.selectedProject.id}`);
+      var offsetBonus = 56;
+      if(this.below){
+        $('html, body').animate({scrollTop: $(btn).offset().top - (document.getElementById('detailContainer').scrollHeight + offsetBonus)}, 'slow');
+      } else {
+        $('html, body').animate({scrollTop: $(btn).offset().top -  offsetBonus}, 'slow');
+      }
+        this.scroll = false;
+    } else {
+      this.scroll = false;
     }
   }
+  
 
   isProjectApplicable(projectId) {
     return this.appliedProjects ? !this.appliedProjects.some(p => p && p.id === projectId) : true;

@@ -11,12 +11,16 @@
   margin-left: -15px;
   margin-right: -15px;
   background-color: #e3f2fd;
+  position: fixed;
+  width: 100%;
+  max-width: none;
 }
 
-.navbar-divider {
-  position: -webkit-sticky;
-  position: sticky;
+.navbar-divider{
+  position: fixed;
   top: 56px;
+  width: 100%;
+  max-width: none;
   margin: 0 -15px;
   min-height: 2px;
   z-index: 1020;
@@ -28,7 +32,7 @@
 }
 
 .active-link{
-  color: rgba(0, 0, 0, 1) !important;
+  color: rgba(0, 0, 0, 1);
 }
 
 .back-to-top-badge {
@@ -37,32 +41,41 @@
 
 #side-nav{
   display: none;
+  min-width: 30%;
 }
 
 .mat-drawer-backdrop{
-  display: none !important;
+  display: none;
 }
 
 .mat-drawer-container{
-  background-color: transparent !important;
+  background-color: transparent;
 }
 
-@include media-breakpoint-up(lg) {
-  #logout{
-    position: absolute;
-    right: 10px;
-  }
+*:focus {
+  outline: none;
+}
 
-  .back-to-top-badge {
-    display: none !important;
-  }
+#logout{
+  position: absolute;
+  right: 10px;
+}
 
-  #navbarContent{
-    display: block !important;
-  }
+#navbarContent{
+  display: block;
+}
+
+#innerContent {
+  padding-bottom: 1rem;
+  padding-left: 10%;
+  padding-right: 10%;
 }
 
 @include media-breakpoint-down(lg) {
+
+  #brand-logo {
+    margin: -18px -28px -13px;
+  }
 
   .custom-navbar {
     position: fixed;
@@ -75,16 +88,21 @@
     width: 100%;
   }
 
-  #brand-logo {
-    margin: -18px -28px -13px;
+  .active-link{
+    color: rgba(0, 0, 0, 0.5);
   }
 
-  #navbarContent{
-    display: none;
-  }
-
-  #belowNavbar{
-    margin-top: 58px;
+  .back-to-top-badge {
+    position: fixed;
+    top: none;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+    width: 50px;
+    height: 50px;
+    border: none;
+    border-radius: 50px;
+    outline: none;
   }
 
   #side-nav{
@@ -93,12 +111,25 @@
     top: 58px;
   }
 
-  /deep/ .mat-drawer-backdrop{
-    display: block !important;
+  .mat-drawer-backdrop{
+    display: block;
   }
 
-  .active-link{
-    color: rgba(0, 0, 0, 0.5) !important;
+  .mat-drawer-container{
+    background-color: inherit;
+  }
+
+  #innerContent {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  #navbarContent{
+    display: none;
+  }
+
+  #belowNavbar{
+    margin-top: 58px;
   }
 
   .side-link{
@@ -132,23 +163,5 @@
     float: left;
     margin-top: -2px;
     margin-right: 10px;
-  }
-
-  *:focus {
-    outline: none;
-  }
-}
-
-@include media-breakpoint-down(sm) {
-  .back-to-top-badge {
-    position: fixed;
-    bottom: 25px;
-    right: 15px;
-    z-index: 100;
-    width: 50px;
-    height: 50px;
-    border: none;
-    border-radius: 50px;
-    outline: none;
   }
 }

@@ -1,8 +1,9 @@
 @supports ((position: -webkit-sticky) or (position: sticky)) {
+
   .sticky {
     position: absolute;
-    right: 5%;
-    left: 5%;
+    right: 16%;
+    left: 16%;
     top: 60px;
     z-index: 1020;
   }

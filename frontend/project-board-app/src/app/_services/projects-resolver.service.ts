@@ -11,6 +11,6 @@ export class ProjectsResolverService implements Resolve<Page<Project>> {
   constructor(private projectService: ProjectService) { }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Page<Project>> {
-    return this.projectService.getAllProjectsPaginated(0, 20);
+    return this.projectService.getAllProjectsPaginated(0, 25);
   }
 }

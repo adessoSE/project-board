@@ -19,13 +19,35 @@ button{
   color: #dc3545;
 }
 
-@include media-breakpoint-down(sm) {
+#managementContainer{
+  padding: 0 15px 15px 15px;
+}
+
+#managementContainerLg{
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+ }
+
+  #employeeContainer{
+    max-height: calc(100vh - 240px);
+    overflow-y: auto;
+  }
+
+@include media-breakpoint-down(lg) {
+
+  #employeeContainer{
+    max-height: none;
+    overflow-y: auto;
+  }
+
   h4 {
     padding-left: 15px;
   }
 
   .col-md-6 {
     padding: 0;
+    max-width: 100%;
+    flex: 0 0 100%;
   }
 
   .list-group-item {

@@ -12,7 +12,7 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$project-board-app-primary: mat-palette($mat-indigo);
+$project-board-app-primary: mat-palette($mat-blue, A400);
 $project-board-app-accent: mat-palette($mat-pink, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
@@ -32,12 +32,15 @@ $project-board-app-theme: mat-light-theme($project-board-app-primary, $project-b
 
 .display-3 {
   font-size: 3rem;
-  padding-top: 1rem;
+  padding-top: calc(1rem + 58px);
 }
 
 .inner-container {
-  padding-left: 15%;
-  padding-right: 15%;
+  padding: 0;
+}
+
+.container {
+  max-width: 100%;
 }
 
 h1 {
@@ -46,30 +49,14 @@ h1 {
 
 .background-inner {
   background: white;
-  box-shadow: 0 0 10px 3px grey;
-  min-height: calc(100vh - 74px); /*100vh Gesamt, 58px Navigationbar, 16px = 1 rem padding*/
-  padding-bottom: 1rem;
+  min-height: calc(100vh);
+}
+
+*{
+  user-select: auto !important;
 }
 
 @include media-breakpoint-down(lg) {
-
-  .background-inner {
-    background: white;
-    box-shadow: 0;
-    padding-bottom: 0;
-    min-height: calc(100vh - 58px);
-  }
-
-  .container {
-    max-width: 100%;
-  }
-
-}
-
-@include media-breakpoint-down(md) {
-  .display-1 {
-    font-size: 3rem;
-  }
 
   .display-3 {
     font-size: 2.5rem;
@@ -82,9 +69,7 @@ h1 {
   }
 
   .background-inner {
-    background: white;
-    box-shadow: 0;
-    padding-bottom: 0;
+    min-height: calc(100vh - 58px);
   }
 }
 
@@ -95,14 +80,6 @@ h1 {
 
   .display-3 {
     font-size: 2rem;
-  }
-
-  .background-inner {
-    padding-bottom: 0;
-  }
-
-  .inner-container {
-    padding: 0;
   }
 }
 

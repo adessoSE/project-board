@@ -2,23 +2,26 @@
 <div class="row">
   <div class="col-md-6">
     <h4>Liste mit Personen</h4>
-    <div class="list-group">
-      <ng-container *ngFor="let e of employees">
-        <button id="{{e.id}}" (click)="employeeClicked(e)" type="button" [ngClass]="{'list-group-item list-group-item-action': true, 'active': e.id == selectedEmployee?.id}">
 
-          <!-- Differentiate between boss and normal user for readability -->
-          <span *ngIf="e.boss" class="badge badge-success badge-width" title="{{badgeTooltip(e)}}">D</span>
-          <span *ngIf="!e.boss" title="{{badgeTooltip(e)}}" [ngClass]="{'badge badge-width': true, 'badge-success': e.accessInfo.hasAccess, 'badge-danger badge-red': !e.accessInfo.hasAccess}">{{e.duration || '0'}}</span>
+    <div id="employeeContainer" (swiperight)="swipebugplaceholder()">
+      <div class="list-group">
+        <ng-container *ngFor="let e of employees">
+            <button id="{{e.id}}" (click)="employeeClicked(e)" type="button" [ngClass]="{'list-group-item list-group-item-action': true, 'active': e.id == selectedEmployee?.id}">
 
-          {{e.lastName}}, {{e.firstName}}
-        </button>
-        <div *ngIf="mobile && selectedEmployee?.id == e.id" style="padding: 0 15px 15px 15px" id="managementContainer">
-          <app-employee-management [selectedEmployee]="selectedEmployee"></app-employee-management>
-        </div>
-      </ng-container>
+             <!-- Differentiate between boss and normal user for readability -->
+              <span *ngIf="e.boss" class="badge badge-success badge-width" title="{{badgeTooltip(e)}}">D</span>
+              <span *ngIf="!e.boss" title="{{badgeTooltip(e)}}" [ngClass]="{'badge badge-width': true, 'badge-success': e.accessInfo.hasAccess, 'badge-danger badge-red': !e.accessInfo.hasAccess}">{{e.duration || '0'}}</span>
+
+             {{e.lastName}}, {{e.firstName}}
+            </button>
+          <div *ngIf="mobile && selectedEmployee?.id == e.id" id="managementContainer">
+           <app-employee-management [selectedEmployee]="selectedEmployee"></app-employee-management>
+          </div>
+        </ng-container>
+      </div>
     </div>
   </div>
-  <div *ngIf="!mobile" class="col-md-6">
+  <div *ngIf="!mobile" class="col-md-6" id="managementContainerLg">
     <app-employee-management [selectedEmployee]="selectedEmployee"></app-employee-management>
   </div>
 </div>

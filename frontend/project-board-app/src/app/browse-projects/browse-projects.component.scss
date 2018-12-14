@@ -3,7 +3,6 @@
 @import '../../../node_modules/bootstrap/scss/mixins';
 
 h4 {
-  margin-top: 1rem;
   margin-bottom: 0.5rem;
 }
 
@@ -15,26 +14,49 @@ button span {
   outline: 0;
 }
 
-.loading-dots {
-  text-align: center;
-  font-size: 5rem;
-  color: grey;
-  animation: blink 1.2s steps(5, start) infinite;
+.loading-spinner {
+  margin-top: 1rem;
+  margin: 0 auto;
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
 }
 
-@keyframes blink {
-  to {
-    color: lightgrey;
+#TooltipIcon{
+display: inline-block;
+height: 23px;
+overflow: hidden;
+margin-bottom: -6px;
+}
+
+  #projectContainer {
+    max-height: calc(100vh - 270px);
+    overflow-y: auto;
   }
-}
 
-@include media-breakpoint-down(sm) {
+  #detailContainerLg{
+    max-height: calc(100vh - 180px);
+    overflow-y: auto;
+  }
+
+  #divToScroll {
+    overflow-x: hidden;
+  }
+
+@include media-breakpoint-down(lg) {
+
+  #projectContainer {
+    max-height: none;
+    overflow-y: auto;
+  }
+
+  #detailContainerLg{
+    max-height: none;
+    overflow-y: auto;
+  }
+
   h4 {
     padding-left: 15px;
-  }
-
-  .col-md-6 {
-    padding: 0;
   }
 
   .list-group-item {
@@ -51,5 +73,11 @@ button span {
     margin-left: 15px;
     margin-right: 15px;
     width: calc(100% - 30px);
+  }
+
+  .col-md-6 {
+    max-width: 100%;
+    flex: 0 0 100%;
+    padding: 0;
   }
 }

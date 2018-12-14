@@ -14,7 +14,7 @@ import { Project, ProjectService } from '../_services/project.service';
   templateUrl: './project-details.component.html',
   styleUrls: ['./project-details.component.scss']
 })
-export class ProjectDetailsComponent implements OnInit, OnChanges {
+export class ProjectDetailsComponent {
   @Input() selectedProject: Project;
   @Input() applicable;
   @Input() bookmark = false;
@@ -33,12 +33,7 @@ export class ProjectDetailsComponent implements OnInit, OnChanges {
               private employeeService: EmployeeService,
               private authService: AuthenticationService) { }
 
-  ngOnInit() {
-  }
-
-  ngOnChanges() {
-    document.getElementById('scrollable-area').scrollTop = 0;
-  }
+  swipebugplaceholder(){}
 
   requestProject() {
     this.router.navigate([`/projects/${this.selectedProject.id}/request`]);

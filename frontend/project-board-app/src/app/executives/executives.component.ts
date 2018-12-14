@@ -15,23 +15,27 @@ export class ExecutivesComponent implements OnInit, AfterViewChecked {
   employees: Employee[] = [];
   selectedEmployee: Employee;
   mobile = false;
+  smallMobile = false;
   scroll = true;
   below = false;
 
   destroy$ = new Subject<void>();
-
-  @HostListener('window:resize') onResize() {
-    this.mobile = document.body.clientWidth < 768;
-  }
 
   constructor(private employeeService: EmployeeService,
               private route: ActivatedRoute,
               private router: Router,
               private location: Location) { }
 
-  ngOnInit() {
-    this.mobile = document.body.clientWidth < 768;
+  @HostListener('window:resize') onResize() {
+    this.mobile = document.body.clientWidth < 1200;
+    this.smallMobile = document.body.clientWidth < 768;
+  }
 
+  swipebugplaceholder(){}
+
+  ngOnInit() {
+    this.mobile = document.body.clientWidth < 1200;
+    this.smallMobile = document.body.clientWidth < 768;
     combineLatest(this.route.data, this.route.params)
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
@@ -98,15 +102,14 @@ export class ExecutivesComponent implements OnInit, AfterViewChecked {
   }
 
   ngAfterViewChecked() {
-    if (this.mobile && this.scroll && this.selectedEmployee) {
-      
+    if (this.scroll && this.selectedEmployee && this.smallMobile) {
+      var offsetBonus = 56;
       const btn = $(`#${this.getValidId(this.selectedEmployee)}`);
-
       // navbar has 56 pixels height | if opened below selected calculate offset correctly
       if(this.below){
-        $('html, body').animate({scrollTop: $(btn).offset().top - (document.getElementById('managementContainer').scrollHeight + 56)}, 'slow');
+        $('html, body').animate({scrollTop: $(btn).offset().top - (document.getElementById('managementContainer').scrollHeight + offsetBonus)}, 'slow');
       } else {
-        $('html, body').animate({scrollTop: $(btn).offset().top -  56}, 'slow');
+        $('html, body').animate({scrollTop: $(btn).offset().top -  offsetBonus}, 'slow');
       }
       this.scroll = false;
     }

@@ -7,7 +7,7 @@
 <div class="container background-inner" style="min-height: 0;">
 
 <!--Navbar-->
-<nav class="navbar navbar-expand-lg navbar-light custom-navbar sticky-top">
+<nav class="navbar navbar-expand-xl navbar-light custom-navbar sticky-top">
 
 <!--BurgerMenuIcon-->
     <button style="border: 0; outline: 0;" class="navbar-toggler" type="button" (click)="NavToggle()">
@@ -62,7 +62,7 @@
 <!--Content Window for router-outlet & alert-->
     <mat-sidenav-content class="sidenav-content" id="contentWindow">
 
-    <div class="container background-inner" (swiperight)="openNav()">
+    <div class="container background-inner" id="innerContent" (swiperight)="openNav()">
         
         <app-alert></app-alert>
         <router-outlet></router-outlet>

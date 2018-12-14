@@ -30,6 +30,30 @@ export class AppComponent {
     this.oAuthService.loadDiscoveryDocumentAndLogin();
   }
 
+/* Sidenav responsive */
+
+  NavToggle(){
+    if (/Mobi/.test(navigator.userAgent)) {
+      if(this.sidenav.opened){
+        this.sidenav.close();
+      } else {
+        this.sidenav.open();
+      } 
+    }
+  }
+
+  openNav(){
+    if (window.innerWidth < 1200) {
+        this.sidenav.open();
+    }
+  }
+
+  closeNav(){
+    if (window.innerWidth < 1200) {
+        this.sidenav.close();
+    }
+  }
+
   onNavOpen(){
     if (/Mobi/.test(navigator.userAgent)) {
     $("body").css("overflow","hidden");
@@ -108,5 +132,7 @@ export const authConfig: AuthConfig = {
   // set the scope for the permissions the client should request
   // The first three are defined by OIDC. The 4th is a usecase-specific one
   scope: 'openid profile email',
-  oidc: true
+  oidc: true,
+
+  //requireHttps: false,
 };
