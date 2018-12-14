@@ -45,9 +45,7 @@ dependencies {
 			[group: 'org.springframework.boot', name: 'spring-boot-starter-security'],
 			[group: 'org.springframework.boot', name: 'spring-boot-starter-mail']
 	)
-	compile(
-			[group: 'org.keycloak', name: 'keycloak-spring-boot-starter']
-	)
+	compile(group: 'org.keycloak', name: 'keycloak-spring-boot-starter')
 	compile(group: 'org.springframework.ldap', name: 'spring-ldap-core')
 	compile(group: 'mysql', name: 'mysql-connector-java')
 
