@@ -5,16 +5,16 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * {@link AuthenticationInfo} implementation that returns a the {@link Authentication#getPrincipal() principal}
+ * {@link AuthenticationInfoRetriever} implementation that returns a the {@link Authentication#getPrincipal() principal}
  * of the {@link Authentication} instance of the current {@link SecurityContext} in case it is a {@link String}.
  *
  * <p>
- *     Auto-configured when no other {@link AuthenticationInfo} bean is supplied.
+ *     Auto-configured when no other {@link AuthenticationInfoRetriever} bean is supplied.
  * </p>
  *
- * @see AuthenticationInfo
+ * @see AuthenticationInfoRetriever
  */
-public class DefaultAuthenticationInfo implements AuthenticationInfo {
+public class DefaultAuthenticationInfoRetriever implements AuthenticationInfoRetriever {
 
     /**
      *

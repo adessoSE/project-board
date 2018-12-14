@@ -1,7 +1,7 @@
 package de.adesso.projectboard.ldap.user;
 
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
-import de.adesso.projectboard.base.security.AuthenticationInfo;
+import de.adesso.projectboard.base.security.AuthenticationInfoRetriever;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
@@ -13,22 +13,22 @@ import de.adesso.projectboard.ldap.service.util.data.StringStructure;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.springframework.data.domain.Sort;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class LdapUserServiceTest {
+
+    private final String USER_ID = "user";
 
     @Mock
     UserRepository userRepo;
@@ -37,342 +37,557 @@ public class LdapUserServiceTest {
     UserDataRepository userDataRepo;
 
     @Mock
-    OrganizationStructureRepository orgStructRepo;
+    OrganizationStructureRepository structureRepo;
 
     @Mock
     LdapService ldapService;
 
     @Mock
-    AuthenticationInfo authInfo;
+    AuthenticationInfoRetriever authInfoRetriever;
 
-    @InjectMocks
+    @Captor
+    ArgumentCaptor<List<User>> userListCaptor;
+
     LdapUserService ldapUserService;
-
-    @Mock
-    User user;
-
-    @Mock
-    OrganizationStructure orgStruct;
-
-    @Mock
-    UserData userData;
 
     @Before
     public void setUp() {
-        // set up save methods of every repo to return the passed instance
-        when(userRepo.save(any(User.class))).thenAnswer((Answer<User>) invocation -> {
-            Object[] args = invocation.getArguments();
-
-            return (User) args[0];
-        });
-        when(userDataRepo.save(any(UserData.class))).thenAnswer((Answer<UserData>) invocation -> {
-            Object[] args = invocation.getArguments();
-
-            return (UserData) args[0];
-        });
-        when(orgStructRepo.save(any(OrganizationStructure.class))).thenAnswer((Answer<OrganizationStructure>) invocation -> {
-           Object[] args = invocation.getArguments();
-
-           return (OrganizationStructure) args[0];
-        });
-
-        // set up user repo mock to "contain" the mock user
-        when(userRepo.findById("user")).thenReturn(Optional.of(user));
-        when(userRepo.existsById("user")).thenReturn(true);
-
-        // set up mock objects
-        when(user.getId()).thenReturn("user");
+        this.ldapUserService = new LdapUserService(userRepo, userDataRepo, ldapService, structureRepo, authInfoRetriever);
     }
 
     @Test
-    public void testGetAuthenticatedUser() {
-        // set up mock, repo mocks already set up in setUp method
-        when(authInfo.getUserId()).thenReturn("user");
+    public void getAuthenticatedUserReturnsUserWhenUserExists() {
+        // given
+        User expectedUser = new User(USER_ID);
 
-        User returnedUser = ldapUserService.getAuthenticatedUser();
+        given(authInfoRetriever.getUserId()).willReturn(USER_ID);
+        given(userRepo.findById(USER_ID)).willReturn(Optional.of(expectedUser));
 
-        assertEquals(user, returnedUser);
+        // when
+        User actualUser = ldapUserService.getAuthenticatedUser();
+
+        // then
+        assertThat(actualUser).isEqualTo(expectedUser);
     }
 
     @Test
-    public void testGetAuthenticatedUserId() {
-        // set up mock
-        when(authInfo.getUserId()).thenReturn("user-id");
+    public void getAuthenticatedUserThrowsExceptionWhenUserDoesNotExist() {
+        // given
+        given(authInfoRetriever.getUserId()).willReturn(USER_ID);
+        given(userRepo.findById(USER_ID)).willReturn(Optional.empty());
 
-        assertEquals("user-id", ldapUserService.getAuthenticatedUserId());
+        // when
+        assertThatThrownBy(() -> ldapUserService.getAuthenticatedUser())
+                .isInstanceOf(UserNotFoundException.class);
     }
 
     @Test
-    public void testUserExists_ExistsInRepo() {
-        // mock already set up in setUp method
+    public void getAuthenticatedUserIdReturnsExpectedId() {
+        // given
+        given(authInfoRetriever.getUserId()).willReturn(USER_ID);
 
-        assertTrue(ldapUserService.userExists("user"));
+        // when
+        String actualUserId = ldapUserService.getAuthenticatedUserId();
+
+        // then
+        assertThat(actualUserId).isEqualTo(USER_ID);
     }
 
     @Test
-    public void testUserExists_DoesNotExistInRepo() {
-        // set up service mock
-        when(ldapService.userExists("not-in-repo")).thenReturn(true);
+    public void userExistsReturnsTrueWhenUserExistsInRepo() {
+        // given
+        given(userRepo.existsById(USER_ID)).willReturn(true);
 
-        assertTrue(ldapUserService.userExists("not-in-repo"));
+        // when
+        boolean actualExists = ldapUserService.userExists(USER_ID);
+
+        // then
+        assertThat(actualExists).isTrue();
     }
 
     @Test
-    public void testUserExist_DoesNotExist() {
-        assertFalse(ldapUserService.userExists("non-existent-user"));
+    public void userExistsReturnsFalseWhenUserDoesNotExistInRepo() {
+        // given
+        given(userRepo.existsById(USER_ID)).willReturn(false);
+
+        // when
+        boolean actualExists = ldapUserService.userExists(USER_ID);
+
+        // then
+        assertThat(actualExists).isFalse();
     }
 
     @Test
-    public void testUserIsManager_Cached_IsManager() {
-        // set up repo mock
-        when(orgStructRepo.existsByUser(user)).thenReturn(true);
-        when(orgStructRepo.existsByUserAndUserIsManager(user, true)).thenReturn(true);
+    public void userIsManagerReturnsTrueWhenManagerFieldOfExistingStructureForUserIsTrue() {
+        // given
+        User user = new User(USER_ID);
 
-        assertTrue(ldapUserService.userIsManager(user));
-        verify(ldapService, never()).isManager("user");
+        given(structureRepo.existsByUser(user)).willReturn(true);
+        given(structureRepo.existsByUserAndUserIsManager(user, true)).willReturn(true);
+
+        // when
+        boolean actualIsManager = ldapUserService.userIsManager(user);
+
+        // then
+        assertThat(actualIsManager).isTrue();
     }
 
     @Test
-    public void testUserIsManager_Cached_NoManager() {
-        // set up repo mock
-        when(orgStructRepo.existsByUser(user)).thenReturn(true);
-        when(orgStructRepo.existsByUserAndUserIsManager(user, true)).thenReturn(false);
+    public void userIsManagerReturnsFalseWhenManagerFieldOfExistingStructureForUserIsFalse() {
+        // given
+        User user = new User(USER_ID);
 
-        assertFalse(ldapUserService.userIsManager(user));
-        verify(ldapService, never()).isManager("user");
+        given(structureRepo.existsByUser(user)).willReturn(true);
+        given(structureRepo.existsByUserAndUserIsManager(user, true)).willReturn(false);
+
+        // when
+        boolean actualIsManager = ldapUserService.userIsManager(user);
+
+        // then
+        assertThat(actualIsManager).isFalse();
     }
 
     @Test
-    public void testUserIsManager_NotCached_IsManager() {
-        // set up service mock
-        when(ldapService.isManager("user")).thenReturn(true);
+    public void userIsManagerReturnsTrueWhenLdapServiceReturnsTrue() {
+        // given
+        User user = new User(USER_ID);
 
-        assertTrue(ldapUserService.userIsManager(user));
-        verify(ldapService).isManager("user");
+        given(structureRepo.existsByUser(user)).willReturn(false);
+        given(ldapService.isManager(USER_ID)).willReturn(true);
+
+        // when
+        boolean actualIsManager = ldapUserService.userIsManager(user);
+
+        // then
+        assertThat(actualIsManager).isTrue();
     }
 
     @Test
-    public void testUserIsManager_NotCached_NoManager() {
-        // set up service mocks
-        when(ldapService.isManager("user")).thenReturn(false);
+    public void userIsManagerReturnsFalseWhenLdapServiceReturnsFalse() {
+        // given
+        User user = new User(USER_ID);
 
-        assertFalse(ldapUserService.userIsManager(user));
-        verify(ldapService).isManager("user");
+        given(structureRepo.existsByUser(user)).willReturn(false);
+        given(ldapService.isManager(USER_ID)).willReturn(false);
+
+        // when
+        boolean actualIsManager = ldapUserService.userIsManager(user);
+
+        // then
+        assertThat(actualIsManager).isFalse();
     }
 
     @Test
-    public void testGetStructureForUser_Cached() {
-        // set up repo mock
-        when(orgStructRepo.findByUser(user)).thenReturn(Optional.of(orgStruct));
+    public void getStructureForUserReturnsPersistedInstanceWhenPresent() {
+        // given
+        User user = new User(USER_ID);
+        User manager = new User("manager");
 
-        OrganizationStructure returnedStruct = ldapUserService.getStructureForUser(user);
+        OrganizationStructure expectedStructure = new OrganizationStructure(user, manager, Collections.emptySet(), false);
 
-        assertEquals(orgStruct, returnedStruct);
-        verify(ldapService, never()).getIdStructure(user);
+        given(structureRepo.findByUser(user)).willReturn(Optional.of(expectedStructure));
+
+        // when
+        OrganizationStructure actualStructure = ldapUserService.getStructureForUser(user);
+
+        // then
+        assertThat(actualStructure).isEqualTo(expectedStructure);
     }
 
     @Test
-    public void testGetStructureForUser_NotCached() {
-        // create new mock for ldap service
-        StringStructure idStructure = mock(StringStructure.class);
-        when(idStructure.getManager()).thenReturn("manager");
-        when(idStructure.getStaffMembers()).thenReturn(Collections.singleton("staff"));
+    public void getStructureForUserCreatesNewStructureWhenNoneIsPresent() {
+        // given
+        String managerId = "manager";
+        String staffMemberId = "staff";
 
-        // create new mock users
-        User staffMember = mock(User.class);
-        User manager = mock(User.class);
+        User user = new User(USER_ID);
+        User managerUser = new User(managerId);
+        User staffUser = new User(staffMemberId);
 
-        // set up repo/service mock
-        when(orgStructRepo.findByUser(user)).thenReturn(Optional.empty());
-        when(ldapService.getIdStructure(user)).thenReturn(idStructure);
-        when(userRepo.findById("manager")).thenReturn(Optional.of(manager));
-        when(userRepo.findById("staff")).thenReturn(Optional.of(staffMember));
+        OrganizationStructure expectedStructure = new OrganizationStructure(user, managerUser, Collections.singleton(staffUser), true);
 
-        OrganizationStructure structureForUser = ldapUserService.getStructureForUser(user);
+        StringStructure idStructure = new StringStructure(user, USER_ID, managerId, Collections.singleton(staffMemberId));
 
-        assertEquals(user, structureForUser.getUser());
-        assertEquals(manager, structureForUser.getManager());
-        assertEquals(1, structureForUser.getStaffMembers().size());
-        assertTrue(structureForUser.getStaffMembers().contains(staffMember));
-        assertTrue(structureForUser.isUserIsManager());
+        given(structureRepo.findByUser(user)).willReturn(Optional.empty());
+        given(ldapService.userExists(USER_ID)).willReturn(true);
+        given(ldapService.getIdStructure(user)).willReturn(idStructure);
 
-        verify(orgStructRepo).save(any());
+        given(userRepo.findById(managerId)).willReturn(Optional.of(managerUser));
+        given(userRepo.findById(staffMemberId)).willReturn(Optional.of(staffUser));
+
+        given(structureRepo.save(expectedStructure)).willReturn(expectedStructure);
+
+        // when
+        OrganizationStructure actualStructure = ldapUserService.getStructureForUser(user);
+
+        // then
+        assertThat(actualStructure).isEqualTo(expectedStructure);
+
+        verify(structureRepo).save(actualStructure);
     }
 
     @Test
-    public void testGetUserData_Cached() {
-        // set up repo mock
-        when(userDataRepo.findByUser(user)).thenReturn(Optional.of(userData));
+    public void getStructureForUserCreatesNewStructureAndNewUsersWhenNoneIsPresent() {
+        // given
+        String managerId = "manager";
+        String staffMemberId = "staff";
 
-        UserData returnedData = ldapUserService.getUserData(user);
+        User user = new User(USER_ID);
+        User manager = new User(managerId);
+        User staffMember = new User(staffMemberId);
 
-        assertEquals(userData, returnedData);
-        verify(ldapService, never()).getUserData(any());
+        OrganizationStructure expectedStructure = new OrganizationStructure(user, manager, Collections.singleton(staffMember), true);
+
+        StringStructure idStructure = new StringStructure(user, USER_ID, managerId, Collections.singleton(staffMemberId));
+
+        given(ldapService.userExists(USER_ID)).willReturn(true);
+        given(ldapService.getIdStructure(user)).willReturn(idStructure);
+
+        given(userRepo.findById(managerId)).willReturn(Optional.empty());
+        given(userRepo.findById(staffMemberId)).willReturn(Optional.empty());
+
+        given(userRepo.save(manager)).willReturn(manager);
+        given(userRepo.save(staffMember)).willReturn(staffMember);
+
+        given(structureRepo.findByUser(user)).willReturn(Optional.empty());
+        given(structureRepo.save(expectedStructure)).willReturn(expectedStructure);
+
+        // when
+        OrganizationStructure actualStructure = ldapUserService.getStructureForUser(user);
+
+        // then
+        assertThat(actualStructure).isEqualTo(expectedStructure);
+
+        verify(structureRepo).save(actualStructure);
+        verify(userRepo).save(manager);
+        verify(userRepo).save(staffMember);
     }
 
     @Test
-    public void testGetUserData_NotCached() {
-        // set up repo/service mock
-        when(userDataRepo.findByUser(user)).thenReturn(Optional.empty());
-        when(ldapService.getUserData(anyList())).thenReturn(Collections.singletonList(userData));
+    public void getStructureForUserCorrectlySetsIsManagerWhenCreatingNewInstance() {
+        // given
+        String managerId = "manager";
 
-        UserData returnedData = ldapUserService.getUserData(user);
+        User user = new User(USER_ID);
+        User manager = new User(managerId);
 
-        assertEquals(userData, returnedData);
-        verify(userDataRepo).save(any());
+        OrganizationStructure expectedStructure = new OrganizationStructure(user, manager, Collections.emptySet(), false);
+
+        StringStructure idStructure = new StringStructure(user, USER_ID, managerId, Collections.emptySet());
+
+        given(ldapService.userExists(USER_ID)).willReturn(true);
+        given(ldapService.getIdStructure(user)).willReturn(idStructure);
+
+        given(userRepo.findById(managerId)).willReturn(Optional.empty());
+
+        given(userRepo.save(manager)).willReturn(manager);
+
+        given(structureRepo.findByUser(user)).willReturn(Optional.empty());
+        given(structureRepo.save(expectedStructure)).willReturn(expectedStructure);
+
+        // when
+        OrganizationStructure actualStructure = ldapUserService.getStructureForUser(user);
+
+        // then
+        assertThat(actualStructure).isEqualTo(expectedStructure);
+
+        verify(structureRepo).save(actualStructure);
+        verify(userRepo).save(manager);
     }
 
     @Test
-    public void testGetUserById_ExistsInRepo() {
-        // mocks already set up in setUp method
+    public void getStructureForUserThrowsExceptionWhenUserDoesNotExistInAD() {
+        // given
+        User user = new User(USER_ID);
 
-        User returnedUser = ldapUserService.getUserById("user");
+        given(structureRepo.findByUser(user)).willReturn(Optional.empty());
+        given(ldapService.userExists(USER_ID)).willReturn(false);
 
-        assertEquals(user, returnedUser);
-        verify(ldapService, never()).userExists(anyString());
+        // when
+        assertThatThrownBy(() -> ldapUserService.getStructureForUser(user))
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessage("No user with the given ID exists in the AD!");
     }
 
     @Test
-    public void testGetUserById_DoesNotExistInRepo() {
-        // set up service mock
-        when(ldapService.userExists("new-user")).thenReturn(true);
+    public void getUserDataCreatesNewInstanceWhenNoneIsPresent() {
+        // given
+        User user = new User(USER_ID);
+        UserData expectedUserData = new UserData(user, "First", "Last", "mail", "lob");
 
-        User returnedUser = ldapUserService.getUserById("new-user");
+        given(ldapService.getUserData(Collections.singletonList(user))).willReturn(Collections.singletonList(expectedUserData));
+        given(ldapService.userExists(USER_ID)).willReturn(true);
 
-        assertEquals("new-user", returnedUser.getId());
-        verify(userRepo).save(any());
-    }
+        given(userDataRepo.findByUser(user)).willReturn(Optional.empty());
+        given(userDataRepo.save(expectedUserData)).willReturn(expectedUserData);
 
-    @Test(expected = UserNotFoundException.class)
-    public void testGetUserById_DoesNotExist() {
-        ldapUserService.getUserById("non-existent-user");
-    }
+        // when
+        UserData actualUserData = ldapUserService.getUserData(user);
 
-    @Test
-    public void testUserHasStaffMember_Contains() {
-        // create new entity mock
-        User staffMember = mock(User.class);
+        // then
+        assertThat(actualUserData).isEqualTo(expectedUserData);
 
-        // set up repo/entity mock
-        when(orgStructRepo.findByUser(user)).thenReturn(Optional.of(orgStruct));
-        when(orgStruct.getStaffMembers()).thenReturn(Collections.singleton(staffMember));
-
-        assertTrue(ldapUserService.userHasStaffMember(user, staffMember));
+        verify(userDataRepo).save(expectedUserData);
     }
 
     @Test
-    public void testUserHasStaffMember_DoesNotContain() {
-        // create new entity mock
-        User staffMember = mock(User.class);
+    public void getUserDataReturnsPersistedInstanceWhenPresent() {
+        // given
+        User user = new User(USER_ID);
+        UserData expectedUserData = new UserData(user, "First", "Last", "mail", "lob");
 
-        // set up repo/entity mock
-        when(orgStructRepo.findByUser(user)).thenReturn(Optional.of(orgStruct));
-        when(orgStruct.getStaffMembers()).thenReturn(Collections.emptySet());
+        given(userDataRepo.findByUser(user)).willReturn(Optional.of(expectedUserData));
 
-        assertFalse(ldapUserService.userHasStaffMember(user, staffMember));
+        // when
+        UserData actualUserData = ldapUserService.getUserData(user);
+
+        // then
+        assertThat(actualUserData).isEqualTo(expectedUserData);
     }
 
     @Test
-    public void testGetManagerOfUser_Cached() {
-        // create new entity mock
-        User manager = mock(User.class);
+    public void getUserDataThrowsExceptionWhenUserDoesNotExistInAD() {
+        // given
+        User user = new User(USER_ID);
 
-        // set up repo/entity mock
-        when(orgStructRepo.findByUser(user)).thenReturn(Optional.of(orgStruct));
-        when(orgStruct.getManager()).thenReturn(manager);
+        given(userDataRepo.findByUser(user)).willReturn(Optional.empty());
+        given(ldapService.userExists(USER_ID)).willReturn(false);
 
-        User returnedManager = ldapUserService.getManagerOfUser(user);
-
-        assertEquals(manager, returnedManager);
-        verify(ldapService, never()).getManagerId(user);
+        // when
+        assertThatThrownBy(() -> ldapUserService.getUserData(user))
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessage("No user with the given ID exists in the AD!");
     }
 
     @Test
-    public void testGetManagerOfUser_NotCached_ManagerExists() {
-        // create new entity mock
-        User manager = mock(User.class);
+    public void getUserByIdReturnsUserWhenUserExists() {
+        // given
+        User user = new User(USER_ID);
 
-        // set up repo/service mock
-        when(orgStructRepo.findByUser(user)).thenReturn(Optional.empty());
-        when(ldapService.getManagerId(user)).thenReturn("manager");
-        when(userRepo.findById("manager")).thenReturn(Optional.of(manager));
+        given(userRepo.findById(USER_ID)).willReturn(Optional.of(user));
 
-        User returnedManager = ldapUserService.getManagerOfUser(user);
+        // when
+        User actualUser = ldapUserService.getUserById(USER_ID);
 
-        assertEquals(manager, returnedManager);
-        verify(userRepo, never()).save(any());
+        // then
+        assertThat(actualUser).isEqualTo(user);
     }
 
     @Test
-    public void testGetManagerOfUser_NotCached_MangerDoesNotExist() {
-        // set up repo/service mock
-        when(orgStructRepo.findByUser(user)).thenReturn(Optional.empty());
-        when(ldapService.getManagerId(user)).thenReturn("manager");
-        when(ldapService.userExists("manager")).thenReturn(true);
-        when(userRepo.findById("manager")).thenReturn(Optional.empty());
+    public void getUserByIdCreatesNewInstanceWhenNoneIsPresentAndUserExistsInAD() {
+        // given
+        User expectedUser = new User(USER_ID);
 
-        User returnedManager = ldapUserService.getManagerOfUser(user);
+        given(userRepo.findById(USER_ID)).willReturn(Optional.empty());
+        given(ldapService.userExists(USER_ID)).willReturn(true);
 
-        assertEquals("manager", returnedManager.getId());
-        verify(userRepo).save(any());
+        given(userRepo.save(expectedUser)).willReturn(expectedUser);
+
+        // when
+        User actualUser = ldapUserService.getUserById(USER_ID);
+
+        // then
+        assertThat(actualUser).isEqualTo(expectedUser);
     }
 
     @Test
-    public void testGetStaffMemberDataOfUser() {
-        // set up new entity mocks
-        User firstStaffMember = mock(User.class);
-        User secondStaffMember = mock(User.class);
-        UserData secondUserData = mock(UserData.class);
+    public void getUserByIdThrowsExceptionWhenNoneIsPresentAndUserDoesNotExistInAD() {
+        // given
+        given(userRepo.findById(USER_ID)).willReturn(Optional.empty());
+        given(ldapService.userExists(USER_ID)).willReturn(false);
 
-        Sort sorting = mock(Sort.class);
-
-        // set up repo/service mock
-        when(orgStructRepo.findByUser(user)).thenReturn(Optional.of(orgStruct));
-        when(orgStruct.getStaffMembers()).thenReturn(new HashSet<>(Arrays.asList(firstStaffMember, secondStaffMember)));
-        when(userDataRepo.existsByUser(firstStaffMember)).thenReturn(true);
-        when(ldapService.getUserData(anyList())).thenReturn(Collections.singletonList(secondUserData));
-
-        ldapUserService.getStaffMemberDataOfUser(user, sorting);
-
-        verify(userDataRepo).saveAll(anyList());
+        // when
+        assertThatThrownBy(() -> ldapUserService.getUserById(USER_ID))
+                .isInstanceOf(UserNotFoundException.class);
     }
 
     @Test
-    public void testSave() {
-        User returnedUser = ldapUserService.save(user);
+    public void userHasStaffMemberReturnsTrueWhenExistsByUserAndStaffMemberContaining() {
+        // given
+        String managerId = "manager";
 
-        assertEquals(user, returnedUser);
+        User user = new User(USER_ID);
+        User manager = new User(managerId);
+
+        given(structureRepo.existsByUserAndStaffMembersContaining(user, manager)).willReturn(true);
+
+        // when
+        boolean actualUserHasStaffMember = ldapUserService.userHasStaffMember(user, manager);
+
+        // then
+        assertThat(actualUserHasStaffMember).isTrue();
+    }
+
+    @Test
+    public void userHasStaffMemberReturnsFalseWhenNotExistsByUserAndStaffMemberContaining() {
+        // given
+        String managerId = "manager";
+
+        User user = new User(USER_ID);
+        User manager = new User(managerId);
+
+        given(structureRepo.existsByUserAndStaffMembersContaining(user, manager)).willReturn(false);
+
+        // when
+        boolean actualUserHasStaffMember = ldapUserService.userHasStaffMember(user, manager);
+
+        // then
+        assertThat(actualUserHasStaffMember).isFalse();
+    }
+
+    @Test
+    public void getManagerOfUserReturnsManagerOfPersistedInstanceWhenPresent() {
+        // given
+        String managerId = "manager";
+
+        User user = new User(USER_ID);
+        User expectedManager = new User(managerId);
+
+        OrganizationStructure structure = new OrganizationStructure(user, expectedManager, Collections.emptySet(), false);
+
+        given(structureRepo.findByUser(user)).willReturn(Optional.of(structure));
+
+        // when
+        User actualManager = ldapUserService.getManagerOfUser(user);
+
+        // then
+        assertThat(actualManager).isEqualTo(expectedManager);
+    }
+
+    @Test
+    public void getManagerOfUserReturnsManagerWhenNoneIsPresent() {
+        // given
+        String managerId = "manager";
+        User user = new User(USER_ID);
+        User expectedManager = new User(managerId);
+
+        given(structureRepo.findByUser(user)).willReturn(Optional.empty());
+
+        given(ldapService.getManagerId(user)).willReturn(managerId);
+        given(ldapService.userExists(USER_ID)).willReturn(true);
+
+        given(userRepo.findById(managerId)).willReturn(Optional.of(expectedManager));
+
+        // when
+        User actualManager = ldapUserService.getManagerOfUser(user);
+
+        // then
+        assertThat(actualManager).isEqualTo(expectedManager);
+    }
+
+    @Test
+    public void getStaffMemberDataOfUser() {
+        // given
+        Sort sort = Sort.unsorted();
+
+        String managerId = "manager";
+        String staffMemberWithDataId = "staff-1";
+        String staffMemberWithoutDataId = "staff-2";
+
+        User user = new User(USER_ID);
+        User manager = new User(managerId);
+        User staffMemberWithData = new User(staffMemberWithDataId);
+        User staffMemberWithoutData = new User(staffMemberWithoutDataId);
+
+        Set<User> staffMembers = new HashSet<>(Arrays.asList(staffMemberWithData, staffMemberWithoutData));
+        OrganizationStructure structure = new OrganizationStructure(user, manager, staffMembers, true);
+
+        UserData staffMemberWithDataData = new UserData(staffMemberWithData, "First", "Last", "email", "lob");
+        UserData staffMemberWithoutDataData = new UserData(staffMemberWithoutData, "First", "Last", "email", "lob");
+
+        given(structureRepo.findByUser(user)).willReturn(Optional.of(structure));
+
+        given(userDataRepo.existsByUser(staffMemberWithData)).willReturn(true);
+        given(userDataRepo.existsByUser(staffMemberWithoutData)).willReturn(false);
+
+        given(userDataRepo.findByUserIn(staffMembers, sort))
+                .willReturn(Arrays.asList(staffMemberWithDataData, staffMemberWithoutDataData));
+
+        given(ldapService.getUserData(Collections.singletonList(staffMemberWithoutData)))
+                .willReturn(Collections.singletonList(staffMemberWithoutDataData));
+
+        // when
+        List<UserData> actualStaffData = ldapUserService.getStaffMemberDataOfUser(user, sort);
+
+        // then
+        assertThat(actualStaffData).containsExactlyInAnyOrder(staffMemberWithDataData, staffMemberWithoutDataData);
+
+        verify(ldapService).getUserData(userListCaptor.capture());
+        assertThat(userListCaptor.getValue()).containsExactlyInAnyOrder(staffMemberWithoutData);
+
+        verify(userDataRepo).saveAll(Collections.singletonList(staffMemberWithoutDataData));
+    }
+
+    @Test
+    public void save() {
+        // given
+        User user = new User(USER_ID);
+
+        given(userRepo.save(user)).willReturn(user);
+
+        // when
+        User actualUser = ldapUserService.save(user);
+
+        // then
+        assertThat(actualUser).isEqualTo(user);
+
         verify(userRepo).save(user);
     }
 
     @Test
-    public void testUsersAreManagers() {
-        // create new entity mocks
-        User cachedManager = mock(User.class);
-        User nonCachedManager = mock(User.class);
-        User nonCachedUser = mock(User.class);
-        OrganizationStructure cachedManagerStructure = mock(OrganizationStructure.class);
+    public void usersAreManagers() {
+        // given
+        String managerId = "manager";
+        String userWithExistingStructId = "user-1";
+        String userWithoutExistingStructId = "user-2";
 
-        // set up new entity mocks
-        when(nonCachedManager.getId()).thenReturn("non-cached-manager");
-        when(nonCachedUser.getId()).thenReturn("non-cached-user");
+        User manager = new User(managerId);
+        User userWithExistingStruct = new User(userWithExistingStructId);
+        User userWithoutExistingStruct = new User(userWithoutExistingStructId);
 
-        when(cachedManagerStructure.isUserIsManager()).thenReturn(true);
-        when(cachedManagerStructure.getUser()).thenReturn(cachedManager);
+        OrganizationStructure structureForUserWithExistingStruct
+                = new OrganizationStructure(userWithExistingStruct, manager, Collections.emptySet(), true);
 
-        // set up service/repo mocks
-        when(orgStructRepo.findAllByUserIn(any())).thenReturn(Arrays.asList(cachedManagerStructure));
-        when(ldapService.isManager("non-cached-manager")).thenReturn(true);
-        when(ldapService.isManager("non-cached-user")).thenReturn(false);
+        Set<User> users = new HashSet<>(Arrays.asList(userWithExistingStruct, userWithoutExistingStruct));
 
-        // call tested method
-        Set<User> userSet = Stream.of(cachedManager, nonCachedManager, nonCachedUser).collect(Collectors.toSet());
-        Map<User, Boolean> userManagerMap = ldapUserService.usersAreManagers(userSet);
+        given(structureRepo.findAllByUserIn(users)).willReturn(Collections.singletonList(structureForUserWithExistingStruct));
 
-        assertEquals(3, userManagerMap.entrySet().size());
-        assertTrue(userManagerMap.get(cachedManager));
-        assertTrue(userManagerMap.get(nonCachedManager));
-        assertFalse(userManagerMap.get(nonCachedUser));
+        given(ldapService.isManager(userWithoutExistingStructId)).willReturn(false);
+
+        // when
+        Map<User, Boolean> actualUserManagerMap = ldapUserService.usersAreManagers(users);
+
+        // then
+        assertThat(actualUserManagerMap).containsOnly(entry(userWithExistingStruct, true), entry(userWithoutExistingStruct, false));
+
+        verify(ldapService).isManager(userWithoutExistingStructId);
+    }
+
+    @Test
+    public void validateExistenceReturnsUserWhenUserExistsInAD() {
+        // given
+        User expectedUser = new User(USER_ID);
+
+        given(ldapService.userExists(USER_ID)).willReturn(true);
+
+        // when
+        User actualUser = ldapUserService.validateExistence(expectedUser);
+
+        // then
+        assertThat(actualUser).isEqualTo(expectedUser);
+    }
+
+    @Test
+    public void validateExistenceThrowsExceptionWhenUserDoesNotExistInAD() {
+        // given
+        User user = new User(USER_ID);
+
+        given(ldapService.userExists(USER_ID)).willReturn(false);
+
+        // when
+        assertThatThrownBy(() -> ldapUserService.validateExistence(user))
+                .isInstanceOf(UserNotFoundException.class)
+                .hasMessage("No user with the given ID exists in the AD!");
     }
 
 }

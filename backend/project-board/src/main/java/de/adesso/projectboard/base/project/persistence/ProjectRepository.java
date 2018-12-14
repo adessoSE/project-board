@@ -16,9 +16,28 @@ import java.util.List;
 public interface ProjectRepository extends JpaRepository<Project, String> {
 
     /**
-     * A normal user can see all escalated and open projects only when the user's
-     * LoB is the same as the project's one. Projects where no LoB is
-     * set {@code lob = null} are included as well.
+     * A normal user can see all escalated ({@code status = 'eskaliert'}). Open projects ({@code status = 'open'})
+     * can only be seen when at least one of the following conditions is fulfilled:
+     *
+     * <ul>
+     *     <li>the {@link Project#lob LoB} of the project is set to {@code null} ({@code lob IS NULL})</li>
+     *
+     *     <li>the given {@code lob} is like the {@link Project project's LoB} with wildcards appended
+     *     to the beginning and the end ({@code LOWER(lob) LIKE CONCAT('%', LOWER(project.lob), '%')})</li>
+     * </ul>
+     *
+     * <p/>
+     *
+     * This is necessary because the {@link Project project's LoB} differs from a
+     * {@link de.adesso.projectboard.base.user.persistence.data.UserData#lob user's LoB}
+     * even when they should be equal because they are from the same LoB.
+     * <p/>
+     * Example:
+     * <pre>
+     *     LOB CROSS INDUSTRIES (CI) &ne; LOB Cross Industries
+     *       (User LoB)                      (Project LoB)
+     * </pre>
+     *
      *
      * @param lob
      *          The LoB of the user to get the projects for.
@@ -34,7 +53,7 @@ public interface ProjectRepository extends JpaRepository<Project, String> {
     @Query("SELECT p " +
             "FROM Project AS p " +
             "WHERE (LOWER(p.status) = 'eskaliert') " +
-            "OR (LOWER(p.status) = 'open' AND (LOWER(p.lob) = LOWER(:lob) OR p.lob IS NULL))")
+            "OR (LOWER(p.status) = 'open' AND (p.lob IS NULL OR LOWER(:lob) LIKE CONCAT('%', LOWER(p.lob), '%')))")
     Page<Project> findAllForUserPageable(@Param("lob") String lob, Pageable page);
 
     /**
@@ -57,7 +76,7 @@ public interface ProjectRepository extends JpaRepository<Project, String> {
     }
 
     /**
-     * Managers can see all open and escalated {@link Project}s.
+     * Managers can see all open and escalated projects ({@code status = 'eskaliert' OR status = 'open'}).
      *
      * @param page
      *          The pageable for pagination.
@@ -88,6 +107,17 @@ public interface ProjectRepository extends JpaRepository<Project, String> {
     }
 
     /**
+     * Searches projects for a user from a given {@code lob} with a given {@code keyword}. Searches in
+     * the following fields:
+     * <ul>
+     *     <li>{@link Project#title Title}</li>
+     *     <li>{@link Project#skills Skills}</li>
+     *     <li>{@link Project#job Job}</li>
+     *     <li>{@link Project#description Description}</li>
+     * </ul>
+     *
+     * <b>Note</b>: The same access restrictions as described in {@link #findAllForUser(String, Sort)}
+     * are applied.
      *
      * @param lob
      *          The LoB of the user to get the projects for.
@@ -103,13 +133,15 @@ public interface ProjectRepository extends JpaRepository<Project, String> {
      */
     @Query("SELECT p " +
             "FROM Project AS p " +
-            "WHERE ((LOWER(p.status) = 'eskaliert') OR (LOWER(p.status) = 'open'))" +
+            "WHERE (" +
+                "LOWER(p.status) = 'eskaliert'" +
+                "OR (LOWER(p.status) = 'open' AND (p.lob IS NULL OR LOWER(:lob) LIKE CONCAT('%', LOWER(p.lob), '%')))" +
+            ")" +
             "AND (LOWER(p.title) like LOWER(CONCAT('%', :keyword, '%')) " +
                 "OR LOWER(p.skills) like LOWER(CONCAT('%', :keyword, '%')) " +
                 "OR LOWER(p.job) like LOWER(CONCAT('%', :keyword, '%')) " +
                 "OR LOWER(p.description) like LOWER(CONCAT('%', :keyword, '%'))" +
-            ")" +
-            "AND (LOWER(p.lob) = LOWER(:lob) OR p.lob IS NULL)")
+            ")")
     Page<Project> findAllForUserByKeywordPageable(@Param("lob") String lob, @Param("keyword") String keyword, Pageable page);
 
     /**
@@ -135,6 +167,14 @@ public interface ProjectRepository extends JpaRepository<Project, String> {
     }
 
     /**
+     * Searches projects for a manager with a given {@code keyword}. Searches in
+     * the following fields:
+     * <ul>
+     *     <li>{@link Project#title Title}</li>
+     *     <li>{@link Project#skills Skills}</li>
+     *     <li>{@link Project#job Job}</li>
+     *     <li>{@link Project#description Description}</li>
+     * </ul>
      *
      * @param keyword
      *          The keyword to search for.

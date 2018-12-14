@@ -1,6 +1,7 @@
 package de.adesso.projectboard.reader;
 
 import de.adesso.projectboard.base.project.persistence.Project;
+import de.adesso.projectboard.base.project.persistence.ProjectOrigin;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,9 +22,12 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
@@ -33,6 +37,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @RunWith(SpringRunner.class)
 @RestClientTest(JiraProjectReader.class)
 public class ProjectReaderIntegrationTest {
+
+    private final String REQUEST_PATH = "/test";
 
     @MockBean
     private JiraProjectReaderConfigurationProperties properties;
@@ -45,72 +51,42 @@ public class ProjectReaderIntegrationTest {
 
     @Before
     public void setUp() {
-        given(properties.getRequestUrl()).willReturn("/test");
+        given(properties.getRequestUrl()).willReturn(REQUEST_PATH);
     }
 
     @Test
-    public void testGetProjects_Success() throws Exception {
-        server.expect(requestTo("/test"))
+    public void getProjectsReturnsProjectsWhenRequestIsSuccessful() throws Exception {
+        // given
+        server.expect(requestTo(REQUEST_PATH))
                 .andRespond(withSuccess(getJiraJsonResponse(), MediaType.APPLICATION_JSON));
 
-        List<? extends Project> projectList = reader.getInitialProjects();
+        LocalDateTime expectedCreated = LocalDateTime.of(2018, 1, 1, 13, 37);
+        LocalDateTime expectedUpdated = LocalDateTime.of(2018, 1, 2, 13, 37);
 
-        assertEquals(2, projectList.size());
+        Project expectedFirstProject = new Project("Testkey 1", "Teststatus 1", "Testissuetype 1", "Testsummary 1", Arrays.asList("Testlabel 1", "Testlabel 2"),
+                "Testjob 1", "Testskills 1", "Testdescription 1", "Testlob 1", "Testcustomer 1", "Testlocation 1", "01.01.2018", "01.02.2018", "Testeffort 1", expectedCreated, expectedUpdated,
+                "Testfreelancer 1", "Testelongation 1", "Testother 1",  ProjectOrigin.JIRA);
 
-        Project firstProject = projectList.get(0);
+        Project expectedSecondProject = new Project("Testkey 2", "Teststatus 2", "Testissuetype 2", "Testsummary 2", Collections.emptyList(),
+                "Testjob 2", "Testskills 2", "Testdescription 2", "Testlob 2", "Testcustomer 2", "Testlocation 2", "02.01.2018", "02.02.2018", "Testeffort 2", expectedCreated, expectedUpdated,
+                "Testfreelancer 2", "Testelongation 2", "Testother 2",  ProjectOrigin.JIRA);
 
-        assertEquals("Teststatus 1", firstProject.getStatus());
-        assertEquals("Testissuetype 1", firstProject.getIssuetype());
-        assertEquals("Testkey 1", firstProject.getId());
-        assertEquals("Testsummary 1", firstProject.getTitle());
-        assertEquals(2, firstProject.getLabels().size());
-        assertEquals("Testlabel 1", firstProject.getLabels().get(0));
-        assertEquals("Testlabel 2", firstProject.getLabels().get(1));
-        assertEquals("Testjob 1", firstProject.getJob());
-        assertEquals("Testskills 1", firstProject.getSkills());
-        assertEquals("Testdescription 1", firstProject.getDescription());
-        assertEquals("Testlob 1", firstProject.getLob());
-        assertEquals("Testcustomer 1", firstProject.getCustomer());
-        assertEquals("Testlocation 1", firstProject.getLocation());
-        assertEquals("01.01.2018", firstProject.getOperationStart());
-        assertEquals("01.02.2018", firstProject.getOperationEnd());
-        assertEquals("Testeffort 1", firstProject.getEffort());
-        assertEquals(LocalDateTime.of(2018, 1, 1, 13, 37, 0), firstProject.getCreated());
-        assertEquals(LocalDateTime.of(2018, 1, 2, 13, 37, 0), firstProject.getUpdated());
-        assertEquals("Testfreelancer 1", firstProject.getFreelancer());
-        assertEquals("Testelongation 1", firstProject.getElongation());
-        assertEquals("Testother 1", firstProject.getOther());
+        // when
+        List<Project> projectList = reader.getInitialProjects();
 
-
-        Project secondProject = projectList.get(1);
-
-        assertEquals("Teststatus 2", secondProject.getStatus());
-        assertEquals("Testissuetype 2", secondProject.getIssuetype());
-        assertEquals("Testkey 2", secondProject.getId());
-        assertEquals("Testsummary 2", secondProject.getTitle());
-        assertEquals(0, secondProject.getLabels().size());
-        assertEquals("Testjob 2", secondProject.getJob());
-        assertEquals("Testskills 2", secondProject.getSkills());
-        assertEquals("Testdescription 2", secondProject.getDescription());
-        assertEquals("Testlob 2", secondProject.getLob());
-        assertEquals("Testcustomer 2", secondProject.getCustomer());
-        assertEquals("Testlocation 2", secondProject.getLocation());
-        assertEquals("02.01.2018", secondProject.getOperationStart());
-        assertEquals("02.02.2018", secondProject.getOperationEnd());
-        assertEquals("Testeffort 2", secondProject.getEffort());
-        assertEquals(LocalDateTime.of(2018, 1, 1, 13, 37, 0), secondProject.getCreated());
-        assertEquals(LocalDateTime.of(2018, 1, 2, 13, 37, 0), secondProject.getUpdated());
-        assertEquals("Testfreelancer 2", secondProject.getFreelancer());
-        assertEquals("Testelongation 2", secondProject.getElongation());
-        assertEquals("Testother 2", secondProject.getOther());
+        // then
+        assertThat(projectList).containsExactly(expectedFirstProject, expectedSecondProject);
     }
 
-    @Test(expected = RestClientException.class)
-    public void testGetProjects_5xxStatus() throws Exception {
+    @Test
+    public void getProjectsThrowsExceptionWhenRequestNotSuccessful() {
+        // given
         server.expect(requestTo("/test"))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        reader.getInitialProjects();
+        // when
+        assertThatThrownBy(() -> reader.getInitialProjects())
+                .isInstanceOf(RestClientException.class);
     }
 
     private String getJiraJsonResponse() throws IOException, URISyntaxException {

@@ -63,7 +63,7 @@ public class JiraProjectReader implements ProjectReader {
      *          When a error occurs.
      */
     @Override
-    public List<? extends Project> getAllProjectsSince(LocalDateTime dateTime) throws Exception {
+    public List<Project> getAllProjectsSince(LocalDateTime dateTime) throws Exception {
         return getProjectsByQuery(getJqlUpdateQueryString(dateTime));
     }
 
@@ -76,7 +76,7 @@ public class JiraProjectReader implements ProjectReader {
      *          When a error occurs.
      */
     @Override
-    public List<? extends Project> getInitialProjects() throws Exception {
+    public List<Project> getInitialProjects() throws Exception {
         return getProjectsByQuery(getJqlInitialQueryString());
     }
 

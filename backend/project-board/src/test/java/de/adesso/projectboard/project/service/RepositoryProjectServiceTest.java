@@ -295,6 +295,7 @@ public class RepositoryProjectServiceTest {
         verify(userService, atLeastOnce()).save(userMock);
 
         verify(projectRepo).delete(projectMock);
+        verify(applicationRepo).deleteAll(Collections.singletonList(applicationMock));
     }
 
     @Test

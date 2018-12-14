@@ -1,5 +1,6 @@
 package de.adesso.projectboard.base.project.persistence;
 
+import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -31,11 +31,14 @@ public class ProjectPersistenceTest {
 
     @Test
     public void testSave() {
+        // given
+        String expectedProjectId = "STF-1";
+
         LocalDateTime created = LocalDateTime.of(2018, 2, 1, 13, 37);
         LocalDateTime updated = LocalDateTime.of(2018, 2, 2, 13, 37);
 
-        Project project = new Project()
-                .setId("STF-1")
+        Project expectedProject = new Project()
+                .setId(expectedProjectId)
                 .setStatus("eskaliert")
                 .setIssuetype("Issuetype")
                 .setTitle("Title")
@@ -56,122 +59,321 @@ public class ProjectPersistenceTest {
                 .setOther("Other")
                 .setOrigin(ProjectOrigin.CUSTOM);
 
-        projectRepository.save(project);
-        Project retrievedProject = projectRepository.findById("STF-1").orElseThrow(EntityNotFoundException::new);
+        // when
+        projectRepository.save(expectedProject);
+        Project retrievedProject = projectRepository.findById(expectedProjectId).orElseThrow(EntityNotFoundException::new);
 
-        assertEquals("STF-1", retrievedProject.getId());
-        assertEquals("eskaliert", retrievedProject.getStatus());
-        assertEquals("Issuetype", retrievedProject.getIssuetype());
-        assertEquals("Title", retrievedProject.getTitle());
-        assertEquals("Job", retrievedProject.getJob());
-        assertEquals("Skills", retrievedProject.getSkills());
-        assertEquals("Description", retrievedProject.getDescription());
-        assertEquals("LOB Test", retrievedProject.getLob());
-        assertEquals("Customer", retrievedProject.getCustomer());
-        assertEquals("Location", retrievedProject.getLocation());
-        assertEquals("OperationStart", retrievedProject.getOperationStart());
-        assertEquals("OperationEnd", retrievedProject.getOperationEnd());
-        assertEquals("Effort", retrievedProject.getEffort());
-        assertEquals(created, retrievedProject.getCreated());
-        assertEquals(updated, retrievedProject.getUpdated());
-        assertEquals("Freelancer", retrievedProject.getFreelancer());
-        assertEquals("Elongation", retrievedProject.getElongation());
-        assertEquals("Other", retrievedProject.getOther());
-        assertEquals(ProjectOrigin.CUSTOM, retrievedProject.getOrigin());
-
-        List<String> firstProjectLabels = retrievedProject.getLabels();
-        assertEquals(3, firstProjectLabels.size());
-        assertEquals("Label 1", firstProjectLabels.get(0));
-        assertEquals("Label 2", firstProjectLabels.get(1));
-        assertEquals("Label 3", firstProjectLabels.get(2));
+        // then
+        assertThat(retrievedProject).isEqualTo(expectedProject);
     }
 
     @Test
-    public void testIdGenerator_AlreadySet() {
-        Project project = new Project();
-        project.setId("STF-1234");
+    public void idGeneratorDoesNotSetIdIfAlreadySet() {
+        // given
+        String expectedProjectId = "STF-1234";
 
+        Project project = new Project()
+                .setId(expectedProjectId);
+
+        // when
         Project persistedProject = projectRepository.save(project);
 
-        assertEquals("STF-1234", persistedProject.getId());
+        // then
+        assertThat(persistedProject.getId()).isEqualTo(expectedProjectId);
     }
 
     @Test
-    public void testIdGenerator_NotSet() {
+    public void idGeneratorSetsIdIfNotAlreadySet() {
+        // given
+        String expectedProjectId = "AD-1";
+
         Project project = new Project();
 
+        // when
         Project persistedProject = projectRepository.save(project);
 
-        assertEquals("AD-1", persistedProject.getId());
+        // then
+        assertThat(persistedProject.getId()).isEqualTo(expectedProjectId);
     }
 
     @Test
-    public void testIdGenerator_Increment() {
+    public void idGeneratorAutoIncrementsIds() {
+        // given
+        String expectedFirstId = "AD-1";
+        String expectedSecondId = "AD-2";
+
         Project firstProject = new Project();
         Project secondProject = new Project();
 
+        // when
         Project firstPersisted = projectRepository.save(firstProject);
         Project secondPersisted = projectRepository.save(secondProject);
 
-        assertEquals("AD-1", firstPersisted.getId());
-        assertEquals("AD-2", secondPersisted.getId());
+        // then
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(firstPersisted.getId()).isEqualTo(expectedFirstId);
+        softly.assertThat(secondPersisted.getId()).isEqualTo(expectedSecondId);
+
+        softly.assertAll();
     }
 
     @Test
-    public void testIdGenerator_Remove() {
+    public void idGeneratorReusesIds() {
+        // given
+        String expectedProjectId = "AD-1";
+
         Project firstProject = new Project();
+        Project secondProject = new Project();
+
+        // when
         Project firstPersisted = projectRepository.save(firstProject);
-
-        assertEquals("AD-1", firstPersisted.getId());
-
         projectRepository.delete(firstPersisted);
 
-        Project secondProject = new Project();
         Project secondPersisted = projectRepository.save(secondProject);
 
-        assertEquals("AD-1", secondPersisted.getId());
+        // then
+        assertThat(secondPersisted.getId()).isEqualTo(expectedProjectId);
+    }
+
+    @Test
+    public void idGeneratorIgnoresNonMatchingIds() {
+        String firstProjectId = "AD-T";
+        String expectedProjectId = "AD-1";
+
+        Project firstProject = new Project()
+                .setId(firstProjectId);
+
+        Project secondProject = new Project();
+
+        // when
+        projectRepository.save(firstProject);
+        Project persistedProject = projectRepository.save(secondProject);
+
+        // then
+        assertThat(persistedProject.getId()).isEqualTo(expectedProjectId);
     }
 
     @Test
     @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void testFindAllForUser() {
-        // get a list of all projects for a user of the lob "LOB Test"
-        List<Project> allForUser = projectRepository.findAllForUser("LOB Test", sort);
+    public void findAllForUser() {
+        // given
+        // SQL script
+        String expectedLob = "LOB Test";
 
-        testProjectsForUser(allForUser);
+        // when
+        List<Project> allForUser = projectRepository.findAllForUser(expectedLob, sort);
+
+        // then
+        testProjectsForUser(allForUser, expectedLob);
     }
 
     @Test
     @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void testFindAllForUserPageable() {
-        Page<Project> allForUser = projectRepository.findAllForUserPageable("LOB Test", PageRequest.of(0, 100));
+    public void findAllForUserWhereUserLobDiffersButMeansTheSame() {
+        // given
+        // SQL script
+        String expectedLob = "LOB Test";
+        String sameLobButDifferentName = "LOB TEST (LT)";
 
-        testProjectsForUser(allForUser.getContent());
+        // when
+        List<Project> allForUser = projectRepository.findAllForUser(sameLobButDifferentName, sort);
+
+        // then
+        testProjectsForUser(allForUser, expectedLob);
     }
 
     @Test
     @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void testFindAllForManager() {
-        // get a list of all projects for a manager
+    public void findAllForUserPageable() {
+        // given
+        // SQL script
+        String expectedLob = "LOB Test";
+
+        // when
+        Page<Project> allForUser = projectRepository.findAllForUserPageable(expectedLob, PageRequest.of(0, 100));
+
+        // then
+        testProjectsForUser(allForUser.getContent(), expectedLob);
+    }
+
+    @Test
+    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void findAllForUserPageableWhereUserLobDiffersButMeansTheSame() {
+        // given
+        // SQL script
+        String expectedLob = "LOB Test";
+        String sameLobButDifferentName = "LOB TEST (LT)";
+
+        // when
+        Page<Project> allForUser = projectRepository.findAllForUserPageable(sameLobButDifferentName, PageRequest.of(0, 100));
+
+        // then
+        testProjectsForUser(allForUser.getContent(), expectedLob);
+    }
+
+    @Test
+    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void findAllForManager() {
+        // given
+        // SQL script
+
+        // when
         List<Project> allForManager = projectRepository.findAllForManager(sort);
 
+        // then
         testProjectsForManager(allForManager);
     }
 
     @Test
     @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void testFindAllForManagerPageable() {
+    public void findAllForManagerPageable() {
+        // given
+        // SQL script
+
+        // when
         Page<Project> allForManager = projectRepository.findAllForManagerPageable(PageRequest.of(0, 100));
 
+        // then
         testProjectsForManager(allForManager.getContent());
     }
 
-    void testProjectsForUser(List<Project> allForUser) {
-        boolean allEscalatedOrFromSameLobOrNoLob = allForUser.stream()
+    @Test
+    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void findAllForUserByKeyword() {
+        // given
+        // SQL script
+        String keyword = "Special";
+        String expectedLob = "LOB Test";
+
+        // when
+        List<Project> allForUserByKeyword =
+                projectRepository.findAllForUserByKeyword(expectedLob, keyword, sort);
+
+        // then
+        testProjectsForUserByKeyword(allForUserByKeyword, keyword, expectedLob);
+    }
+
+    @Test
+    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void findAllForUserByKeywordPageable() {
+        // given
+        // SQL script
+        String keyword = "Special";
+        String expectedLob = "LOB Test";
+
+        // when
+        Page<Project> allForUserByKeyword =
+                projectRepository.findAllForUserByKeywordPageable(expectedLob, keyword, PageRequest.of(0, 100));
+
+        // then
+        testProjectsForUserByKeyword(allForUserByKeyword.getContent(), keyword, expectedLob);
+    }
+
+    @Test
+    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void findAllForUserByKeywordPageableWhereUserLobDiffersButMeansTheSame() {
+        // given
+        // SQL script
+        String keyword = "Special";
+        String expectedLob = "LOB Test";
+        String sameLobButDifferentName = "LOB TEST (LT)";
+
+        // when
+        Page<Project> allForUserByKeyword =
+                projectRepository.findAllForUserByKeywordPageable(sameLobButDifferentName, keyword, PageRequest.of(0, 100));
+
+        // then
+        testProjectsForUserByKeyword(allForUserByKeyword.getContent(), keyword, expectedLob);
+    }
+
+    @Test
+    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void findAllForManagerByKeyword() {
+        // given
+        // SQL script
+        String keyword = "Special";
+
+        // when
+        List<Project> allForManagerByKeyword =
+                projectRepository.findAllForManagerByKeyword(keyword, sort);
+
+        // then
+        testProjectsForManagerByKeyword(allForManagerByKeyword, keyword);
+    }
+
+    @Test
+    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void findAllForManagerByKeywordPageable() {
+        // given
+        // SQL script
+        String keyword = "Special";
+
+        // when
+        Page<Project> allForManagerByKeyword =
+                projectRepository.findAllForManagerByKeywordPageable(keyword, PageRequest.of(0, 100));
+
+        // then
+        testProjectsForManagerByKeyword(allForManagerByKeyword.getContent(), keyword);
+    }
+
+    void testProjectsForUser(List<Project> allForUser, String expectedLob) {
+        boolean allEscalatedOrFromSameLobOrNoLob = allEscalatedOrFromSameLobOrNoLob(allForUser, expectedLob);
+
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(allEscalatedOrFromSameLobOrNoLob).isTrue();
+        softly.assertThat(allForUser).hasSize(5);
+
+        softly.assertAll();
+    }
+
+    void testProjectsForManager(List<Project> allForManager) {
+        // managers can see all open/escalated projects
+        boolean allEscalatedOrOpen = allEscalatedOrOpen(allForManager);
+
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(allEscalatedOrOpen).isTrue();
+        softly.assertThat(allForManager).hasSize(6);
+
+        softly.assertAll();
+    }
+
+    void testProjectsForUserByKeyword(List<Project> allForUserByKeyword, String keyword, String expectedLob) {
+        boolean allEscalatedOrFromSameLobOrNoLob = allEscalatedOrFromSameLobOrNoLob(allForUserByKeyword, expectedLob);
+        boolean allContainingKeywordInAnyField = allContainingKeywordInField(allForUserByKeyword, keyword);
+
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(allEscalatedOrFromSameLobOrNoLob).isTrue();
+        softly.assertThat(allContainingKeywordInAnyField).isTrue();
+
+        softly.assertThat(allForUserByKeyword).hasSize(4);
+
+        softly.assertAll();
+    }
+
+    void testProjectsForManagerByKeyword(List<Project> allForManagerByKeyword, String keyword) {
+        boolean allEscalatedOrOpen = allEscalatedOrOpen(allForManagerByKeyword);
+        boolean allContainingKeywordInAnyField = allContainingKeywordInField(allForManagerByKeyword, keyword);
+
+        SoftAssertions softly = new SoftAssertions();
+
+        softly.assertThat(allEscalatedOrOpen).isTrue();
+        softly.assertThat(allContainingKeywordInAnyField).isTrue();
+
+        softly.assertThat(allForManagerByKeyword).hasSize(4);
+
+        softly.assertAll();
+    }
+
+    boolean allEscalatedOrFromSameLobOrNoLob(List<Project> projects, String expectedLob) {
+        return projects.stream()
                 .allMatch(project -> {
                     boolean isOpen = "open".equalsIgnoreCase(project.getStatus());
                     boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
-                    boolean sameLobAsUser = "LOB Test".equalsIgnoreCase(project.getLob());
+                    boolean sameLobAsUser = expectedLob.equalsIgnoreCase(project.getLob());
                     boolean noLob = project.getLob() == null;
 
                     // escalated || isOpen <-> (sameLob || noLob)
@@ -179,24 +381,28 @@ public class ProjectPersistenceTest {
                     // when the status is neither "eskaliert" nor "open"
                     return isEscalated || (isOpen && (sameLobAsUser || noLob) || (!isOpen && !(sameLobAsUser || noLob)));
                 });
-
-        assertTrue(allEscalatedOrFromSameLobOrNoLob);
-        assertEquals(5L, allForUser.size());
     }
 
-    void testProjectsForManager(List<Project> allForManager) {
-        // managers can see all open/escalated projects
-        boolean allEscalatedOrOpen =
-                allForManager.stream()
-                        .allMatch(project -> {
-                            boolean isOpen = "open".equalsIgnoreCase(project.getStatus());
-                            boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
+    boolean allEscalatedOrOpen(List<Project> projects) {
+        return projects.stream()
+                .allMatch(project -> {
+                    boolean isOpen = "open".equalsIgnoreCase(project.getStatus());
+                    boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus());
 
-                            return isOpen || isEscalated;
-                        });
+                    return isOpen || isEscalated;
+                });
+    }
 
-        assertTrue(allEscalatedOrOpen);
-        assertEquals(6L, allForManager.size());
+    boolean allContainingKeywordInField(List<Project> projects, String keyword) {
+        return projects.stream()
+                .allMatch(project -> {
+                    boolean titleMatches = project.getTitle().matches(".*" + keyword + ".*");
+                    boolean jobMatches = project.getJob().matches(".*" + keyword + ".*");
+                    boolean skillsMatches = project.getSkills().matches(".*" + keyword + ".*");
+                    boolean descriptionMatches = project.getDescription().matches(".*" + keyword + ".*");
+
+                    return titleMatches || jobMatches || skillsMatches || descriptionMatches;
+                });
     }
 
 }

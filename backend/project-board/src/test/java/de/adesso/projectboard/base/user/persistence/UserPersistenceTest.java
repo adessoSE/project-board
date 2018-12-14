@@ -49,8 +49,8 @@ public class UserPersistenceTest {
         User user = new User(expectedUserId);
         user.addBookmark(project);
 
-        ProjectApplication application = new ProjectApplication(project, "Comment", user, applicationDate);
-        AccessInfo accessInfo = new AccessInfo(user, infoStartDate, infoEndDate);
+        new ProjectApplication(project, "Comment", user, applicationDate);
+        new AccessInfo(user, infoStartDate, infoEndDate);
 
         // when
         userRepo.save(user);
@@ -59,15 +59,11 @@ public class UserPersistenceTest {
         // then
         SoftAssertions softly = new SoftAssertions();
 
-        softly.assertThat(retrievedUser.getId()).isEqualTo(expectedUserId);
-        softly.assertThat(retrievedUser.getAccessInfoList()).containsOnly(accessInfo);
-        softly.assertThat(retrievedUser.getApplications()).containsOnly(application);
-        softly.assertThat(retrievedUser.getBookmarks()).containsOnly(project);
-
+        softly.assertThat(retrievedUser.id).isEqualTo(expectedUserId);
         softly.assertThat(applicationRepo.count()).isEqualTo(1);
         softly.assertThat(accessInfoRepo.count()).isEqualTo(1);
 
-        // softly.assertAll();
+        softly.assertAll();
     }
 
 }

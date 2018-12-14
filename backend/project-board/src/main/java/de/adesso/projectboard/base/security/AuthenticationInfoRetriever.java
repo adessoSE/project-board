@@ -3,7 +3,7 @@ package de.adesso.projectboard.base.security;
 /**
  * Interface used to retrieve authentication information.
  */
-public interface AuthenticationInfo {
+public interface AuthenticationInfoRetriever {
 
     /**
      *

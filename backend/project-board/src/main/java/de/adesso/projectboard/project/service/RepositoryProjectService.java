@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -83,6 +84,7 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Project getProjectById(String projectId) throws ProjectNotFoundException {
         Optional<Project> projectOptional = projectRepo.findById(projectId);
 
@@ -90,6 +92,7 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean projectExists(String projectId) {
         return projectRepo.existsById(projectId);
     }
@@ -112,6 +115,7 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
      *          {@link ProjectOrigin#CUSTOM}.
      */
     @Override
+    @Transactional
     public Project updateProject(Project project, String projectId) throws ProjectNotEditableException {
         Project existingProject = getProjectById(projectId);
 
@@ -133,6 +137,7 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
     }
 
     @Override
+    @Transactional
     public void deleteProjectById(String projectId) throws ProjectNotEditableException {
         Project existingProject = getProjectById(projectId);
 
@@ -168,6 +173,7 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
 
             userService.save(user);
         });
+        applicationRepo.deleteAll(applications);
 
         projectRepo.delete(existingProject);
     }
@@ -188,6 +194,7 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
      *          
      * @see ProjectDtoMapper#toProject(ProjectRequestDTO)
      */
+    @Transactional
     Project createOrUpdateProject(Project project, String projectId) {
         Optional<Project> existingProjectOptional = projectId != null ? projectRepo.findById(projectId) : Optional.empty();
 
@@ -210,6 +217,7 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Project> getProjectsForUser(User user, Sort sort) {
         if(userService.userIsManager(user)) {
             return projectRepo.findAllForManager(sort);
@@ -221,6 +229,7 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Project> searchProjectsForUser(User user, String keyword, Sort sort) {
         if(userService.userIsManager(user)) {
             return projectRepo.findAllForManagerByKeyword(keyword, sort);
@@ -232,11 +241,13 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean userOwnsProject(User user, Project project) {
         return userRepo.existsByIdAndOwnedProjectsContaining(user.getId(), project);
     }
 
     @Override
+    @Transactional
     public Project createProjectForUser(Project project, User user) {
         Project createdProject = createProject(project);
 
@@ -247,6 +258,7 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
     }
 
     @Override
+    @Transactional
     public Project addProjectToUser(User user, Project project) {
         user.addOwnedProject(project);
         userService.save(user);
@@ -255,6 +267,7 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Project> getProjectsForUserPaginated(User user, Pageable pageable) {
         if(userService.userIsManager(user)) {
             return projectRepo.findAllForManagerPageable(pageable);
@@ -266,6 +279,7 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Project> searchProjectsForUserPaginated(String keyword, User user, Pageable pageable) {
         if(userService.userIsManager(user)) {
             return projectRepo.findAllForManagerByKeywordPageable(keyword, pageable);

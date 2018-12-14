@@ -13,7 +13,7 @@ ARG JAR_FILE=@jarName@
 COPY ${JAR_FILE} project-board.jar
 
 # Copy all property files to /config/ for Spring
-COPY application*.properties /config/
+COPY *.properties /config/
 
 # Set entrypoint to execute jar and set Spring config location to /config/
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom", "-Dspring.config.location=/config/", "-jar", "/project-board.jar"]

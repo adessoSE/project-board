@@ -10,6 +10,7 @@ import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.user.persistence.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -61,11 +62,13 @@ public class RepositoryApplicationService implements ApplicationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean userHasAppliedForProject(User user, Project project) {
         return applicationRepo.existsByUserAndProject(user, project);
     }
 
     @Override
+    @Transactional
     public ProjectApplication createApplicationForUser(User user, ProjectApplicationRequestDTO applicationDTO) throws AlreadyAppliedException {
         Project project = projectService.getProjectById(applicationDTO.getProjectId());
 
@@ -81,6 +84,7 @@ public class RepositoryApplicationService implements ApplicationService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ProjectApplication> getApplicationsOfUser(User user) {
         return new ArrayList<>(user.getApplications());
     }

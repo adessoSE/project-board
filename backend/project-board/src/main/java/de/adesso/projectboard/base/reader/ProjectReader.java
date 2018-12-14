@@ -28,7 +28,7 @@ public interface ProjectReader {
      *
      * @see de.adesso.projectboard.base.updater.ProjectDatabaseUpdater
      */
-    List<? extends Project> getAllProjectsSince(LocalDateTime dateTime) throws Exception;
+    List<Project> getAllProjectsSince(LocalDateTime dateTime) throws Exception;
 
     /**
      * This method gets invoked by the {@link de.adesso.projectboard.base.updater.ProjectDatabaseUpdater}
@@ -40,7 +40,7 @@ public interface ProjectReader {
      * @throws Exception
      *          When a error occurrs.
      */
-    List<? extends Project> getInitialProjects() throws Exception;
+    List<Project> getInitialProjects() throws Exception;
 
     /**
      * This method is invoked by the {@link ReaderHealthIndicator} to get

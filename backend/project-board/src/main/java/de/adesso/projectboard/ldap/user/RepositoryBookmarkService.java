@@ -7,8 +7,8 @@ import de.adesso.projectboard.base.user.persistence.UserRepository;
 import de.adesso.projectboard.base.user.service.BookmarkService;
 import de.adesso.projectboard.project.service.RepositoryProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,6 @@ import java.util.List;
  * @see LdapUserService
  * @see RepositoryProjectService
  */
-@Profile("adesso-ad")
 @Service
 public class RepositoryBookmarkService implements BookmarkService {
 
@@ -31,6 +30,7 @@ public class RepositoryBookmarkService implements BookmarkService {
     }
 
     @Override
+    @Transactional
     public Project addBookmarkToUser(User user, Project project) {
         // add the project and persist the entity
         user.addBookmark(project);
@@ -40,6 +40,7 @@ public class RepositoryBookmarkService implements BookmarkService {
     }
 
     @Override
+    @Transactional
     public void removeBookmarkOfUser(User user, Project project) {
         if(userRepo.existsByIdAndBookmarksContaining(user.getId(), project)) {
 
@@ -53,11 +54,13 @@ public class RepositoryBookmarkService implements BookmarkService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Project> getBookmarksOfUser(User user) {
         return new ArrayList<>(user.getBookmarks());
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean userHasBookmark(User user, Project project) {
         return userRepo.existsByIdAndBookmarksContaining(user.getId(), project);
     }

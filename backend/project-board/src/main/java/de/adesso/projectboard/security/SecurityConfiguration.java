@@ -4,10 +4,11 @@ import org.keycloak.adapters.KeycloakConfigResolver;
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
-import org.keycloak.adapters.springsecurity.client.KeycloakClientRequestFactory;
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
+import org.keycloak.adapters.springsecurity.filter.KeycloakAuthenticatedActionsFilter;
 import org.keycloak.adapters.springsecurity.filter.KeycloakAuthenticationProcessingFilter;
 import org.keycloak.adapters.springsecurity.filter.KeycloakPreAuthActionsFilter;
+import org.keycloak.adapters.springsecurity.filter.KeycloakSecurityContextRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -22,17 +23,17 @@ import org.springframework.security.web.authentication.session.SessionAuthentica
 /**
  * {@link KeycloakWebSecurityConfigurerAdapter} that is used to configure keycloak and spring security.
  */
-@Profile("adesso-keycloak")
+@Profile("keycloak")
 @KeycloakConfiguration
 public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter {
 
-    private final KeycloakClientRequestFactory clientRequestFactory;
-
-    @Autowired
-    public SecurityConfiguration(KeycloakClientRequestFactory clientRequestFactory) {
-        this.clientRequestFactory = clientRequestFactory;
-    }
-
+    /**
+     * Define the session authentication strategy.
+     * Uses a {@link NullAuthenticatedSessionStrategy} for bearer-only.
+     *
+     * @return
+     *          A {@link NullAuthenticatedSessionStrategy} instance.
+     */
     @Bean
     @Override
     protected SessionAuthenticationStrategy sessionAuthenticationStrategy() {
@@ -47,19 +48,21 @@ public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter 
                 .cors()
                 .and()
                 .csrf()
-                .disable()
+                    .disable()
                 .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .sessionAuthenticationStrategy(sessionAuthenticationStrategy())
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                    .sessionAuthenticationStrategy(sessionAuthenticationStrategy())
                 .and()
                 .authorizeRequests()
-                .antMatchers("/**").hasRole("user")
-                .antMatchers("/actuator*").hasRole("admin")
-                .anyRequest()
-                .permitAll();
+                    .antMatchers("/**")
+                        .authenticated()
+                    .antMatchers("/actuator*")
+                        .hasRole("admin")
+                    .anyRequest()
+                        .permitAll();
     }
 
-    // maps the keycloak roles to spring compatible roles
+    // maps keycloak roles to spring compatible roles
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         KeycloakAuthenticationProvider keyCloakAuthProvider = keycloakAuthenticationProvider();
@@ -74,11 +77,10 @@ public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter 
         return new KeycloakSpringBootConfigResolver();
     }
 
-    // avoids double registration of the keycloak filters
+    // avoids double registration of keycloak filters
     @Bean
     @SuppressWarnings("unchecked")
-    public FilterRegistrationBean keycloakAuthenticationProcessingFilterRegistrationBean(
-            KeycloakAuthenticationProcessingFilter filter) {
+    public FilterRegistrationBean keycloakAuthenticationProcessingFilterRegistrationBean(KeycloakAuthenticationProcessingFilter filter) {
         FilterRegistrationBean registrationBean = new FilterRegistrationBean(filter);
         registrationBean.setEnabled(false);
         return registrationBean;
@@ -86,8 +88,23 @@ public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter 
 
     @Bean
     @SuppressWarnings("unchecked")
-    public FilterRegistrationBean keycloakPreAuthActionsFilterRegistrationBean(
-            KeycloakPreAuthActionsFilter filter) {
+    public FilterRegistrationBean keycloakPreAuthActionsFilterRegistrationBean(KeycloakPreAuthActionsFilter filter) {
+        FilterRegistrationBean registrationBean = new FilterRegistrationBean(filter);
+        registrationBean.setEnabled(false);
+        return registrationBean;
+    }
+
+    @Bean
+    @SuppressWarnings("unchecked")
+    public FilterRegistrationBean keycloakAuthenticatedActionsFilterBean(KeycloakAuthenticatedActionsFilter filter) {
+        FilterRegistrationBean registrationBean = new FilterRegistrationBean(filter);
+        registrationBean.setEnabled(false);
+        return registrationBean;
+    }
+
+    @Bean
+    @SuppressWarnings("unchecked")
+    public FilterRegistrationBean keycloakSecurityContextRequestFilterBean(KeycloakSecurityContextRequestFilter filter) {
         FilterRegistrationBean registrationBean = new FilterRegistrationBean(filter);
         registrationBean.setEnabled(false);
         return registrationBean;

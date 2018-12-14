@@ -91,7 +91,7 @@ public class AccessInfo {
         if(obj instanceof AccessInfo) {
             AccessInfo other = (AccessInfo) obj;
 
-            // only compare the user IDs because of the cyclic reference: User <-> Application
+            // only compare the user IDs because of the cyclic reference: User <-> AccessInfo
             boolean userEquals;
             if(Objects.nonNull(this.user) && Objects.nonNull(other.user)) {
                 userEquals = Objects.equals(this.user.getId(), other.user.getId());

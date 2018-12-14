@@ -12,6 +12,10 @@ import java.time.LocalDateTime;
 @Component
 public class ProjectDtoMapper {
 
+    /**
+     * The clock used when setting the dates
+     * of the project.
+     */
     private final Clock clock;
 
     /**
