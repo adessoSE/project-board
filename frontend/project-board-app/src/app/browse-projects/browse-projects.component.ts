@@ -145,7 +145,9 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
 
   ngAfterViewChecked() {
 
-    document.getElementById('detailContainerLg').scrollTop = 0;
+    if(!this.mobile){
+      document.getElementById('detailContainerLg').scrollTop = 0;
+    }
 
     if (this.scroll && this.selectedProject && this.mobile) {
       const btn = $(`#${this.selectedProject.id}`);
