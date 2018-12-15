@@ -7,102 +7,113 @@ import de.adesso.projectboard.base.user.persistence.UserRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RepositoryBookmarkServiceTest {
 
+    private final String USER_ID = "user";
+
     @Mock
     UserRepository userRepository;
 
-    @InjectMocks
+    @Mock
+    Project projectMock;
+
+    @Mock
+    User userMock;
+
     RepositoryBookmarkService bookmarkService;
-
-    @Mock
-    User user;
-
-    @Mock
-    Project project;
 
     @Before
     public void setUp() {
-        // set up repo mock
-        when(userRepository.save(any(User.class))).thenAnswer((Answer<User>) invocation -> {
-            Object[] args = invocation.getArguments();
-
-            return (User) args[0];
-        });
-
-
-        // set up entity mocks
-        when(user.getId()).thenReturn("user");
-    }
-
-
-    @Test
-    public void testAddBookmarkToUser() {
-        bookmarkService.addBookmarkToUser(user, project);
-
-        verify(user).addBookmark(project);
-        verify(userRepository).save(user);
+        this.bookmarkService = new RepositoryBookmarkService(userRepository);
     }
 
     @Test
-    public void testRemoveBookmarkOfUser_OK() {
-        // set up repo mock
-        when(userRepository.existsByIdAndBookmarksContaining("user", project)).thenReturn(true);
+    public void addBookmarkToUserAddsBookmark() {
+        // given
 
-        bookmarkService.removeBookmarkOfUser(user, project);
+        // when
+        Project actualProject = bookmarkService.addBookmarkToUser(userMock, projectMock);
 
-        verify(user).removeBookmark(project);
-        verify(userRepository).save(user);
-    }
+        // then
+        assertThat(actualProject).isEqualTo(projectMock);
 
-    @Test(expected = BookmarkNotFoundException.class)
-    public void testRemoveBookmarkOfUser_NotBookmarked() {
-        // set up repo mock
-        when(userRepository.existsByIdAndBookmarksContaining("user", project)).thenReturn(false);
-
-        bookmarkService.removeBookmarkOfUser(user, project);
+        verify(userMock).addBookmark(projectMock);
+        verify(userRepository).save(userMock);
     }
 
     @Test
-    public void testGetBookmarksOfUser() {
-        // set up entity mock
-        when(user.getBookmarks()).thenReturn(Collections.singleton(project));
+    public void removeBookmarkOfUserRemovesBookmark() {
+        // given
+        given(userMock.getId()).willReturn(USER_ID);
+        given(userRepository.existsByIdAndBookmarksContaining(USER_ID, projectMock)).willReturn(true);
 
-        List<Project> bookmarks = bookmarkService.getBookmarksOfUser(user);
+        // when
+        bookmarkService.removeBookmarkOfUser(userMock, projectMock);
 
-        assertEquals(1, bookmarks.size());
-        assertTrue(bookmarks.contains(project));
+        // then
+        verify(userMock).removeBookmark(projectMock);
+        verify(userRepository).save(userMock);
     }
 
     @Test
-    public void testUserHasBookmark_HasBookmark() {
-        // set up repo mock
-        when(userRepository.existsByIdAndBookmarksContaining("user", project)).thenReturn(true);
+    public void removeBookmarkOfUserThrowsExceptionWhenNotBookmarked() {
+        // given
+        given(userMock.getId()).willReturn(USER_ID);
+        given(userRepository.existsByIdAndBookmarksContaining(USER_ID, projectMock)).willReturn(false);
 
-        assertTrue(bookmarkService.userHasBookmark(user, project));
+        // when
+        assertThatThrownBy(() -> bookmarkService.removeBookmarkOfUser(userMock, projectMock))
+                .isInstanceOf(BookmarkNotFoundException.class);
     }
 
     @Test
-    public void testUserHasBookmark_HasNoBookmark() {
-        // set up repo mock
-        when(userRepository.existsByIdAndBookmarksContaining("user", project)).thenReturn(false);
+    public void getBookmarksOfUserReturnsAllBookmarks() {
+        // given
+        given(userMock.getBookmarks()).willReturn(Collections.singleton(projectMock));
 
-        assertFalse(bookmarkService.userHasBookmark(user, project));
+        // when
+        List<Project> actualBookmarks = bookmarkService.getBookmarksOfUser(userMock);
+
+        // then
+        assertThat(actualBookmarks).containsExactly(projectMock);
     }
 
+    @Test
+    public void userHasBookmarkReturnsTrueWhenBookmarkExists() {
+        // given
+        given(userMock.getId()).willReturn(USER_ID);
+        given(userRepository.existsByIdAndBookmarksContaining(USER_ID, projectMock)).willReturn(true);
+
+        // when
+        boolean actualHasBookmarked = bookmarkService.userHasBookmark(userMock, projectMock);
+
+        // then
+        assertThat(actualHasBookmarked).isTrue();
+    }
+
+    @Test
+    public void userHasBookmarkReturnsFalseWhenBookmarkDoesNotExists() {
+        // given
+        given(userMock.getId()).willReturn(USER_ID);
+        given(userRepository.existsByIdAndBookmarksContaining(USER_ID, projectMock)).willReturn(false);
+
+        // when
+        boolean actualHasBookmarked = bookmarkService.userHasBookmark(userMock, projectMock);
+
+        // then
+        assertThat(actualHasBookmarked).isFalse();
+    }
 
 }

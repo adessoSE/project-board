@@ -42,7 +42,7 @@ public class RepositoryBookmarkService implements BookmarkService {
     @Override
     @Transactional
     public void removeBookmarkOfUser(User user, Project project) {
-        if(userRepo.existsByIdAndBookmarksContaining(user.getId(), project)) {
+        if(userHasBookmark(user, project)) {
 
             // remove the bookmark and update the entity
             user.removeBookmark(project);
