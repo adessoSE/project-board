@@ -201,6 +201,36 @@ public class RepositoryProjectServiceTest {
     }
 
     @Test
+    public void save() {
+        // given
+        given(projectRepo.save(projectMock)).willReturn(projectMock);
+
+        // when
+        Project savedProject = projectService.save(projectMock);
+
+        // then
+        assertThat(savedProject).isEqualTo(projectMock);
+
+        verify(projectRepo).save(projectMock);
+    }
+
+    @Test
+    public void saveAll() {
+        // given
+        List<Project> expectedProjects = Collections.singletonList(projectMock);
+
+        given(projectRepo.saveAll(expectedProjects)).willReturn(expectedProjects);
+
+        // when
+        List<Project> savedProjects = projectService.saveAll(expectedProjects);
+
+        // then
+        assertThat(savedProjects).isEqualTo(expectedProjects);
+
+        verify(projectRepo).saveAll(expectedProjects);
+    }
+
+    @Test
     public void createProject() {
         // given
         String expectedStatus = "Status";
