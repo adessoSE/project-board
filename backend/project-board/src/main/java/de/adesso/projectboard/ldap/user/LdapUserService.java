@@ -77,7 +77,8 @@ public class LdapUserService implements UserService {
     }
 
     /**
-     * Returns {@code true} iff the persisted {@link OrganizationStructure}'s
+     * Returns {@code true} iff {@link AuthenticationInfoRetriever#hasAdminRole()} returns {@code true}
+     * the persisted {@link OrganizationStructure}'s
      * {@link OrganizationStructure#getStaffMembers() staff members collection}
      * is <b>not empty</b> or the result of {@link LdapService#isManager(String)}
      * if none is present.
@@ -87,6 +88,10 @@ public class LdapUserService implements UserService {
     @Override
     @Transactional(readOnly = true)
     public boolean userIsManager(User user) {
+        if(authInfo.hasAdminRole()) {
+            return true;
+        }
+
         if(structureRepo.existsByUser(user)) {
             return structureRepo.existsByUserAndUserIsManager(user, true);
         } else {
