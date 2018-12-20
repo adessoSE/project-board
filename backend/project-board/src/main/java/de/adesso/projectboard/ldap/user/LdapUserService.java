@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
  */
 @Profile("adesso-ad")
 @Service
+@Transactional
 public class LdapUserService implements UserService {
 
     private final UserRepository userRepo;
@@ -52,6 +53,7 @@ public class LdapUserService implements UserService {
         this.ldapService = ldapService;
         this.authInfo = authInfo;
     }
+
 
     @Override
     public User getAuthenticatedUser() throws UserNotFoundException {
@@ -103,7 +105,6 @@ public class LdapUserService implements UserService {
      * @see LdapService#getIdStructure(User)
      */
     @Override
-    @Transactional
     public OrganizationStructure getStructureForUser(User user) {
         // return the structure saved in the repo if one is present
         // or get the latest structure from the AD
@@ -147,7 +148,6 @@ public class LdapUserService implements UserService {
      * @see LdapService#getUserData(List)
      */
     @Override
-    @Transactional
     public UserData getUserData(User user) {
         Optional<UserData> dataOptional = dataRepo.findByUser(user);
 
@@ -172,7 +172,6 @@ public class LdapUserService implements UserService {
      * @see LdapService#userExists(String)
      */
     @Override
-    @Transactional
     public User getUserById(String userId) throws UserNotFoundException {
         Optional<User> userOptional = userRepo.findById(userId);
 
@@ -221,7 +220,6 @@ public class LdapUserService implements UserService {
     }
 
     @Override
-    @Transactional
     public List<UserData> getStaffMemberDataOfUser(User user, Sort sort) {
         OrganizationStructure structureForUser = getStructureForUser(user);
         if (structureForUser.getStaffMembers().isEmpty()) {
@@ -248,7 +246,6 @@ public class LdapUserService implements UserService {
      * @see UserRepository#save(Object)
      */
     @Override
-    @Transactional
     public User save(User user) {
         return userRepo.save(user);
     }

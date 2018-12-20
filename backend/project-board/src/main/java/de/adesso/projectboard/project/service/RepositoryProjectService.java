@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class RepositoryProjectService implements ProjectService {
 
     private final ProjectRepository projectRepo;
@@ -76,7 +77,6 @@ public class RepositoryProjectService implements ProjectService {
     }
 
     @Override
-    @Transactional
     public Project updateProject(Project project, String projectId) throws ProjectNotEditableException {
         Project existingProject = getProjectById(projectId);
 
@@ -108,7 +108,6 @@ public class RepositoryProjectService implements ProjectService {
     }
 
     @Override
-    @Transactional
     public void deleteProjectById(String projectId) throws ProjectNotEditableException {
         Project existingProject = getProjectById(projectId);
 
@@ -165,8 +164,7 @@ public class RepositoryProjectService implements ProjectService {
      *          
      * @see ProjectDtoMapper#toProject(ProjectRequestDTO)
      */
-    @Transactional
-    protected Project createOrUpdateProject(Project project, String projectId) {
+    public Project createOrUpdateProject(Project project, String projectId) {
         Optional<Project> existingProjectOptional = projectId != null ? projectRepo.findById(projectId) : Optional.empty();
 
         LocalDateTime updatedTime = LocalDateTime.now(clock);

@@ -20,6 +20,7 @@ import java.util.List;
  * @see RepositoryProjectService
  */
 @Service
+@Transactional
 public class RepositoryBookmarkService implements BookmarkService {
 
     private final UserRepository userRepo;
@@ -30,7 +31,6 @@ public class RepositoryBookmarkService implements BookmarkService {
     }
 
     @Override
-    @Transactional
     public Project addBookmarkToUser(User user, Project project) {
         // add the project and persist the entity
         user.addBookmark(project);
@@ -40,7 +40,6 @@ public class RepositoryBookmarkService implements BookmarkService {
     }
 
     @Override
-    @Transactional
     public void removeBookmarkOfUser(User user, Project project) {
         if(userHasBookmark(user, project)) {
 

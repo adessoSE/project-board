@@ -22,6 +22,7 @@ import java.util.List;
  * in a repository.
  */
 @Service
+@Transactional
 public class RepositoryApplicationService implements ApplicationService {
 
     private final ProjectService projectService;
@@ -68,7 +69,6 @@ public class RepositoryApplicationService implements ApplicationService {
     }
 
     @Override
-    @Transactional
     public ProjectApplication createApplicationForUser(User user, ProjectApplicationRequestDTO applicationDTO) throws AlreadyAppliedException {
         Project project = projectService.getProjectById(applicationDTO.getProjectId());
 
