@@ -5,7 +5,8 @@ import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.user.persistence.User;
 
-import java.util.Objects;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Service interface to provide functionality to manage {@link Project}s.
@@ -64,6 +65,34 @@ public interface ProjectService {
      *
      */
     Project updateProject(Project project, String projectId);
+
+    /**
+     *
+     * @param project
+     *          The {@link Project} to save.
+     *
+     * @return
+     *          The saved {@code project}.
+     *
+     * @see #saveAll(List)
+     */
+    Project save(Project project);
+
+    /**
+     *
+     * @param projects
+     *          The list of {@link Project}s to save.
+     *
+     * @return
+     *          A list of the saved {@code project}s.
+     *
+     * @see #save(Project)
+     */
+    default List<Project> saveAll(List<Project> projects) {
+        return projects.stream()
+            .map(this::save)
+            .collect(Collectors.toList());
+    }
 
     /**
      * @param project

@@ -7,14 +7,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * A specification for a reader that is used in {@link de.adesso.projectboard.base.updater.ProjectDatabaseUpdater}.
+ * A specification for a reader that is used in {@link de.adesso.projectboard.base.updater.ProjectUpdater}.
  *
  * @see de.adesso.projectboard.reader.JiraProjectReader
  */
 public interface ProjectReader {
 
     /**
-     * This method gets invoked by the {@link de.adesso.projectboard.base.updater.ProjectDatabaseUpdater}
+     * This method gets invoked by the {@link de.adesso.projectboard.base.updater.ProjectUpdater}
      * to update the projects in the database.
      *
      * @param dateTime
@@ -26,12 +26,12 @@ public interface ProjectReader {
      * @throws Exception
      *          When a error occurs.
      *
-     * @see de.adesso.projectboard.base.updater.ProjectDatabaseUpdater
+     * @see de.adesso.projectboard.base.updater.ProjectUpdater
      */
     List<Project> getAllProjectsSince(LocalDateTime dateTime) throws Exception;
 
     /**
-     * This method gets invoked by the {@link de.adesso.projectboard.base.updater.ProjectDatabaseUpdater}
+     * This method gets invoked by the {@link de.adesso.projectboard.base.updater.ProjectUpdater}
      * to get the initial list of projects when no successful update was performed before.
      *
      * @return

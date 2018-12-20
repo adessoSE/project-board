@@ -2,16 +2,15 @@ package de.adesso.projectboard.base.updater;
 
 import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.project.persistence.ProjectRepository;
+import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.reader.ProjectReader;
 import de.adesso.projectboard.base.updater.persistence.UpdateJob;
 import de.adesso.projectboard.base.updater.persistence.UpdateJobRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,30 +20,42 @@ import java.util.Optional;
  * The {@link Service} to update the projects in the database.
  */
 @Service
-public class ProjectDatabaseUpdater {
+public class ProjectUpdater {
 
-    private final UpdateJobRepository infoRepository;
+    private final ProjectService projectService;
 
-    private final ProjectRepository projectRepository;
+    private final UpdateJobRepository updateJobRepo;
 
     private final ProjectReader projectReader;
 
     private final Duration refreshIntervalDuration;
 
-    private final Logger logger;
+    private final Clock clock;
 
     @Autowired
-    public ProjectDatabaseUpdater(UpdateJobRepository infoRepository,
-                                  ProjectRepository projectRepository,
-                                  ProjectReader projectReader,
-                                  ProjectBoardConfigurationProperties properties) {
-        this.infoRepository = infoRepository;
-        this.projectRepository = projectRepository;
+    public ProjectUpdater(ProjectService projectService,
+                          UpdateJobRepository updateJobRepo,
+                          ProjectReader projectReader,
+                          ProjectBoardConfigurationProperties properties) {
+        this.updateJobRepo = updateJobRepo;
+        this.projectService = projectService;
         this.projectReader = projectReader;
 
         this.refreshIntervalDuration = Duration.ofMinutes(properties.getRefreshInterval());
+        this.clock = Clock.systemDefaultZone();
+    }
 
-        this.logger = LoggerFactory.getLogger(getClass());
+    protected ProjectUpdater(ProjectService projectService,
+                             UpdateJobRepository updateJobRepo,
+                             ProjectReader projectReader,
+                             long refreshInterval,
+                             Clock clock) {
+        this.updateJobRepo = updateJobRepo;
+        this.projectService = projectService;
+        this.projectReader = projectReader;
+
+        this.refreshIntervalDuration = Duration.ofMinutes(refreshInterval);
+        this.clock = clock;
     }
 
     /**
@@ -55,10 +66,10 @@ public class ProjectDatabaseUpdater {
     @Scheduled(fixedDelay = 30000L)
     public void refreshProjectDatabase() {
         Optional<UpdateJob> lastSuccessfulUpdate
-                = infoRepository.findFirstByStatusOrderByTimeDesc(UpdateJob.Status.SUCCESS);
+                = updateJobRepo.findFirstByStatusOrderByTimeDesc(UpdateJob.Status.SUCCESS);
 
         try {
-            List<? extends Project> projects;
+            List<Project> projects;
 
             if(lastSuccessfulUpdate.isPresent()) {
                 if(!shouldUpdate(lastSuccessfulUpdate.get())) {
@@ -70,17 +81,15 @@ public class ProjectDatabaseUpdater {
                 projects = projectReader.getInitialProjects();
             }
 
-            projectRepository.saveAll(projects);
+            this.projectService.saveAll(projects);
 
-            infoRepository.save(new UpdateJob(LocalDateTime.now(), UpdateJob.Status.SUCCESS));
+            updateJobRepo.save(new UpdateJob(LocalDateTime.now(clock), UpdateJob.Status.SUCCESS));
         } catch (Exception e) {
-            logger.error("Error updating project database!", e);
-
-            UpdateJob info = new UpdateJob(LocalDateTime.now(),
+            UpdateJob info = new UpdateJob(LocalDateTime.now(clock),
                     UpdateJob.Status.FAILURE,
                     e);
 
-            infoRepository.save(info);
+            updateJobRepo.save(info);
         }
 
     }
@@ -91,12 +100,12 @@ public class ProjectDatabaseUpdater {
      *          The {@link UpdateJob} object of the last successful update.
      *
      * @return
-     *          {@code true} if the difference between {@link LocalDateTime#now() now} and
+     *          {@code true} if the difference between {@link LocalDateTime#now(Clock) now} and
      *          {@link UpdateJob#getTime()} is longer than
      *          {@link ProjectBoardConfigurationProperties#getRefreshInterval()} minutes.
      */
     private boolean shouldUpdate(UpdateJob lastUpdate) {
-        Duration lastUpdateDeltaDuration = Duration.between(lastUpdate.getTime(), LocalDateTime.now()).abs();
+        Duration lastUpdateDeltaDuration = Duration.between(lastUpdate.getTime(), LocalDateTime.now(clock)).abs();
 
         return refreshIntervalDuration.compareTo(lastUpdateDeltaDuration) <= 0;
     }

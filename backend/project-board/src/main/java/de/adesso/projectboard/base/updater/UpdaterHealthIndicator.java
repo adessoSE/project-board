@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 /**
- * A {@link HealthIndicator} implementation for the {@link ProjectDatabaseUpdater}.
+ * A {@link HealthIndicator} implementation for the {@link ProjectUpdater}.
  *
- * @see ProjectDatabaseUpdater
+ * @see ProjectUpdater
  */
 @Component
 public class UpdaterHealthIndicator implements HealthIndicator {
@@ -27,7 +27,7 @@ public class UpdaterHealthIndicator implements HealthIndicator {
     /**
      *
      * @return
-     *          The {@link Health} of the {@link ProjectDatabaseUpdater}. Gives additional
+     *          The {@link Health} of the {@link ProjectUpdater}. Gives additional
      *          details about the status.
      */
     @Override
