@@ -85,29 +85,4 @@ public interface ProjectService {
      */
     void deleteProjectById(String projectId);
 
-    /**
-     * Method to validate the existence of a given {@link Project}
-     * instance.
-     *
-     * @param project
-     *          The {@link Project} to validate.
-     *
-     * @return
-     *          The given {@code project}.
-     *
-     * @throws ProjectNotFoundException
-     *          When the no {@link Project} with the given {@code project}'s
-     *          {@link Project#id ID} exists.
-     *
-     */
-    default Project validateExistence(Project project) throws ProjectNotFoundException {
-        Project givenProject = Objects.requireNonNull(project);
-
-        if(projectExists(givenProject.getId())) {
-            return givenProject;
-        } else {
-            throw new ProjectNotFoundException();
-        }
-    }
-
 }
