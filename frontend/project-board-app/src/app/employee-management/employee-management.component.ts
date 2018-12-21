@@ -23,7 +23,6 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
   @Input() projects: Project[] = [];
 
   numberOfDaysSelect = [];
-
   destroy$ = new Subject<void>();
 
   constructor(private projectService: ProjectService,
@@ -57,7 +56,7 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
     const accessEnd = new Date();
     accessEnd.setDate(accessEnd.getDate() + Number(duration.value));
     accessEnd.setHours(23, 59, 59, 999);
-    const dateString = formatDate(new Date(), 'yyyy-MM-ddTHH:mm:ss.SSS', 'de');
+    const dateString = formatDate(accessEnd, 'yyyy-MM-ddTHH:mm:ss.SSS', 'de');
     this.employeeService.setEmployeeAccessInfo(this.selectedEmployee.id, dateString)
       .pipe(takeUntil(this.destroy$))
       .subscribe(user => {

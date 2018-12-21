@@ -65,32 +65,37 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked  {
 
     const dialogRef = this.dialog.open(ProjectComponent, { panelClass: 'custom-dialog-container' });
     dialogRef.afterClosed().subscribe(result => {
-      this.loadProjects();
+      this.reloadProjects();
     });
   }
 
   loadProjects() {
     
     combineLatest(this.route.data, this.route.params)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(data => {
-        
-        this.bookmarks = data[0].bookmarks;
-        this.isUserBoss = data[0].isUserBoss;
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(data => {
+      if (data[0].projects) {
+        this.projects = data[0].projects.content;
+      }
 
-        // set selected project
-        this.setSelectedProject(data[1].id);
-      }); 
+      // extract projects from applications
+      this.appliedProjects = data[0].applications ? data[0].applications.map(app => app.project) : [];
+      this.bookmarks = data[0].bookmarks;
+      this.isUserBoss = data[0].isUserBoss;
 
-      this.projectsService.getAllProjectsPaginated(this.currentPage, 25)
+      // set selected project
+      this.setSelectedProject(data[1].id);
+    });
+  }
+
+  reloadProjects() {
+    this.projectsService.getAllProjectsPaginated(this.currentPage, 25)
         .pipe(takeUntil(this.destroy$))
         .subscribe(projects => {
           this.loadingProjects = false;
           this.projects = projects.content;
           this.projectsFound = projects.totalElements;
         });
-
-
   }
 
   ngOnInit() {
