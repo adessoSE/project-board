@@ -1,4 +1,4 @@
-package de.adesso.projectboard.security;
+package de.adesso.projectboard.rest.security.configuration;
 
 import org.keycloak.adapters.KeycloakConfigResolver;
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
@@ -64,7 +64,7 @@ public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter 
 
     // maps keycloak roles to spring compatible roles
     @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+    public void configureGlobal(AuthenticationManagerBuilder auth) {
         KeycloakAuthenticationProvider keyCloakAuthProvider = keycloakAuthenticationProvider();
         keyCloakAuthProvider.setGrantedAuthoritiesMapper(new SimpleAuthorityMapper());
 

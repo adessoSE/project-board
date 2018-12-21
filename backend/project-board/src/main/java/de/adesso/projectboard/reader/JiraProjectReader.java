@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  *     is defined.
  * </p>
  *
- * @see de.adesso.projectboard.base.updater.ProjectDatabaseUpdater
+ * @see de.adesso.projectboard.base.updater.ProjectUpdater
  */
 @Profile("adesso-jira")
 @Service
@@ -53,8 +53,7 @@ public class JiraProjectReader implements ProjectReader {
     /**
      *
      * @param dateTime
-     *          The {@link LocalDateTime} supplied by the
-     *          {@link de.adesso.projectboard.base.updater.ProjectDatabaseUpdater}.
+     *          The time from which to get new/updated projects.
      *
      * @return
      *          A List of {@link Project}s that were created/modified since {@code dateTime}.

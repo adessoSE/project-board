@@ -118,6 +118,20 @@ public class LdapUserServiceTest {
     }
 
     @Test
+    public void userIsManagerReturnsTrueWhenUserHasAdminRole() {
+        // given
+        User user = new User(USER_ID);
+
+        given(authInfoRetriever.hasAdminRole()).willReturn(true);
+
+        // when
+        boolean actualIsManager = ldapUserService.userIsManager(user);
+
+        // then
+        assertThat(actualIsManager).isTrue();
+    }
+
+    @Test
     public void userIsManagerReturnsTrueWhenManagerFieldOfExistingStructureForUserIsTrue() {
         // given
         User user = new User(USER_ID);

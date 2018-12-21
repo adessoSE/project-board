@@ -45,6 +45,17 @@ export class AuthenticationService {
   }
 
   get isAdmin() {
-    return this.hasUserRole('admin');
+    if (this.hasUserRole('admin')) {
+      return true;
+    }
+
+    // check if the "directReports" claim is present
+    // if so, the user is a admin
+    const claims: any = this.oAuthService.getIdentityClaims();
+    if (!claims) {
+      return false;
+    }
+
+    return claims.directReports != null;
   }
 }

@@ -12,12 +12,8 @@ import de.adesso.projectboard.base.project.persistence.ProjectRepository;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
-import de.adesso.projectboard.base.user.service.PageableUserProjectService;
 import de.adesso.projectboard.base.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +23,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class RepositoryProjectService implements ProjectService, PageableUserProjectService {
+@Transactional
+public class RepositoryProjectService implements ProjectService {
 
     private final ProjectRepository projectRepo;
 
@@ -52,25 +49,6 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
         this.clock = Clock.systemDefaultZone();
     }
 
-    /**
-     * Package private default constructor for testing purposes.
-     *
-     * @param projectRepo
-     *          The {@link ProjectRepository}.
-     *
-     * @param applicationRepo
-     *          The {@link ProjectApplicationRepository}.
-     *
-     * @param userRepo
-     *          The {@link UserRepository}.
-     *
-     * @param userService
-     *          The {@link UserService}.
-     *
-     * @param clock
-     *          The {@link Clock} to use to generate the
-     *          current time with.
-     */
     RepositoryProjectService(ProjectRepository projectRepo,
                              ProjectApplicationRepository applicationRepo,
                              UserRepository userRepo,
@@ -80,6 +58,7 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
         this.applicationRepo = applicationRepo;
         this.userRepo = userRepo;
         this.userService = userService;
+
         this.clock = clock;
     }
 
@@ -97,25 +76,7 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
         return projectRepo.existsById(projectId);
     }
 
-    /**
-     *
-     * @param project
-     *          The {@link Project} to update the exising
-     *          project from
-     *
-     * @param projectId
-     *          The {@link Project#id ID} of the {@link Project}
-     *          to update.
-     *
-     * @return
-     *          The updated {@link Project}.
-     *
-     * @throws ProjectNotEditableException
-     *          When the {@link Project}'s {@link Project#origin origin} is not set to
-     *          {@link ProjectOrigin#CUSTOM}.
-     */
     @Override
-    @Transactional
     public Project updateProject(Project project, String projectId) throws ProjectNotEditableException {
         Project existingProject = getProjectById(projectId);
 
@@ -124,6 +85,16 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
         } else {
             throw new ProjectNotEditableException();
         }
+    }
+
+    @Override
+    public Project save(Project project) {
+        return projectRepo.save(project);
+    }
+
+    @Override
+    public List<Project> saveAll(List<Project> projects) {
+        return projectRepo.saveAll(projects);
     }
 
     @Override
@@ -137,7 +108,6 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
     }
 
     @Override
-    @Transactional
     public void deleteProjectById(String projectId) throws ProjectNotEditableException {
         Project existingProject = getProjectById(projectId);
 
@@ -194,8 +164,7 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
      *          
      * @see ProjectDtoMapper#toProject(ProjectRequestDTO)
      */
-    @Transactional
-    Project createOrUpdateProject(Project project, String projectId) {
+    public Project createOrUpdateProject(Project project, String projectId) {
         Optional<Project> existingProjectOptional = projectId != null ? projectRepo.findById(projectId) : Optional.empty();
 
         LocalDateTime updatedTime = LocalDateTime.now(clock);
@@ -213,81 +182,7 @@ public class RepositoryProjectService implements ProjectService, PageableUserPro
             project.setCreated(updatedTime);
         }
 
-        return projectRepo.save(project);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Project> getProjectsForUser(User user, Sort sort) {
-        if(userService.userIsManager(user)) {
-            return projectRepo.findAllForManager(sort);
-        } else {
-            String lob = userService.getUserData(user).getLob();
-
-            return projectRepo.findAllForUser(lob, sort);
-        }
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Project> searchProjectsForUser(User user, String keyword, Sort sort) {
-        if(userService.userIsManager(user)) {
-            return projectRepo.findAllForManagerByKeyword(keyword, sort);
-        } else {
-            String lob = userService.getUserData(user).getLob();
-
-            return projectRepo.findAllForUserByKeyword(lob, keyword, sort);
-        }
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean userOwnsProject(User user, Project project) {
-        return userRepo.existsByIdAndOwnedProjectsContaining(user.getId(), project);
-    }
-
-    @Override
-    @Transactional
-    public Project createProjectForUser(Project project, User user) {
-        Project createdProject = createProject(project);
-
-        user.addOwnedProject(createdProject);
-        userService.save(user);
-
-        return createdProject;
-    }
-
-    @Override
-    @Transactional
-    public Project addProjectToUser(User user, Project project) {
-        user.addOwnedProject(project);
-        userService.save(user);
-
-        return project;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<Project> getProjectsForUserPaginated(User user, Pageable pageable) {
-        if(userService.userIsManager(user)) {
-            return projectRepo.findAllForManagerPageable(pageable);
-        } else {
-            String lob = userService.getUserData(user).getLob();
-
-            return projectRepo.findAllForUserPageable(lob, pageable);
-        }
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<Project> searchProjectsForUserPaginated(String keyword, User user, Pageable pageable) {
-        if(userService.userIsManager(user)) {
-            return projectRepo.findAllForManagerByKeywordPageable(keyword, pageable);
-        } else {
-            String lob = userService.getUserData(user).getLob();
-
-            return projectRepo.findAllForUserByKeywordPageable(lob, keyword, pageable);
-        }
+        return this.save(project);
     }
 
 }

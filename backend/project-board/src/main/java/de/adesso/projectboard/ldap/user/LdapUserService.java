@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
  */
 @Profile("adesso-ad")
 @Service
+@Transactional
 public class LdapUserService implements UserService {
 
     private final UserRepository userRepo;
@@ -53,6 +54,7 @@ public class LdapUserService implements UserService {
         this.authInfo = authInfo;
     }
 
+
     @Override
     public User getAuthenticatedUser() throws UserNotFoundException {
         return getUserById(authInfo.getUserId());
@@ -75,7 +77,8 @@ public class LdapUserService implements UserService {
     }
 
     /**
-     * Returns {@code true} iff the persisted {@link OrganizationStructure}'s
+     * Returns {@code true} iff {@link AuthenticationInfoRetriever#hasAdminRole()} returns {@code true}
+     * the persisted {@link OrganizationStructure}'s
      * {@link OrganizationStructure#getStaffMembers() staff members collection}
      * is <b>not empty</b> or the result of {@link LdapService#isManager(String)}
      * if none is present.
@@ -85,6 +88,10 @@ public class LdapUserService implements UserService {
     @Override
     @Transactional(readOnly = true)
     public boolean userIsManager(User user) {
+        if(authInfo.hasAdminRole()) {
+            return true;
+        }
+
         if(structureRepo.existsByUser(user)) {
             return structureRepo.existsByUserAndUserIsManager(user, true);
         } else {
@@ -103,7 +110,6 @@ public class LdapUserService implements UserService {
      * @see LdapService#getIdStructure(User)
      */
     @Override
-    @Transactional
     public OrganizationStructure getStructureForUser(User user) {
         // return the structure saved in the repo if one is present
         // or get the latest structure from the AD
@@ -147,7 +153,6 @@ public class LdapUserService implements UserService {
      * @see LdapService#getUserData(List)
      */
     @Override
-    @Transactional
     public UserData getUserData(User user) {
         Optional<UserData> dataOptional = dataRepo.findByUser(user);
 
@@ -172,7 +177,6 @@ public class LdapUserService implements UserService {
      * @see LdapService#userExists(String)
      */
     @Override
-    @Transactional
     public User getUserById(String userId) throws UserNotFoundException {
         Optional<User> userOptional = userRepo.findById(userId);
 
@@ -221,7 +225,6 @@ public class LdapUserService implements UserService {
     }
 
     @Override
-    @Transactional
     public List<UserData> getStaffMemberDataOfUser(User user, Sort sort) {
         OrganizationStructure structureForUser = getStructureForUser(user);
         if (structureForUser.getStaffMembers().isEmpty()) {
@@ -248,7 +251,6 @@ public class LdapUserService implements UserService {
      * @see UserRepository#save(Object)
      */
     @Override
-    @Transactional
     public User save(User user) {
         return userRepo.save(user);
     }

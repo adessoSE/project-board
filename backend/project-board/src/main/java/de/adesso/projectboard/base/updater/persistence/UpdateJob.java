@@ -1,20 +1,22 @@
 package de.adesso.projectboard.base.updater.persistence;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 /**
- * A info object for the {@link de.adesso.projectboard.base.updater.ProjectDatabaseUpdater}
+ * A info object for the {@link de.adesso.projectboard.base.updater.ProjectUpdater}
  * to persist information about the project database updates.
  *
  * @see UpdateJobRepository
  */
 @Entity
 @Table(name = "UPDATE_JOB")
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UpdateJob {
