@@ -3,7 +3,8 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import localeDe from '@angular/common/locales/de';
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, HAMMER_GESTURE_CONFIG, HammerGestureConfig } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { OAuthModule } from 'angular-oauth2-oidc';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
@@ -23,24 +24,19 @@ import { EmployeeManagementComponent } from './employee-management/employee-mana
 import { ExecutivesComponent } from './executives/executives.component';
 import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
-import { ProfileComponent } from './profile/profile.component';
+import { MaterialModule } from './material.module';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { ProfileComponent } from './profile/profile.component';
 import { ProjectDetailsComponent } from './project-details/project-details.component';
 import { ProjectRequestComponent } from './project-request/project-request.component';
 import { ProjectComponent } from './project/project.component';
-import { MaterialModule } from './material.module';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {
-  HammerGestureConfig,
-  HAMMER_GESTURE_CONFIG,
-} from '@angular/platform-browser';
 
 declare var Hammer: any;
 
-export class MyHammerConfig extends HammerGestureConfig  {
+export class MyHammerConfig extends HammerGestureConfig {
   buildHammer(element: HTMLElement) {
     let mc = new Hammer(element, {
-      touchAction: "pan-y",
+      touchAction: 'pan-y'
     });
     return mc;
   }
@@ -84,7 +80,7 @@ registerLocaleData(localeDe, 'de');
     EmployeeService,
     {
       provide: HAMMER_GESTURE_CONFIG,
-      useClass: MyHammerConfig ,
+      useClass: MyHammerConfig
     },
     ProjectService,
     {provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true}

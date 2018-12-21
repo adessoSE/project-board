@@ -12,30 +12,30 @@ h4 {
   padding-bottom: 0.3rem;
 }
 
-#ButtonBox{
+#ButtonBox {
   text-align: center;
 }
 
-@include media-breakpoint-down(lg){
+@include media-breakpoint-down(lg) {
 
-  h4{
+  h4 {
     padding-top: 1rem;
   }
 
-  #scrollable-area{
+  #scrollable-area {
     border-bottom: 2px solid #007bff;
   }
 
 }
 
-@include media-breakpoint-up(sm){
+@include media-breakpoint-up(sm) {
 
-  #scrollable-area{
+  #scrollable-area {
     padding-left: 10px;
     padding-right: 10px;
   }
 
-  #ButtonBox{
+  #ButtonBox {
     text-align: center;
   }
 }
@@ -47,7 +47,7 @@ h4 {
     max-width: 250px;
   }
 
-  #ButtonBox{
+  #ButtonBox {
     text-align: left;
   }
 
@@ -68,7 +68,7 @@ h4 {
     padding-left: 20px;
     padding-bottom: 0.5rem;
   }
-  .btn{
+  .btn {
     font-size: 90%;
   }
 }

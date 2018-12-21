@@ -1,148 +1,151 @@
-<h1 mat-dialog-title><div *ngIf="edit">Projekt bearbeiten</div><div *ngIf="!edit">Neues Projekt</div></h1>
+<h1 mat-dialog-title>
+  <div *ngIf="edit">Projekt bearbeiten</div>
+  <div *ngIf="!edit">Neues Projekt</div>
+</h1>
 
-<form autocomplete="off"  [formGroup]="form" (ngSubmit)="onSubmit()">
+<form autocomplete="off" [formGroup]="form" (ngSubmit)="onSubmit()">
 
-<div mat-dialog-content style="padding-top: 20px; border-bottom: 1px solid lightgrey; border-top: 1px solid lightgrey;">
-  <div>
-    <div class="form-group">
-      <label for="title">Titel*</label>
+  <div mat-dialog-content style="padding-top: 20px; border-bottom: 1px solid lightgrey; border-top: 1px solid lightgrey;">
+    <div>
+      <div class="form-group">
+        <label for="title">Titel*</label>
+        <div>
+          <input name="title" type="text" class="form-control" id="title" formControlName="title" [ngClass]="{ 'is-invalid': submitted && f.title.errors }">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="issueType">Typ*</label>
+        <div class="form-group">
+          <select name="issueType" class="form-control" id="issueType" formControlName="issuetype" [ngClass]="{ 'is-invalid': submitted && f.issuetype.errors }">
+            <option value="Staffinganfrage" selected>Staffinganfrage</option>
+            <option value="Studentisches Projekt">Studentisches Projekt</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="status">Status*</label>
+        <div>
+          <select name="status" class="form-control" id="status" formControlName="status" [ngClass]="{ 'is-invalid': submitted && f.status.errors }">
+            <option value="open" selected>Offen</option>
+            <option value="eskaliert">Eskaliert</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="labels">Stichwörter</label>
+        <div>
+          <input name="labels" type="text" class="form-control" id="labels" [(ngModel)]="labelsInput" [ngModelOptions]="{standalone: true}">
+          <small>Stichwörter durch Komma getrennt eingeben (z.B.: 'Java, Spring Boot, Angular')</small>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="job">Aufgabe</label>
+        <div>
+          <textarea name="job" type="text" class="form-control custom-textarea" id="job" rows="4" [(ngModel)]="project.job" [ngModelOptions]="{standalone: true}"></textarea>
+        </div>
+      </div>
       <div>
-        <input name="title" type="text" class="form-control" id="title" formControlName="title" [ngClass]="{ 'is-invalid': submitted && f.title.errors }">
+        <label for="lob">Zuständige LOB*</label>
+        <div class="form-group">
+          <select name="lob" class="form-control" id="lob" formControlName="lob" [ngClass]="{ 'is-invalid': submitted && f.lob.errors }">
+            <option value="automotiveTransportation" selected>Automotive & Transportation</option>
+            <option value="banking">Banking</option>
+            <option value="crossIndustries">Cross Industries</option>
+            <option value="health">Health</option>
+            <option value="insurance">Insurance</option>
+            <option value="itmc">ITMC</option>
+            <option value="lottery">Lottery</option>
+            <option value="manufactering">Manufacturing</option>
+            <option value="microsoft">Microsoft</option>
+            <option value="public">Public</option>
+          </select>
+        </div>
       </div>
-    </div>
-    <div class="form-group">
-      <label for="issueType" >Typ*</label>
+
+      <div>
+        <label for="skills">Skills</label>
+        <div class="form-group">
+          <input name="skills" type="text" class="form-control" id="skills" [(ngModel)]="project.skills" [ngModelOptions]="{standalone: true}">
+          <small>Skills durch Komma getrennt eingeben (z.B.: 'Java, Spring Boot, Angular')</small>
+        </div>
+      </div>
+
       <div class="form-group">
-        <select name="issueType" class="form-control" id="issueType" formControlName="issuetype" [ngClass]="{ 'is-invalid': submitted && f.issuetype.errors }">
-          <option value="Staffinganfrage" selected>Staffinganfrage</option>
-          <option value="Studentisches Projekt">Studentisches Projekt</option>
-        </select>
+        <label for="customer">Kunde</label>
+        <div>
+          <input name="customer" type="text" class="form-control" id="customer" [(ngModel)]="project.customer" [ngModelOptions]="{standalone: true}">
+        </div>
       </div>
-    </div>
-    <div class="form-group">
-      <label for="status" >Status*</label>
-      <div >
-        <select name="status" class="form-control" id="status" formControlName="status" [ngClass]="{ 'is-invalid': submitted && f.status.errors }">
-          <option value="open" selected>Offen</option>
-          <option value="eskaliert">Eskaliert</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="labels" >Stichwörter</label>
-      <div >
-        <input name="labels" type="text" class="form-control" id="labels" [(ngModel)]="labelsInput" [ngModelOptions]="{standalone: true}">
-        <small>Stichwörter durch Komma getrennt eingeben (z.B.: 'Java, Spring Boot, Angular')</small>
-      </div>
-    </div>
-    <div class="form-group">
-      <label for="job" >Aufgabe</label>
-      <div >
-        <textarea name="job" type="text" class="form-control custom-textarea" id="job" rows="4" [(ngModel)]="project.job" [ngModelOptions]="{standalone: true}"></textarea>
-      </div>
-    </div>
-    <div>
-      <label for="lob" >Zuständige LOB*</label>
+
       <div class="form-group">
-        <select name="lob" class="form-control" id="lob" formControlName="lob" [ngClass]="{ 'is-invalid': submitted && f.lob.errors }">
-          <option value="automotiveTransportation" selected>Automotive & Transportation</option>       
-          <option value="banking">Banking</option>
-          <option value="crossIndustries">Cross Industries</option>
-          <option value="health">Health</option>
-          <option value="insurance">Insurance</option>
-          <option value="itmc">ITMC</option>
-          <option value="lottery">Lottery</option>
-          <option value="manufactering">Manufacturing</option>
-          <option value="microsoft">Microsoft</option>
-          <option value="public">Public</option>
-        </select>
+        <label for="location">Einsatzort</label>
+        <div>
+          <input name="location" type="text" class="form-control" id="location" [(ngModel)]="project.location" [ngModelOptions]="{standalone: true}">
+        </div>
       </div>
-    </div>
 
-    <div>
-      <label for="skills" >Skills</label>
-      <div class="form-group">
-        <input name="skills" type="text" class="form-control" id="skills" [(ngModel)]="project.skills" [ngModelOptions]="{standalone: true}">
-        <small>Skills durch Komma getrennt eingeben (z.B.: 'Java, Spring Boot, Angular')</small>
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="customer" >Kunde</label>
-      <div >
-        <input name="customer" type="text" class="form-control" id="customer" [(ngModel)]="project.customer" [ngModelOptions]="{standalone: true}">
-      </div>
-    </div>
-
-    <div class="form-group">
-      <label for="location" >Einsatzort</label>
-      <div >
-        <input name="location" type="text" class="form-control" id="location" [(ngModel)]="project.location" [ngModelOptions]="{standalone: true}">
-      </div>
-    </div>
-
-    <div>
-      <label for="start" >Start</label>
-      <div >
-        <!-- <input name="start" type="text" class="form-control" id="start" [(ngModel)]="project.operationStart" [ngModelOptions]="{standalone: true}"> -->
-        <mat-form-field>
+      <div>
+        <label for="start">Start</label>
+        <div>
+          <!-- <input name="start" type="text" class="form-control" id="start" [(ngModel)]="project.operationStart" [ngModelOptions]="{standalone: true}"> -->
+          <mat-form-field>
             <mat-label></mat-label>
             <input matInput name="start" id="start" [(ngModel)]="project.operationStart" [ngModelOptions]="{standalone: true}" [matDatepicker]="pickerStart" placeholder="TT.MM.JJJJ">
             <mat-datepicker-toggle matSuffix [for]="pickerStart"></mat-datepicker-toggle>
             <mat-datepicker #pickerStart></mat-datepicker>
-        </mat-form-field>
+          </mat-form-field>
+        </div>
       </div>
-    </div>
 
-    <div>
-      <label for="end" >Ende</label>
-      <div >
-        <!-- <input name="end" type="text" class="form-control" id="end" [(ngModel)]="project.operationEnd" [ngModelOptions]="{standalone: true}"> [matDatepickerFilter]="myFilter" -->
-        <mat-form-field>
+      <div>
+        <label for="end">Ende</label>
+        <div>
+          <!-- <input name="end" type="text" class="form-control" id="end" [(ngModel)]="project.operationEnd" [ngModelOptions]="{standalone: true}"> [matDatepickerFilter]="myFilter" -->
+          <mat-form-field>
             <mat-label></mat-label>
-            <input name="end" id="end" [(ngModel)]="project.operationEnd" [ngModelOptions]="{standalone: true}" matInput  [matDatepicker]="pickerEnd" placeholder="TT.MM.JJJJ">
+            <input name="end" id="end" [(ngModel)]="project.operationEnd" [ngModelOptions]="{standalone: true}" matInput [matDatepicker]="pickerEnd" placeholder="TT.MM.JJJJ">
             <mat-datepicker-toggle matSuffix [for]="pickerEnd"></mat-datepicker-toggle>
             <mat-datepicker #pickerEnd></mat-datepicker>
-        </mat-form-field>
+          </mat-form-field>
+        </div>
       </div>
-    </div>
 
-    <div>
-      <label for="elongation" >Option auf Verlängerung</label>
-      <div class="form-group">
-        <input name="elongation" type="text" class="form-control" id="elongation" [(ngModel)]="project.elongation" [ngModelOptions]="{standalone: true}">
+      <div>
+        <label for="elongation">Option auf Verlängerung</label>
+        <div class="form-group">
+          <input name="elongation" type="text" class="form-control" id="elongation" [(ngModel)]="project.elongation" [ngModelOptions]="{standalone: true}">
+        </div>
       </div>
-    </div>
 
-    <div>
-      <label for="effort" >Aufwand</label>
-      <div class="form-group">
-        <input name="effort" type="text" class="form-control" id="effort" [(ngModel)]="project.effort" [ngModelOptions]="{standalone: true}">
+      <div>
+        <label for="effort">Aufwand</label>
+        <div class="form-group">
+          <input name="effort" type="text" class="form-control" id="effort" [(ngModel)]="project.effort" [ngModelOptions]="{standalone: true}">
+        </div>
       </div>
-    </div>
 
-    <div>
-      <label for="description" >Beschreibung*</label>
-      <div class="form-group">
-        <textarea name="description" type="text" class="form-control custom-textarea" id="description" rows="4" formControlName="description" [ngClass]="{ 'is-invalid': submitted && f.description.errors }"></textarea>
+      <div>
+        <label for="description">Beschreibung*</label>
+        <div class="form-group">
+          <textarea name="description" type="text" class="form-control custom-textarea" id="description" rows="4" formControlName="description" [ngClass]="{ 'is-invalid': submitted && f.description.errors }"></textarea>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
-<div mat-dialog-actions>
-  <div style="margin: 0 auto; text-align: center">
-    <!--  Info  -->
-    <div>
-    <small *ngIf="submitted && form.invalid" class="invalid d-block">Du hast nicht alle benötigten Felder ausgefüllt!</small>
-    <small>Felder, die mit einem Stern markiert sind, müssen ausgefüllt werden.</small>
+  <div mat-dialog-actions>
+    <div style="margin: 0 auto; text-align: center">
+      <!--  Info  -->
+      <div>
+        <small *ngIf="submitted && form.invalid" class="invalid d-block">Du hast nicht alle benötigten Felder ausgefüllt!</small>
+        <small>Felder, die mit einem Stern markiert sind, müssen ausgefüllt werden.</small>
+      </div>
+      <!--  Buttons  -->
+      <div>
+        <button *ngIf="!edit" type="submit" class="btn btn-primary" style="margin: 5px">Erstellen</button>
+        <button *ngIf="edit" type="submit" class="btn btn-primary" style="margin: 5px">Änderungen speichern</button>
+        <button mat-dialog-close class="btn btn-primary" style="margin: 5px">Abbrechen</button>
+      </div>
     </div>
-    <!--  Buttons  -->
-    <div>
-    <button *ngIf="!edit" type="submit" class="btn btn-primary" style="margin: 5px">Erstellen</button>
-    <button *ngIf="edit"  type="submit" class="btn btn-primary" style="margin: 5px">Änderungen speichern</button>
-    <button mat-dialog-close class="btn btn-primary" style="margin: 5px">Abbrechen</button>
-    </div>
-  </div> 
-</div>
+  </div>
 </form>

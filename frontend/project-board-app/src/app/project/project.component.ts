@@ -1,33 +1,29 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, Inject, OnInit } from '@angular/core';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { MomentDateAdapter } from '@angular/material-moment-adapter';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import * as _moment from 'moment';
+import 'moment/locale/de';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AlertService } from '../_services/alert.service';
 import { Project, ProjectService } from '../_services/project.service';
 
-import {MAT_DIALOG_DATA} from '@angular/material';
-import { Inject } from '@angular/core';
-
-import {FormControl} from '@angular/forms';
-import {MomentDateAdapter} from '@angular/material-moment-adapter';
-import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
-import { MatDialogRef} from '@angular/material';
-import * as _moment from 'moment';
-import 'moment/locale/de';
-
 const moment = _moment;
 
 export const MY_FORMATS = {
   parse: {
-    dateInput: 'DD.MM.YYYY',
+    dateInput: 'DD.MM.YYYY'
   },
   display: {
     dateInput: 'DD.MM.YYYY',
     monthYearLabel: 'MMM YYYY',
     dateA11yLabel: 'DD.MM.YYYY',
-    monthYearA11yLabel: 'MMMM YYYY',
-  },
+    monthYearA11yLabel: 'MMMM YYYY'
+  }
 };
 
 @Component({
@@ -36,8 +32,8 @@ export const MY_FORMATS = {
   styleUrls: ['./project.component.scss'],
   providers: [
     {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
-    {provide: MAT_DATE_FORMATS, useValue: MY_FORMATS},
-  ],
+    {provide: MAT_DATE_FORMATS, useValue: MY_FORMATS}
+  ]
 })
 export class ProjectComponent implements OnInit {
   project: Project;
@@ -58,10 +54,10 @@ export class ProjectComponent implements OnInit {
               private dialogRef: MatDialogRef<ProjectComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any) { }
 
-myFilter = (d: Date): boolean => {
-  var currentDate = new Date();
-  return ((d.getDate() >= currentDate.getDate()) && (d.getMonth() >= currentDate.getMonth()) && (d.getFullYear() === currentDate.getFullYear())) || (d.getFullYear() > currentDate.getFullYear());
-}            
+  myFilter = (d: Date): boolean => {
+    const currentDate = new Date();
+    return ((d.getDate() >= currentDate.getDate()) && (d.getMonth() >= currentDate.getMonth()) && (d.getFullYear() === currentDate.getFullYear())) || (d.getFullYear() > currentDate.getFullYear());
+  };
 
   ngOnInit() {
     this.route.data
