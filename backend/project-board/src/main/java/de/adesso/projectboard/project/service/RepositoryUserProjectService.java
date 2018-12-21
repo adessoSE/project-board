@@ -40,7 +40,7 @@ public class RepositoryUserProjectService implements PageableUserProjectService 
     @Override
     @Transactional(readOnly = true)
     public List<Project> getProjectsForUser(User user, Sort sort) {
-        if(userService.userIsManager(user)) {
+        if(userCanSeeProjectsForManagers(user)) {
             return projectRepo.findAllForManager(sort);
         } else {
             String lob = userService.getUserData(user).getLob();
@@ -52,7 +52,7 @@ public class RepositoryUserProjectService implements PageableUserProjectService 
     @Override
     @Transactional(readOnly = true)
     public List<Project> searchProjectsForUser(User user, String keyword, Sort sort) {
-        if(userService.userIsManager(user)) {
+        if(userCanSeeProjectsForManagers(user)) {
             return projectRepo.findAllForManagerByKeyword(keyword, sort);
         } else {
             String lob = userService.getUserData(user).getLob();
@@ -90,7 +90,7 @@ public class RepositoryUserProjectService implements PageableUserProjectService 
     @Override
     @Transactional(readOnly = true)
     public Page<Project> getProjectsForUserPaginated(User user, Pageable pageable) {
-        if(userService.userIsManager(user)) {
+        if(userCanSeeProjectsForManagers(user)) {
             return projectRepo.findAllForManagerPageable(pageable);
         } else {
             String lob = userService.getUserData(user).getLob();
@@ -102,13 +102,29 @@ public class RepositoryUserProjectService implements PageableUserProjectService 
     @Override
     @Transactional(readOnly = true)
     public Page<Project> searchProjectsForUserPaginated(String keyword, User user, Pageable pageable) {
-        if(userService.userIsManager(user)) {
+        if(userCanSeeProjectsForManagers(user)) {
             return projectRepo.findAllForManagerByKeywordPageable(keyword, pageable);
         } else {
             String lob = userService.getUserData(user).getLob();
 
             return projectRepo.findAllForUserByKeywordPageable(lob, keyword, pageable);
         }
+    }
+
+    /**
+     *
+     * @param user
+     *          The {@link User} to check.
+     *
+     * @return
+     *          {@code true}, iff the given {@code user} can see
+     *          all projects that a manager can see.
+     */
+    boolean userCanSeeProjectsForManagers(User user) {
+        boolean userEqualsAuthenticatedUserAndIsAdmin = user.equals(userService.getAuthenticatedUser())
+                && userService.authenticatedUserIsAdmin();
+
+        return userService.userIsManager(user) || userEqualsAuthenticatedUserAndIsAdmin;
     }
 
 }
