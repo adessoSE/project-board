@@ -6,9 +6,10 @@ import { environment } from '../../environments/environment';
 export class ProjectService {
   constructor(private http: HttpClient) { }
 
+  /* Nicht benutzen, daBackend damit nicht funktioniert
   getAllProjects() {
     return this.http.get<Project[]>(`${environment.resourceServer}/projects`);
-  }
+  } */
 
   getAllProjectsPaginated(page: number, size: number) {
     return this.http.get<Page<Project>>(`${environment.resourceServer}/projects?page=${page}&size=${size}`);

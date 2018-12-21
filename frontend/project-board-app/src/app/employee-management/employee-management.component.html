@@ -31,7 +31,7 @@
     <div *ngIf="adminControls" class="mt-2 pt-1 border-top">
       <form *ngIf="!selectedEmployee.accessInfo.hasAccess && !selectedEmployee.boss">
         <div class="form-group">
-          <label class="select-label" for="durationSelect">Dauer der Freischaltung</label>
+          <label class="select-label" for="durationSelect">Dauer der Freischaltung in Tagen</label>
           <select #duration required class="select form-control" id="durationSelect">
             <option *ngFor="let option of numberOfDaysSelect">{{option}}</option>
           </select>

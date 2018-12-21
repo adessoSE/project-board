@@ -1,32 +1,40 @@
 @import 'functions';
 @import '../../../node_modules/bootstrap/scss/variables';
+@import '../../../node_modules/bootstrap/scss/mixins';
 
 textarea {
   resize: none;
 }
 
-/* width */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: #e3f2fd;
-  border-radius: 2px;
-}
-
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: $primary;
-  border-radius: 2px;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: darken($primary, 10);
-}
-
 .invalid {
   color: $red;
+}
+
+.mat-dialog-title {
+  margin: 0;
+  padding-bottom: 20px;
+}
+
+@include media-breakpoint-down(lg) {
+
+  .mat-dialog-content {
+    max-height: 87vh !important;
+  }
+
+}
+
+@include media-breakpoint-down(md) {
+
+  .mat-dialog-content {
+    max-height: 82vh !important;
+  }
+
+}
+
+@include media-breakpoint-down(sm) {
+
+  .mat-dialog-content {
+    max-height: 70vh !important;
+  }
+
 }

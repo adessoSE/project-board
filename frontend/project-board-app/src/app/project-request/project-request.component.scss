@@ -1,5 +1,10 @@
 @import 'functions';
 @import '../../../node_modules/bootstrap/scss/variables';
+@import '../../../node_modules/bootstrap/scss/mixins';
+
+#requestContainer {
+  padding-top: 5rem;
+}
 
 .comment {
   margin-bottom: 1rem;
@@ -15,4 +20,12 @@
   overflow-y: auto;
   resize: none;
   display: block;
+}
+
+@include media-breakpoint-down(lg) {
+
+  #requestContainer {
+    padding-top: 1rem;
+  }
+
 }

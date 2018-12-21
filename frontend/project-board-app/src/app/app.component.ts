@@ -1,21 +1,21 @@
-import { Component, HostListener, ViewChild } from '@angular/core';
+import { Component, DoCheck, HostListener, OnInit, ViewChild } from '@angular/core';
+import { MatSidenav } from '@angular/material';
 import { faChevronUp } from '@fortawesome/free-solid-svg-icons/faChevronUp';
 import { AuthConfig, JwksValidationHandler, OAuthService } from 'angular-oauth2-oidc';
+import * as $ from 'jquery';
 import { environment } from '../environments/environment';
 import { AlertService } from './_services/alert.service';
 import { AuthenticationService } from './_services/authentication.service';
-import { MatSidenav } from '@angular/material';
-import * as $ from 'jquery';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit, DoCheck {
   faChevronUp = faChevronUp;
-  username = "default";
-  @ViewChild ('snav') sidenav: MatSidenav;
+  username = 'default';
+  @ViewChild('snav') sidenav: MatSidenav;
 
   constructor(private oAuthService: OAuthService,
               private authenticationService: AuthenticationService,
@@ -30,60 +30,60 @@ export class AppComponent {
     this.oAuthService.loadDiscoveryDocumentAndLogin();
   }
 
-/* Sidenav responsive */
+  /* Sidenav responsive */
 
-  NavToggle(){
+  NavToggle() {
     if (/Mobi/.test(navigator.userAgent)) {
-      if(this.sidenav.opened){
+      if (this.sidenav.opened) {
         this.sidenav.close();
       } else {
         this.sidenav.open();
-      } 
+      }
     }
   }
 
-  openNav(){
+  openNav() {
     if (window.innerWidth < 1200) {
-        this.sidenav.open();
+      this.sidenav.open();
     }
   }
 
-  closeNav(){
+  closeNav() {
     if (window.innerWidth < 1200) {
-        this.sidenav.close();
+      this.sidenav.close();
     }
   }
 
-  onNavOpen(){
+  onNavOpen() {
     if (/Mobi/.test(navigator.userAgent)) {
-    $("body").css("overflow","hidden");
-    document.getElementById('top-badge').style.visibility ="hidden";
+      $('body').css('overflow', 'hidden');
+      document.getElementById('top-badge').style.visibility = 'hidden';
     }
   }
 
-  onNavClosed(){
+  onNavClosed() {
     if (/Mobi/.test(navigator.userAgent)) {
-    $("body").css("overflow","auto");
-    document.getElementById('top-badge').style.visibility ="visible";
+      $('body').css('overflow', 'auto');
+      document.getElementById('top-badge').style.visibility = 'visible';
     }
   }
 
-  onResize(){
+  onResize() {
     this.sidenav.close();
-    $("body").css("overflow","auto");
-    document.getElementById('top-badge').style.visibility ="visible";
+    $('body').css('overflow', 'auto');
+    document.getElementById('top-badge').style.visibility = 'visible';
   }
 
-  getUsername(){
+  getUsername() {
     return this.authenticationService.username;
   }
 
-  ngOnInit(){
+  ngOnInit() {
     this.sidenav.openedStart.subscribe(() => this.onNavOpen());
     this.sidenav.closedStart.subscribe(() => this.onNavClosed());
   }
 
-  ngDoCheck(){
+  ngDoCheck() {
     this.username = this.getUsername();
   }
 
@@ -132,7 +132,7 @@ export const authConfig: AuthConfig = {
   // set the scope for the permissions the client should request
   // The first three are defined by OIDC. The 4th is a usecase-specific one
   scope: 'openid profile email',
-  oidc: true,
+  oidc: true
 
-  //requireHttps: false,
+  // requireHttps: false,
 };

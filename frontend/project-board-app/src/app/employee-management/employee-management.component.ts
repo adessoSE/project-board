@@ -6,6 +6,8 @@ import { takeUntil } from 'rxjs/operators';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Application, Employee, EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
+import {MatDialog} from '@angular/material';
+import { ProjectComponent } from '../project/project.component';
 
 @Component({
   selector: 'app-employee-management',
@@ -21,12 +23,12 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
   @Input() projects: Project[] = [];
 
   numberOfDaysSelect = [];
-
   destroy$ = new Subject<void>();
 
   constructor(private projectService: ProjectService,
               private employeeService: EmployeeService,
               private authService: AuthenticationService,
+              public dialog: MatDialog,
               private router: Router) { }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -103,7 +105,19 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
   }
 
   editProject(projectId) {
-    this.router.navigate([`/projects/${projectId}/edit`]);
+    this.openDialog(projectId);
+  }
+
+  openDialog(projectId): void {
+
+    const dialogRef = this.dialog.open(ProjectComponent, { panelClass: 'custom-dialog-container', data: {
+      dataKey: projectId
+    } });
+
+    dialogRef.afterClosed().subscribe(result => {
+     this.ngOnInit();
+    });
+
   }
 
   isAdmin() {

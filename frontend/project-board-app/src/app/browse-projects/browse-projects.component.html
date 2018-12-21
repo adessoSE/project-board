@@ -1,7 +1,10 @@
-<h1 class="display-3">Offene Projekte</h1>
+<h1 class="display-3">Projekte</h1>
 <div id="divToScroll" class="row mt-4" (swiperight)="swipebugplaceholder()">
   <div class="col-md-6" (swiperight)="swipebugplaceholder()">
-    <h4>Projekte</h4>
+    <div id="addProject" mat-raised-button (click)="openDialog()">
+      <mat-icon id="addIcon" class="nav-icon">add_circle_outline</mat-icon>
+      Neues Projekt
+    </div>
     <label for="search" class="sr-only">Suche</label>
     <input #search [(ngModel)]="searchText" (ngModelChange)="searchProjects()" [ngClass]="{'search form-control': true, 'mb-1': search.value != '', 'mb-3': search.value == ''}" type="text" name="search" id="search" placeholder="Projekte suchen...">
     <div *ngIf="search.value != '' && !loadingProjects" class="mb-1" style="text-align: center">
@@ -25,8 +28,10 @@
         </ng-container>
       </div>
       <div *ngIf="loadingProjects" style="width: 100%; margin-top: 1rem">
-        <div class="loading-spinner"><mat-spinner [diameter]="50"></mat-spinner></div>
-    </div>
+        <div class="loading-spinner">
+          <mat-spinner [diameter]="50"></mat-spinner>
+        </div>
+      </div>
     </div>
 
     <!--Desktop Version-->
@@ -45,8 +50,10 @@
         </ng-container>
       </div>
       <div *ngIf="loadingProjects" style="width: 100%; margin-top: 1rem">
-        <div class="loading-spinner"><mat-spinner [diameter]="50"></mat-spinner></div>
-    </div>
+        <div class="loading-spinner">
+          <mat-spinner [diameter]="50"></mat-spinner>
+        </div>
+      </div>
     </div>
 
 

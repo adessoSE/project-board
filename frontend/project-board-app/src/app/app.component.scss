@@ -16,22 +16,22 @@
   max-width: none;
 }
 
-.navbar-divider{
+.navbar-divider {
   position: fixed;
   top: 56px;
   width: 100%;
   max-width: none;
   margin: 0 -15px;
   min-height: 2px;
-  z-index: 1020;
+  z-index: 100;
   background-image: linear-gradient(to right, #006ec7, #e3f2fd);
 }
 
-.nav-item a:hover{
+.nav-item a:hover {
   color: inherit;
 }
 
-.active-link{
+.active-link {
   color: rgba(0, 0, 0, 1);
 }
 
@@ -39,16 +39,16 @@
   display: none;
 }
 
-#side-nav{
+#side-nav {
   display: none;
   min-width: 30%;
 }
 
-.mat-drawer-backdrop{
+.mat-drawer-backdrop {
   display: none;
 }
 
-.mat-drawer-container{
+.mat-drawer-container {
   background-color: transparent;
 }
 
@@ -56,12 +56,12 @@
   outline: none;
 }
 
-#logout{
+#logout {
   position: absolute;
   right: 10px;
 }
 
-#navbarContent{
+#navbarContent {
   display: block;
 }
 
@@ -82,13 +82,13 @@
     width: 100%;
   }
 
-  .navbar-divider{
+  .navbar-divider {
     position: fixed;
     top: 56px;
     width: 100%;
   }
 
-  .active-link{
+  .active-link {
     color: rgba(0, 0, 0, 0.5);
   }
 
@@ -105,17 +105,17 @@
     outline: none;
   }
 
-  #side-nav{
+  #side-nav {
     display: block;
     position: fixed;
     top: 58px;
   }
 
-  .mat-drawer-backdrop{
+  .mat-drawer-backdrop {
     display: block;
   }
 
-  .mat-drawer-container{
+  .mat-drawer-container {
     background-color: inherit;
   }
 
@@ -124,24 +124,24 @@
     padding-right: 15px;
   }
 
-  #navbarContent{
+  #navbarContent {
     display: none;
   }
 
-  #belowNavbar{
+  #belowNavbar {
     margin-top: 58px;
   }
 
-  .side-link{
+  .side-link {
     padding: 15px;
     padding-top: 20px;
   }
 
-  .side-link:focus{
+  .side-link:focus {
     outline: 0 !important;
   }
 
-  #side-username{
+  #side-username {
     padding: 20px;
     font-size: 120%;
     font-weight: bold;
@@ -154,12 +154,12 @@
     border-bottom: 1px solid grey;
   }
 
-  #side-logout{
+  #side-logout {
     border-top: 1px solid grey;
     border-bottom: 0;
   }
 
-  .nav-icon{
+  .nav-icon {
     float: left;
     margin-top: -2px;
     margin-right: 10px;
