@@ -36,6 +36,14 @@ public interface UserService {
 
     /**
      *
+     * @return
+     *          {@code true}, iff the currently authenticated {@link User}
+     *          is a admin.
+     */
+    boolean authenticatedUserIsAdmin();
+
+    /**
+     *
      * @param userId
      *          The {@link User#id ID} of the {@link User}.
      *

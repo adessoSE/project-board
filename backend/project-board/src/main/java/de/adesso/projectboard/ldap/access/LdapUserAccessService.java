@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Profile("adesso-ad")
 @Service
@@ -55,14 +56,16 @@ public class LdapUserAccessService implements UserAccessService {
             throw new IllegalArgumentException("End date must lie in the future!");
         }
 
-        AccessInfo latestInfo = user.getLatestAccessInfo();
+        Optional<AccessInfo> latestInfoOptional = user.getLatestAccessInfo();
 
-        if(latestInfo == null || !userHasActiveAccessInfo(user)) {
+        if(!latestInfoOptional.isPresent() || !userHasActiveAccessInfo(user)) {
             AccessInfo info = new AccessInfo(user, LocalDateTime.now(clock), until);
             user.addAccessInfo(info);
 
             return userService.save(user);
         } else {
+            AccessInfo latestInfo = latestInfoOptional.get();
+
             latestInfo.setAccessEnd(until);
 
             infoRepo.save(latestInfo);
@@ -74,9 +77,11 @@ public class LdapUserAccessService implements UserAccessService {
     @Override
     public User removeAccessFromUser(User user) {
         if(userHasActiveAccessInfo(user)) {
-            AccessInfo latestInfo = user.getLatestAccessInfo();
+            AccessInfo latestInfo = user.getLatestAccessInfo()
+                    .orElseThrow(() -> new IllegalStateException("No info instance present!"));
 
             latestInfo.setAccessEnd(LocalDateTime.now(clock));
+
             infoRepo.save(latestInfo);
         }
 
@@ -85,9 +90,11 @@ public class LdapUserAccessService implements UserAccessService {
 
     @Override
     public boolean userHasActiveAccessInfo(User user) {
-        AccessInfo latestInfo = user.getLatestAccessInfo();
+        Optional<AccessInfo> latestInfoOptional = user.getLatestAccessInfo();
 
-        if(latestInfo != null) {
+        if(latestInfoOptional.isPresent()) {
+            AccessInfo latestInfo = latestInfoOptional.get();
+
             LocalDateTime startTime = latestInfo.getAccessStart();
             LocalDateTime endTime = latestInfo.getAccessEnd();
             LocalDateTime now = LocalDateTime.now(clock);

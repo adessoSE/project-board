@@ -148,15 +148,15 @@ public class User {
     /**
      *
      * @return
-     *          The latest {@link AccessInfo} instance or {@code null}
-     *          when none is present.
+     *          A {@link Optional} containing the latest {@link AccessInfo}
+     *          instance or an empty one if none is present.
      */
-    public AccessInfo getLatestAccessInfo() {
+    public Optional<AccessInfo> getLatestAccessInfo() {
         if(accessInfoList.size() > 0) {
-            return accessInfoList.get(accessInfoList.size() - 1);
+            return Optional.of(accessInfoList.get(accessInfoList.size() - 1));
         }
 
-        return null;
+        return Optional.empty();
     }
 
     /**

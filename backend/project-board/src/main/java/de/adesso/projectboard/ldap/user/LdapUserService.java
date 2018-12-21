@@ -65,6 +65,11 @@ public class LdapUserService implements UserService {
         return authInfo.getUserId();
     }
 
+    @Override
+    public boolean authenticatedUserIsAdmin() {
+        return authInfo.hasAdminRole();
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -88,10 +93,6 @@ public class LdapUserService implements UserService {
     @Override
     @Transactional(readOnly = true)
     public boolean userIsManager(User user) {
-        if(authInfo.hasAdminRole()) {
-            return true;
-        }
-
         if(structureRepo.existsByUser(user)) {
             return structureRepo.existsByUserAndUserIsManager(user, true);
         } else {

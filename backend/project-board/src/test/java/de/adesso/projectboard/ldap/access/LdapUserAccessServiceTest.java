@@ -17,6 +17,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -69,7 +70,7 @@ public class LdapUserAccessServiceTest {
         LocalDateTime initialEndTime = LocalDateTime.now(clock).plus(10L, ChronoUnit.MINUTES);
         LocalDateTime expectedEndTime = LocalDateTime.now(clock).plus(20L, ChronoUnit.MINUTES);
 
-        given(userMock.getLatestAccessInfo()).willReturn(accessInfoMock);
+        given(userMock.getLatestAccessInfo()).willReturn(Optional.of(accessInfoMock));
 
         given(accessInfoMock.getAccessStart()).willReturn(expectedStartTime);
         given(accessInfoMock.getAccessEnd()).willReturn(initialEndTime);
@@ -91,7 +92,7 @@ public class LdapUserAccessServiceTest {
         LocalDateTime expectedStartTime = LocalDateTime.now(clock);
         LocalDateTime expectedEndTime = LocalDateTime.now(clock).plus(10L , ChronoUnit.DAYS);
 
-        given(userMock.getLatestAccessInfo()).willReturn(accessInfoMock);
+        given(userMock.getLatestAccessInfo()).willReturn(Optional.of(accessInfoMock));
         given(accessInfoMock.getAccessStart()).willReturn(inactiveStartTime);
         given(accessInfoMock.getAccessEnd()).willReturn(inactiveEndTime);
 
@@ -121,7 +122,7 @@ public class LdapUserAccessServiceTest {
         LocalDateTime expectedStartTime = LocalDateTime.now(clock);
         LocalDateTime expectedEndTime = LocalDateTime.now(clock).plus(10L , ChronoUnit.DAYS);
 
-        given(userMock.getLatestAccessInfo()).willReturn(null);
+        given(userMock.getLatestAccessInfo()).willReturn(Optional.empty());
 
         // when
         accessService.giveUserAccessUntil(userMock, expectedEndTime);
@@ -149,7 +150,7 @@ public class LdapUserAccessServiceTest {
         LocalDateTime inactiveStartTime = LocalDateTime.now(clock).minus(10L, ChronoUnit.DAYS);
         LocalDateTime inactiveEndTime = LocalDateTime.now(clock).minus(1L, ChronoUnit.DAYS);
 
-        given(userMock.getLatestAccessInfo()).willReturn(accessInfoMock);
+        given(userMock.getLatestAccessInfo()).willReturn(Optional.of(accessInfoMock));
         given(accessInfoMock.getAccessStart()).willReturn(inactiveStartTime);
         given(accessInfoMock.getAccessEnd()).willReturn(inactiveEndTime);
 
@@ -167,7 +168,7 @@ public class LdapUserAccessServiceTest {
         LocalDateTime activeEndTime = LocalDateTime.now(clock).plus(1L, ChronoUnit.WEEKS);
         LocalDateTime expectedEndTime = LocalDateTime.now(clock);
 
-        given(userMock.getLatestAccessInfo()).willReturn(accessInfoMock);
+        given(userMock.getLatestAccessInfo()).willReturn(Optional.of(accessInfoMock));
         given(accessInfoMock.getAccessStart()).willReturn(activeStartTime);
         given(accessInfoMock.getAccessEnd()).willReturn(activeEndTime);
 
