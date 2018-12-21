@@ -1,7 +1,5 @@
-<div *ngIf="project" style="padding-top: 1rem;">
-  <p>Möchtest du folgendes Projekt wirklich anfragen?</p>
-  <p>Beim Klick auf <b>Projekt anfragen</b> wird dein Vorgesetzter per Email über deine Anfrage benachrichtigt.</p>
-  <p class="mt-5"><b>{{project.title}}</b></p>
+<div *ngIf="project" id="requestContainer">
+  <p><b>{{project.title}}</b></p>
   <p>{{project.job}}</p>
 </div>
 <div *ngIf="!project">
@@ -14,3 +12,4 @@
 </div>
 
 <button  style="margin-bottom: 1rem;" class="btn btn-primary" (click)="requestProject()">Projekt anfragen</button>
+<p>Dein Vorgesetzter wird per Email über deine Anfrage benachrichtigt.</p>

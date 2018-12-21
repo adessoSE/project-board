@@ -32,11 +32,7 @@ $project-board-app-theme: mat-light-theme($project-board-app-primary, $project-b
 
 .display-3 {
   font-size: 3rem;
-  padding-top: calc(1rem + 58px);
-}
-
-.inner-container {
-  padding: 0;
+  padding-top: 78px;
 }
 
 .container {
@@ -49,7 +45,6 @@ h1 {
 
 .background-inner {
   background: white;
-  min-height: calc(100vh);
 }
 
 *{
@@ -58,9 +53,22 @@ h1 {
 
 @include media-breakpoint-down(lg) {
 
+  .sticky-top {
+    z-index: 100 !important;
+  }
+
+  .custom-dialog-container .mat-dialog-container {
+    min-width: 100vw;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 900;
+    border-radius: 0;
+  }
+
   .display-3 {
     font-size: 2.5rem;
-    margin-top: 0;
     padding-top: 1rem;
   }
 

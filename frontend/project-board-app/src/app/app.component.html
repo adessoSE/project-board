@@ -27,9 +27,6 @@
               <a class="nav-link" routerLink="/browse" routerLinkActive="active-link">Offene Projekte</a>
             </li>
             <li *ngIf="isAdmin" class="nav-item">
-              <a class="nav-link" routerLink="/projects/new" routerLinkActive="active-link">Neues Projekt</a>
-            </li>
-            <li *ngIf="isAdmin" class="nav-item">
               <a class="nav-link" routerLink="/admin" routerLinkActive="active-link">Mitarbeiter</a>
             </li>
             <li class="nav-item" id="logout">
@@ -53,7 +50,6 @@
         <div class="side-link" id="side-username">{{username}}</div>
         <a (click)="snav.toggle()" routerLink="/profile" routerLinkActive="active-link"><div class="side-link"><mat-icon class="nav-icon" >person</mat-icon>Profil</div><mat-divider></mat-divider></a>
         <a (click)="snav.toggle()" routerLink="/browse" routerLinkActive="active-link"><div class="side-link"><mat-icon class="nav-icon">folder_open</mat-icon>Offene Projekte</div><mat-divider></mat-divider></a>
-        <a (click)="snav.toggle()" routerLink="/projects/new" routerLinkActive="active-link" *ngIf="isAdmin"><div class="side-link"><mat-icon class="nav-icon">add</mat-icon>Neues Projekt</div><mat-divider></mat-divider></a>
         <a (click)="snav.toggle()" routerLink="/admin" routerLinkActive="active-link" *ngIf="isAdmin"><div class="side-link"><mat-icon class="nav-icon">people</mat-icon>Mitarbeiter</div><mat-divider></mat-divider></a>
         <a (click)="snav.toggle()" routerLink="/logout" (click)="logout()"><div class="side-link" id="side-logout"><mat-icon class="nav-icon">arrow_back</mat-icon>abmelden</div></a>
       </mat-nav-list>

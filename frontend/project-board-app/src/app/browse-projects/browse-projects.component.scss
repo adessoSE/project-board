@@ -4,6 +4,7 @@
 
 h4 {
   margin-bottom: 0.5rem;
+  display: inline-block;
 }
 
 button,
@@ -29,19 +30,32 @@ overflow: hidden;
 margin-bottom: -6px;
 }
 
-  #projectContainer {
-    max-height: calc(100vh - 270px);
-    overflow-y: auto;
-  }
+#projectContainer {
+  max-height: calc(100vh - 270px);
+  overflow-y: auto;
+}
 
-  #detailContainerLg{
-    max-height: calc(100vh - 180px);
-    overflow-y: auto;
-  }
+#detailContainerLg{
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+}
 
-  #divToScroll {
-    overflow-x: hidden;
-  }
+#addProject {
+  cursor: pointer;
+  float: left;
+  font-size: 120%;
+  margin-bottom: 5px;
+}
+
+#addIcon {
+  float: left;
+  margin-right: 5px;
+  margin-top: 1px;
+}
+
+#divToScroll {
+  overflow-x: hidden;
+}
 
 @include media-breakpoint-down(lg) {
 
@@ -79,5 +93,21 @@ margin-bottom: -6px;
     max-width: 100%;
     flex: 0 0 100%;
     padding: 0;
+  }
+
+  #addProject {
+    padding-left: 15px;
+    font-size: 120%;
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  #addProject {
+    font-size: 100%;
+  }
+
+  #addIcon {
+    margin-right: 3px;
+    margin-top: -2px;
   }
 }

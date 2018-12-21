@@ -6,14 +6,42 @@ import { takeUntil } from 'rxjs/operators';
 import { AlertService } from '../_services/alert.service';
 import { Project, ProjectService } from '../_services/project.service';
 
+import {MAT_DIALOG_DATA} from '@angular/material';
+import { Inject } from '@angular/core';
+
+import {FormControl} from '@angular/forms';
+import {MomentDateAdapter} from '@angular/material-moment-adapter';
+import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
+import { MatDialogRef} from '@angular/material';
+import * as _moment from 'moment';
+import 'moment/locale/de';
+
+const moment = _moment;
+
+export const MY_FORMATS = {
+  parse: {
+    dateInput: 'DD.MM.YYYY',
+  },
+  display: {
+    dateInput: 'DD.MM.YYYY',
+    monthYearLabel: 'MMM YYYY',
+    dateA11yLabel: 'DD.MM.YYYY',
+    monthYearA11yLabel: 'MMMM YYYY',
+  },
+};
+
 @Component({
   selector: 'app-project',
   templateUrl: './project.component.html',
-  styleUrls: ['./project.component.scss']
+  styleUrls: ['./project.component.scss'],
+  providers: [
+    {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
+    {provide: MAT_DATE_FORMATS, useValue: MY_FORMATS},
+  ],
 })
 export class ProjectComponent implements OnInit {
   project: Project;
-
+  date = new FormControl(moment());
   labelsInput = '';
   form: FormGroup;
   submitted = false;
@@ -25,8 +53,15 @@ export class ProjectComponent implements OnInit {
   constructor(private projectService: ProjectService,
               private alertService: AlertService,
               private formBuilder: FormBuilder,
+              private router: Router,
               private route: ActivatedRoute,
-              private router: Router) { }
+              private dialogRef: MatDialogRef<ProjectComponent>,
+              @Inject(MAT_DIALOG_DATA) public data: any) { }
+
+myFilter = (d: Date): boolean => {
+  var currentDate = new Date();
+  return ((d.getDate() >= currentDate.getDate()) && (d.getMonth() >= currentDate.getMonth()) && (d.getFullYear() === currentDate.getFullYear())) || (d.getFullYear() > currentDate.getFullYear());
+}            
 
   ngOnInit() {
     this.route.data
@@ -56,7 +91,6 @@ export class ProjectComponent implements OnInit {
 
   onSubmit() {
     this.submitted = true;
-
     if (this.form.invalid) {
       return;
     }
@@ -72,15 +106,14 @@ export class ProjectComponent implements OnInit {
         .pipe(takeUntil(this.destroy$))
         .subscribe(() => {
           this.alertService.success('Änderungen wurden gespeichert.', true);
-          this.router.navigate(['/overview']);
         });
+      this.dialogRef.close();
     } else {
       this.projectService.createProject(this.project)
         .pipe(takeUntil(this.destroy$))
         .subscribe(() => {
           this.alertService.success('Projekt erfolgreich erstellt.', !this.navigateOnSubmit);
           if (!this.navigateOnSubmit) {
-            this.router.navigate(['/overview']);
           } else {
             this.submitted = false;
             this.resetProject();
@@ -88,6 +121,7 @@ export class ProjectComponent implements OnInit {
             document.documentElement.scrollTop = 0;
           }
         });
+      this.dialogRef.close();
     }
   }
 
