@@ -27,14 +27,14 @@ export class ExecutivesComponent implements OnInit, AfterViewChecked {
               private location: Location) { }
 
   @HostListener('window:resize') onResize() {
-    this.mobile = document.body.clientWidth < 1200;
+    this.mobile = document.body.clientWidth < 992;
     this.smallMobile = document.body.clientWidth < 768;
   }
 
   swipebugplaceholder(){}
 
   ngOnInit() {
-    this.mobile = document.body.clientWidth < 1200;
+    this.mobile = document.body.clientWidth < 992;
     this.smallMobile = document.body.clientWidth < 768;
     combineLatest(this.route.data, this.route.params)
       .pipe(takeUntil(this.destroy$))

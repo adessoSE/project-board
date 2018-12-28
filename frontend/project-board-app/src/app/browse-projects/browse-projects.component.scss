@@ -57,7 +57,7 @@ margin-bottom: -6px;
   overflow-x: hidden;
 }
 
-@include media-breakpoint-down(lg) {
+@include media-breakpoint-down(md) {
 
   #projectContainer {
     max-height: none;

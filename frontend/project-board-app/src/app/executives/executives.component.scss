@@ -33,7 +33,7 @@ button{
     overflow-y: auto;
   }
 
-@include media-breakpoint-down(lg) {
+@include media-breakpoint-down(md) {
 
   #employeeContainer{
     max-height: none;

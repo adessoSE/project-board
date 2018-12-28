@@ -27,7 +27,6 @@ import { ProfileComponent } from './profile/profile.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ProjectDetailsComponent } from './project-details/project-details.component';
 import { ProjectRequestComponent } from './project-request/project-request.component';
-import { ProjectComponent } from './project/project.component';
 import { MaterialModule } from './material.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {
@@ -61,7 +60,6 @@ registerLocaleData(localeDe, 'de');
     EmployeeManagementComponent,
     ProjectRequestComponent,
     ProfileComponent,
-    ProjectComponent,
     LogoutComponent
   ],
   imports: [

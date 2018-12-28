@@ -1,7 +1,6 @@
 <h1 class="display-3">Projekte</h1>
 <div id="divToScroll" class="row mt-4" (swiperight)="swipebugplaceholder()">
   <div class="col-md-6" (swiperight)="swipebugplaceholder()">
-    <div id="addProject" mat-raised-button (click)="openDialog()"><mat-icon id="addIcon" class="nav-icon">add_circle_outline</mat-icon> Neues Projekt</div>
     <label for="search" class="sr-only">Suche</label>
     <input #search [(ngModel)]="searchText" (ngModelChange)="searchProjects()" [ngClass]="{'search form-control': true, 'mb-1': search.value != '', 'mb-3': search.value == ''}" type="text" name="search" id="search" placeholder="Projekte suchen...">
     <div *ngIf="search.value != '' && !loadingProjects" class="mb-1" style="text-align: center">
@@ -10,7 +9,7 @@
 
     <!-- infinite scroll directive used for pagination 
     Different Versions for Mobile and Desktop, to keep infiniteScroll working -->
-    <div *ngIf="mobile" infiniteScroll [infiniteScrollDisabled]="infiniteScrollDisabled" (scrolled)="onScroll()" (swiperight)="swipebugplaceholder()">
+    <div *ngIf="mobile" (swiperight)="swipebugplaceholder()">
       <div class="list-group">
         <ng-container *ngFor="let p of projects">
           <button #btn id="{{p.id}}" (click)="projectClicked(p)" type="button" [ngClass]="{'list-group-item list-group-item-action': true, 'active': p.id == selectedProject?.id}">
@@ -30,7 +29,7 @@
     </div>
 
     <!--Desktop Version-->
-    <div *ngIf="!mobile" id="projectContainer" [scrollWindow]="false" infiniteScroll [infiniteScrollDisabled]="infiniteScrollDisabled" (scrolled)="onScroll()">
+    <div *ngIf="!mobile" id="projectContainer">
       <div class="list-group">
         <ng-container *ngFor="let p of projects">
           <button #btn id="{{p.id}}" (click)="projectClicked(p)" type="button" [ngClass]="{'list-group-item list-group-item-action': true, 'active': p.id == selectedProject?.id}">

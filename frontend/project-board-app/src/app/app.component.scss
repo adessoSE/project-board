@@ -3,36 +3,69 @@
 @import '../../../node_modules/bootstrap/scss/mixins';
 @import '../sass/variables';
 
-#brand-logo {
-  margin: -22px -10px -13px;
+.navbar-brand {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 85px;
+  padding: 12px 15px;
+  color: #016EC7;
+  background: linear-gradient(-45deg,transparent 18px,#F3F3F3 0) bottom right!important;
 }
 
 .custom-navbar {
-  margin-left: -15px;
-  margin-right: -15px;
-  background-color: #e3f2fd;
-  position: fixed;
-  width: 100%;
-  max-width: none;
+  background-color: #F3F3F3;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+  padding-bottom: 0 !important;
+  padding-top: 0 !important;
+  height: 60px;
 }
 
-.navbar-divider{
-  position: fixed;
-  top: 56px;
-  width: 100%;
-  max-width: none;
-  margin: 0 -15px;
-  min-height: 2px;
-  z-index: 100;
-  background-image: linear-gradient(to right, #006ec7, #e3f2fd);
+#navbarContent{
+  display: block;
+  padding-left: 340px;
 }
 
-.nav-item a:hover{
-  color: inherit;
+.nav-link {
+  display: inline-block;
+  box-sizing: border-box;
+  color: #887D75 !important;
+  padding: 10px 15px 5px;
+  min-width: 101px;
+  height: 100%;
+  line-height: 20px;
+  text-align: center;
+  border-bottom: 4px solid #bbb2ac;
+  text-decoration: none;
+  font-size: smaller;
+  height: 60px;
 }
 
-.active-link{
-  color: rgba(0, 0, 0, 1);
+.nav-link.active-link {
+  border-bottom: 4px solid #EF8200;
+  background-color: #FFF;
+  color: #887D75;
+}
+
+.nav-link.active-link:hover {
+  border-bottom: 4px solid #EF8200;
+  background-color: #FFF;
+  color: #887D75;
+}
+
+.nav-link:hover {
+  border-bottom: 4px solid #016EC7;
+  background-color: #FFF;
+  color: #887D75;
+}
+
+.navbar-icon{
+  display: block;
+  margin: 0 auto;
 }
 
 .back-to-top-badge {
@@ -41,7 +74,7 @@
 
 #side-nav{
   display: none;
-  min-width: 30%;
+  min-width: 190px;
 }
 
 .mat-drawer-backdrop{
@@ -61,35 +94,28 @@
   right: 10px;
 }
 
-#navbarContent{
-  display: block;
-}
-
 #innerContent {
   padding-bottom: 1rem;
   padding-left: 10%;
   padding-right: 10%;
 }
 
-@include media-breakpoint-down(lg) {
+@include media-breakpoint-down(md) {
+
+  .navbar-brand {
+    width: 200px;
+    height: 75px;
+    padding: 11px 15px;
+  }
 
   #brand-logo {
-    margin: -18px -28px -13px;
+    height: 50px;
   }
 
-  .custom-navbar {
-    position: fixed;
-    width: 100%;
-  }
-
-  .navbar-divider{
-    position: fixed;
-    top: 56px;
-    width: 100%;
-  }
-
-  .active-link{
-    color: rgba(0, 0, 0, 0.5);
+  .navbar-toggler {
+    position: absolute;
+    top: 5;
+    right: 10px;
   }
 
   .back-to-top-badge {
@@ -108,7 +134,7 @@
   #side-nav{
     display: block;
     position: fixed;
-    top: 58px;
+    top: 60px;
   }
 
   .mat-drawer-backdrop{
@@ -129,39 +155,68 @@
   }
 
   #belowNavbar{
-    margin-top: 58px;
+    padding-top: 5px;
   }
 
   .side-link{
-    padding: 15px;
+    box-sizing: border-box;
+    color: #887D75 !important;
+    padding: 10px;
     padding-top: 20px;
+    min-width: 101px;
+    height: 100%;
+    line-height: 20px;
+    background-color: #fff;
+    border-left: 3px solid #bbb2ac;
+    text-decoration: none;
+    font-size: smaller;
+    height: 60px;
   }
 
   .side-link:focus{
     outline: 0 !important;
   }
+  
+  .side-link.active-link {
+    border-left: 3px solid #EF8200;
+    background-color: #FFF;
+    color: #887D75;
+  }
+
+  .side-field{
+    box-sizing: border-box;
+    padding: 10px;
+    padding-top: 20px;
+    min-width: 101px;
+    height: 100%;
+    line-height: 20px;
+    text-decoration: none;
+    height: 75px;
+  }
 
   #side-username{
     padding: 20px;
-    font-size: 120%;
-    font-weight: bold;
+    padding-top: 30px;
+    font-size: 140%;
     max-width: 300px;
     overflow: hidden;
+    font-weight: bold;
     white-space: nowrap;
     text-overflow: ellipsis;
     color: #006ec7;
+    background-color: #fff;
     text-align: center;
-    border-bottom: 1px solid grey;
-  }
-
-  #side-logout{
-    border-top: 1px solid grey;
-    border-bottom: 0;
+    border-bottom: 1px solid lightgrey;
   }
 
   .nav-icon{
+    margin-left: 20px;
+    margin-right: 10px;
     float: left;
     margin-top: -2px;
-    margin-right: 10px;
+  }
+
+  #side-logout {
+    border-bottom: 1px solid lightgrey;
   }
 }

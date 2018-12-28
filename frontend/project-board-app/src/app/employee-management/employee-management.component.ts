@@ -6,8 +6,6 @@ import { takeUntil } from 'rxjs/operators';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Application, Employee, EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
-import {MatDialog} from '@angular/material';
-import { ProjectComponent } from '../project/project.component';
 
 @Component({
   selector: 'app-employee-management',
@@ -28,7 +26,6 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
   constructor(private projectService: ProjectService,
               private employeeService: EmployeeService,
               private authService: AuthenticationService,
-              public dialog: MatDialog,
               private router: Router) { }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -96,28 +93,6 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
     this.employeeService.revokeApplication(this.authService.username, appId)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.getApplications());
-  }
-
-  deleteProject(projectId) {
-    this.projectService.deleteProject(projectId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.projects = this.projects.filter(p => p.id !== projectId));
-  }
-
-  editProject(projectId) {
-    this.openDialog(projectId);
-  }
-
-  openDialog(projectId): void {
-
-    const dialogRef = this.dialog.open(ProjectComponent, { panelClass: 'custom-dialog-container', data: {
-      dataKey: projectId
-    } });
-
-    dialogRef.afterClosed().subscribe(result => {
-     this.ngOnInit();
-    });
-
   }
 
   isAdmin() {

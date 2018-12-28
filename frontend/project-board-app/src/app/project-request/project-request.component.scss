@@ -22,7 +22,7 @@
   display: block;
 }
 
-@include media-breakpoint-down(lg) {
+@include media-breakpoint-down(md) {
 
   #requestContainer {
     padding-top: 1rem;

@@ -20,7 +20,6 @@ import { LogoutComponent } from './logout/logout.component';
 import { ProfileComponent } from './profile/profile.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ProjectRequestComponent } from './project-request/project-request.component';
-import { ProjectComponent } from './project/project.component';
 
 const routes: Routes = [
   {
@@ -47,26 +46,6 @@ const routes: Routes = [
     canActivate: [
       AuthGuard,
       AdminGuard
-    ]
-  },
-  {
-    path: 'projects/new',
-    component: ProjectComponent,
-    canActivate: [
-      AuthGuard,
-      AdminGuard
-    ]
-  },
-  {
-    path: 'projects/:id/edit',
-    component: ProjectComponent,
-    resolve: {
-      project: ProjectResolverService
-    },
-    canActivate: [
-      AuthGuard,
-      AdminGuard,
-      EditableGuard
     ]
   },
   {

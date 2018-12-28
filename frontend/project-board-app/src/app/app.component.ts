@@ -43,13 +43,13 @@ export class AppComponent {
   }
 
   openNav(){
-    if (window.innerWidth < 1200) {
+    if (window.innerWidth < 992) {
         this.sidenav.open();
     }
   }
 
   closeNav(){
-    if (window.innerWidth < 1200) {
+    if (window.innerWidth < 992) {
         this.sidenav.close();
     }
   }

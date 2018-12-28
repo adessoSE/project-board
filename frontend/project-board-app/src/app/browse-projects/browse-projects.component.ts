@@ -11,9 +11,6 @@ import { AlertService } from '../_services/alert.service';
 import { EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
 
-import {MatDialog} from '@angular/material';
-import { ProjectComponent } from '../project/project.component';
-
 @Component({
   selector: 'app-browse-projects',
   templateUrl: './browse-projects.component.html',
@@ -51,23 +48,14 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked  {
               private projectsService: ProjectService,
               private alertService: AlertService,
               private route: ActivatedRoute,
-              public dialog: MatDialog,
               private location: Location
               ) {}
 
   @HostListener('window:resize') onResize() {
-    this.mobile = document.body.clientWidth < 1200;
+    this.mobile = document.body.clientWidth < 992;
   }
 
   swipebugplaceholder(){}
-
-  openDialog(): void {
-
-    const dialogRef = this.dialog.open(ProjectComponent, { panelClass: 'custom-dialog-container' });
-    dialogRef.afterClosed().subscribe(result => {
-      this.reloadProjects();
-    });
-  }
 
   loadProjects() {
     
@@ -82,24 +70,24 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked  {
       this.appliedProjects = data[0].applications ? data[0].applications.map(app => app.project) : [];
       this.bookmarks = data[0].bookmarks;
       this.isUserBoss = data[0].isUserBoss;
-
+  
       // set selected project
       this.setSelectedProject(data[1].id);
     });
   }
 
-  reloadProjects() {
-    this.projectsService.getAllProjectsPaginated(this.currentPage, 25)
+  /*reloadProjects() {
+    this.projectsService.getAllProjects()
         .pipe(takeUntil(this.destroy$))
         .subscribe(projects => {
           this.loadingProjects = false;
           this.projects = projects.content;
           this.projectsFound = projects.totalElements;
         });
-  }
+  } */
 
   ngOnInit() {
-    this.mobile = document.body.clientWidth < 1200;
+    this.mobile = document.body.clientWidth < 992;
 
     this.searchText$
       .pipe(
@@ -113,7 +101,6 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked  {
         this.projects = projects.content;
         this.projectsFound = projects.totalElements;
       });
-
       this.loadProjects();
 
     this.divToScroll = document.getElementById('divToScroll');
@@ -209,33 +196,4 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked  {
     }
   }
 
-  // this method gets called when infinite-scroll's scrolling event triggers
-  onScroll() {
-    this.loadingProjects = true;
-    // load next page from all projects pool, when searchText is empty
-    if (this.searchText === '') {
-      this.projectsService.getAllProjectsPaginated(++this.currentPage, 25)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(newPage => {
-          if (newPage.last) {
-            this.infiniteScrollDisabled = true;
-          }
-          this.projects = this.projects.concat(newPage.content);
-          this.loadingProjects = false;
-          }
-        );
-    } else {
-      // otherwise load next page from projects pool corresponding to the searchText
-      this.projectsService.searchPaginated(this.searchText, ++this.currentPage, 25)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(newPage => {
-          if (newPage.last) {
-            this.infiniteScrollDisabled = true;
-          }
-          this.projects = this.projects.concat(newPage.content);
-          this.loadingProjects = false;
-          }
-        );
-    }
-  }
 }

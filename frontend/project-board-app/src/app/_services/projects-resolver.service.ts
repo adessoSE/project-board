@@ -6,11 +6,11 @@ import { Page, Project, ProjectService } from './project.service';
 @Injectable({
   providedIn: 'root'
 })
-export class ProjectsResolverService implements Resolve<Page<Project>> {
+export class ProjectsResolverService implements Resolve<Project[]> {
 
   constructor(private projectService: ProjectService) { }
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Page<Project>> {
-    return this.projectService.getAllProjectsPaginated(0, 25);
+  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Project[]> {
+    return this.projectService.getAllProjects();
   }
 }
