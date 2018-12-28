@@ -3,8 +3,7 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import localeDe from '@angular/common/locales/de';
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BrowserModule, HAMMER_GESTURE_CONFIG, HammerGestureConfig } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { BrowserModule } from '@angular/platform-browser';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { OAuthModule } from 'angular-oauth2-oidc';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
@@ -29,7 +28,6 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 import { ProfileComponent } from './profile/profile.component';
 import { ProjectDetailsComponent } from './project-details/project-details.component';
 import { ProjectRequestComponent } from './project-request/project-request.component';
-import { MaterialModule } from './material.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {
   HammerGestureConfig,
