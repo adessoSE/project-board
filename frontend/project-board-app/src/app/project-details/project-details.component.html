@@ -66,13 +66,13 @@
       <div class="appliedInfo" *ngIf="!applicable">
         <small>Du hast dieses Projekt bereits angefragt</small>
       </div>
-          <div id="ButtonBox">
-    <div id="detailButtons">
-      <button [disabled]="!applicable" class="btn btn-primary mr-3 mb-3" (click)="requestProject()">Projekt anfragen</button>
-      <button *ngIf="!bookmark" class="btn btn-outline-secondary mb-3" (click)="addBookmark()">Lesezeichen hinzufügen</button>
-      <button *ngIf="bookmark" class="btn btn-outline-secondary mb-3" (click)="removeBookmark()">Lesezeichen entfernen</button>
-    </div>
-         </div>
+      <div id="ButtonBox">
+        <div id="detailButtons">
+          <button [disabled]="!applicable" class="btn btn-primary mr-3 mb-3" (click)="requestProject()">Projekt anfragen</button>
+          <button *ngIf="!bookmark" class="btn btn-outline-secondary mb-3" (click)="addBookmark()">Lesezeichen hinzufügen</button>
+          <button *ngIf="bookmark" class="btn btn-outline-secondary mb-3" (click)="removeBookmark()">Lesezeichen entfernen</button>
+        </div>
+      </div>
     </div>
   </div>
   <p *ngIf="!selectedProject">Kein Projekt ausgewählt.</p>

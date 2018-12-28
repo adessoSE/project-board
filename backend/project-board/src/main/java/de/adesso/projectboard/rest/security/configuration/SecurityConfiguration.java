@@ -9,7 +9,9 @@ import org.keycloak.adapters.springsecurity.filter.KeycloakAuthenticatedActionsF
 import org.keycloak.adapters.springsecurity.filter.KeycloakAuthenticationProcessingFilter;
 import org.keycloak.adapters.springsecurity.filter.KeycloakPreAuthActionsFilter;
 import org.keycloak.adapters.springsecurity.filter.KeycloakSecurityContextRequestFilter;
+import org.keycloak.adapters.springsecurity.management.HttpSessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
@@ -108,6 +110,14 @@ public class SecurityConfiguration extends KeycloakWebSecurityConfigurerAdapter 
         FilterRegistrationBean registrationBean = new FilterRegistrationBean(filter);
         registrationBean.setEnabled(false);
         return registrationBean;
+    }
+
+    // avoid double registration
+    @Bean
+    @Override
+    @ConditionalOnMissingBean(HttpSessionManager.class)
+    protected HttpSessionManager httpSessionManager() {
+        return new HttpSessionManager();
     }
 
 }

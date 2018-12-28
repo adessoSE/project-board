@@ -99,7 +99,8 @@ public class UserDtoFactory {
 
         AccessInfoResponseDTO infoDTO = new AccessInfoResponseDTO();
         if(userAccessService.userHasActiveAccessInfo(user)) {
-            AccessInfo latestInfo = user.getLatestAccessInfo();
+            AccessInfo latestInfo = user.getLatestAccessInfo()
+                    .orElseThrow(() -> new IllegalStateException("No info instance present!"));
 
             infoDTO.setHasAccess(true)
                     .setAccessStart(latestInfo.getAccessStart())

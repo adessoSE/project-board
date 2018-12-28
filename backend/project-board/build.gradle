@@ -2,8 +2,8 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 buildscript {
 	ext {
-		springBootVersion = '2.0.7.RELEASE'
-		keycloakVersion = '4.6.0.Final'
+		springBootVersion = '2.1.1.RELEASE'
+		keycloakVersion = '4.8.1.Final'
 	}
 	repositories {
 		mavenCentral()
@@ -27,7 +27,9 @@ apply plugin: 'jacoco'
 
 group = 'de.adesso'
 version = '1.0.0-SNAPSHOT'
-sourceCompatibility = 1.8
+
+targetCompatibility = 11
+sourceCompatibility = 11
 
 jacoco {
 	toolVersion = "0.8.2"

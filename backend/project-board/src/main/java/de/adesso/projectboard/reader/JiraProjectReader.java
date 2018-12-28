@@ -44,7 +44,7 @@ public class JiraProjectReader implements ProjectReader {
     @Autowired
     public JiraProjectReader(RestTemplateBuilder builder, JiraProjectReaderConfigurationProperties properties) {
         this.restTemplate = builder
-                .basicAuthorization(properties.getUsername(), properties.getPassword())
+                .basicAuthentication(properties.getUsername(), properties.getPassword())
                 .build();
 
         this.properties = properties;
@@ -63,7 +63,7 @@ public class JiraProjectReader implements ProjectReader {
      */
     @Override
     public List<Project> getAllProjectsSince(LocalDateTime dateTime) throws Exception {
-        return getProjectsByQuery(getJqlUpdateQueryString(dateTime));
+        return getProjectsByQuery(getUpdateJqlQueryString(dateTime));
     }
 
     /**
@@ -76,7 +76,7 @@ public class JiraProjectReader implements ProjectReader {
      */
     @Override
     public List<Project> getInitialProjects() throws Exception {
-        return getProjectsByQuery(getJqlInitialQueryString());
+        return getProjectsByQuery(getInitialJqlQueryString());
     }
 
     /**
@@ -139,11 +139,13 @@ public class JiraProjectReader implements ProjectReader {
     /**
      *
      * @param dateTime
-     *          The {@link LocalDateTime} supplied by {@link #getAllProjectsSince(LocalDateTime)}.
+     *          The time to build the query from.
+     *
      * @return
-     *          The JQL query to get all modified/created projects since {@code dateTime}.
+     *          The JQL query to get all modified/created projects since the
+     *          given {@code dateTime}.
      */
-    private String getJqlUpdateQueryString(LocalDateTime dateTime) {
+    String getUpdateJqlQueryString(LocalDateTime dateTime) {
         JqlQueryStringBuilder andQueryBuilder = new JqlQueryStringBuilder();
         JqlQueryStringBuilder orQueryBuilder = new JqlQueryStringBuilder();
 
@@ -153,7 +155,7 @@ public class JiraProjectReader implements ProjectReader {
 
         return andQueryBuilder
                 .newQuery("issuetype", JqlComparator.EQUAL, "Staffinganfrage")
-                .and("project", JqlComparator.EQUAL, "STF")
+                .and("project", JqlComparator.EQUAL, "Staffing")
                 .and(orQueryBuilder.build())
                 .build();
     }
@@ -164,7 +166,7 @@ public class JiraProjectReader implements ProjectReader {
      *          The JQL query used to get the initial projects when
      *          the first update is performed.
      */
-    private String getJqlInitialQueryString() {
+    String getInitialJqlQueryString() {
         JqlQueryStringBuilder orQueryBuilder = new JqlQueryStringBuilder();
         JqlQueryStringBuilder andQueryBuilder = new JqlQueryStringBuilder();
 
@@ -174,7 +176,7 @@ public class JiraProjectReader implements ProjectReader {
 
         return andQueryBuilder
                 .newQuery("issuetype", JqlComparator.EQUAL, "Staffinganfrage")
-                .and("project", JqlComparator.EQUAL, "STF")
+                .and("project", JqlComparator.EQUAL, "Staffing")
                 .and(orQueryBuilder.build())
                 .build();
     }
@@ -229,10 +231,10 @@ public class JiraProjectReader implements ProjectReader {
      * @return
      *          The string as it was passed in case it was shorter than
      *          {@code maxLength} characters or {@code null}, a string with the given max
-     *          length with <i>"..."</i> appended to it to indicate that it
+     *          length with <i>"..."</i> appended to indicate that it
      *          was cut or a empty string when {@code maxLength < 3}.
      */
-    private String cutAndAppendDotsIfRequired(String string, int maxLength) {
+    String cutAndAppendDotsIfRequired(String string, int maxLength) {
         if(string == null) {
             return null;
         } else if(maxLength < 3) {
@@ -240,7 +242,7 @@ public class JiraProjectReader implements ProjectReader {
         }
 
         if(string.length() > maxLength) {
-            return string.subSequence(0, Math.max(0, maxLength - 4)) + "...";
+            return string.subSequence(0, maxLength - 3) + "...";
         } else {
             return string;
         }

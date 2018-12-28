@@ -16,26 +16,26 @@ button span {
 }
 
 .loading-spinner {
-  margin-top: 1rem;
   margin: 0 auto;
   width: 50px;
   height: 50px;
   overflow: hidden;
 }
 
-#TooltipIcon{
-display: inline-block;
-height: 23px;
-overflow: hidden;
-margin-bottom: -6px;
+#TooltipIcon {
+  display: inline-block;
+  height: 23px;
+  overflow: hidden;
+  margin-bottom: -6px;
 }
 
 #projectContainer {
   max-height: calc(100vh - 270px);
   overflow-y: auto;
+  padding-right: 1rem;
 }
 
-#detailContainerLg{
+#detailContainerLg {
   max-height: calc(100vh - 180px);
   overflow-y: auto;
 }
@@ -64,7 +64,7 @@ margin-bottom: -6px;
     overflow-y: auto;
   }
 
-  #detailContainerLg{
+  #detailContainerLg {
     max-height: none;
     overflow-y: auto;
   }

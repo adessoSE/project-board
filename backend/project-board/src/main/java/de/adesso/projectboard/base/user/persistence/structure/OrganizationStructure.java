@@ -38,17 +38,17 @@ public class OrganizationStructure {
     @JoinTable(
             name = "ORG_STRUCTURE_STAFF",
             joinColumns = @JoinColumn(name = "ORG_STRUCTURE_ID"),
-            inverseJoinColumns = @JoinColumn(name = "USER_ID")
+            inverseJoinColumns = @JoinColumn(name = "STAFF_USER_ID")
     )
     Set<User> staffMembers = new HashSet<>();
 
-    @Column(name = "USER_IS_MANAGER")
-    boolean userIsManager;
+    @Column(name = "MANAGING_USER")
+    boolean managingUser;
 
     /**
      *
      * @param user
-     *          The {@link User} this structure belongs to.
+     *          The user this structure belongs to.
      *
      * @param manager
      *          The manager of the user.
@@ -56,14 +56,14 @@ public class OrganizationStructure {
      * @param staffMembers
      *          The staff members of the user.
      *
-     * @param userIsManager
+     * @param managingUser
      *          Whether or not the user is a manager himself.
      */
-    public OrganizationStructure(User user, User manager, Set<User> staffMembers, boolean userIsManager) {
+    public OrganizationStructure(User user, User manager, Set<User> staffMembers, boolean managingUser) {
         this.user = user;
         this.manager = manager;
         this.staffMembers = staffMembers;
-        this.userIsManager = userIsManager;
+        this.managingUser = managingUser;
     }
 
 }

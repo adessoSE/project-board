@@ -31,28 +31,28 @@ public class LdapUserServiceTest {
     private final String USER_ID = "user";
 
     @Mock
-    UserRepository userRepo;
+    private UserRepository userRepoMock;
 
     @Mock
-    UserDataRepository userDataRepo;
+    private UserDataRepository userDataRepoMock;
 
     @Mock
-    OrganizationStructureRepository structureRepo;
+    private OrganizationStructureRepository structureRepoMock;
 
     @Mock
-    LdapService ldapService;
+    private LdapService ldapServiceMock;
 
     @Mock
-    AuthenticationInfoRetriever authInfoRetriever;
+    private AuthenticationInfoRetriever authInfoRetrieverMock;
 
     @Captor
-    ArgumentCaptor<List<User>> userListCaptor;
+    private ArgumentCaptor<List<User>> userListCaptor;
 
-    LdapUserService ldapUserService;
+    private LdapUserService ldapUserService;
 
     @Before
     public void setUp() {
-        this.ldapUserService = new LdapUserService(userRepo, userDataRepo, ldapService, structureRepo, authInfoRetriever);
+        this.ldapUserService = new LdapUserService(userRepoMock, userDataRepoMock, ldapServiceMock, structureRepoMock, authInfoRetrieverMock);
     }
 
     @Test
@@ -60,8 +60,8 @@ public class LdapUserServiceTest {
         // given
         User expectedUser = new User(USER_ID);
 
-        given(authInfoRetriever.getUserId()).willReturn(USER_ID);
-        given(userRepo.findById(USER_ID)).willReturn(Optional.of(expectedUser));
+        given(authInfoRetrieverMock.getUserId()).willReturn(USER_ID);
+        given(userRepoMock.findById(USER_ID)).willReturn(Optional.of(expectedUser));
 
         // when
         User actualUser = ldapUserService.getAuthenticatedUser();
@@ -73,8 +73,8 @@ public class LdapUserServiceTest {
     @Test
     public void getAuthenticatedUserThrowsExceptionWhenUserDoesNotExist() {
         // given
-        given(authInfoRetriever.getUserId()).willReturn(USER_ID);
-        given(userRepo.findById(USER_ID)).willReturn(Optional.empty());
+        given(authInfoRetrieverMock.getUserId()).willReturn(USER_ID);
+        given(userRepoMock.findById(USER_ID)).willReturn(Optional.empty());
 
         // when
         assertThatThrownBy(() -> ldapUserService.getAuthenticatedUser())
@@ -84,7 +84,7 @@ public class LdapUserServiceTest {
     @Test
     public void getAuthenticatedUserIdReturnsExpectedId() {
         // given
-        given(authInfoRetriever.getUserId()).willReturn(USER_ID);
+        given(authInfoRetrieverMock.getUserId()).willReturn(USER_ID);
 
         // when
         String actualUserId = ldapUserService.getAuthenticatedUserId();
@@ -94,9 +94,33 @@ public class LdapUserServiceTest {
     }
 
     @Test
+    public void authenticatedUserIsAdminReturnsTrueWhenUserHasAdminRole() {
+        // given
+        given(authInfoRetrieverMock.hasAdminRole()).willReturn(true);
+
+        // when
+        boolean actualAuthenticatedUserIsAdmin = ldapUserService.authenticatedUserIsAdmin();
+
+        // then
+        assertThat(actualAuthenticatedUserIsAdmin).isTrue();
+    }
+
+    @Test
+    public void authenticatedUserIsAdminReturnsFalseWhenUserHasNoAdminRole() {
+        // given
+        given(authInfoRetrieverMock.hasAdminRole()).willReturn(false);
+
+        // when
+        boolean actualAuthenticatedUserIsAdmin = ldapUserService.authenticatedUserIsAdmin();
+
+        // then
+        assertThat(actualAuthenticatedUserIsAdmin).isFalse();
+    }
+
+    @Test
     public void userExistsReturnsTrueWhenUserExistsInRepo() {
         // given
-        given(userRepo.existsById(USER_ID)).willReturn(true);
+        given(userRepoMock.existsById(USER_ID)).willReturn(true);
 
         // when
         boolean actualExists = ldapUserService.userExists(USER_ID);
@@ -108,7 +132,7 @@ public class LdapUserServiceTest {
     @Test
     public void userExistsReturnsFalseWhenUserDoesNotExistInRepo() {
         // given
-        given(userRepo.existsById(USER_ID)).willReturn(false);
+        given(userRepoMock.existsById(USER_ID)).willReturn(false);
 
         // when
         boolean actualExists = ldapUserService.userExists(USER_ID);
@@ -118,26 +142,12 @@ public class LdapUserServiceTest {
     }
 
     @Test
-    public void userIsManagerReturnsTrueWhenUserHasAdminRole() {
-        // given
-        User user = new User(USER_ID);
-
-        given(authInfoRetriever.hasAdminRole()).willReturn(true);
-
-        // when
-        boolean actualIsManager = ldapUserService.userIsManager(user);
-
-        // then
-        assertThat(actualIsManager).isTrue();
-    }
-
-    @Test
     public void userIsManagerReturnsTrueWhenManagerFieldOfExistingStructureForUserIsTrue() {
         // given
         User user = new User(USER_ID);
 
-        given(structureRepo.existsByUser(user)).willReturn(true);
-        given(structureRepo.existsByUserAndUserIsManager(user, true)).willReturn(true);
+        given(structureRepoMock.existsByUser(user)).willReturn(true);
+        given(structureRepoMock.existsByUserAndManagingUser(user, true)).willReturn(true);
 
         // when
         boolean actualIsManager = ldapUserService.userIsManager(user);
@@ -151,8 +161,8 @@ public class LdapUserServiceTest {
         // given
         User user = new User(USER_ID);
 
-        given(structureRepo.existsByUser(user)).willReturn(true);
-        given(structureRepo.existsByUserAndUserIsManager(user, true)).willReturn(false);
+        given(structureRepoMock.existsByUser(user)).willReturn(true);
+        given(structureRepoMock.existsByUserAndManagingUser(user, true)).willReturn(false);
 
         // when
         boolean actualIsManager = ldapUserService.userIsManager(user);
@@ -166,8 +176,8 @@ public class LdapUserServiceTest {
         // given
         User user = new User(USER_ID);
 
-        given(structureRepo.existsByUser(user)).willReturn(false);
-        given(ldapService.isManager(USER_ID)).willReturn(true);
+        given(structureRepoMock.existsByUser(user)).willReturn(false);
+        given(ldapServiceMock.isManager(USER_ID)).willReturn(true);
 
         // when
         boolean actualIsManager = ldapUserService.userIsManager(user);
@@ -181,8 +191,8 @@ public class LdapUserServiceTest {
         // given
         User user = new User(USER_ID);
 
-        given(structureRepo.existsByUser(user)).willReturn(false);
-        given(ldapService.isManager(USER_ID)).willReturn(false);
+        given(structureRepoMock.existsByUser(user)).willReturn(false);
+        given(ldapServiceMock.isManager(USER_ID)).willReturn(false);
 
         // when
         boolean actualIsManager = ldapUserService.userIsManager(user);
@@ -199,7 +209,7 @@ public class LdapUserServiceTest {
 
         OrganizationStructure expectedStructure = new OrganizationStructure(user, manager, Collections.emptySet(), false);
 
-        given(structureRepo.findByUser(user)).willReturn(Optional.of(expectedStructure));
+        given(structureRepoMock.findByUser(user)).willReturn(Optional.of(expectedStructure));
 
         // when
         OrganizationStructure actualStructure = ldapUserService.getStructureForUser(user);
@@ -222,14 +232,14 @@ public class LdapUserServiceTest {
 
         StringStructure idStructure = new StringStructure(user, USER_ID, managerId, Collections.singleton(staffMemberId));
 
-        given(structureRepo.findByUser(user)).willReturn(Optional.empty());
-        given(ldapService.userExists(USER_ID)).willReturn(true);
-        given(ldapService.getIdStructure(user)).willReturn(idStructure);
+        given(structureRepoMock.findByUser(user)).willReturn(Optional.empty());
+        given(ldapServiceMock.userExists(USER_ID)).willReturn(true);
+        given(ldapServiceMock.getIdStructure(user)).willReturn(idStructure);
 
-        given(userRepo.findById(managerId)).willReturn(Optional.of(managerUser));
-        given(userRepo.findById(staffMemberId)).willReturn(Optional.of(staffUser));
+        given(userRepoMock.findById(managerId)).willReturn(Optional.of(managerUser));
+        given(userRepoMock.findById(staffMemberId)).willReturn(Optional.of(staffUser));
 
-        given(structureRepo.save(expectedStructure)).willReturn(expectedStructure);
+        given(structureRepoMock.save(expectedStructure)).willReturn(expectedStructure);
 
         // when
         OrganizationStructure actualStructure = ldapUserService.getStructureForUser(user);
@@ -237,7 +247,7 @@ public class LdapUserServiceTest {
         // then
         assertThat(actualStructure).isEqualTo(expectedStructure);
 
-        verify(structureRepo).save(actualStructure);
+        verify(structureRepoMock).save(actualStructure);
     }
 
     @Test
@@ -254,17 +264,17 @@ public class LdapUserServiceTest {
 
         StringStructure idStructure = new StringStructure(user, USER_ID, managerId, Collections.singleton(staffMemberId));
 
-        given(ldapService.userExists(USER_ID)).willReturn(true);
-        given(ldapService.getIdStructure(user)).willReturn(idStructure);
+        given(ldapServiceMock.userExists(USER_ID)).willReturn(true);
+        given(ldapServiceMock.getIdStructure(user)).willReturn(idStructure);
 
-        given(userRepo.findById(managerId)).willReturn(Optional.empty());
-        given(userRepo.findById(staffMemberId)).willReturn(Optional.empty());
+        given(userRepoMock.findById(managerId)).willReturn(Optional.empty());
+        given(userRepoMock.findById(staffMemberId)).willReturn(Optional.empty());
 
-        given(userRepo.save(manager)).willReturn(manager);
-        given(userRepo.save(staffMember)).willReturn(staffMember);
+        given(userRepoMock.save(manager)).willReturn(manager);
+        given(userRepoMock.save(staffMember)).willReturn(staffMember);
 
-        given(structureRepo.findByUser(user)).willReturn(Optional.empty());
-        given(structureRepo.save(expectedStructure)).willReturn(expectedStructure);
+        given(structureRepoMock.findByUser(user)).willReturn(Optional.empty());
+        given(structureRepoMock.save(expectedStructure)).willReturn(expectedStructure);
 
         // when
         OrganizationStructure actualStructure = ldapUserService.getStructureForUser(user);
@@ -272,9 +282,9 @@ public class LdapUserServiceTest {
         // then
         assertThat(actualStructure).isEqualTo(expectedStructure);
 
-        verify(structureRepo).save(actualStructure);
-        verify(userRepo).save(manager);
-        verify(userRepo).save(staffMember);
+        verify(structureRepoMock).save(actualStructure);
+        verify(userRepoMock).save(manager);
+        verify(userRepoMock).save(staffMember);
     }
 
     @Test
@@ -289,15 +299,15 @@ public class LdapUserServiceTest {
 
         StringStructure idStructure = new StringStructure(user, USER_ID, managerId, Collections.emptySet());
 
-        given(ldapService.userExists(USER_ID)).willReturn(true);
-        given(ldapService.getIdStructure(user)).willReturn(idStructure);
+        given(ldapServiceMock.userExists(USER_ID)).willReturn(true);
+        given(ldapServiceMock.getIdStructure(user)).willReturn(idStructure);
 
-        given(userRepo.findById(managerId)).willReturn(Optional.empty());
+        given(userRepoMock.findById(managerId)).willReturn(Optional.empty());
 
-        given(userRepo.save(manager)).willReturn(manager);
+        given(userRepoMock.save(manager)).willReturn(manager);
 
-        given(structureRepo.findByUser(user)).willReturn(Optional.empty());
-        given(structureRepo.save(expectedStructure)).willReturn(expectedStructure);
+        given(structureRepoMock.findByUser(user)).willReturn(Optional.empty());
+        given(structureRepoMock.save(expectedStructure)).willReturn(expectedStructure);
 
         // when
         OrganizationStructure actualStructure = ldapUserService.getStructureForUser(user);
@@ -305,8 +315,8 @@ public class LdapUserServiceTest {
         // then
         assertThat(actualStructure).isEqualTo(expectedStructure);
 
-        verify(structureRepo).save(actualStructure);
-        verify(userRepo).save(manager);
+        verify(structureRepoMock).save(actualStructure);
+        verify(userRepoMock).save(manager);
     }
 
     @Test
@@ -314,8 +324,8 @@ public class LdapUserServiceTest {
         // given
         User user = new User(USER_ID);
 
-        given(structureRepo.findByUser(user)).willReturn(Optional.empty());
-        given(ldapService.userExists(USER_ID)).willReturn(false);
+        given(structureRepoMock.findByUser(user)).willReturn(Optional.empty());
+        given(ldapServiceMock.userExists(USER_ID)).willReturn(false);
 
         // when
         assertThatThrownBy(() -> ldapUserService.getStructureForUser(user))
@@ -329,11 +339,11 @@ public class LdapUserServiceTest {
         User user = new User(USER_ID);
         UserData expectedUserData = new UserData(user, "First", "Last", "mail", "lob");
 
-        given(ldapService.getUserData(Collections.singletonList(user))).willReturn(Collections.singletonList(expectedUserData));
-        given(ldapService.userExists(USER_ID)).willReturn(true);
+        given(ldapServiceMock.getUserData(Collections.singletonList(user))).willReturn(Collections.singletonList(expectedUserData));
+        given(ldapServiceMock.userExists(USER_ID)).willReturn(true);
 
-        given(userDataRepo.findByUser(user)).willReturn(Optional.empty());
-        given(userDataRepo.save(expectedUserData)).willReturn(expectedUserData);
+        given(userDataRepoMock.findByUser(user)).willReturn(Optional.empty());
+        given(userDataRepoMock.save(expectedUserData)).willReturn(expectedUserData);
 
         // when
         UserData actualUserData = ldapUserService.getUserData(user);
@@ -341,7 +351,7 @@ public class LdapUserServiceTest {
         // then
         assertThat(actualUserData).isEqualTo(expectedUserData);
 
-        verify(userDataRepo).save(expectedUserData);
+        verify(userDataRepoMock).save(expectedUserData);
     }
 
     @Test
@@ -350,7 +360,7 @@ public class LdapUserServiceTest {
         User user = new User(USER_ID);
         UserData expectedUserData = new UserData(user, "First", "Last", "mail", "lob");
 
-        given(userDataRepo.findByUser(user)).willReturn(Optional.of(expectedUserData));
+        given(userDataRepoMock.findByUser(user)).willReturn(Optional.of(expectedUserData));
 
         // when
         UserData actualUserData = ldapUserService.getUserData(user);
@@ -364,8 +374,8 @@ public class LdapUserServiceTest {
         // given
         User user = new User(USER_ID);
 
-        given(userDataRepo.findByUser(user)).willReturn(Optional.empty());
-        given(ldapService.userExists(USER_ID)).willReturn(false);
+        given(userDataRepoMock.findByUser(user)).willReturn(Optional.empty());
+        given(ldapServiceMock.userExists(USER_ID)).willReturn(false);
 
         // when
         assertThatThrownBy(() -> ldapUserService.getUserData(user))
@@ -378,7 +388,7 @@ public class LdapUserServiceTest {
         // given
         User user = new User(USER_ID);
 
-        given(userRepo.findById(USER_ID)).willReturn(Optional.of(user));
+        given(userRepoMock.findById(USER_ID)).willReturn(Optional.of(user));
 
         // when
         User actualUser = ldapUserService.getUserById(USER_ID);
@@ -392,10 +402,10 @@ public class LdapUserServiceTest {
         // given
         User expectedUser = new User(USER_ID);
 
-        given(userRepo.findById(USER_ID)).willReturn(Optional.empty());
-        given(ldapService.userExists(USER_ID)).willReturn(true);
+        given(userRepoMock.findById(USER_ID)).willReturn(Optional.empty());
+        given(ldapServiceMock.userExists(USER_ID)).willReturn(true);
 
-        given(userRepo.save(expectedUser)).willReturn(expectedUser);
+        given(userRepoMock.save(expectedUser)).willReturn(expectedUser);
 
         // when
         User actualUser = ldapUserService.getUserById(USER_ID);
@@ -407,8 +417,8 @@ public class LdapUserServiceTest {
     @Test
     public void getUserByIdThrowsExceptionWhenNoneIsPresentAndUserDoesNotExistInAD() {
         // given
-        given(userRepo.findById(USER_ID)).willReturn(Optional.empty());
-        given(ldapService.userExists(USER_ID)).willReturn(false);
+        given(userRepoMock.findById(USER_ID)).willReturn(Optional.empty());
+        given(ldapServiceMock.userExists(USER_ID)).willReturn(false);
 
         // when
         assertThatThrownBy(() -> ldapUserService.getUserById(USER_ID))
@@ -423,7 +433,7 @@ public class LdapUserServiceTest {
         User user = new User(USER_ID);
         User manager = new User(managerId);
 
-        given(structureRepo.existsByUserAndStaffMembersContaining(user, manager)).willReturn(true);
+        given(structureRepoMock.existsByUserAndStaffMembersContaining(user, manager)).willReturn(true);
 
         // when
         boolean actualUserHasStaffMember = ldapUserService.userHasStaffMember(user, manager);
@@ -440,7 +450,7 @@ public class LdapUserServiceTest {
         User user = new User(USER_ID);
         User manager = new User(managerId);
 
-        given(structureRepo.existsByUserAndStaffMembersContaining(user, manager)).willReturn(false);
+        given(structureRepoMock.existsByUserAndStaffMembersContaining(user, manager)).willReturn(false);
 
         // when
         boolean actualUserHasStaffMember = ldapUserService.userHasStaffMember(user, manager);
@@ -459,7 +469,7 @@ public class LdapUserServiceTest {
 
         OrganizationStructure structure = new OrganizationStructure(user, expectedManager, Collections.emptySet(), false);
 
-        given(structureRepo.findByUser(user)).willReturn(Optional.of(structure));
+        given(structureRepoMock.findByUser(user)).willReturn(Optional.of(structure));
 
         // when
         User actualManager = ldapUserService.getManagerOfUser(user);
@@ -475,12 +485,12 @@ public class LdapUserServiceTest {
         User user = new User(USER_ID);
         User expectedManager = new User(managerId);
 
-        given(structureRepo.findByUser(user)).willReturn(Optional.empty());
+        given(structureRepoMock.findByUser(user)).willReturn(Optional.empty());
 
-        given(ldapService.getManagerId(user)).willReturn(managerId);
-        given(ldapService.userExists(USER_ID)).willReturn(true);
+        given(ldapServiceMock.getManagerId(user)).willReturn(managerId);
+        given(ldapServiceMock.userExists(USER_ID)).willReturn(true);
 
-        given(userRepo.findById(managerId)).willReturn(Optional.of(expectedManager));
+        given(userRepoMock.findById(managerId)).willReturn(Optional.of(expectedManager));
 
         // when
         User actualManager = ldapUserService.getManagerOfUser(user);
@@ -509,27 +519,27 @@ public class LdapUserServiceTest {
         UserData staffMemberWithDataData = new UserData(staffMemberWithData, "First", "Last", "email", "lob");
         UserData staffMemberWithoutDataData = new UserData(staffMemberWithoutData, "First", "Last", "email", "lob");
 
-        given(structureRepo.findByUser(user)).willReturn(Optional.of(structure));
+        given(structureRepoMock.findByUser(user)).willReturn(Optional.of(structure));
 
-        given(userDataRepo.existsByUser(staffMemberWithData)).willReturn(true);
-        given(userDataRepo.existsByUser(staffMemberWithoutData)).willReturn(false);
+        given(userDataRepoMock.existsByUser(staffMemberWithData)).willReturn(true);
+        given(userDataRepoMock.existsByUser(staffMemberWithoutData)).willReturn(false);
 
-        given(userDataRepo.findByUserIn(staffMembers, sort))
+        given(userDataRepoMock.findByUserIn(staffMembers, sort))
                 .willReturn(Arrays.asList(staffMemberWithDataData, staffMemberWithoutDataData));
 
-        given(ldapService.getUserData(Collections.singletonList(staffMemberWithoutData)))
+        given(ldapServiceMock.getUserData(Collections.singletonList(staffMemberWithoutData)))
                 .willReturn(Collections.singletonList(staffMemberWithoutDataData));
 
         // when
-        List<UserData> actualStaffData = ldapUserService.getStaffMemberDataOfUser(user, sort);
+        List<UserData> actualStaffData = ldapUserService.getStaffMemberUserDataOfUser(user, sort);
 
         // then
         assertThat(actualStaffData).containsExactlyInAnyOrder(staffMemberWithDataData, staffMemberWithoutDataData);
 
-        verify(ldapService).getUserData(userListCaptor.capture());
+        verify(ldapServiceMock).getUserData(userListCaptor.capture());
         assertThat(userListCaptor.getValue()).containsExactlyInAnyOrder(staffMemberWithoutData);
 
-        verify(userDataRepo).saveAll(Collections.singletonList(staffMemberWithoutDataData));
+        verify(userDataRepoMock).saveAll(Collections.singletonList(staffMemberWithoutDataData));
     }
 
     @Test
@@ -537,7 +547,7 @@ public class LdapUserServiceTest {
         // given
         User user = new User(USER_ID);
 
-        given(userRepo.save(user)).willReturn(user);
+        given(userRepoMock.save(user)).willReturn(user);
 
         // when
         User actualUser = ldapUserService.save(user);
@@ -545,7 +555,7 @@ public class LdapUserServiceTest {
         // then
         assertThat(actualUser).isEqualTo(user);
 
-        verify(userRepo).save(user);
+        verify(userRepoMock).save(user);
     }
 
     @Test
@@ -564,9 +574,9 @@ public class LdapUserServiceTest {
 
         Set<User> users = new HashSet<>(Arrays.asList(userWithExistingStruct, userWithoutExistingStruct));
 
-        given(structureRepo.findAllByUserIn(users)).willReturn(Collections.singletonList(structureForUserWithExistingStruct));
+        given(structureRepoMock.findAllByUserIn(users)).willReturn(Collections.singletonList(structureForUserWithExistingStruct));
 
-        given(ldapService.isManager(userWithoutExistingStructId)).willReturn(false);
+        given(ldapServiceMock.isManager(userWithoutExistingStructId)).willReturn(false);
 
         // when
         Map<User, Boolean> actualUserManagerMap = ldapUserService.usersAreManagers(users);
@@ -574,7 +584,7 @@ public class LdapUserServiceTest {
         // then
         assertThat(actualUserManagerMap).containsOnly(entry(userWithExistingStruct, true), entry(userWithoutExistingStruct, false));
 
-        verify(ldapService).isManager(userWithoutExistingStructId);
+        verify(ldapServiceMock).isManager(userWithoutExistingStructId);
     }
 
     @Test
@@ -582,7 +592,7 @@ public class LdapUserServiceTest {
         // given
         User expectedUser = new User(USER_ID);
 
-        given(ldapService.userExists(USER_ID)).willReturn(true);
+        given(ldapServiceMock.userExists(USER_ID)).willReturn(true);
 
         // when
         User actualUser = ldapUserService.validateExistence(expectedUser);
@@ -596,7 +606,7 @@ public class LdapUserServiceTest {
         // given
         User user = new User(USER_ID);
 
-        given(ldapService.userExists(USER_ID)).willReturn(false);
+        given(ldapServiceMock.userExists(USER_ID)).willReturn(false);
 
         // when
         assertThatThrownBy(() -> ldapUserService.validateExistence(user))

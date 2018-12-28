@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { faBookmark } from '@fortawesome/free-regular-svg-icons/faBookmark';
 import { faGraduationCap } from '@fortawesome/free-solid-svg-icons/faGraduationCap';
@@ -33,7 +33,7 @@ export class ProjectDetailsComponent {
               private employeeService: EmployeeService,
               private authService: AuthenticationService) { }
 
-  swipebugplaceholder(){}
+  swipebugplaceholder() {}
 
   requestProject() {
     this.router.navigate([`/projects/${this.selectedProject.id}/request`]);

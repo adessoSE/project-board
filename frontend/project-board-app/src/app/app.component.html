@@ -6,15 +6,15 @@
 <!--Navbar-->
 <nav class="navbar navbar-expand-lg navbar-light custom-navbar sticky-top">
 
-<!--BurgerMenuIcon-->
+    <!--BurgerMenuIcon-->
     <button style="border: 0; outline: 0;" class="navbar-toggler" type="button" (click)="NavToggle()">
       <span class="navbar-toggler-icon"></span>
     </button>
 
 <!--adesso Logo-->
-    <a class="navbar-brand" routerLink="/"><img id="brand-logo" src="/assets/adesso-projectboard-logo.png"></a>       
+    <a class="navbar-brand" routerLink="/"><img id="brand-logo" src="/assets/adesso-projectboard-logo.png"></a>
 
-<!--NavbarItems for large screens-->
+    <!--NavbarItems for large screens-->
     <div id="navbarContent">
         <ul *ngIf="isUserAuthenticated()" class="navbar-nav mr-auto">
             <li class="nav-item">
@@ -34,7 +34,7 @@
   </nav>
 
 <!--Container for Sidenavigation-->
-  <mat-sidenav-container class="sidenav-container" id="belowNavbar" (swipeleft)="closeNav()" (window:resize)="onResize()">
+<mat-sidenav-container class="sidenav-container" id="belowNavbar" (swipeleft)="closeNav()" (window:resize)="onResize()">
 
 <!--Sidenavigation & Sidenavigation Items-->
     <mat-sidenav #snav id="side-nav">
@@ -47,16 +47,15 @@
       </mat-nav-list>
     </mat-sidenav>
 
-<!--Content Window for router-outlet & alert-->
-    <mat-sidenav-content class="sidenav-content" id="contentWindow">
+  <!--Content Window for router-outlet & alert-->
+  <mat-sidenav-content class="sidenav-content" id="contentWindow">
 
     <div class="container background-inner" id="innerContent" (swiperight)="openNav()">
-        
-        <app-alert></app-alert>
-        <router-outlet></router-outlet>
+
+      <app-alert></app-alert>
+      <router-outlet></router-outlet>
 
     </div>
 
-    </mat-sidenav-content>
-  </mat-sidenav-container>
-
+  </mat-sidenav-content>
+</mat-sidenav-container>

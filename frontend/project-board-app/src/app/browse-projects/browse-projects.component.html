@@ -7,7 +7,7 @@
       <small>{{projectsFound}} Treffer</small>
     </div>
 
-    <!-- infinite scroll directive used for pagination 
+    <!-- infinite scroll directive used for pagination
     Different Versions for Mobile and Desktop, to keep infiniteScroll working -->
     <div *ngIf="mobile" (swiperight)="swipebugplaceholder()">
       <div class="list-group">
@@ -24,8 +24,10 @@
         </ng-container>
       </div>
       <div *ngIf="loadingProjects" style="width: 100%; margin-top: 1rem">
-        <div class="loading-spinner"><mat-spinner [diameter]="50"></mat-spinner></div>
-    </div>
+        <div class="loading-spinner">
+          <mat-spinner [diameter]="50"></mat-spinner>
+        </div>
+      </div>
     </div>
 
     <!--Desktop Version-->
@@ -44,8 +46,10 @@
         </ng-container>
       </div>
       <div *ngIf="loadingProjects" style="width: 100%; margin-top: 1rem">
-        <div class="loading-spinner"><mat-spinner [diameter]="50"></mat-spinner></div>
-    </div>
+        <div class="loading-spinner">
+          <mat-spinner [diameter]="50"></mat-spinner>
+        </div>
+      </div>
     </div>
 
 

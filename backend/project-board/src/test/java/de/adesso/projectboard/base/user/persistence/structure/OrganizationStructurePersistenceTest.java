@@ -10,13 +10,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.persistence.EntityNotFoundException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -24,27 +20,28 @@ import static org.junit.Assert.*;
 public class OrganizationStructurePersistenceTest {
 
     @Autowired
-    OrganizationStructureRepository structureRepo;
+    private OrganizationStructureRepository structureRepo;
 
     @Autowired
-    UserRepository userRepo;
+    private UserRepository userRepo;
 
     @Test
     @Sql("classpath:de/adesso/projectboard/persistence/Users.sql")
-    public void testSave() {
-        User user = userRepo.findById("User1").orElseThrow(EntityNotFoundException::new);
-        User manager = userRepo.findById("User2").orElseThrow(EntityNotFoundException::new);
+    public void save() {
+        // given
+        User user = userRepo.findById("User1").orElseThrow();
+        User manager = userRepo.findById("User2").orElseThrow();
         Set<User> staff = new HashSet<>(userRepo.findAllById(Arrays.asList("User3", "User4")));
 
-        OrganizationStructure structure = new OrganizationStructure(user, manager, staff, true);
-        OrganizationStructure persistedStructure = structureRepo.save(structure);
+        OrganizationStructure expectedStructure = new OrganizationStructure(user, manager, staff, true);
 
-        assertTrue(persistedStructure.isUserIsManager());
-        assertEquals(user, persistedStructure.getUser());
-        assertEquals(manager, persistedStructure.getManager());
-        assertEquals(2, persistedStructure.getStaffMembers().size());
-        assertTrue(persistedStructure.getStaffMembers().stream().anyMatch(member -> "User3".equals(member.getId())));
-        assertTrue(persistedStructure.getStaffMembers().stream().anyMatch(member -> "User4".equals(member.getId())));
+        // when
+        OrganizationStructure persistedStructure = structureRepo.save(expectedStructure);
+        OrganizationStructure actualStructure = structureRepo.findById(persistedStructure.getId()).orElseThrow();
+
+        // then
+        expectedStructure.setId(persistedStructure.getId());
+        assertThat(actualStructure).isEqualTo(expectedStructure);
     }
 
     @Test
@@ -52,12 +49,16 @@ public class OrganizationStructurePersistenceTest {
             "classpath:de/adesso/projectboard/persistence/Users.sql",
             "classpath:de/adesso/projectboard/persistence/OrgStructure.sql"
     })
-    public void testFindByUser() {
-        User first = userRepo.findById("User1").orElseThrow(EntityNotFoundException::new);
-        User second = userRepo.findById("User2").orElseThrow(EntityNotFoundException::new);
+    public void findByUserReturnsStructureForUserWhenPresent() {
+        // given
+        User user = userRepo.findById("User1").orElseThrow();
+        OrganizationStructure expectedStructure = structureRepo.findById(1L).orElseThrow();
 
-        assertTrue(structureRepo.findByUser(first).isPresent());
-        assertFalse(structureRepo.findByUser(second).isPresent());
+        // when
+        OrganizationStructure actualStructure = structureRepo.findByUser(user).orElseThrow();
+
+        // then
+        assertThat(actualStructure).isEqualTo(expectedStructure);
     }
 
     @Test
@@ -65,12 +66,15 @@ public class OrganizationStructurePersistenceTest {
             "classpath:de/adesso/projectboard/persistence/Users.sql",
             "classpath:de/adesso/projectboard/persistence/OrgStructure.sql"
     })
-    public void testExistsByUser() {
-        User first = userRepo.findById("User1").orElseThrow(EntityNotFoundException::new);
-        User second = userRepo.findById("User2").orElseThrow(EntityNotFoundException::new);
+    public void findByUserReturnsNoStructureForUserWhenNoneIsPresent() {
+        // given
+        User user = userRepo.findById("User2").orElseThrow();
 
-        assertTrue(structureRepo.existsByUser(first));
-        assertFalse(structureRepo.existsByUser(second));
+        // when
+        Optional<OrganizationStructure> structureOptional = structureRepo.findByUser(user);
+
+        // then
+        assertThat(structureOptional).isNotPresent();
     }
 
     @Test
@@ -78,11 +82,15 @@ public class OrganizationStructurePersistenceTest {
             "classpath:de/adesso/projectboard/persistence/Users.sql",
             "classpath:de/adesso/projectboard/persistence/OrgStructure.sql"
     })
-    public void testExistsByUserAndUserIsManager() {
-        User first = userRepo.findById("User1").orElseThrow(EntityNotFoundException::new);
+    public void existsByUserReturnsTrueWhenStructureIsPresent() {
+        // given
+        User user = userRepo.findById("User1").orElseThrow();
 
-        assertTrue(structureRepo.existsByUserAndUserIsManager(first, true));
-        assertFalse(structureRepo.existsByUserAndUserIsManager(first, false));
+        // when
+        boolean actualExists = structureRepo.existsByUser(user);
+
+        // then
+        assertThat(actualExists).isTrue();
     }
 
     @Test
@@ -90,14 +98,134 @@ public class OrganizationStructurePersistenceTest {
             "classpath:de/adesso/projectboard/persistence/Users.sql",
             "classpath:de/adesso/projectboard/persistence/OrgStructure.sql"
     })
-    public void testFindAllByUserIn() {
-        User first = userRepo.findById("User1").orElseThrow(EntityNotFoundException::new);
-        User second = userRepo.findById("User2").orElseThrow(EntityNotFoundException::new);
+    public void existsByUserReturnsFalseWhenNoStructureIsPresent() {
+        // given
+        User user = userRepo.findById("User2").orElseThrow();
 
+        // when
+        boolean actualExists = structureRepo.existsByUser(user);
+
+        // then
+        assertThat(actualExists).isFalse();
+    }
+
+    @Test
+    @Sql({
+            "classpath:de/adesso/projectboard/persistence/Users.sql",
+            "classpath:de/adesso/projectboard/persistence/OrgStructure.sql"
+    })
+    public void existsByUserAndManagingUserReturnsTrueWhenStructurePresentAndValueMatches() {
+        // given
+        User user = userRepo.findById("User1").orElseThrow();
+
+        // when
+        boolean actualExists = structureRepo.existsByUserAndManagingUser(user, true);
+
+        // then
+        assertThat(actualExists).isTrue();
+    }
+
+    @Test
+    @Sql({
+            "classpath:de/adesso/projectboard/persistence/Users.sql",
+            "classpath:de/adesso/projectboard/persistence/OrgStructure.sql"
+    })
+    public void existsByUserAndManagingUserReturnsFalseWhenStructurePresentButValueNotMatches() {
+        // given
+        User user = userRepo.findById("User1").orElseThrow();
+
+        // when
+        boolean actualExists = structureRepo.existsByUserAndManagingUser(user, false);
+
+        // then
+        assertThat(actualExists).isFalse();
+    }
+
+    @Test
+    @Sql({
+            "classpath:de/adesso/projectboard/persistence/Users.sql",
+            "classpath:de/adesso/projectboard/persistence/OrgStructure.sql"
+    })
+    public void existsByUserAndManagingUserReturnsFalseWhenNotStructurePresent() {
+        // given
+        User user = userRepo.findById("User2").orElseThrow();
+
+        // when
+        boolean actualExists = structureRepo.existsByUserAndManagingUser(user, true);
+
+        // then
+        assertThat(actualExists).isFalse();
+    }
+
+
+    @Test
+    @Sql({
+            "classpath:de/adesso/projectboard/persistence/Users.sql",
+            "classpath:de/adesso/projectboard/persistence/OrgStructure.sql"
+    })
+    public void findAllByUserInReturnsStructuresForUserWherePresent() {
+        // given
+        User first = userRepo.findById("User1").orElseThrow();
+        User second = userRepo.findById("User2").orElseThrow();
+
+        OrganizationStructure expectedStructure = structureRepo.findByUser(first).orElseThrow();
+
+        // when
         List<OrganizationStructure> allByUserIn = structureRepo.findAllByUserIn(Arrays.asList(first, second));
 
-        assertEquals(1, allByUserIn.size());
-        assertEquals(first, allByUserIn.get(0).getUser());
+        // then
+        assertThat(allByUserIn).containsExactly(expectedStructure);
+    }
+
+    @Test
+    @Sql({
+            "classpath:de/adesso/projectboard/persistence/Users.sql",
+            "classpath:de/adesso/projectboard/persistence/OrgStructure.sql"
+    })
+    public void existsByUserAndStaffMemberContainingReturnsTrueWhenStructurePresentAndContainsUser() {
+        // given
+        User user = userRepo.findById("User1").orElseThrow();
+        User staffMember = userRepo.findById("User3").orElseThrow();
+
+        // when
+        boolean actualExists = structureRepo.existsByUserAndStaffMembersContaining(user, staffMember);
+
+        // then
+        assertThat(actualExists).isTrue();
+    }
+
+    @Test
+    @Sql({
+            "classpath:de/adesso/projectboard/persistence/Users.sql",
+            "classpath:de/adesso/projectboard/persistence/OrgStructure.sql"
+    })
+    public void existsByUserAndStaffMemberContainingReturnsFalseWhenStructurePresentAndButDoesNotContainUser() {
+        // given
+        User user = userRepo.findById("User1").orElseThrow();
+        User staffMember = userRepo.findById("User5").orElseThrow();
+
+        // when
+        boolean actualExists = structureRepo.existsByUserAndStaffMembersContaining(user, staffMember);
+
+        // then
+        assertThat(actualExists).isFalse();
+    }
+
+    @Test
+    @Sql({
+            "classpath:de/adesso/projectboard/persistence/Users.sql",
+            "classpath:de/adesso/projectboard/persistence/OrgStructure.sql"
+    })
+    public void existsByUserAndStaffMemberContainingReturnsFalseWhenStructureNotPresent() {
+        // given
+        User user = userRepo.findById("User3").orElseThrow();
+        User staffMember = userRepo.findById("User5").orElseThrow();
+
+        // when
+        boolean actualExists = structureRepo.existsByUserAndStaffMembersContaining(user, staffMember);
+
+        // then
+        assertThat(actualExists).isFalse();
     }
 
 }

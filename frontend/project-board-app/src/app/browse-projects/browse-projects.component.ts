@@ -1,5 +1,7 @@
 import { Location } from '@angular/common';
 import { AfterViewChecked, Component, HostListener, OnInit } from '@angular/core';
+
+import { MatDialog } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
 import { faBookmark } from '@fortawesome/free-regular-svg-icons';
 import { faEnvelope } from '@fortawesome/free-regular-svg-icons/faEnvelope';
@@ -14,10 +16,10 @@ import { Project, ProjectService } from '../_services/project.service';
 @Component({
   selector: 'app-browse-projects',
   templateUrl: './browse-projects.component.html',
-  styleUrls: ['./browse-projects.component.scss'],
+  styleUrls: ['./browse-projects.component.scss']
 })
-export class BrowseProjectsComponent implements OnInit, AfterViewChecked  {
- 
+export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
+
   appTooltip = 'Du hast dieses Projekt bereits angefragt.';
   bmTooltip = 'Du hast ein Lesezeichen an diesem Projekt.';
   studTooltip = 'Studentisches Projekt';
@@ -49,28 +51,27 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked  {
               private alertService: AlertService,
               private route: ActivatedRoute,
               private location: Location
-              ) {}
+  ) {}
 
   @HostListener('window:resize') onResize() {
     this.mobile = document.body.clientWidth < 992;
   }
 
-  swipebugplaceholder(){}
+  swipebugplaceholder() {}
 
   loadProjects() {
-    
     combineLatest(this.route.data, this.route.params)
-    .pipe(takeUntil(this.destroy$))
-    .subscribe(data => {
-      if (data[0].projects) {
-        this.projects = data[0].projects.content;
-      }
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(data => {
+        if (data[0].projects) {
+          this.projects = data[0].projects.content;
+        }
 
       // extract projects from applications
       this.appliedProjects = data[0].applications ? data[0].applications.map(app => app.project) : [];
       this.bookmarks = data[0].bookmarks;
       this.isUserBoss = data[0].isUserBoss;
-  
+
       // set selected project
       this.setSelectedProject(data[1].id);
     });
@@ -144,13 +145,13 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked  {
       this.below = false;
     } else {
       this.location.replaceState(`/browse/${project.id}`);
-        if(this.selectedProject){
+      if (this.selectedProject) {
 
-          const oldProjectOffset = $(`#${this.selectedProject.id}`).offset().top;
-          
-         if(oldProjectOffset > newProjectOffset){
+        const oldProjectOffset = $(`#${this.selectedProject.id}`).offset().top;
+
+        if (oldProjectOffset > newProjectOffset) {
           this.below = false;
-          } else {
+        } else {
           this.below = true;
         }
       }
@@ -161,23 +162,23 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked  {
 
   ngAfterViewChecked() {
 
-    if(!this.mobile){
+    if (!this.mobile) {
       document.getElementById('detailContainerLg').scrollTop = 0;
     }
 
     if (this.scroll && this.selectedProject && this.mobile) {
       const btn = $(`#${this.selectedProject.id}`);
-      if(this.below){
+      if (this.below) {
         $('html, body').animate({scrollTop: $(btn).offset().top - (document.getElementById('detailContainer').scrollHeight + 56)}, 'slow');
       } else {
-        $('html, body').animate({scrollTop: $(btn).offset().top -  56}, 'slow');
+        $('html, body').animate({scrollTop: $(btn).offset().top - 56}, 'slow');
       }
-        this.scroll = false;
+      this.scroll = false;
     } else {
       this.scroll = false;
     }
   }
-  
+
 
   isProjectApplicable(projectId) {
     return this.appliedProjects ? !this.appliedProjects.some(p => p && p.id === projectId) : true;

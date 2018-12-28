@@ -56,7 +56,7 @@ public class UserController {
         User user = userService.getUserById(userId);
 
         List<UserData> dataOfStaff = userService
-                .getStaffMemberDataOfUser(user, sort);
+                .getStaffMemberUserDataOfUser(user, sort);
 
         return userDtoFactory.createDtos(dataOfStaff);
     }

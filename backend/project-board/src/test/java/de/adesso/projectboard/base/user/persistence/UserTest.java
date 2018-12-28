@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -173,7 +174,8 @@ public class UserTest {
         user.accessInfoList.add(accessInfoMock);
 
         // when
-        AccessInfo actualAccessInfo = user.getLatestAccessInfo();
+        AccessInfo actualAccessInfo = user.getLatestAccessInfo()
+                .orElseThrow(() -> new IllegalStateException("No info instance present!"));
 
         // then
         assertThat(actualAccessInfo).isEqualTo(accessInfoMock);
@@ -188,7 +190,8 @@ public class UserTest {
         user.accessInfoList.addAll(Arrays.asList(accessInfoMock, expectedAccessInfoMock));
 
         // when
-        AccessInfo actualAccessInfo = user.getLatestAccessInfo();
+        AccessInfo actualAccessInfo = user.getLatestAccessInfo()
+                .orElseThrow(() -> new IllegalStateException("No info instance present!"));
 
         // then
         assertThat(actualAccessInfo).isEqualTo(expectedAccessInfoMock);
@@ -200,10 +203,10 @@ public class UserTest {
         User user = new User("user");
 
         // when
-        AccessInfo actualAccessInfo = user.getLatestAccessInfo();
+        Optional<AccessInfo> actualAccessInfoOptional = user.getLatestAccessInfo();
 
         // then
-        assertThat(actualAccessInfo).isNull();
+        assertThat(actualAccessInfoOptional).isNotPresent();
     }
 
     @Test
