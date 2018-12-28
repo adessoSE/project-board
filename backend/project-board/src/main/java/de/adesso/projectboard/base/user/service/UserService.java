@@ -136,7 +136,7 @@ public interface UserService {
      *          A {@link List} of the {@link UserData} belonging to
      *          the staff members.
      */
-    List<UserData> getStaffMemberDataOfUser(User user, Sort sort);
+    List<UserData> getStaffMemberUserDataOfUser(User user, Sort sort);
 
     /**
      *

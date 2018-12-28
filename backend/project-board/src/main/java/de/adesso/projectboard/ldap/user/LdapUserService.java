@@ -94,7 +94,7 @@ public class LdapUserService implements UserService {
     @Transactional(readOnly = true)
     public boolean userIsManager(User user) {
         if(structureRepo.existsByUser(user)) {
-            return structureRepo.existsByUserAndUserIsManager(user, true);
+            return structureRepo.existsByUserAndManagingUser(user, true);
         } else {
             return ldapService.isManager(user.getId());
         }
@@ -226,7 +226,7 @@ public class LdapUserService implements UserService {
     }
 
     @Override
-    public List<UserData> getStaffMemberDataOfUser(User user, Sort sort) {
+    public List<UserData> getStaffMemberUserDataOfUser(User user, Sort sort) {
         OrganizationStructure structureForUser = getStructureForUser(user);
         if (structureForUser.getStaffMembers().isEmpty()) {
             return Collections.emptyList();
@@ -280,7 +280,7 @@ public class LdapUserService implements UserService {
         List<OrganizationStructure> existingStructures = structureRepo.findAllByUserIn(users);
 
         // add it to the map for every existing instance
-        existingStructures.forEach(structure -> userManagerMap.put(structure.getUser(), structure.isUserIsManager()));
+        existingStructures.forEach(structure -> userManagerMap.put(structure.getUser(), structure.isManagingUser()));
 
         // remove all users that have a persisted structure
         List<User> usersWithStructs = users.stream()

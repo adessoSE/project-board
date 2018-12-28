@@ -147,7 +147,7 @@ public class LdapUserServiceTest {
         User user = new User(USER_ID);
 
         given(structureRepoMock.existsByUser(user)).willReturn(true);
-        given(structureRepoMock.existsByUserAndUserIsManager(user, true)).willReturn(true);
+        given(structureRepoMock.existsByUserAndManagingUser(user, true)).willReturn(true);
 
         // when
         boolean actualIsManager = ldapUserService.userIsManager(user);
@@ -162,7 +162,7 @@ public class LdapUserServiceTest {
         User user = new User(USER_ID);
 
         given(structureRepoMock.existsByUser(user)).willReturn(true);
-        given(structureRepoMock.existsByUserAndUserIsManager(user, true)).willReturn(false);
+        given(structureRepoMock.existsByUserAndManagingUser(user, true)).willReturn(false);
 
         // when
         boolean actualIsManager = ldapUserService.userIsManager(user);
@@ -531,7 +531,7 @@ public class LdapUserServiceTest {
                 .willReturn(Collections.singletonList(staffMemberWithoutDataData));
 
         // when
-        List<UserData> actualStaffData = ldapUserService.getStaffMemberDataOfUser(user, sort);
+        List<UserData> actualStaffData = ldapUserService.getStaffMemberUserDataOfUser(user, sort);
 
         // then
         assertThat(actualStaffData).containsExactlyInAnyOrder(staffMemberWithDataData, staffMemberWithoutDataData);

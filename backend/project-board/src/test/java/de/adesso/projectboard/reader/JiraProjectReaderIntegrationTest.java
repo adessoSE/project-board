@@ -5,15 +5,15 @@ import de.adesso.projectboard.base.project.persistence.ProjectOrigin;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,6 +28,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
@@ -35,23 +36,46 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 @ActiveProfiles("adesso-jira")
 @RunWith(SpringRunner.class)
-@RestClientTest(JiraProjectReader.class)
-public class ProjectReaderIntegrationTest {
+public class JiraProjectReaderIntegrationTest {
 
     private final String REQUEST_PATH = "/test";
 
     @MockBean
     private JiraProjectReaderConfigurationProperties properties;
 
-    @Autowired
-    private JiraProjectReader reader;
+    @MockBean
+    private RestTemplateBuilder builder;
 
-    @Autowired
     private MockRestServiceServer server;
+
+    private JiraProjectReader reader;
 
     @Before
     public void setUp() {
+        // set up properties mock
         given(properties.getRequestUrl()).willReturn(REQUEST_PATH);
+        given(properties.getUsername()).willReturn("");
+        given(properties.getPassword()).willReturn("");
+
+        // spring's RestClientTest annotation causes problems
+        // because the username/password for basic authentication can't
+        // be null since spring 5.1, but the properties mock bean injected returns
+        // null when retrieving the username/password
+        // -> configure manually
+
+        // initialize a new rest template that should be used by the
+        // reader
+        var restTemplate = new RestTemplate();
+
+        // configure the builder to return the template
+        given(builder.basicAuthentication(anyString(), anyString())).willReturn(builder);
+        given(builder.build()).willReturn(restTemplate);
+
+        // bind the server to the given rest template
+        this.server = MockRestServiceServer.bindTo(restTemplate)
+                .build();
+
+        this.reader = new JiraProjectReader(builder, properties);
     }
 
     @Test
