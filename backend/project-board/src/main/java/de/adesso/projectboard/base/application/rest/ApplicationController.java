@@ -7,13 +7,13 @@ import de.adesso.projectboard.base.application.dto.ProjectApplicationResponseDTO
 import de.adesso.projectboard.base.application.handler.ProjectApplicationHandler;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.service.ApplicationService;
-import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.project.rest.NonPageableProjectController;
-import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.rest.BookmarkController;
 import de.adesso.projectboard.base.user.rest.UserController;
 import de.adesso.projectboard.base.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.SortDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,10 +54,10 @@ public class ApplicationController {
 
     @PreAuthorize("(hasPermissionToAccessUser(#userId) && hasPermissionToApply()) || hasRole('admin')")
     @PostMapping(path = "/{userId}/applications")
-    public ProjectApplicationResponseDTO createApplicationForUser(@Valid @RequestBody ProjectApplicationRequestDTO requestDTO, @PathVariable("userId") String userId) {
-        User user = userService.getUserById(userId);
+    public ProjectApplicationResponseDTO createApplicationForUser(@Valid @RequestBody ProjectApplicationRequestDTO requestDTO, @PathVariable String userId) {
+        var user = userService.getUserById(userId);
 
-        ProjectApplication application = applicationService.createApplicationForUser(user, requestDTO);
+        var application = applicationService.createApplicationForUser(user, requestDTO);
 
         // call the handler method
         applicationHandler.onApplicationReceived(application);
@@ -67,10 +67,21 @@ public class ApplicationController {
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @GetMapping(path = "/{userId}/applications")
-    public Collection<ProjectApplicationResponseDTO> getApplicationsOfUser(@PathVariable("userId") String userId) throws UserNotFoundException {
-        User user = userService.getUserById(userId);
+    public Collection<ProjectApplicationResponseDTO> getApplicationsOfUser(@PathVariable String userId) {
+        var user = userService.getUserById(userId);
 
         return applicationService.getApplicationsOfUser(user).stream()
+                .map(applicationDtoFactory::createDto)
+                .collect(Collectors.toList());
+    }
+
+    @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
+    @GetMapping(path = "/{userId}/staff/applications")
+    public Collection<ProjectApplicationResponseDTO> getApplicationsOfStaffMembers(@PathVariable String userId, @SortDefault(sort = "applicationDate", direction = Sort.Direction.DESC) Sort sort) {
+        var user = userService.getUserById(userId);
+        var staffMembers = userService.getStaffMembersOfUser(user);
+
+        return applicationService.getApplicationsOfUsers(staffMembers, sort).stream()
                 .map(applicationDtoFactory::createDto)
                 .collect(Collectors.toList());
     }

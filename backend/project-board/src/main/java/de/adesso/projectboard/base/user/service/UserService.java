@@ -141,6 +141,16 @@ public interface UserService {
     /**
      *
      * @param user
+     *          The {@link User} to get the staff members of.
+     *
+     * @return
+     *          The {@code user}'s staff members.
+     */
+    List<User> getStaffMembersOfUser(User user);
+
+    /**
+     *
+     * @param user
      *          The {@link User} to save.
      *
      * @return

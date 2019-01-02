@@ -246,6 +246,11 @@ public class LdapUserService implements UserService {
         return dataRepo.findByUserIn(structureForUser.getStaffMembers(), sort);
     }
 
+    @Override
+    public List<User> getStaffMembersOfUser(User user) {
+        return new ArrayList<>(this.getStructureForUser(user).getStaffMembers());
+    }
+
     /**
      * {@inheritDoc}
      *

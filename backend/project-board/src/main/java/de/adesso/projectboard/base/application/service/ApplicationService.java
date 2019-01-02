@@ -5,7 +5,9 @@ import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.exceptions.AlreadyAppliedException;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.user.persistence.User;
+import org.springframework.data.domain.Sort;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -48,12 +50,25 @@ public interface ApplicationService {
     /**
      *
      * @param user
-     *          The {@link User#id ID} of the {@link User} to get the
-     *          applications of.
+     *          The {@link User} to get the applications of.
      *
      * @return
      *          The user's {@link ProjectApplication applications}.
      */
     List<ProjectApplication> getApplicationsOfUser(User user);
+
+    /**
+     *
+     * @param users
+     *          The {@link User}s to get the staff applications of.
+     *
+     * @param sort
+     *          The sorting to apply.
+     *
+     * @return
+     *          The {@link ProjectApplication applications} of the staff
+     *          members of the user.
+     */
+    List<ProjectApplication> getApplicationsOfUsers(Collection<User> users, Sort sort);
 
 }
