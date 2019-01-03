@@ -1,7 +1,6 @@
 package de.adesso.projectboard.project.service;
 
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.project.persistence.ProjectOrigin;
 import de.adesso.projectboard.base.project.persistence.ProjectRepository;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
@@ -206,17 +205,20 @@ public class RepositoryUserProjectServiceTest {
         String expectedOther = "Other stuff";
         LocalDateTime expectedCreated = LocalDateTime.now(clock);
         LocalDateTime expectedUpdated = LocalDateTime.now(clock);
-        ProjectOrigin expectedOrigin = ProjectOrigin.CUSTOM;
+        String expectedDayRate = "Test Rate";
+        String expectedTravelCostsCompensated = "Nope";
+        Project.Origin expectedOrigin = Project.Origin.CUSTOM;
 
         Project project = new Project("Other ID", expectedStatus, expectedIssueType, expectedTitle, expectedLabels, expectedJob, expectedSkills,
                 expectedDescription, expectedLob, expectedCustomer,
                 expectedLocation, expectedOperationStart, expectedOperationEnd,
-                expectedEffort, null, null, expectedFreelancer, expectedElongation, expectedOther, ProjectOrigin.JIRA);
+                expectedEffort, null, null, expectedFreelancer, expectedElongation, expectedOther, expectedDayRate,
+                expectedTravelCostsCompensated, Project.Origin.JIRA);
 
         given(projectService.createProject(project)).willReturn(project
                 .setCreated(expectedCreated)
                 .setUpdated(expectedUpdated)
-                .setOrigin(ProjectOrigin.CUSTOM));
+                .setOrigin(Project.Origin.CUSTOM));
 
         // when
         Project createdProject = userProjectService.createProjectForUser(project, userMock);

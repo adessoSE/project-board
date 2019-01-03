@@ -7,7 +7,6 @@ import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.base.project.dto.ProjectDtoMapper;
 import de.adesso.projectboard.base.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.project.persistence.ProjectOrigin;
 import de.adesso.projectboard.base.project.persistence.ProjectRepository;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.user.persistence.User;
@@ -80,7 +79,7 @@ public class RepositoryProjectService implements ProjectService {
     public Project updateProject(Project project, String projectId) throws ProjectNotEditableException {
         Project existingProject = getProjectById(projectId);
 
-        if(ProjectOrigin.CUSTOM.equals(existingProject.getOrigin())) {
+        if(Project.Origin.CUSTOM.equals(existingProject.getOrigin())) {
             return createOrUpdateProject(project, projectId);
         } else {
             throw new ProjectNotEditableException();
@@ -111,7 +110,7 @@ public class RepositoryProjectService implements ProjectService {
     public void deleteProjectById(String projectId) throws ProjectNotEditableException {
         Project existingProject = getProjectById(projectId);
 
-        if(ProjectOrigin.JIRA.equals(existingProject.getOrigin())) {
+        if(Project.Origin.JIRA.equals(existingProject.getOrigin())) {
             throw new ProjectNotEditableException();
         }
 
@@ -169,7 +168,7 @@ public class RepositoryProjectService implements ProjectService {
 
         LocalDateTime updatedTime = LocalDateTime.now(clock);
 
-        project.setOrigin(ProjectOrigin.CUSTOM);
+        project.setOrigin(Project.Origin.CUSTOM);
         project.setUpdated(updatedTime);
 
         if(existingProjectOptional.isPresent()) {

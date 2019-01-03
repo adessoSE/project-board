@@ -12,7 +12,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -57,11 +56,13 @@ public class ProjectPersistenceTest {
                 .setFreelancer("Freelancer")
                 .setElongation("Elongation")
                 .setOther("Other")
-                .setOrigin(ProjectOrigin.CUSTOM);
+                .setDayRate("Day Rate")
+                .setTravelCostsCompensated("Travel Costs Compensated")
+                .setOrigin(Project.Origin.CUSTOM);
 
         // when
         projectRepository.save(expectedProject);
-        Project retrievedProject = projectRepository.findById(expectedProjectId).orElseThrow(EntityNotFoundException::new);
+        Project retrievedProject = projectRepository.findById(expectedProjectId).orElseThrow();
 
         // then
         assertThat(retrievedProject).isEqualTo(expectedProject);

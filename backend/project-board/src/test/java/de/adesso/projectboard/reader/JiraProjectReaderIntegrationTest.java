@@ -1,7 +1,6 @@
 package de.adesso.projectboard.reader;
 
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.project.persistence.ProjectOrigin;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -89,11 +88,11 @@ public class JiraProjectReaderIntegrationTest {
 
         Project expectedFirstProject = new Project("Testkey 1", "Teststatus 1", "Testissuetype 1", "Testsummary 1", Arrays.asList("Testlabel 1", "Testlabel 2"),
                 "Testjob 1", "Testskills 1", "Testdescription 1", "Testlob 1", "Testcustomer 1", "Testlocation 1", "01.01.2018", "01.02.2018", "Testeffort 1", expectedCreated, expectedUpdated,
-                "Testfreelancer 1", "Testelongation 1", "Testother 1",  ProjectOrigin.JIRA);
+                "Testfreelancer 1", "Testelongation 1", "Testother 1",  "Testrate 1", "Testcompensated 1", Project.Origin.JIRA);
 
         Project expectedSecondProject = new Project("Testkey 2", "Teststatus 2", "Testissuetype 2", "Testsummary 2", Collections.emptyList(),
                 "Testjob 2", "Testskills 2", "Testdescription 2", "Testlob 2", "Testcustomer 2", "Testlocation 2", "02.01.2018", "02.02.2018", "Testeffort 2", expectedCreated, expectedUpdated,
-                "Testfreelancer 2", "Testelongation 2", "Testother 2",  ProjectOrigin.JIRA);
+                "Testfreelancer 2", "Testelongation 2", "Testother 2",  "Testrate 2", "Testcompensated 2", Project.Origin.JIRA);
 
         // when
         List<Project> projectList = reader.getInitialProjects();

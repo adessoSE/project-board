@@ -3,7 +3,6 @@ package de.adesso.projectboard.base.project.deserializer;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.project.persistence.ProjectOrigin;
 import de.adesso.projectboard.reader.JiraProjectReader;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,7 +25,7 @@ public class JiraIssue {
 
     public Project getProjectWithId() {
         project.setId(id)
-                .setOrigin(ProjectOrigin.JIRA);
+                .setOrigin(Project.Origin.JIRA);
 
         return project;
     }

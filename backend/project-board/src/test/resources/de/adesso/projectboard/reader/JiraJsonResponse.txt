@@ -24,6 +24,10 @@
         "customfield_10297": "Testlocation 1",
         "customfield_10284": "Testeffort 1",
         "customfield_10288": "Testjob 1",
+        "customfield_10298": "Testrate 1",
+        "customfield_10291": {
+          "value": "Testcompensated 1"
+        },
         "issuetype": {
           "name": "Testissuetype 1"
         },
@@ -59,6 +63,10 @@
         "customfield_10297": "Testlocation 2",
         "customfield_10284": "Testeffort 2",
         "customfield_10288": "Testjob 2",
+        "customfield_10298": "Testrate 2",
+        "customfield_10291": {
+          "value": "Testcompensated 2"
+        },
         "issuetype": {
           "name": "Testissuetype 2"
         },

@@ -112,7 +112,19 @@ public class Project {
     @JsonAlias("customfield_10304")
     String other;
 
+    @JsonAlias("customfield_10298")
+    String dayRate;
+
+    @JsonDeserialize(using = ObjectValueDeserializer.class)
+    @JsonAlias("customfield_10291")
+    String travelCostsCompensated;
+
     @Column(nullable = false)
-    ProjectOrigin origin = ProjectOrigin.JIRA;
+    Origin origin = Origin.JIRA;
+
+    public enum Origin {
+        JIRA,
+        CUSTOM
+    }
 
 }

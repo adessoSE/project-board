@@ -5,7 +5,6 @@ import de.adesso.projectboard.base.application.persistence.ProjectApplicationRep
 import de.adesso.projectboard.base.exceptions.ProjectNotEditableException;
 import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.project.persistence.ProjectOrigin;
 import de.adesso.projectboard.base.project.persistence.ProjectRepository;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
@@ -39,26 +38,26 @@ public class RepositoryProjectServiceTest {
     private final String USER_ID = "user";
 
     @Mock
-    ProjectRepository projectRepo;
+    private ProjectRepository projectRepo;
 
     @Mock
-    ProjectApplicationRepository applicationRepo;
+    private ProjectApplicationRepository applicationRepo;
 
     @Mock
-    UserRepository userRepo;
+    private UserRepository userRepo;
 
     @Mock
-    UserService userService;
+    private UserService userService;
 
     @Mock
-    Project projectMock;
+    private Project projectMock;
 
     @Mock
-    User userMock;
+    private User userMock;
 
-    Clock clock;
+    private Clock clock;
 
-    RepositoryProjectService projectService;
+    private RepositoryProjectService projectService;
 
     @Before
     public void setUp() {
@@ -119,7 +118,7 @@ public class RepositoryProjectServiceTest {
     public void updateProjectThrowsExceptionForNotEditableExistingProjectForId() {
         // given
         given(projectRepo.findById(PROJECT_ID)).willReturn(Optional.of(projectMock));
-        given(projectMock.getOrigin()).willReturn(ProjectOrigin.JIRA);
+        given(projectMock.getOrigin()).willReturn(Project.Origin.JIRA);
 
         // when
         assertThatThrownBy(() -> projectService.updateProject(new Project(), PROJECT_ID))
@@ -155,16 +154,18 @@ public class RepositoryProjectServiceTest {
         String expectedFreelancer = "Yup";
         String expectedElongation = "Nope";
         String expectedOther = "Other stuff";
-        ProjectOrigin expectedOrigin = ProjectOrigin.CUSTOM;
+        String expectedDayRate = "Day Rate";
+        String expectedTravelCostsCompensated = "Compensated";
+        Project.Origin expectedOrigin = Project.Origin.CUSTOM;
         LocalDateTime expectedCreatedTime = LocalDateTime.of(2018, 1, 1, 12, 0);
 
         Project project = new Project("Other ID", expectedStatus, expectedIssueType, expectedTitle, expectedLabels, expectedJob, expectedSkills,
                 expectedDescription, expectedLob, expectedCustomer,
                 expectedLocation, expectedOperationStart, expectedOperationEnd,
-                expectedEffort, null, null, expectedFreelancer, expectedElongation, expectedOther, ProjectOrigin.JIRA);
+                expectedEffort, null, null, expectedFreelancer, expectedElongation, expectedOther, expectedDayRate, expectedTravelCostsCompensated, Project.Origin.JIRA);
 
         given(projectRepo.findById(PROJECT_ID)).willReturn(Optional.of(projectMock));
-        given(projectMock.getOrigin()).willReturn(ProjectOrigin.CUSTOM);
+        given(projectMock.getOrigin()).willReturn(Project.Origin.CUSTOM);
         given(projectMock.getId()).willReturn(PROJECT_ID);
         given(projectMock.getCreated()).willReturn(expectedCreatedTime);
 
@@ -249,12 +250,14 @@ public class RepositoryProjectServiceTest {
         String expectedFreelancer = "Yup";
         String expectedElongation = "Nope";
         String expectedOther = "Other stuff";
-        ProjectOrigin expectedOrigin = ProjectOrigin.CUSTOM;
+        String expectedDayRate = "Day Rate";
+        String expectedTravelCostsCompensated = "Compensated";
+        Project.Origin expectedOrigin = Project.Origin.CUSTOM;
 
         Project project = new Project("Other ID", expectedStatus, expectedIssueType, expectedTitle, expectedLabels, expectedJob, expectedSkills,
                 expectedDescription, expectedLob, expectedCustomer,
                 expectedLocation, expectedOperationStart, expectedOperationEnd,
-                expectedEffort, null, null, expectedFreelancer, expectedElongation, expectedOther, ProjectOrigin.JIRA);
+                expectedEffort, null, null, expectedFreelancer, expectedElongation, expectedOther, expectedDayRate, expectedTravelCostsCompensated, Project.Origin.JIRA);
 
         given(projectRepo.save(project)).willReturn(project);
 
@@ -291,7 +294,7 @@ public class RepositoryProjectServiceTest {
     public void deleteProjectByIdThrowsExceptionForNotEditableExistingProjectForId() {
         // given
         given(projectRepo.findById(PROJECT_ID)).willReturn(Optional.of(projectMock));
-        given(projectMock.getOrigin()).willReturn(ProjectOrigin.JIRA);
+        given(projectMock.getOrigin()).willReturn(Project.Origin.JIRA);
 
         // when
         assertThatThrownBy(() -> projectService.deleteProjectById(PROJECT_ID))
@@ -304,7 +307,7 @@ public class RepositoryProjectServiceTest {
         ProjectApplication applicationMock = mock(ProjectApplication.class);
         given(applicationMock.getUser()).willReturn(userMock);
 
-        given(projectMock.getOrigin()).willReturn(ProjectOrigin.CUSTOM);
+        given(projectMock.getOrigin()).willReturn(Project.Origin.CUSTOM);
         given(projectRepo.findById(PROJECT_ID)).willReturn(Optional.of(projectMock));
 
         given(userRepo.findAllByOwnedProjectsContaining(projectMock)).willReturn(Collections.singletonList(userMock));
