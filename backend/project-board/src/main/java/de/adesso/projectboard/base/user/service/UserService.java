@@ -19,31 +19,6 @@ public interface UserService {
 
     /**
      *
-     * @return
-     *          The currently authenticated {@link User}.
-     */
-    default User getAuthenticatedUser() {
-        return getUserById(getAuthenticatedUserId());
-    }
-
-    /**
-     *
-     * @return
-     *          The currently authenticated {@link User}'s
-     *          {@link User#id ID}.
-     */
-    String getAuthenticatedUserId();
-
-    /**
-     *
-     * @return
-     *          {@code true}, iff the currently authenticated {@link User}
-     *          is a admin.
-     */
-    boolean authenticatedUserIsAdmin();
-
-    /**
-     *
      * @param userId
      *          The {@link User#id ID} of the {@link User}.
      *

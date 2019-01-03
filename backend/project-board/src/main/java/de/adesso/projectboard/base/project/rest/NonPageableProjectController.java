@@ -1,9 +1,8 @@
 package de.adesso.projectboard.base.project.rest;
 
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.user.persistence.User;
+import de.adesso.projectboard.base.user.service.UserAuthService;
 import de.adesso.projectboard.base.user.service.UserProjectService;
-import de.adesso.projectboard.base.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Sort;
@@ -28,19 +27,18 @@ public class NonPageableProjectController {
 
     private final UserProjectService userProjectService;
 
-    private final UserService userService;
+    private final UserAuthService userAuthService;
 
     @Autowired
-    public NonPageableProjectController(UserProjectService userProjectService,
-                                        UserService userService) {
+    public NonPageableProjectController(UserProjectService userProjectService, UserAuthService userAuthService) {
         this.userProjectService = userProjectService;
-        this.userService = userService;
+        this.userAuthService = userAuthService;
     }
 
     @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
     @GetMapping
     public Iterable<Project> getAllForUser(@SortDefault(direction = Sort.Direction.DESC, sort = "updated") Sort sort) {
-        return userProjectService.getProjectsForUser(userService.getAuthenticatedUser(), sort);
+        return userProjectService.getProjectsForUser(userAuthService.getAuthenticatedUser(), sort);
     }
 
     @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
@@ -49,7 +47,7 @@ public class NonPageableProjectController {
         if(keyword == null || keyword.isEmpty()) {
             return getAllForUser(sort);
         } else {
-            User user = userService.getAuthenticatedUser();
+            var user = userAuthService.getAuthenticatedUser();
 
             return userProjectService.searchProjectsForUser(user, keyword, sort);
         }

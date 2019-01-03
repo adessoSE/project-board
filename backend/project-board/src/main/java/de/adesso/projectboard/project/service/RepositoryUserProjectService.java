@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class RepositoryUserProjectService implements PageableUserProjectService {
 
     private final UserService userService;
@@ -38,31 +39,16 @@ public class RepositoryUserProjectService implements PageableUserProjectService 
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<Project> getProjectsForUser(User user, Sort sort) {
-        if(userCanSeeProjectsForManagers(user)) {
-            return projectRepo.findAllForManager(sort);
-        } else {
-            String lob = userService.getUserData(user).getLob();
-
-            return projectRepo.findAllForUser(lob, sort);
-        }
+        return projectRepo.findAllByStatusEscalatedOrOpen(sort);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<Project> searchProjectsForUser(User user, String keyword, Sort sort) {
-        if(userCanSeeProjectsForManagers(user)) {
-            return projectRepo.findAllForManagerByKeyword(keyword, sort);
-        } else {
-            String lob = userService.getUserData(user).getLob();
-
-            return projectRepo.findAllForUserByKeyword(lob, keyword, sort);
-        }
+        return projectRepo.findAllByStatusEscalatedOrOpenAndKeyword(keyword, sort);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public boolean userOwnsProject(User user, Project project) {
         return userRepo.existsByIdAndOwnedProjectsContaining(user.getId(), project);
     }
@@ -88,43 +74,13 @@ public class RepositoryUserProjectService implements PageableUserProjectService 
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Page<Project> getProjectsForUserPaginated(User user, Pageable pageable) {
-        if(userCanSeeProjectsForManagers(user)) {
-            return projectRepo.findAllForManagerPageable(pageable);
-        } else {
-            String lob = userService.getUserData(user).getLob();
-
-            return projectRepo.findAllForUserPageable(lob, pageable);
-        }
+        return projectRepo.findAllByStatusEscalatedOrOpenPageable(pageable);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Page<Project> searchProjectsForUserPaginated(String keyword, User user, Pageable pageable) {
-        if(userCanSeeProjectsForManagers(user)) {
-            return projectRepo.findAllForManagerByKeywordPageable(keyword, pageable);
-        } else {
-            String lob = userService.getUserData(user).getLob();
-
-            return projectRepo.findAllForUserByKeywordPageable(lob, keyword, pageable);
-        }
-    }
-
-    /**
-     *
-     * @param user
-     *          The {@link User} to check.
-     *
-     * @return
-     *          {@code true}, iff the given {@code user} can see
-     *          all projects that a manager can see.
-     */
-    boolean userCanSeeProjectsForManagers(User user) {
-        boolean userEqualsAuthenticatedUserAndIsAdmin = user.equals(userService.getAuthenticatedUser())
-                && userService.authenticatedUserIsAdmin();
-
-        return userService.userIsManager(user) || userEqualsAuthenticatedUserAndIsAdmin;
+        return projectRepo.findAllByStatusEscalatedOrOpenAndKeywordPageable(keyword, pageable);
     }
 
 }

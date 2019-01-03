@@ -40,35 +40,16 @@ public class LdapUserService implements UserService {
 
     private final OrganizationStructureRepository structureRepo;
 
-    private final AuthenticationInfoRetriever authInfo;
-
     public LdapUserService(UserRepository userRepo,
                            UserDataRepository dataRepo,
                            LdapService ldapService,
-                           OrganizationStructureRepository structureRepo,
-                           AuthenticationInfoRetriever authInfo) {
+                           OrganizationStructureRepository structureRepo) {
         this.userRepo = userRepo;
         this.dataRepo = dataRepo;
         this.structureRepo = structureRepo;
         this.ldapService = ldapService;
-        this.authInfo = authInfo;
     }
 
-
-    @Override
-    public User getAuthenticatedUser() throws UserNotFoundException {
-        return getUserById(authInfo.getUserId());
-    }
-
-    @Override
-    public String getAuthenticatedUserId() {
-        return authInfo.getUserId();
-    }
-
-    @Override
-    public boolean authenticatedUserIsAdmin() {
-        return authInfo.hasAdminRole();
-    }
 
     /**
      * {@inheritDoc}

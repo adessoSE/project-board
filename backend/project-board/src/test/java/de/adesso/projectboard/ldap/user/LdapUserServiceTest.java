@@ -1,7 +1,6 @@
 package de.adesso.projectboard.ldap.user;
 
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
-import de.adesso.projectboard.base.security.AuthenticationInfoRetriever;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
@@ -42,9 +41,6 @@ public class LdapUserServiceTest {
     @Mock
     private LdapService ldapServiceMock;
 
-    @Mock
-    private AuthenticationInfoRetriever authInfoRetrieverMock;
-
     @Captor
     private ArgumentCaptor<List<User>> userListCaptor;
 
@@ -52,69 +48,7 @@ public class LdapUserServiceTest {
 
     @Before
     public void setUp() {
-        this.ldapUserService = new LdapUserService(userRepoMock, userDataRepoMock, ldapServiceMock, structureRepoMock, authInfoRetrieverMock);
-    }
-
-    @Test
-    public void getAuthenticatedUserReturnsUserWhenUserExists() {
-        // given
-        var expectedUser = new User(USER_ID);
-
-        given(authInfoRetrieverMock.getUserId()).willReturn(USER_ID);
-        given(userRepoMock.findById(USER_ID)).willReturn(Optional.of(expectedUser));
-
-        // when
-        var actualUser = ldapUserService.getAuthenticatedUser();
-
-        // then
-        assertThat(actualUser).isEqualTo(expectedUser);
-    }
-
-    @Test
-    public void getAuthenticatedUserThrowsExceptionWhenUserDoesNotExist() {
-        // given
-        given(authInfoRetrieverMock.getUserId()).willReturn(USER_ID);
-        given(userRepoMock.findById(USER_ID)).willReturn(Optional.empty());
-
-        // when
-        assertThatThrownBy(() -> ldapUserService.getAuthenticatedUser())
-                .isInstanceOf(UserNotFoundException.class);
-    }
-
-    @Test
-    public void getAuthenticatedUserIdReturnsExpectedId() {
-        // given
-        given(authInfoRetrieverMock.getUserId()).willReturn(USER_ID);
-
-        // when
-        var actualUserId = ldapUserService.getAuthenticatedUserId();
-
-        // then
-        assertThat(actualUserId).isEqualTo(USER_ID);
-    }
-
-    @Test
-    public void authenticatedUserIsAdminReturnsTrueWhenUserHasAdminRole() {
-        // given
-        given(authInfoRetrieverMock.hasAdminRole()).willReturn(true);
-
-        // when
-        boolean actualAuthenticatedUserIsAdmin = ldapUserService.authenticatedUserIsAdmin();
-
-        // then
-        assertThat(actualAuthenticatedUserIsAdmin).isTrue();
-    }
-
-    @Test
-    public void authenticatedUserIsAdminReturnsFalseWhenUserHasNoAdminRole() {
-        // given
-        given(authInfoRetrieverMock.hasAdminRole()).willReturn(false);
-
-        // when
-        boolean actualAuthenticatedUserIsAdmin = ldapUserService.authenticatedUserIsAdmin();
-
-        // then
-        assertThat(actualAuthenticatedUserIsAdmin).isFalse();
+        this.ldapUserService = new LdapUserService(userRepoMock, userDataRepoMock, ldapServiceMock, structureRepoMock);
     }
 
     @Test

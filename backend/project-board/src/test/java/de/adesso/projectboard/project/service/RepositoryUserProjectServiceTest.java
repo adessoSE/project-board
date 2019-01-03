@@ -4,7 +4,6 @@ import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.persistence.ProjectRepository;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
-import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.service.UserService;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Before;
@@ -12,8 +11,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 import java.time.Clock;
@@ -21,10 +20,10 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collections;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -33,16 +32,16 @@ public class RepositoryUserProjectServiceTest {
     private final String USER_ID = "user";
 
     @Mock
-    private UserService userService;
+    private UserService userServiceMock;
 
     @Mock
-    private ProjectRepository projectRepo;
+    private ProjectRepository projectRepoMock;
 
     @Mock
-    private UserRepository userRepo;
+    private UserRepository userRepoMock;
 
     @Mock
-    private RepositoryProjectService projectService;
+    private RepositoryProjectService projectServiceMock;
 
     @Mock
     private User userMock;
@@ -61,115 +60,44 @@ public class RepositoryUserProjectServiceTest {
 
         this.clock = Clock.fixed(instant, zoneId);
         this.userProjectService
-                = new RepositoryUserProjectService(userService, projectRepo, userRepo, projectService);
+                = new RepositoryUserProjectService(userServiceMock, projectRepoMock, userRepoMock, projectServiceMock);
     }
 
     @Test
-    public void getProjectsForUserReturnsProjectsForManagerWhenUserIsManager() {
+    public void getProjectsForUser() {
         // given
-        Sort sort = Sort.unsorted();
+        var expectedProjects = Collections.singletonList(projectMock);
+        var sort = Sort.unsorted();
 
-        given(userService.userIsManager(userMock)).willReturn(true);
+        given(projectRepoMock.findAllByStatusEscalatedOrOpen(sort))
+                .willReturn(expectedProjects);
 
         // when
-        userProjectService.getProjectsForUser(userMock, sort);
+        var actualProjects = userProjectService.getProjectsForUser(userMock, sort);
 
         // then
-        verify(projectRepo).findAllForManager(sort);
+        assertThat(actualProjects).isEqualTo(expectedProjects);
+
+        verify(projectRepoMock).findAllByStatusEscalatedOrOpen(sort);
     }
 
     @Test
-    public void getProjectsForUserReturnsProjectsForUserWhenUserIsNotAManager() {
+    public void searchProjectsForUser() {
         // given
-        String expectedLob = "LOB Test";
-        Sort sort = Sort.unsorted();
+        var keyword = "Test!";
+        var expectedProjects = Collections.singletonList(projectMock);
+        var sort = Sort.unsorted();
 
-        UserData userDataMock = mock(UserData.class);
-        given(userDataMock.getLob()).willReturn(expectedLob);
-
-        given(userService.userIsManager(userMock)).willReturn(false);
-        given(userService.getUserData(userMock)).willReturn(userDataMock);
+        given(projectRepoMock.findAllByStatusEscalatedOrOpenAndKeyword(keyword, sort))
+                .willReturn(expectedProjects);
 
         // when
-        userProjectService.getProjectsForUser(userMock, sort);
+        var actualProjects = userProjectService.searchProjectsForUser(userMock, keyword, sort);
 
         // then
-        verify(projectRepo).findAllForUser(expectedLob, sort);
-    }
+        assertThat(actualProjects).isEqualTo(expectedProjects);
 
-    @Test
-    public void getProjectsForUserReturnsProjectsForManagerWhenUserIsNotAManagerButAnAdmin() {
-        // given
-        Sort sort = Sort.unsorted();
-
-        given(userService.getAuthenticatedUser()).willReturn(userMock);
-        given(userService.authenticatedUserIsAdmin()).willReturn(true);
-        given(userService.userIsManager(userMock)).willReturn(false);
-
-        // when
-        userProjectService.getProjectsForUser(userMock, sort);
-
-        // then
-        verify(projectRepo).findAllForManager(sort);
-    }
-
-    @Test
-    public void getProjectsForUserReturnsProjectsForUserWhenUserIsNotAManagerAndNoAdmin() {
-        // given
-        String expectedLob = "LOB Test";
-        Sort sort = Sort.unsorted();
-
-        UserData userDataMock = mock(UserData.class);
-        given(userDataMock.getLob()).willReturn(expectedLob);
-        given(userService.getUserData(userMock)).willReturn(userDataMock);
-
-        given(userService.getAuthenticatedUser()).willReturn(userMock);
-        given(userService.authenticatedUserIsAdmin()).willReturn(false);
-        given(userService.userIsManager(userMock)).willReturn(false);
-
-        // when
-        userProjectService.getProjectsForUser(userMock, sort);
-
-        // then
-        verify(projectRepo).findAllForUser(expectedLob, sort);
-    }
-
-    @Test
-    public void searchProjectsForUserReturnsProjectsForManagerWhenUserIsAManager() {
-        // given
-        String expectedKeyword = "Keyword";
-        Sort sort = Sort.unsorted();
-
-        given(userService.userIsManager(userMock)).willReturn(true);
-
-        // when
-        userProjectService.searchProjectsForUser(userMock, expectedKeyword, sort);
-
-        // then
-        verify(projectRepo).findAllForManagerByKeyword(expectedKeyword, sort);
-    }
-
-    @Test
-    public void searchProjectsForUserReturnsProjectsForUserWhenUserIsNotAManagerAndNoAdmin() {
-        // given
-        String expectedKeyword = "Keyword";
-        String expectedLob = "LOB Test";
-        Sort sort = Sort.unsorted();
-
-        UserData userDataMock = mock(UserData.class);
-        given(userDataMock.getLob()).willReturn(expectedLob);
-
-        given(userService.userIsManager(userMock)).willReturn(false);
-        given(userService.getUserData(userMock)).willReturn(userDataMock);
-
-        given(userService.getAuthenticatedUser()).willReturn(userMock);
-        given(userService.authenticatedUserIsAdmin()).willReturn(false);
-
-        // when
-        userProjectService.searchProjectsForUser(userMock, expectedKeyword, sort);
-
-        // then
-        verify(projectRepo).findAllForUserByKeyword(expectedLob, expectedKeyword, sort);
+        verify(projectRepoMock).findAllByStatusEscalatedOrOpenAndKeyword(keyword, sort);
     }
 
     @Test
@@ -181,50 +109,50 @@ public class RepositoryUserProjectServiceTest {
         userProjectService.userOwnsProject(userMock, projectMock);
 
         // then
-        verify(userRepo).existsByIdAndOwnedProjectsContaining(USER_ID, projectMock);
+        verify(userRepoMock).existsByIdAndOwnedProjectsContaining(USER_ID, projectMock);
     }
 
     @Test
     public void createProjectForUser() {
         // given
-        String expectedStatus = "Status";
-        String expectedIssueType = "Issue Type";
-        String expectedTitle = "Title";
-        List<String> expectedLabels = Arrays.asList("Label 1", "Label 2");
-        String expectedJob = "Job";
-        String expectedSkills = "Skills";
-        String expectedDescription = "Description";
-        String expectedLob = "LOB Test";
-        String expectedCustomer = "Customer";
-        String expectedLocation = "Anywhere";
-        String expectedOperationStart = "Maybe tomorrow";
-        String expectedOperationEnd = "Maybe never";
-        String expectedEffort = "100h per week";
-        String expectedFreelancer = "Yup";
-        String expectedElongation = "Nope";
-        String expectedOther = "Other stuff";
-        LocalDateTime expectedCreated = LocalDateTime.now(clock);
-        LocalDateTime expectedUpdated = LocalDateTime.now(clock);
-        String expectedDayRate = "Test Rate";
-        String expectedTravelCostsCompensated = "Nope";
-        Project.Origin expectedOrigin = Project.Origin.CUSTOM;
+        var expectedStatus = "Status";
+        var expectedIssueType = "Issue Type";
+        var expectedTitle = "Title";
+        var expectedLabels = Arrays.asList("Label 1", "Label 2");
+        var expectedJob = "Job";
+        var expectedSkills = "Skills";
+        var expectedDescription = "Description";
+        var expectedLob = "LOB Test";
+        var expectedCustomer = "Customer";
+        var expectedLocation = "Anywhere";
+        var expectedOperationStart = "Maybe tomorrow";
+        var expectedOperationEnd = "Maybe never";
+        var expectedEffort = "100h per week";
+        var expectedFreelancer = "Yup";
+        var expectedElongation = "Nope";
+        var expectedOther = "Other stuff";
+        var expectedCreated = LocalDateTime.now(clock);
+        var expectedUpdated = LocalDateTime.now(clock);
+        var expectedDayRate = "Test Rate";
+        var expectedTravelCostsCompensated = "Nope";
+        var expectedOrigin = Project.Origin.CUSTOM;
 
-        Project project = new Project("Other ID", expectedStatus, expectedIssueType, expectedTitle, expectedLabels, expectedJob, expectedSkills,
+        var project = new Project("Other ID", expectedStatus, expectedIssueType, expectedTitle, expectedLabels, expectedJob, expectedSkills,
                 expectedDescription, expectedLob, expectedCustomer,
                 expectedLocation, expectedOperationStart, expectedOperationEnd,
                 expectedEffort, null, null, expectedFreelancer, expectedElongation, expectedOther, expectedDayRate,
                 expectedTravelCostsCompensated, Project.Origin.JIRA);
 
-        given(projectService.createProject(project)).willReturn(project
+        given(projectServiceMock.createProject(project)).willReturn(project
                 .setCreated(expectedCreated)
                 .setUpdated(expectedUpdated)
                 .setOrigin(Project.Origin.CUSTOM));
 
         // when
-        Project createdProject = userProjectService.createProjectForUser(project, userMock);
+        var createdProject = userProjectService.createProjectForUser(project, userMock);
 
         // then
-        SoftAssertions softly = new SoftAssertions();
+        var softly = new SoftAssertions();
 
         softly.assertThat(createdProject.getStatus()).isEqualTo(expectedStatus);
         softly.assertThat(createdProject.getIssuetype()).isEqualTo(expectedIssueType);
@@ -249,7 +177,7 @@ public class RepositoryUserProjectServiceTest {
         softly.assertAll();
 
         verify(userMock).addOwnedProject(project);
-        verify(userService).save(userMock);
+        verify(userServiceMock).save(userMock);
     }
 
     @Test
@@ -261,153 +189,46 @@ public class RepositoryUserProjectServiceTest {
 
         // then
         verify(userMock).addOwnedProject(projectMock);
-        verify(userService).save(userMock);
+        verify(userServiceMock).save(userMock);
     }
 
     @Test
-    public void getProjectsForUserPaginatedReturnsProjectsForManagerWhenUserIsManager() {
+    public void getProjectsForUserPaginated() {
         // given
-        Pageable pageable = PageRequest.of(1, 10);
+        var expectedProjects = Collections.singletonList(projectMock);
+        var pageable = PageRequest.of(0, 100);
+        var expectedPage = new PageImpl<>(expectedProjects);
 
-        given(userService.userIsManager(userMock)).willReturn(true);
+        given(projectRepoMock.findAllByStatusEscalatedOrOpenPageable(pageable))
+                .willReturn(expectedPage);
 
         // when
-        userProjectService.getProjectsForUserPaginated(userMock, pageable);
+        var actualProjects = userProjectService.getProjectsForUserPaginated(userMock, pageable);
 
         // then
-        verify(projectRepo).findAllForManagerPageable(pageable);
+        assertThat(actualProjects).isEqualTo(expectedPage);
+
+        verify(projectRepoMock).findAllByStatusEscalatedOrOpenPageable(pageable);
     }
 
     @Test
-    public void getProjectsForUserPaginatedReturnsProjectsForUserWhenUserIsNotAManager() {
+    public void searchProjectsForUserPaginated() {
         // given
-        String expectedLob = "LOB Test";
-        Pageable pageable = PageRequest.of(1, 10);
+        var keyword = "Keyword!";
+        var expectedProjects = Collections.singletonList(projectMock);
+        var pageable = PageRequest.of(0, 100);
+        var expectedPage = new PageImpl<>(expectedProjects);
 
-        UserData userDataMock = mock(UserData.class);
-        given(userDataMock.getLob()).willReturn(expectedLob);
-
-        given(userService.getUserData(userMock)).willReturn(userDataMock);
-        given(userService.userIsManager(userMock)).willReturn(false);
+        given(projectRepoMock.findAllByStatusEscalatedOrOpenAndKeywordPageable(keyword, pageable))
+                .willReturn(expectedPage);
 
         // when
-        userProjectService.getProjectsForUserPaginated(userMock, pageable);
+        var actualProjects = userProjectService.searchProjectsForUserPaginated(keyword, userMock, pageable);
 
         // then
-        verify(projectRepo).findAllForUserPageable(expectedLob, pageable);
-    }
+        assertThat(actualProjects).isEqualTo(expectedPage);
 
-    @Test
-    public void getProjectsForUserPaginatedReturnsProjectsForManagerWhenUserIsNotAManagerButAnAdmin() {
-        // given
-        Pageable pageable = PageRequest.of(1, 10);
-
-        given(userService.getAuthenticatedUser()).willReturn(userMock);
-        given(userService.authenticatedUserIsAdmin()).willReturn(true);
-
-        // when
-        userProjectService.getProjectsForUserPaginated(userMock, pageable);
-
-        // then
-        verify(projectRepo).findAllForManagerPageable(pageable);
-    }
-
-    @Test
-    public void getProjectsForUserPaginatedReturnsProjectsForUserWhenUserIsNotAManagerAndNoAdmin() {
-        // given
-        String expectedLob = "LOB Test";
-        Pageable pageable = PageRequest.of(1, 10);
-
-        UserData userDataMock = mock(UserData.class);
-        given(userDataMock.getLob()).willReturn(expectedLob);
-
-        given(userService.getUserData(userMock)).willReturn(userDataMock);
-        given(userService.userIsManager(userMock)).willReturn(false);
-
-        given(userService.getAuthenticatedUser()).willReturn(userMock);
-        given(userService.authenticatedUserIsAdmin()).willReturn(false);
-
-        // when
-        userProjectService.getProjectsForUserPaginated(userMock, pageable);
-
-        // then
-        verify(projectRepo).findAllForUserPageable(expectedLob, pageable);
-    }
-
-    @Test
-    public void searchProjectsForUserPaginatedReturnsProjectsForManagerWhenUserIsManager() {
-        // given
-        String expectedKeyword = "Keyword";
-        Pageable pageable = PageRequest.of(2, 12);
-
-        given(userService.userIsManager(userMock)).willReturn(true);
-
-        // when
-        userProjectService.searchProjectsForUserPaginated(expectedKeyword, userMock, pageable);
-
-        // then
-        verify(projectRepo).findAllForManagerByKeywordPageable(expectedKeyword, pageable);
-    }
-
-    @Test
-    public void searchProjectsForUserPaginatedReturnsProjectsForUserWhenUserIsNotAManager() {
-        // given
-        String expectedLob = "LOB Test";
-        String expectedKeyword = "Keyword";
-        Pageable pageable = PageRequest.of(2, 12);
-
-        UserData userDataMock = mock(UserData.class);
-        given(userDataMock.getLob()).willReturn(expectedLob);
-
-        given(userService.getUserData(userMock)).willReturn(userDataMock);
-        given(userService.userIsManager(userMock)).willReturn(false);
-
-        // when
-        userProjectService.searchProjectsForUserPaginated(expectedKeyword, userMock, pageable);
-
-        // then
-        verify(projectRepo).findAllForUserByKeywordPageable(expectedLob, expectedKeyword, pageable);
-    }
-
-    @Test
-    public void searchProjectsForUserPaginatedReturnsProjectsForManagerWhenUserIsNotAManagerButAnAdmin() {
-        // given
-        String expectedKeyword = "Keyword";
-        Pageable pageable = PageRequest.of(2, 12);
-
-        given(userService.userIsManager(userMock)).willReturn(false);
-
-        given(userService.getAuthenticatedUser()).willReturn(userMock);
-        given(userService.authenticatedUserIsAdmin()).willReturn(true);
-
-        // when
-        userProjectService.searchProjectsForUserPaginated(expectedKeyword, userMock, pageable);
-
-        // then
-        verify(projectRepo).findAllForManagerByKeywordPageable(expectedKeyword, pageable);
-    }
-
-    @Test
-    public void searchProjectsForUserPaginatedReturnsProjectsForUserWhenUserIsNotAManagerAndNotAnAdmin() {
-        // given
-        String expectedLob = "LOB Test";
-        String expectedKeyword = "Keyword";
-        Pageable pageable = PageRequest.of(2, 12);
-
-        UserData userDataMock = mock(UserData.class);
-        given(userDataMock.getLob()).willReturn(expectedLob);
-
-        given(userService.getUserData(userMock)).willReturn(userDataMock);
-        given(userService.userIsManager(userMock)).willReturn(false);
-
-        given(userService.getAuthenticatedUser()).willReturn(userMock);
-        given(userService.authenticatedUserIsAdmin()).willReturn(false);
-
-        // when
-        userProjectService.searchProjectsForUserPaginated(expectedKeyword, userMock, pageable);
-
-        // then
-        verify(projectRepo).findAllForUserByKeywordPageable(expectedLob, expectedKeyword, pageable);
+        verify(projectRepoMock).findAllByStatusEscalatedOrOpenAndKeywordPageable(keyword, pageable);
     }
 
 }
