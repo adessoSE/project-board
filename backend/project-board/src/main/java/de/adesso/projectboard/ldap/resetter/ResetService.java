@@ -30,7 +30,7 @@ public class ResetService {
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void resetCachedData() {
+    public void resetCachedUserDataAndOrgStructures() {
         dataRepo.deleteAll();
         orgRepo.deleteAll();
     }
