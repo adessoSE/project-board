@@ -78,21 +78,5 @@
     </div>
   </ng-container>
 
-  <!--  Created Projects-->
-  <ng-container *ngIf="!adminControls && isAdmin()">
-    <h4>Erstellte Projekte</h4>
-    <div class="card" *ngFor="let p of projects; index as i" [ngClass]="{'border-bottom mb-2': i<projects.length-1}">
-      <div class="card-body">
-        <h5 class="card-title">{{p.title}}</h5>
-        <h6 class="card-subtitle mb-2 text-muted"><a routerLink="/browse/{{p.id}}">Zur Beschreibung</a></h6>
-        <p class="card-text">
-          <small class="link-blue mr-3" (click)="editProject(p.id)">Bearbeiten</small>
-          <small class="link-red" (click)="deleteProject(p.id)">Projekt löschen</small>
-        </p>
-      </div>
-    </div>
-    <div class="inset" *ngIf="!projects || projects.length === 0">Du hast keine Projekte erstellt.</div>
-  </ng-container>
-
   <p *ngIf="!selectedEmployee">Kein Mitarbeiter ausgewählt.</p>
 </div>

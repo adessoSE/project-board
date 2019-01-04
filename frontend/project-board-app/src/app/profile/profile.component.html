@@ -1,7 +1,110 @@
-<h1 class="display-3">Profil</h1>
-<div class="inner-container">
-  <h4>{{user.firstName}} {{user.lastName}}</h4>
-  <div class="pb-2">
-    <app-employee-management [applications]="applications" [bookmarks]="bookmarks" [projects]="projects" [adminControls]="false" [selectedEmployee]="user"></app-employee-management>
+<div class="inner-container row">
+
+  <div class="aside col-md-3 leftbar">
+
+    <div id="avatarArea">
+      <div id="userName">{{user.firstName}} {{user.lastName}}</div>
+      <div id="profileImg">Image Placeholder</div> <!--TO DO Bild einfügen-->
+    </div>
+
+    <div id="userInformation">
+      <div style="border: 0;" class="userDetailPoint">
+        <p class="detailHeading">Status</p>
+        <span class="pointText">
+          {{user.accessInfo.hasAccess || user.boss ? 'Freigeschaltet' : 'Nicht freigeschaltet'}}</span>
+      </div>
+      <div class="userDetailPoint">
+        <p class="detailHeading">Freigeschaltet bis</p>
+        <span *ngIf="user.boss" class="pointText">Dauerhaft (Führungskraft)</span>
+        <span *ngIf="!user.boss" class="pointText">
+          {{user.accessInfo.hasAccess ? (user.accessInfo.accessEnd | date : 'dd.MM.yyyy') : '-'}}</span>
+      </div>
+      <div *ngIf="!user.boss" class="userDetailPoint">
+        <p class="detailHeading">Projektanfragen</p>
+        <span class="pointText">{{applications.length}}</span>
+      </div>
+      <div *ngIf="user.boss" class="userDetailPoint">
+        <p class="detailHeading">Mitarbeiter</p> 
+        <span class="pointText">{{employees.length}}</span> <!--TO DO Mitarbeiter zählen -->
+      </div>
+    </div>
+  </div>
+
+  <div class="aside col-md-9 middle">
+    <div id="profileNav">
+
+      <div *ngIf="!user.boss" (click)="selectTab(0)" id="tab0" class="navPoint col-md-6 active">
+        <div class="profileNavIcon">
+          <mat-icon>bookmark</mat-icon>
+        </div>Lesezeichen
+      </div>
+
+      <div *ngIf="!user.boss" (click)="selectTab(1)" id="tab1" class="navPoint col-md-6">
+        <div class="profileNavIcon">
+          <mat-icon>email</mat-icon>
+        </div>Projektanfragen
+      </div>
+
+      <div *ngIf="user.boss" (click)="selectTab(2)" id="tab2" class="navPoint col-md-6 active">
+        <div class="profileNavIcon">
+          <mat-icon>email</mat-icon>
+        </div>Projektanfragen Mitarbeiter
+      </div>
+
+    </div>
+
+    <div id="profileNavContent">
+      <ng-container *ngIf="tabIndex == 0">
+        <div class="bookmark" *ngFor="let b of bookmarks; index as i" [ngClass]="{'border-bottom': i<bookmarks.length-1}">
+          <div class="linkingIcon"><a title="zum Projekt" routerLink="/browse/{{b.id}}">
+              <mat-icon>open_in_new</mat-icon>
+            </a></div>
+          <div class="remover" title="entfernen" (click)="removeBookmark(b.id)">
+            <mat-icon>clear</mat-icon>
+          </div>
+          <div class="project-title">{{b.title}}</div>
+        </div>
+        <div class="inset" *ngIf="!bookmarks || bookmarks.length === 0">Du hast keine Lesezeichen.</div>
+      </ng-container>
+
+      <ng-container *ngIf="tabIndex == 1">
+        <div class="application" *ngFor="let a of applications; index as i" [ngClass]="{'border-bottom': i<applications.length-1}">
+          <div class="linkingIcon"><a title="zum Projekt"  routerLink="/browse/{{a.project.id}}">
+              <mat-icon>open_in_new</mat-icon>
+            </a>
+          </div>
+          <div class="project-title">{{a.project.title}}</div>
+          <div class="applicationDetails">
+            <span>Datum: {{a.date | date : 'dd.MM.yyyy'}}</span>
+            <span>Mein Kommentar:</span>
+            <span>{{a.comment}}</span>
+          </div>
+        </div>
+        <div class="inset" *ngIf="!applications || applications.length === 0">
+          Du hast keine Projekte angefragt.
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="tabIndex == 2">
+        <!--TO DO Mitarbeiterprojekte laden-->
+        <div class="employeeApplication" *ngFor="let a of employeeApplications; index as i" [ngClass]="{'border-bottom': i<employeeApplications.length-1}">
+          <div class="linkingIcon"><a title="zum Projekt" routerLink="/browse/{{a.project.id}}">
+              <mat-icon>open_in_new</mat-icon>
+            </a>
+          </div>
+          <div class="project-title">Musterprojekt</div>
+          <div class="applicationDetails">
+            <span class="requester">Max Mustermann</span>
+            <span>Datum: 01.01.2019</span>
+            <span>Kommentar:</span>
+            <span>Hallo, ich will den Job. Danke!</span>
+          </div>
+        </div>
+        <div class="inset" *ngIf="!employeeApplications || employeeApplications.length === 0">
+          Keine Projektanfragen deiner Mitarbeiter.
+        </div>
+      </ng-container>
+
+    </div>
   </div>
 </div>

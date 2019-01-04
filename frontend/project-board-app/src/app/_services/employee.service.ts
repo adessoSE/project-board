@@ -54,7 +54,7 @@ export class EmployeeService {
   }
 
   addBookmark(userId, projectId) {
-    return this.http.post(`${environment.resourceServer}/users/${userId}/bookmarks`, {projectId});
+    return this.http.post<Project>(`${environment.resourceServer}/users/${userId}/bookmarks`, {projectId});
   }
 
   removeBookmark(userId, projectId) {

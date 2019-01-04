@@ -1,11 +1,6 @@
 import { Location } from '@angular/common';
-import { AfterViewChecked, Component, HostListener, OnInit } from '@angular/core';
-
-import { MatDialog } from '@angular/material';
-import { ActivatedRoute } from '@angular/router';
-import { faBookmark } from '@fortawesome/free-regular-svg-icons';
-import { faEnvelope } from '@fortawesome/free-regular-svg-icons/faEnvelope';
-import { faGraduationCap } from '@fortawesome/free-solid-svg-icons/faGraduationCap';
+import { Component, HostListener, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import * as $ from 'jquery';
 import { combineLatest, Subject } from 'rxjs';
 import { debounceTime, switchMap, takeUntil } from 'rxjs/operators';
@@ -18,14 +13,11 @@ import { Project, ProjectService } from '../_services/project.service';
   templateUrl: './browse-projects.component.html',
   styleUrls: ['./browse-projects.component.scss']
 })
-export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
+export class BrowseProjectsComponent implements OnInit {
 
   appTooltip = 'Du hast dieses Projekt bereits angefragt.';
   bmTooltip = 'Du hast ein Lesezeichen an diesem Projekt.';
   studTooltip = 'Studentisches Projekt';
-  faEnvelope = faEnvelope;
-  faBookmark = faBookmark;
-  faGradCap = faGraduationCap;
 
   projects: Project[] = [];
   appliedProjects: Project[] = [];
@@ -50,7 +42,8 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
               private projectsService: ProjectService,
               private alertService: AlertService,
               private route: ActivatedRoute,
-              private location: Location
+              private location: Location,
+              private router: Router
   ) {}
 
   @HostListener('window:resize') onResize() {
@@ -64,7 +57,7 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
         if (data[0].projects) {
-          this.projects = data[0].projects.content;
+          this.projects = data[0].projects;
         }
 
       // extract projects from applications
@@ -77,16 +70,6 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
     });
   }
 
-  /*reloadProjects() {
-    this.projectsService.getAllProjects()
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(projects => {
-          this.loadingProjects = false;
-          this.projects = projects.content;
-          this.projectsFound = projects.totalElements;
-        });
-  } */
-
   ngOnInit() {
     this.mobile = document.body.clientWidth < 992;
 
@@ -95,12 +78,12 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
         takeUntil(this.destroy$),
         debounceTime(500),
         switchMap(searchText => {
-          return this.projectsService.searchPaginated(searchText, this.currentPage, 20);
+          return this.projectsService.search(searchText);
         }))
       .subscribe(projects => {
         this.loadingProjects = false;
-        this.projects = projects.content;
-        this.projectsFound = projects.totalElements;
+        this.projects = projects;
+        this.projectsFound = projects.length;
       });
       this.loadProjects();
 
@@ -160,26 +143,6 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
     }
   }
 
-  ngAfterViewChecked() {
-
-    if (!this.mobile) {
-      document.getElementById('detailContainerLg').scrollTop = 0;
-    }
-
-    if (this.scroll && this.selectedProject && this.mobile) {
-      const btn = $(`#${this.selectedProject.id}`);
-      if (this.below) {
-        $('html, body').animate({scrollTop: $(btn).offset().top - (document.getElementById('detailContainer').scrollHeight + 56)}, 'slow');
-      } else {
-        $('html, body').animate({scrollTop: $(btn).offset().top - 56}, 'slow');
-      }
-      this.scroll = false;
-    } else {
-      this.scroll = false;
-    }
-  }
-
-
   isProjectApplicable(projectId) {
     return this.appliedProjects ? !this.appliedProjects.some(p => p && p.id === projectId) : true;
   }
@@ -197,4 +160,7 @@ export class BrowseProjectsComponent implements OnInit, AfterViewChecked {
     }
   }
 
+  showDetails(p: Project) {
+    this.router.navigate(['/browse/' + p.id]);
+  }
 }

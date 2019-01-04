@@ -1,60 +1,43 @@
-<h1 class="display-3">Projekte</h1>
-<div id="divToScroll" class="row mt-4" (swiperight)="swipebugplaceholder()">
-  <div class="col-md-6" (swiperight)="swipebugplaceholder()">
+<div class="search-input-wrapper">
+  <div class="input-group search-input-inner-wrapper">
     <label for="search" class="sr-only">Suche</label>
-    <input #search [(ngModel)]="searchText" (ngModelChange)="searchProjects()" [ngClass]="{'search form-control': true, 'mb-1': search.value != '', 'mb-3': search.value == ''}" type="text" name="search" id="search" placeholder="Projekte suchen...">
-    <div *ngIf="search.value != '' && !loadingProjects" class="mb-1" style="text-align: center">
-      <small>{{projectsFound}} Treffer</small>
-    </div>
-
-    <!-- infinite scroll directive used for pagination
-    Different Versions for Mobile and Desktop, to keep infiniteScroll working -->
-    <div *ngIf="mobile" (swiperight)="swipebugplaceholder()">
-      <div class="list-group">
-        <ng-container *ngFor="let p of projects">
-          <button #btn id="{{p.id}}" (click)="projectClicked(p)" type="button" [ngClass]="{'list-group-item list-group-item-action': true, 'active': p.id == selectedProject?.id}">
-          <span>
-            <div title="{{appTooltip}}" class="mr-2" id="TooltipIcon" *ngIf="!isProjectApplicable(p.id)"><mat-icon>email</mat-icon></div>
-            <div title="{{bmTooltip}}" class="mr-2" id="TooltipIcon" *ngIf="isProjectBookmarked(p.id)"><mat-icon>bookmark</mat-icon></div>
-            <div title="{{studTooltip}}" class="mr-2" id="TooltipIcon" *ngIf="p.issuetype == 'Studentisches Projekt'"><mat-icon>school</mat-icon></div>
-            <!-- <b>{{p.id}}:</b> -->{{p.title}}
-          </span>
-          </button>
-          <app-project-details id="detailContainer" *ngIf="p.id == selectedProject?.id" [bookmark]="isProjectBookmarked(p.id)" [isUserBoss]="isUserBoss" [applicable]="isProjectApplicable(p.id)" (bookmarkChanged)="handleBookmark($event)" [selectedProject]="selectedProject"></app-project-details>
-        </ng-container>
-      </div>
-      <div *ngIf="loadingProjects" style="width: 100%; margin-top: 1rem">
-        <div class="loading-spinner">
-          <mat-spinner [diameter]="50"></mat-spinner>
-        </div>
-      </div>
-    </div>
-
-    <!--Desktop Version-->
-    <div *ngIf="!mobile" id="projectContainer">
-      <div class="list-group">
-        <ng-container *ngFor="let p of projects">
-          <button #btn id="{{p.id}}" (click)="projectClicked(p)" type="button" [ngClass]="{'list-group-item list-group-item-action': true, 'active': p.id == selectedProject?.id}">
-          <span>
-            <div title="{{appTooltip}}" class="mr-2" id="TooltipIcon" *ngIf="!isProjectApplicable(p.id)"><mat-icon>email</mat-icon></div>
-            <div title="{{bmTooltip}}" class="mr-2" id="TooltipIcon" *ngIf="isProjectBookmarked(p.id)"><mat-icon>bookmark</mat-icon></div>
-            <div title="{{studTooltip}}" class="mr-2" id="TooltipIcon" *ngIf="p.issuetype == 'Studentisches Projekt'"><mat-icon>school</mat-icon></div>
-            <!-- <b>{{p.id}}:</b> -->{{p.title}}
-          </span>
-          </button>
-          <app-project-details id="detailContainer" *ngIf=" mobile && p.id == selectedProject?.id" [bookmark]="isProjectBookmarked(p.id)" [isUserBoss]="isUserBoss" [applicable]="isProjectApplicable(p.id)" (bookmarkChanged)="handleBookmark($event)" [selectedProject]="selectedProject"></app-project-details>
-        </ng-container>
-      </div>
-      <div *ngIf="loadingProjects" style="width: 100%; margin-top: 1rem">
-        <div class="loading-spinner">
-          <mat-spinner [diameter]="50"></mat-spinner>
-        </div>
-      </div>
-    </div>
-
-
+    <span class="square"><mat-icon>search</mat-icon></span>
+    <input #search [(ngModel)]="searchText" (ngModelChange)="searchProjects()" class="search form-control" type="text" name="search" id="search" placeholder="Projekte suchen...">
   </div>
-  <div *ngIf="!mobile" class="col-md-6" id="detailContainerLg">
-    <app-project-details [bookmark]="isProjectBookmarked(selectedProject?.id)" [isUserBoss]="isUserBoss" [applicable]="isProjectApplicable(selectedProject?.id)" (bookmarkChanged)="handleBookmark($event)" [selectedProject]="selectedProject"></app-project-details>
+</div>
+
+<div class="outer">
+  <div class="inner">
+    <table id="result-table">
+      <thead>
+      <tr>
+        <th id="total-hits">{{projects?.length || 'Keine'}} Treffer</th>
+        <td>Standort</td>
+        <td>Beginn</td>
+        <td>Aufwand</td>
+      </tr>
+      </thead>
+      <tbody *ngIf="!loadingProjects && projects.length > 0">
+      <tr *ngFor="let p of projects" (click)="showDetails(p)">
+        <th>
+          <table class="fixed-project-info">
+            <tbody>
+            <tr>
+              <td class="td-project-title hover-change title-clickable">{{p.title}}</td>
+            </tr>
+            </tbody>
+          </table>
+        </th>
+        <td class="hover-change">{{p.location}}</td>
+        <td class="hover-change">{{p.operationStart}}</td>
+        <td class="hover-change">{{p.effort}}</td>
+      </tr>
+      </tbody>
+    </table>
+    <div *ngIf="loadingProjects" style="width: 100%; margin-top: 1rem">
+      <div class="loading-spinner">
+        <mat-spinner [diameter]="50"></mat-spinner>
+      </div>
+    </div>
   </div>
 </div>
