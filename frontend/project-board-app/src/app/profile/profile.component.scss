@@ -14,15 +14,23 @@
   font-weight: 500;
   font-size: 24px;
   text-align: center;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  
 }
 
 #profileImg {
   margin: 0 auto;
   height: 120px;
   width: 120px;
-  border: 1px solid grey;
   margin-top: 40px;
 }
+
+#profileImg img {
+  height: 110px;
+  width: 110px;
+} 
 
 #userInformation {
   padding: 0 20px;

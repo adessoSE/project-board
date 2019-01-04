@@ -198,17 +198,29 @@ button span {
     cursor: default;
   }
 
+  .imageWrapper {
+    
+    
+  }
+
   .search-input-wrapper {
-    margin-top: 5rem;
-    margin-bottom: 5rem;
     width: 100%;
   }
 
   .search-input-inner-wrapper {
-    width: 50%;
+    max-width: 60%;
+    min-width: 350px;
     margin: 0 auto;
     align-content: center;
     line-height: 5rem;
+    margin-bottom: 2rem;
+
+    padding-top: calc(4rem + 2px);
+    padding-bottom: 4rem;
+    padding-left: calc(4rem + 7px);
+    padding-right: calc(4rem + 7px);
+
+    background:white url("../../assets/searchbackground.png") no-repeat;
   }
 }
 

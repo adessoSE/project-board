@@ -1,9 +1,11 @@
 <div class="search-input-wrapper">
+    <div class="imageWrapper">
   <div class="input-group search-input-inner-wrapper">
     <label for="search" class="sr-only">Suche</label>
     <span class="square"><mat-icon>search</mat-icon></span>
     <input #search [(ngModel)]="searchText" (ngModelChange)="searchProjects()" class="search form-control" type="text" name="search" id="search" placeholder="Projekte suchen...">
   </div>
+</div>
 </div>
 
 <div class="outer">
