@@ -360,7 +360,7 @@ public class LdapUserServiceTest {
     }
 
     @Test
-    public void userHasStaffMemberReturnsTrueWhenExistsByUserAndStaffMemberContaining() {
+    public void userHasStaffMemberReturnsTrueWhenUserIsDirectStaffMember() {
         // given
         var managerId = "manager";
 
@@ -377,17 +377,52 @@ public class LdapUserServiceTest {
     }
 
     @Test
-    public void userHasStaffMemberReturnsFalseWhenNotExistsByUserAndStaffMemberContaining() {
+    public void userHasStaffMemberReturnsTrueWhenUserIsIndirectStaffMember() {
         // given
-        var managerId = "manager";
+        var indirectManagerId = "indirect-manager";
+        var directManagerId = "direct-manager";
 
         var user = new User(USER_ID);
-        var manager = new User(managerId);
+        var directManager = new User(directManagerId);
+        var indirectManager = new User(indirectManagerId);
 
-        given(structureRepoMock.existsByUserAndStaffMembersContaining(user, manager)).willReturn(false);
+        var userStructure = new OrganizationStructure(user, directManager, Set.of(), false);
+        var directManagerStructure = new OrganizationStructure(directManager, indirectManager, Set.of(user), true);
+        var indirectManagerStructure = new OrganizationStructure(indirectManager, indirectManager, Set.of(directManager), true);
+
+        given(structureRepoMock.findByUser(user)).willReturn(Optional.of(userStructure));
+        given(structureRepoMock.findByUser(directManager)).willReturn(Optional.of(directManagerStructure));
+        given(structureRepoMock.findByUser(indirectManager)).willReturn(Optional.of(indirectManagerStructure));
+
+        given(structureRepoMock.existsByUserAndStaffMembersContaining(indirectManager, directManager)).willReturn(true);
 
         // when
-        boolean actualUserHasStaffMember = ldapUserService.userHasStaffMember(user, manager);
+        boolean actualUserHasStaffMember = ldapUserService.userHasStaffMember(indirectManager, user);
+
+        // then
+        assertThat(actualUserHasStaffMember).isTrue();
+    }
+
+    @Test
+    public void userHasStaffMemberReturnsFalseWhenUserIsNoDirectNorIndirectStaffMember() {
+        // given
+        var directManagerId = "direct-manager";
+        var otherManagerId = "indirect-manager";
+
+        var user = new User(USER_ID);
+        var directManager = new User(directManagerId);
+        var otherManager = new User(otherManagerId);
+
+        var userStructure = new OrganizationStructure(user, directManager, Set.of(), false);
+        var directManagerStructure = new OrganizationStructure(directManager, directManager, Set.of(user), true);
+        var otherManagerStructure = new OrganizationStructure(otherManager, otherManager, Set.of(), true);
+
+        given(structureRepoMock.findByUser(user)).willReturn(Optional.of(userStructure));
+        given(structureRepoMock.findByUser(directManager)).willReturn(Optional.of(directManagerStructure));
+        given(structureRepoMock.findByUser(otherManager)).willReturn(Optional.of(otherManagerStructure));
+
+        // when
+        boolean actualUserHasStaffMember = ldapUserService.userHasStaffMember(otherManager, user);
 
         // then
         assertThat(actualUserHasStaffMember).isFalse();
