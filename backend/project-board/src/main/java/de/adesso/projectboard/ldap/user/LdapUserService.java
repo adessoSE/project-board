@@ -9,6 +9,7 @@ import de.adesso.projectboard.base.user.persistence.data.UserDataRepository;
 import de.adesso.projectboard.base.user.persistence.structure.OrganizationStructure;
 import de.adesso.projectboard.base.user.persistence.structure.OrganizationStructureRepository;
 import de.adesso.projectboard.base.user.service.UserService;
+import de.adesso.projectboard.base.user.util.ParentChildWrapper;
 import de.adesso.projectboard.ldap.service.LdapService;
 import de.adesso.projectboard.ldap.service.util.data.StringStructure;
 import org.springframework.context.annotation.Profile;
@@ -226,10 +227,10 @@ public class LdapUserService implements UserService {
     }
 
     @Override
-    public List<UserData> getStaffMemberUserDataOfUser(User user, Sort sort) {
+    public ParentChildWrapper<UserData> getStaffMemberUserDataOfUser(User user, Sort sort) {
         OrganizationStructure structureForUser = getStructureForUser(user);
         if (structureForUser.getStaffMembers().isEmpty()) {
-            return Collections.emptyList();
+            return new ParentChildWrapper<>(getUserData(user));
         }
 
         // assure that data of all users is present in the repo
@@ -243,11 +244,12 @@ public class LdapUserService implements UserService {
             dataRepo.saveAll(ldapService.getUserData(nonCachedUsers));
         }
 
-        return dataRepo.findByUserIn(structureForUser.getStaffMembers(), sort);
+        // TODO
+        return null;
     }
 
     @Override
-    public List<User> getStaffMembersOfUser(User user) {
+    public ParentChildWrapper<User> getStaffMembersOfUser(User user) {
         return new ArrayList<>(this.getStructureForUser(user).getStaffMembers());
     }
 

@@ -5,6 +5,7 @@ import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.persistence.structure.OrganizationStructure;
+import de.adesso.projectboard.base.user.util.ParentChildWrapper;
 import org.springframework.data.domain.Sort;
 
 import java.util.*;
@@ -108,10 +109,13 @@ public interface UserService {
      *          The {@link Sort} instance to sort by.
      *
      * @return
-     *          A {@link List} of the {@link UserData} belonging to
-     *          the staff members.
+     *          The {@link UserData} of the {@code user}'s staff
+     *          members, wrapped in a {@link ParentChildWrapper}
+     *          to indicate the parent-child relationship between
+     *          different users. Sorted accordingly.
+     *
      */
-    List<UserData> getStaffMemberUserDataOfUser(User user, Sort sort);
+    ParentChildWrapper<UserData> getStaffMemberUserDataOfUser(User user, Sort sort);
 
     /**
      *
@@ -119,9 +123,11 @@ public interface UserService {
      *          The {@link User} to get the staff members of.
      *
      * @return
-     *          The {@code user}'s staff members.
+     *          The {@code user}'s staff members, wrapped in a
+     *          {@link ParentChildWrapper} to indicate the parent
+     *          child relationship between different user.
      */
-    List<User> getStaffMembersOfUser(User user);
+    ParentChildWrapper<User> getStaffMembersOfUser(User user);
 
     /**
      *
