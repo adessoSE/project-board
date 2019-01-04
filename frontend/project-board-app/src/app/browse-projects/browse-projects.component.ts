@@ -1,7 +1,5 @@
 import { Location } from '@angular/common';
 import { AfterViewChecked, Component, HostListener, OnInit } from '@angular/core';
-
-import { MatDialog } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
 import { faBookmark } from '@fortawesome/free-regular-svg-icons';
 import { faEnvelope } from '@fortawesome/free-regular-svg-icons/faEnvelope';

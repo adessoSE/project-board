@@ -37,14 +37,16 @@ $project-board-app-theme: mat-light-theme($project-board-app-primary, $project-b
 
 .container {
   max-width: 100%;
+  min-height: calc(100vh - 50px);
+  background-image: linear-gradient(rgb(255, 255, 255) 0px, rgb(238, 238, 238) 100%);
+}
+
+.mat-drawer-content {
+  margin-bottom: -10px;
 }
 
 h1 {
   text-align: center;
-}
-
-.background-inner {
-  background: white;
 }
 
 *{

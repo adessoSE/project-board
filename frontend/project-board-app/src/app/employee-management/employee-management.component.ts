@@ -1,11 +1,10 @@
 import { formatDate } from '@angular/common';
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Application, Employee, EmployeeService } from '../_services/employee.service';
-import { Project, ProjectService } from '../_services/project.service';
+import { Project } from '../_services/project.service';
 
 @Component({
   selector: 'app-employee-management',
@@ -23,10 +22,10 @@ export class EmployeeManagementComponent implements OnInit, OnChanges {
   numberOfDaysSelect = [];
   destroy$ = new Subject<void>();
 
-  constructor(private projectService: ProjectService,
+  constructor(
               private employeeService: EmployeeService,
               private authService: AuthenticationService,
-              private router: Router) { }
+              ) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.selectedEmployee.currentValue && !changes.selectedEmployee.isFirstChange()) {

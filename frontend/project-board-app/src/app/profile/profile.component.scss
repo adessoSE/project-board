@@ -1,4 +1,162 @@
-h4 {
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
+.leftbar {
+  box-shadow: 0 0 0.25rem rgba(0,0,0,.25);
+  padding: 0;
+  height: 75vh;
+  background-color: #FFF;
+}
+
+#avatarArea {
+  padding: 30px 30px 60px;
+}
+
+#userName {
+  color: #016EC7;
+  font-weight: 500;
+  font-size: 24px;
+  text-align: center;
+}
+
+#profileImg {
+  margin: 0 auto;
+  height: 120px;
+  width: 120px;
+  border: 1px solid grey;
+  margin-top: 40px;
+}
+
+#userInformation {
+  padding: 0 20px;
+}
+
+.userDetailPoint {
+  padding-top: 15px;
+  border-top: 1px solid #e6e6e6;
+}
+
+.detailHeading {
+  color: #016EC7;
+  font-size: 12px;
+  padding: 0;
+  margin: 0;
+}
+
+.pointText {
+  line-height: 19px;
+  white-space: pre-wrap;
+  font-size: 14px;
+}
+
+.middle {
+  padding: 0;
+  padding-left: 5%;
+}
+
+#profileNav {
+overflow: hidden;
+padding-top: 2px;
+padding-left: 2px;
+padding-right: 2px;
+margin-left: -2px;
+margin-right: -2px;
+margin-top: -2px;
+}
+
+.navPoint {
+  display: inline-block;
+  text-align: center;
+  padding: 5px;
+  padding-bottom: 10px;
+}
+
+.navPoint:hover {
+  color: white;
+  background-color: #016EC7;
+  cursor: pointer;
+}
+
+.navPoint.active {
+  background-color: #FFF;
+  box-shadow: 0 0 0.25rem rgba(0,0,0,.25);
+}
+.navPoint.active:hover {
+  color: inherit;
+  cursor: default;
+}
+
+.profileNavIcon {
+  display: inline-block;
+  vertical-align: bottom;
+  height: 30px;
+  margin-right: 5px;
+}
+
+.profileNavIcon mat-icon {
+  margin-top: 5px;
+}
+
+#profileNavContent {
+  z-index: 2;
+  margin-bottom: 50px;
+  box-shadow: 0 0 0.25rem rgba(0,0,0,.25);
+  padding: 0;
+  background-color: #FFF;
+}
+
+.bookmark {
+  border-bottom: 1px solid #e6e6e6;
+  padding: 15px;
+}
+
+.application {
+  border-bottom: 1px solid #e6e6e6;
+  padding: 15px;
+}
+
+.employeeApplication {
+  border-bottom: 1px solid #e6e6e6;
+  padding: 15px;
+}
+
+.remover {
+  cursor: pointer;
+  float: right;
+  height: 26px;
+}
+
+.project-title {
+  font-weight: 550;
+}
+
+.linkingIcon {
+  float:left;
+  margin-right: 16px;
+  height: 32px;
+}
+
+.linkingIcon .material-icons {
+  font-size: 32px !important;
+  margin-top: -5px;
+  color: #016EC7;
+}
+
+.linkingIcon .material-icons:hover {
+  color: #338bd2;
+}
+
+.inset {
+  padding: 20px;
+  text-align: center;
+}
+
+.applicationDetails {
+margin-top: 10px;
+}
+
+.applicationDetails span {
+ display: block;
+ text-align: left;  
+}
+
+.requester {
+  color: #016EC7;
 }
