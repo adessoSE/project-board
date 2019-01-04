@@ -5,6 +5,7 @@ import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.rest.NonPageableProjectController;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.rest.UserController;
+import de.adesso.projectboard.base.user.service.UserAuthService;
 import de.adesso.projectboard.base.user.service.UserService;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
@@ -28,16 +29,22 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
 
     private final UserService userService;
 
+    private final UserAuthService userAuthService;
+
     private Object filterObject;
 
     private Object returnObject;
 
 
-    public CustomMethodSecurityExpressionRoot(Authentication authentication, ExpressionEvaluator evaluator, UserService userService) {
+    public CustomMethodSecurityExpressionRoot(Authentication authentication,
+                                              ExpressionEvaluator evaluator,
+                                              UserService userService,
+                                              UserAuthService userAuthService) {
         super(authentication);
 
         this.evaluator = evaluator;
         this.userService = userService;
+        this.userAuthService = userAuthService;
     }
 
     @Override
@@ -77,7 +84,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
     public boolean hasAccessToProjects() {
         // check if the user has a corresponding User object
         if(currentUserExists()) {
-            return evaluator.hasAccessToProjects(getAuthentication(), userService.getAuthenticatedUser());
+            return evaluator.hasAccessToProjects(getAuthentication(), userAuthService.getAuthenticatedUser());
         }
 
         return false;
@@ -99,7 +106,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
     public boolean hasAccessToProject(String projectId) {
         // check if the user has a corresponding User object
         if(currentUserExists()) {
-            return evaluator.hasAccessToProject(getAuthentication(), userService.getAuthenticatedUser(), projectId);
+            return evaluator.hasAccessToProject(getAuthentication(), userAuthService.getAuthenticatedUser(), projectId);
         }
 
         return false;
@@ -117,7 +124,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
     public boolean hasPermissionToApply() {
         // check if the user has a corresponding User object
         if(currentUserExists()) {
-            return evaluator.hasPermissionToApply(getAuthentication(), userService.getAuthenticatedUser());
+            return evaluator.hasPermissionToApply(getAuthentication(), userAuthService.getAuthenticatedUser());
         }
 
         return false;
@@ -139,7 +146,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
     public boolean hasPermissionToAccessUser(String userId) {
         // check if the user has a corresponding User object
         if(currentUserExists()) {
-            return evaluator.hasPermissionToAccessUser(getAuthentication(), userService.getAuthenticatedUser(), userId);
+            return evaluator.hasPermissionToAccessUser(getAuthentication(), userAuthService.getAuthenticatedUser(), userId);
         }
 
         return false;
@@ -160,7 +167,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
     public boolean hasElevatedAccessToUser(String userId) {
         // check if the user has a corresponding User object
         if(currentUserExists()) {
-            return evaluator.hasElevatedAccessToUser(getAuthentication(), userService.getAuthenticatedUser(), userId);
+            return evaluator.hasElevatedAccessToUser(getAuthentication(), userAuthService.getAuthenticatedUser(), userId);
         }
 
         return false;
@@ -178,7 +185,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
     public boolean hasPermissionToCreateProjects() {
         // check if the user has a corresponding User object
         if(currentUserExists()) {
-            return evaluator.hasPermissionToCreateProjects(getAuthentication(), userService.getAuthenticatedUser());
+            return evaluator.hasPermissionToCreateProjects(getAuthentication(), userAuthService.getAuthenticatedUser());
         }
 
         return false;
@@ -199,7 +206,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
     public boolean hasPermissionToEditProject(String projectId) {
         // check if the user has a corresponding User object
         if(currentUserExists()) {
-            return evaluator.hasPermissionToEditProject(getAuthentication(), userService.getAuthenticatedUser(), projectId);
+            return evaluator.hasPermissionToEditProject(getAuthentication(), userAuthService.getAuthenticatedUser(), projectId);
         }
 
         return false;
@@ -209,10 +216,10 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
      *
      * @return
      *          The result of {@link UserService#userExists(String)} with the returned value
-     *          of {@link UserService#getAuthenticatedUserId()} as the argument.
+     *          of {@link UserAuthService#getAuthenticatedUserId()} as the argument.
      */
     private boolean currentUserExists() {
-        return userService.userExists(userService.getAuthenticatedUserId());
+        return userService.userExists(userAuthService.getAuthenticatedUserId());
     }
 
 }

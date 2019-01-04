@@ -40,35 +40,16 @@ public class LdapUserService implements UserService {
 
     private final OrganizationStructureRepository structureRepo;
 
-    private final AuthenticationInfoRetriever authInfo;
-
     public LdapUserService(UserRepository userRepo,
                            UserDataRepository dataRepo,
                            LdapService ldapService,
-                           OrganizationStructureRepository structureRepo,
-                           AuthenticationInfoRetriever authInfo) {
+                           OrganizationStructureRepository structureRepo) {
         this.userRepo = userRepo;
         this.dataRepo = dataRepo;
         this.structureRepo = structureRepo;
         this.ldapService = ldapService;
-        this.authInfo = authInfo;
     }
 
-
-    @Override
-    public User getAuthenticatedUser() throws UserNotFoundException {
-        return getUserById(authInfo.getUserId());
-    }
-
-    @Override
-    public String getAuthenticatedUserId() {
-        return authInfo.getUserId();
-    }
-
-    @Override
-    public boolean authenticatedUserIsAdmin() {
-        return authInfo.hasAdminRole();
-    }
 
     /**
      * {@inheritDoc}
@@ -76,7 +57,6 @@ public class LdapUserService implements UserService {
      * @see UserRepository#existsById(Object)
      */
     @Override
-    @Transactional(readOnly = true)
     public boolean userExists(String userId) {
         return userRepo.existsById(userId) || ldapService.userExists(userId);
     }
@@ -91,7 +71,6 @@ public class LdapUserService implements UserService {
      * {@inheritDoc}
      */
     @Override
-    @Transactional(readOnly = true)
     public boolean userIsManager(User user) {
         if(structureRepo.existsByUser(user)) {
             return structureRepo.existsByUserAndManagingUser(user, true);
@@ -123,17 +102,17 @@ public class LdapUserService implements UserService {
 
             // get the corresponding manager instance
             String managerId = idStructure.getManager();
-            User manager = userRepo.findById(managerId).orElseGet(() -> {
-                return userRepo.save(new User(managerId));
-            });
+            User manager = userRepo.findById(managerId).orElseGet(() ->
+                userRepo.save(new User(managerId))
+            );
 
             // get the corresponding staff member instances
             Set<User> staffMembers = idStructure.getStaffMembers()
                     .stream()
-                    .map(userId -> {
-                        return userRepo.findById(userId)
-                                .orElseGet(() -> userRepo.save(new User(userId)));
-                    })
+                    .map(userId ->
+                        userRepo.findById(userId)
+                                .orElseGet(() -> userRepo.save(new User(userId)))
+                    )
                     .collect(Collectors.toSet());
 
             // a user is a manager when he has at least one staff member
@@ -196,9 +175,31 @@ public class LdapUserService implements UserService {
      * @see OrganizationStructureRepository#existsByUserAndStaffMembersContaining(User, User)
      */
     @Override
-    @Transactional(readOnly = true)
     public boolean userHasStaffMember(User user, User staffMember) {
-        return structureRepo.existsByUserAndStaffMembersContaining(user, staffMember);
+        // direct staff member
+        if(structureRepo.existsByUserAndStaffMembersContaining(user, staffMember)) {
+            return true;
+        }
+
+        // get the struct of the user to make sure it is present
+        // in the DB
+        getStructureForUser(user);
+
+        // walk up the user<->manager path for efficiency reasons
+        // the user is a manager
+        var currentManager = getStructureForUser(staffMember).getManager();
+        var currentManagerStructure = getStructureForUser(currentManager);
+
+        while(!currentManager.equals(user) && !currentManagerStructure.getManager().equals(currentManager)) {
+            if(structureRepo.existsByUserAndStaffMembersContaining(user, currentManager)) {
+                return true;
+            }
+
+            currentManager = currentManagerStructure.getManager();
+            currentManagerStructure = getStructureForUser(currentManager);
+        }
+
+        return false;
     }
 
     /**
@@ -210,7 +211,6 @@ public class LdapUserService implements UserService {
      * {@inheritDoc}
      */
     @Override
-    @Transactional(readOnly = true)
     public User getManagerOfUser(User user) {
         Optional<OrganizationStructure> structureOptional = structureRepo.findByUser(user);
 
@@ -272,7 +272,6 @@ public class LdapUserService implements UserService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public Map<User, Boolean> usersAreManagers(Set<User> users) {
         Map<User, Boolean> userManagerMap = new HashMap<>();
 

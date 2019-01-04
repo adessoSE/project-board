@@ -1,9 +1,8 @@
 package de.adesso.projectboard.base.project.rest;
 
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.service.PageableUserProjectService;
-import de.adesso.projectboard.base.user.service.UserService;
+import de.adesso.projectboard.base.user.service.UserAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Pageable;
@@ -28,19 +27,18 @@ public class PageableProjectController {
 
     private final PageableUserProjectService userProjectService;
 
-    private final UserService userService;
+    private final UserAuthService userAuthService;
 
     @Autowired
-    public PageableProjectController(PageableUserProjectService userProjectService,
-                             UserService userService) {
+    public PageableProjectController(PageableUserProjectService userProjectService, UserAuthService userAuthService) {
         this.userProjectService = userProjectService;
-        this.userService = userService;
+        this.userAuthService = userAuthService;
     }
 
     @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
     @GetMapping
     public Iterable<Project> getAllForUser(@SortDefault(direction = Sort.Direction.DESC, sort = "updated") Pageable pageable) {
-        User user = userService.getAuthenticatedUser();
+        var user = userAuthService.getAuthenticatedUser();
 
         return userProjectService.getProjectsForUserPaginated(user, pageable);
     }
@@ -51,7 +49,7 @@ public class PageableProjectController {
         if(keyword == null || keyword.isEmpty()) {
             return getAllForUser(pageable);
         } else {
-            User user = userService.getAuthenticatedUser();
+            var user = userAuthService.getAuthenticatedUser();
 
             return userProjectService.searchProjectsForUserPaginated(keyword, user, pageable);
         }

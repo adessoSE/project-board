@@ -4,6 +4,7 @@ buildscript {
 	ext {
 		springBootVersion = '2.1.1.RELEASE'
 		keycloakVersion = '4.8.1.Final'
+		unboundIDVersion = '3.1.1'
 	}
 	repositories {
 		mavenCentral()
@@ -33,6 +34,12 @@ sourceCompatibility = 11
 
 jacoco {
 	toolVersion = "0.8.2"
+}
+
+jacocoTestReport {
+	reports {
+		html.destination file("${buildDir}/jacocoHtml")
+	}
 }
 
 repositories {
@@ -65,6 +72,8 @@ dependencies {
 
 	testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test')
 	testCompile(group: 'org.springframework.security', name: 'spring-security-test')
+    testCompile(group: 'org.springframework.ldap', name: 'spring-ldap-test')
+	testCompile(group: 'com.unboundid', name: 'unboundid-ldapsdk', version: "${unboundIDVersion}")
 
 	annotationProcessor(group: 'org.projectlombok', name: 'lombok')
 
