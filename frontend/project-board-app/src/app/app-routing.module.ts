@@ -4,7 +4,6 @@ import { AccessGuard } from './_guards/access.guard';
 import { AdminGuard } from './_guards/admin.guard';
 import { AlreadyAppliedGuard } from './_guards/already-applied.guard';
 import { AuthGuard } from './_guards/auth.guard';
-import { EditableGuard } from './_guards/editable.guard';
 import { IsNoBossGuard } from './_guards/is-no-boss.guard';
 import { ApplicationsResolverService } from './_services/applications-resolver.service';
 import { BookmarksResolverService } from './_services/bookmarks-resolver.service';
@@ -17,8 +16,9 @@ import { UserResolverService } from './_services/user-resolver.service';
 import { BrowseProjectsComponent } from './browse-projects/browse-projects.component';
 import { ExecutivesComponent } from './executives/executives.component';
 import { LogoutComponent } from './logout/logout.component';
-import { ProfileComponent } from './profile/profile.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { ProfileComponent } from './profile/profile.component';
+import { ProjectDetailsComponent } from './project-details/project-details.component';
 import { ProjectRequestComponent } from './project-request/project-request.component';
 
 const routes: Routes = [
@@ -63,9 +63,9 @@ const routes: Routes = [
   },
   {
     path: 'browse/:id',
-    component: BrowseProjectsComponent,
+    component: ProjectDetailsComponent,
     resolve: {
-      projects: ProjectsResolverService,
+      project: ProjectResolverService,
       applications: ApplicationsResolverService,
       bookmarks: BookmarksResolverService,
       isUserBoss: IsBossResolverService
