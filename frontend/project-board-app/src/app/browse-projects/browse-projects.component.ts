@@ -65,6 +65,8 @@ export class BrowseProjectsComponent implements OnInit {
       .pipe(takeUntil(this.dialogRef.afterClosed()))
       .subscribe(() => this.handleApplication(p));
     this.dialogRef.afterClosed().subscribe(() => this.onDialogClosed());
+
+    this.location.replaceState(`/browse/${p.id}`);
   }
 
   @HostListener('window:resize') onResize() {

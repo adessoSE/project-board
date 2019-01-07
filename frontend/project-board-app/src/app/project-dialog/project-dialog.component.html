@@ -75,7 +75,7 @@
   </div>
 </mat-dialog-content>
 <mat-dialog-actions [ngClass]="{'fullscreen': mobile}" align="end">
-  <div *ngIf="!data.isUserBoss && !data.applicable">
+  <div style="margin: 0 auto" *ngIf="!data.isUserBoss && !data.applicable">
     <mat-icon id="applied-icon" *ngIf="!data.applicable" title="{{appTooltip}}">email</mat-icon>
     <small>Du hast dieses Projekt bereits angefragt</small>
   </div>

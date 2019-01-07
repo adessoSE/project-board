@@ -12,6 +12,11 @@ mat-dialog-actions {
   }
 }
 
+mat-dialog-actions.fullscreen div {
+  width: 100%;
+  text-align: center;
+}
+
 mat-dialog-content {
   max-height: 600px;
   &.fullscreen {

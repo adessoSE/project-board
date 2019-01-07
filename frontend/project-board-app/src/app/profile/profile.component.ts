@@ -1,13 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { formatDate } from '@angular/common';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import * as $ from 'jquery';
-import { Subject, combineLatest } from 'rxjs';
+import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { AuthenticationService } from '../_services/authentication.service';
 import { Application, Employee, EmployeeService } from '../_services/employee.service';
 import { Project } from '../_services/project.service';
-import { formatDate } from '@angular/common';
-import { Input, OnChanges, SimpleChanges } from '@angular/core';
-import { AuthenticationService } from '../_services/authentication.service';
 
 @Component({
   selector: 'app-profile',
@@ -20,6 +19,7 @@ export class ProfileComponent implements OnInit, OnChanges {
   @Input() applications: Application[] = [];
   @Input() projects: Project[] = [];
   employees: Employee[] = [];
+  employeeApplications: Application[] = [];
 
   user: Employee;
   tabIndex: number;
@@ -27,13 +27,11 @@ export class ProfileComponent implements OnInit, OnChanges {
   destroy$ = new Subject<void>();
 
   constructor(private route: ActivatedRoute,
-    private employeeService: EmployeeService,
-    private authService: AuthenticationService, ) 
-    {
-      this.tabIndex = 0;
-    }
+              private employeeService: EmployeeService,
+              private authService: AuthenticationService) {}
 
   ngOnInit() {
+    this.tabIndex = 0;
 
     this.route.data
       .pipe(takeUntil(this.destroy$))
@@ -44,27 +42,27 @@ export class ProfileComponent implements OnInit, OnChanges {
         this.projects = data.projects;
       });
 
-      if(this.user.boss) {
-        this.tabIndex = 2;
-      }
+    if (this.user.boss) {
+      this.tabIndex = 2;
+    }
 
-      if(this.user.boss) {
-        this.getEmployees();
-      }
+    if (this.user.boss) {
+      this.getEmployees();
+    }
 
-      if (!this.adminControls) {
-        this.getBookmarks();
-      }
+    if (!this.adminControls) {
+      this.getBookmarks();
+    }
 
-      if (this.user) {
-        this.getApplications();
-      }
+    if (this.user) {
+      this.getApplications();
+    }
   }
 
   selectTab(tab) {
     this.tabIndex = tab;
     $('.active').removeClass('active');
-    document.getElementById("tab" + tab).classList.add('active');
+    document.getElementById('tab' + tab).classList.add('active');
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -101,7 +99,18 @@ export class ProfileComponent implements OnInit, OnChanges {
   getEmployees() {
     this.employeeService.getEmployeesForSuperUser(this.user.id)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(employees => this.employees = employees);
+      .subscribe(employees => {
+        this.employees = employees;
+        console.log(employees);
+        for (const e of employees) {
+          console.log(e.id + ' ' + e.applications.count);
+          if (e.applications.count > 0) {
+            this.employeeService.getApplications(e.id)
+              .pipe(takeUntil(this.destroy$))
+              .subscribe((applications: Application[]) => this.employeeApplications = this.employeeApplications.concat(applications));
+          }
+        }
+      });
   }
 
   getBookmarks() {
@@ -113,7 +122,7 @@ export class ProfileComponent implements OnInit, OnChanges {
   removeBookmark(projectId) {
     this.employeeService.removeBookmark(this.authService.username, projectId)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {this.bookmarks = this.bookmarks.filter(p => p.id != projectId);});
+      .subscribe(() => this.bookmarks = this.bookmarks.filter(p => p.id != projectId));
   }
 
   getApplications() {

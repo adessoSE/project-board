@@ -97,3 +97,11 @@ body {
   -moz-border-radius: 0;
   border-radius: 0;
 }
+
+.btn-primary {
+  background-color: #016EC7;
+}
+
+.btn-primary:hover, .btn-primary:active, .btn-primary:focus {
+  background-color: darken(#016EC7, 7);
+}

@@ -1,11 +1,11 @@
 <div class="search-input-wrapper">
-    <div class="imageWrapper">
-  <div class="input-group search-input-inner-wrapper">
-    <label for="search" class="sr-only">Suche</label>
-    <span class="square"><mat-icon>search</mat-icon></span>
-    <input #search [(ngModel)]="searchText" (ngModelChange)="searchProjects()" class="search form-control" type="text" name="search" id="search" placeholder="Projekte suchen...">
+  <div class="imageWrapper">
+    <div class="input-group search-input-inner-wrapper">
+      <label for="search" class="sr-only">Suche</label>
+      <span class="square"><mat-icon>search</mat-icon></span>
+      <input #search [(ngModel)]="searchText" (ngModelChange)="searchProjects()" class="search form-control" type="text" name="search" id="search" placeholder="Projekte suchen...">
+    </div>
   </div>
-</div>
 </div>
 
 <div class="outer">
@@ -13,30 +13,30 @@
     <table id="result-table">
       <thead>
       <tr>
-        <th id="total-hits">{{projects?.length || 'Keine'}} Treffer</th>
-        <td>Standort</td>
-        <td>Beginn</td>
-        <td>Aufwand</td>
+        <th style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" *ngIf="!loadingProjects" id="total-hits">{{projects?.length || 'Keine'}} Treffer{{searchText != '' ? ' für "' + searchText + '"' : ''}}</th>
+        <td *ngIf="!mobile">Standort</td>
+        <td *ngIf="!mobile">Beginn</td>
+        <td *ngIf="!mobile">Aufwand</td>
       </tr>
       </thead>
       <tbody *ngIf="!loadingProjects && projects.length > 0">
       <tr *ngFor="let p of projects" (click)="openDialog(p)">
         <th>
-          <table class="fixed-project-info">
+          <table class="fixed-project-info hover-change">
             <tbody>
-            <tr>
-              <td class="hover-change" style="width: 26px;">
-                <mat-icon title="{{bmTooltip}}" *ngIf="isProjectBookmarked(p.id)" style="display: block;">bookmark</mat-icon>
-                <mat-icon title="{{appTooltip}}" *ngIf="!isProjectApplicable(p.id)" style="display: block">email</mat-icon>
+            <tr [ngClass]="{'mobile': mobile}">
+              <td class="icons">
+                <mat-icon title="{{bmTooltip}}" *ngIf="isProjectBookmarked(p.id)">bookmark</mat-icon>
+                <mat-icon title="{{appTooltip}}" *ngIf="!isProjectApplicable(p.id)">email</mat-icon>
               </td>
-              <td class="td-project-title hover-change title-clickable">{{p.title}}</td>
+              <td class="td-project-title title-clickable">{{p.title}}</td>
             </tr>
             </tbody>
           </table>
         </th>
-        <td class="hover-change">{{p.location}}</td>
-        <td class="hover-change">{{p.operationStart}}</td>
-        <td class="hover-change">{{p.effort}}</td>
+        <td *ngIf="!mobile" class="hover-change">{{p.location}}</td>
+        <td *ngIf="!mobile" class="hover-change">{{p.operationStart}}</td>
+        <td *ngIf="!mobile" class="hover-change">{{p.effort}}</td>
       </tr>
       </tbody>
     </table>

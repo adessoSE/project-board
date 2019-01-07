@@ -92,12 +92,12 @@
               <mat-icon>open_in_new</mat-icon>
             </a>
           </div>
-          <div class="project-title">Musterprojekt</div>
+          <div class="project-title">{{a.project.title}}</div>
           <div class="applicationDetails">
-            <span class="requester">Max Mustermann</span>
-            <span>Datum: 01.01.2019</span>
+            <span class="requester">{{a.user.lastName + ', ' + a.user.firstName}}</span>
+            <span>Datum: {{a.date | date}}</span>
             <span>Kommentar:</span>
-            <span>Hallo, ich will den Job. Danke!</span>
+            <span>{{a.comment}}</span>
           </div>
         </div>
         <div class="inset" *ngIf="!employeeApplications || employeeApplications.length === 0">
