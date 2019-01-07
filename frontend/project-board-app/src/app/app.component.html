@@ -23,8 +23,8 @@
             <li class="nav-item">
               <a class="nav-link" routerLink="/browse" routerLinkActive="active-link"><mat-icon class="navbar-icon">folder_open</mat-icon><span>Projekte</span></a>
             </li>
-            <li *ngIf="isAdmin" class="nav-item">
-              <a class="nav-link" routerLink="/admin" routerLinkActive="active-link"><mat-icon class="navbar-icon">people</mat-icon><span>Mitarbeiter</span></a>
+            <li *ngIf="isBoss" class="nav-item">
+              <a class="nav-link" routerLink="/employees" routerLinkActive="active-link"><mat-icon class="navbar-icon">people</mat-icon><span>Mitarbeiter</span></a>
             </li>
             <li class="nav-item">
               <a class="nav-link" id="logout" routerLink="/logout" (click)="logout()"><mat-icon class="navbar-icon">logout</mat-icon><span>{{username}} abmelden</span></a>

@@ -6,6 +6,7 @@ import * as $ from 'jquery';
 import { environment } from '../environments/environment';
 import { AlertService } from './_services/alert.service';
 import { AuthenticationService } from './_services/authentication.service';
+import { EmployeeService } from './_services/employee.service';
 
 @Component({
   selector: 'app-root',
@@ -19,6 +20,7 @@ export class AppComponent implements OnInit, DoCheck {
 
   constructor(private oAuthService: OAuthService,
               private authenticationService: AuthenticationService,
+              private employeeService: EmployeeService,
               private alertService: AlertService) {
     this.configureWithNewConfigApi();
   }
@@ -42,15 +44,15 @@ export class AppComponent implements OnInit, DoCheck {
     }
   }
 
-  openNav(){
+  openNav() {
     if (window.innerWidth < 992) {
-        this.sidenav.open();
+      this.sidenav.open();
     }
   }
 
-  closeNav(){
+  closeNav() {
     if (window.innerWidth < 992) {
-        this.sidenav.close();
+      this.sidenav.close();
     }
   }
 
@@ -99,6 +101,10 @@ export class AppComponent implements OnInit, DoCheck {
 
   get isAdmin() {
     return this.authenticationService.isAdmin;
+  }
+
+  get isBoss() {
+    return this.employeeService.isUserBoss(this.authenticationService.username);
   }
 
   @HostListener('window:scroll') onScroll() {

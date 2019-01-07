@@ -1,16 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AccessGuard } from './_guards/access.guard';
-import { AdminGuard } from './_guards/admin.guard';
-import { AlreadyAppliedGuard } from './_guards/already-applied.guard';
 import { AuthGuard } from './_guards/auth.guard';
-import { IsNoBossGuard } from './_guards/is-no-boss.guard';
+import { IsBossGuard } from './_guards/is-boss.guard';
 import { ApplicationsResolverService } from './_services/applications-resolver.service';
 import { BookmarksResolverService } from './_services/bookmarks-resolver.service';
 import { CreatedProjectsResolverService } from './_services/created-projects-resolver.service';
 import { EmployeeResolverService } from './_services/employee-resolver.service';
 import { IsBossResolverService } from './_services/is-boss-resolver.service';
-import { ProjectResolverService } from './_services/project-resolver.service';
 import { ProjectsResolverService } from './_services/projects-resolver.service';
 import { UserResolverService } from './_services/user-resolver.service';
 import { BrowseProjectsComponent } from './browse-projects/browse-projects.component';
@@ -18,7 +15,6 @@ import { ExecutivesComponent } from './executives/executives.component';
 import { LogoutComponent } from './logout/logout.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ProfileComponent } from './profile/profile.component';
-import { ProjectRequestComponent } from './project-request/project-request.component';
 
 const routes: Routes = [
   {
@@ -26,38 +22,25 @@ const routes: Routes = [
     component: LogoutComponent
   },
   {
-    path: 'admin/:id',
+    path: 'employees/:id',
     component: ExecutivesComponent,
     resolve: {
       employees: EmployeeResolverService
     },
     canActivate: [
       AuthGuard,
-      AdminGuard
+      IsBossGuard
     ]
   },
   {
-    path: 'admin',
+    path: 'employees',
     component: ExecutivesComponent,
     resolve: {
       employees: EmployeeResolverService
     },
     canActivate: [
       AuthGuard,
-      AdminGuard
-    ]
-  },
-  {
-    path: 'projects/:id/request',
-    component: ProjectRequestComponent,
-    resolve: {
-      project: ProjectResolverService
-    },
-    canActivate: [
-      AuthGuard,
-      AccessGuard,
-      AlreadyAppliedGuard,
-      IsNoBossGuard
+      IsBossGuard
     ]
   },
   {
