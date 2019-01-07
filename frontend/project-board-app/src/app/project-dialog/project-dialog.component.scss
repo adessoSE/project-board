@@ -1,0 +1,93 @@
+@import 'functions';
+@import '../../../node_modules/bootstrap/scss/variables';
+@import '../../../node_modules/bootstrap/scss/mixins';
+
+mat-dialog-actions {
+  // 80px header + 650px content = 730px
+  margin: 0 -24px -24px -24px;
+  padding: 8px 24px 8px 24px;
+  background-color: #F3F3F3;
+  &.fullscreen {
+    min-height: calc(100vh - 730px);
+  }
+}
+
+mat-dialog-content {
+  max-height: 600px;
+  &.fullscreen {
+    max-height: 650px;
+  }
+  &.fullscreen.shorten {
+    max-height: calc(100vh - 340px);
+  }
+}
+
+.shorten {
+  max-height: calc(65vh - 182px);
+}
+
+h1 {
+  margin: -24px -24px 0 -24px;
+  padding: 24px 24px 24px 24px;
+  background-color: #F3F3F3;
+}
+
+#applied-icon {
+  cursor: default;
+  user-select: none;
+  vertical-align: bottom;
+  margin-right: 0.5rem;
+}
+
+#bookmark-icon {
+  float: left;
+  cursor: pointer;
+  color: grey;
+  &.active {
+    color: #016EC7;
+  }
+}
+
+#close-icon {
+  float: right;
+  cursor: pointer;
+  color: #887D75;
+}
+
+#close-icon-wrapper :hover, #close-icon-wrapper #close-icon :hover {
+  color: darken(#887D75, 10);
+}
+
+#bookmark-icon-wrapper :hover, #bookmark-icon-wrapper #bookmark-icon :hover {
+  color: darken(grey, 10);
+  &.active {
+    color: darken(#016EC7, 10);
+  }
+}
+
+#comment:focus {
+  border: 1px solid #016EC7;
+  box-shadow: none;
+}
+
+.comment-label {
+  font-weight: bold;
+}
+
+.comment-textarea {
+  width: 100%;
+  overflow-y: auto;
+  resize: none;
+  display: block;
+}
+
+@include media-breakpoint-down(sm) {
+  .left-side {
+    font-weight: 500;
+  }
+
+  .right-side {
+    padding-left: 20px;
+    padding-bottom: 0.5rem;
+  }
+}

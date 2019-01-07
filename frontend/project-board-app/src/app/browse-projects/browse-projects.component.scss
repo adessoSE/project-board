@@ -94,7 +94,7 @@ button span {
 }
 
 #result-table thead td {
-  color: #887075;
+  color: #887D75;
   background-color: transparent;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -198,11 +198,6 @@ button span {
     cursor: default;
   }
 
-  .imageWrapper {
-    
-    
-  }
-
   .search-input-wrapper {
     width: 100%;
   }
@@ -210,21 +205,18 @@ button span {
   .search-input-inner-wrapper {
     max-width: 60%;
     min-width: 350px;
-    margin: 0 auto;
     align-content: center;
     line-height: 5rem;
-    margin-bottom: 2rem;
+    margin: 0 auto 2rem;
 
-    padding-top: calc(4rem + 2px);
-    padding-bottom: 4rem;
-    padding-left: calc(4rem + 7px);
-    padding-right: calc(4rem + 7px);
+    padding: calc(4rem + 2px) calc(4rem + 7px) 4rem;
 
-    background:white url("../../assets/searchbackground.png") no-repeat;
+    background: white url("../../assets/searchbackground.png") no-repeat;
   }
 }
 
 .outer {
+  padding-bottom: 4rem;
 }
 
 .inner {

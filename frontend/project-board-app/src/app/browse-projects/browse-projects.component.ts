@@ -1,12 +1,13 @@
 import { Location } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import * as $ from 'jquery';
+import { MatDialog, MatDialogRef } from '@angular/material';
+import { ActivatedRoute } from '@angular/router';
 import { combineLatest, Subject } from 'rxjs';
 import { debounceTime, switchMap, takeUntil } from 'rxjs/operators';
 import { AlertService } from '../_services/alert.service';
 import { EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
+import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
 
 @Component({
   selector: 'app-browse-projects',
@@ -17,21 +18,18 @@ export class BrowseProjectsComponent implements OnInit {
 
   appTooltip = 'Du hast dieses Projekt bereits angefragt.';
   bmTooltip = 'Du hast ein Lesezeichen an diesem Projekt.';
-  studTooltip = 'Studentisches Projekt';
 
   projects: Project[] = [];
   appliedProjects: Project[] = [];
   bookmarks: Project[] = [];
   selectedProject: Project;
-  below = false;
   mobile = false;
-  scroll = true;
   isUserBoss = false;
-  currentPage = 0;
   searchText = '';
-  loadingProjects = false;
+  loadingProjects = true;
   projectsFound: number;
-  infiniteScrollDisabled = false;
+
+  dialogRef: MatDialogRef<ProjectDialogComponent>;
 
   private divToScroll;
 
@@ -43,8 +41,31 @@ export class BrowseProjectsComponent implements OnInit {
               private alertService: AlertService,
               private route: ActivatedRoute,
               private location: Location,
-              private router: Router
+              public dialog: MatDialog
   ) {}
+
+  openDialog(p: Project) {
+    this.dialogRef = this.dialog.open(ProjectDialogComponent, {
+      width: '70vw',
+      minWidth: this.mobile ? '100vw' : '',
+      maxHeight: this.mobile ? '' : '80vh',
+      minHeight: this.mobile ? '100vh' : '',
+      panelClass: this.mobile ? 'fullscreen' : '',
+      data: {
+        project: p,
+        applicable: this.isProjectApplicable(p.id),
+        bookmarked: this.isProjectBookmarked(p.id),
+        isUserBoss: this.isUserBoss
+      }
+    });
+    this.dialogRef.componentInstance.bookmark
+      .pipe(takeUntil(this.dialogRef.afterClosed()))
+      .subscribe(() => this.handleBookmark(p));
+    this.dialogRef.componentInstance.application
+      .pipe(takeUntil(this.dialogRef.afterClosed()))
+      .subscribe(() => this.handleApplication(p));
+    this.dialogRef.afterClosed().subscribe(() => this.onDialogClosed());
+  }
 
   @HostListener('window:resize') onResize() {
     this.mobile = document.body.clientWidth < 992;
@@ -58,16 +79,21 @@ export class BrowseProjectsComponent implements OnInit {
       .subscribe(data => {
         if (data[0].projects) {
           this.projects = data[0].projects;
+          this.loadingProjects = false;
         }
 
-      // extract projects from applications
-      this.appliedProjects = data[0].applications ? data[0].applications.map(app => app.project) : [];
-      this.bookmarks = data[0].bookmarks;
-      this.isUserBoss = data[0].isUserBoss;
+        // extract projects from applications
+        this.appliedProjects = data[0].applications ? data[0].applications.map(app => app.project) : [];
+        this.bookmarks = data[0].bookmarks;
+        this.isUserBoss = data[0].isUserBoss;
 
-      // set selected project
-      this.setSelectedProject(data[1].id);
-    });
+        // set selected project
+        this.setSelectedProject(data[1].id);
+
+        if (this.selectedProject) {
+          this.openDialog(this.selectedProject);
+        }
+      });
   }
 
   ngOnInit() {
@@ -85,16 +111,14 @@ export class BrowseProjectsComponent implements OnInit {
         this.projects = projects;
         this.projectsFound = projects.length;
       });
-      this.loadProjects();
+    this.loadProjects();
 
     this.divToScroll = document.getElementById('divToScroll');
   }
 
   searchProjects() {
-    this.infiniteScrollDisabled = false;
     this.loadingProjects = true;
     this.projects = [];
-    this.currentPage = 0;
     this.searchText$.next(this.searchText);
   }
 
@@ -103,55 +127,24 @@ export class BrowseProjectsComponent implements OnInit {
       this.selectedProject = null;
       return;
     }
-
     for (const p of this.projects) {
       if (p.id === projectId) {
         this.selectedProject = p;
         return;
       }
     }
-    this.projectsService.getProjectWithID(projectId)
-      .subscribe(
-        project => this.selectedProject = project,
-        () => this.alertService.info('Das angegebene Projekt wurde nicht gefunden.')
-      );
+    this.alertService.info('Das angegebene Projekt wurde nicht gefunden.');
   }
 
-  projectClicked(project) {
-
-    const newProjectOffset = $(`#${project.id}`).offset().top;
-
-    if (this.selectedProject === project) {
-      this.location.replaceState(`/browse`);
-      this.selectedProject = null;
-      this.scroll = false;
-      this.below = false;
-    } else {
-      this.location.replaceState(`/browse/${project.id}`);
-      if (this.selectedProject) {
-
-        const oldProjectOffset = $(`#${this.selectedProject.id}`).offset().top;
-
-        if (oldProjectOffset > newProjectOffset) {
-          this.below = false;
-        } else {
-          this.below = true;
-        }
-      }
-      this.selectedProject = project;
-      this.scroll = true;
-    }
-  }
-
-  isProjectApplicable(projectId) {
+  isProjectApplicable(projectId: string) {
     return this.appliedProjects ? !this.appliedProjects.some(p => p && p.id === projectId) : true;
   }
 
-  isProjectBookmarked(projectId) {
+  isProjectBookmarked(projectId: string) {
     return this.bookmarks ? this.bookmarks.some(p => p && p.id === projectId) : false;
   }
 
-  handleBookmark(project) {
+  handleBookmark(project: Project) {
     const index = this.bookmarks.findIndex(p => p.id === project.id);
     if (index > -1) {
       this.bookmarks.splice(index, 1);
@@ -160,7 +153,12 @@ export class BrowseProjectsComponent implements OnInit {
     }
   }
 
-  showDetails(p: Project) {
-    this.router.navigate(['/browse/' + p.id]);
+  handleApplication(project: Project) {
+    this.appliedProjects.push(project);
+  }
+
+  onDialogClosed() {
+    this.selectedProject = null;
+    this.location.replaceState('/browse');
   }
 }

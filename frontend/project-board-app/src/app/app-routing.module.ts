@@ -18,7 +18,6 @@ import { ExecutivesComponent } from './executives/executives.component';
 import { LogoutComponent } from './logout/logout.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ProfileComponent } from './profile/profile.component';
-import { ProjectDetailsComponent } from './project-details/project-details.component';
 import { ProjectRequestComponent } from './project-request/project-request.component';
 
 const routes: Routes = [
@@ -63,9 +62,9 @@ const routes: Routes = [
   },
   {
     path: 'browse/:id',
-    component: ProjectDetailsComponent,
+    component: BrowseProjectsComponent,
     resolve: {
-      project: ProjectResolverService,
+      projects: ProjectsResolverService,
       applications: ApplicationsResolverService,
       bookmarks: BookmarksResolverService,
       isUserBoss: IsBossResolverService

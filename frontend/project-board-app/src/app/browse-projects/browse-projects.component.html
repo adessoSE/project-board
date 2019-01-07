@@ -20,11 +20,15 @@
       </tr>
       </thead>
       <tbody *ngIf="!loadingProjects && projects.length > 0">
-      <tr *ngFor="let p of projects" (click)="showDetails(p)">
+      <tr *ngFor="let p of projects" (click)="openDialog(p)">
         <th>
           <table class="fixed-project-info">
             <tbody>
             <tr>
+              <td class="hover-change" style="width: 26px;">
+                <mat-icon title="{{bmTooltip}}" *ngIf="isProjectBookmarked(p.id)" style="display: block;">bookmark</mat-icon>
+                <mat-icon title="{{appTooltip}}" *ngIf="!isProjectApplicable(p.id)" style="display: block">email</mat-icon>
+              </td>
               <td class="td-project-title hover-change title-clickable">{{p.title}}</td>
             </tr>
             </tbody>
