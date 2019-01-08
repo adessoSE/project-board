@@ -155,10 +155,6 @@
     display: none;
   }
 
-  #belowNavbar{
-    padding-top: 5px;
-  }
-
   .side-link{
     box-sizing: border-box;
     color: #887D75 !important;
@@ -219,5 +215,9 @@
 
   #side-logout {
     border-bottom: 1px solid lightgrey;
+  }
+
+  #innerContent {
+    padding-top: 30px;
   }
 }

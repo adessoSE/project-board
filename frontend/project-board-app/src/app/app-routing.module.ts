@@ -77,8 +77,7 @@ const routes: Routes = [
     resolve: {
       user: UserResolverService,
       bookmarks: BookmarksResolverService,
-      applications: ApplicationsResolverService,
-      projects: CreatedProjectsResolverService
+      applications: ApplicationsResolverService
     },
     canActivate: [
       AuthGuard

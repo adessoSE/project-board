@@ -2,7 +2,8 @@
   <div class="aside col-md-3 left-bar">
     <div id="avatar-area">
       <div id="username">{{user.firstName}} {{user.lastName}}</div>
-      <div id="profile-image"><img src="../../assets/avatar.png"></div> <!--TO DO Bild einfügen-->
+      <div id="profile-image"><img src="../../assets/avatar.png"></div>
+      <!--TO DO Bild einfügen-->
     </div>
 
     <div id="user-information">
@@ -30,21 +31,21 @@
 
   <div class="aside col-md-9 middle">
     <div id="profile-nav">
-      <div *ngIf="!user.boss" (click)="selectTab(0)" id="tab0" class="nav-point col-md-6 active">
+      <div *ngIf="!user.boss" (click)="selectTab(0)" id="tab0" class="nav-point col-6 active">
         <div class="profile-nav-icon">
           <mat-icon>bookmark</mat-icon>
         </div>
         Lesezeichen
       </div>
 
-      <div *ngIf="!user.boss" (click)="selectTab(1)" id="tab1" class="nav-point col-md-6">
+      <div *ngIf="!user.boss" (click)="selectTab(1)" id="tab1" class="nav-point col-6">
         <div class="profile-nav-icon">
           <mat-icon>email</mat-icon>
         </div>
         Projektanfragen
       </div>
 
-      <div *ngIf="user.boss" (click)="selectTab(2)" id="tab2" class="nav-point col-md-12 active">
+      <div *ngIf="user.boss" (click)="selectTab(2)" id="tab2" class="nav-point col-12 active">
         <div class="profile-nav-icon">
           <mat-icon>email</mat-icon>
         </div>
@@ -56,8 +57,13 @@
       <!-- bookmarks tab -->
       <ng-container *ngIf="tabIndex == 0">
         <div class="bookmark" *ngFor="let b of bookmarks; index as i" [ngClass]="{'border-bottom': i<bookmarks.length-1}">
-          <div class="linking-icon" (click)="openDialog(b)">
-            <mat-icon>open_in_new</mat-icon>
+          <div class="icon-wrapper">
+            <div class="linking-icon" title="Öffnen" (click)="openDialog(b)">
+              <mat-icon>open_in_new</mat-icon>
+            </div>
+            <div *ngIf="!isProjectApplicable(b.id)" class="mail-icon">
+              <mat-icon title="bereits angefragt" style="cursor: default;">email</mat-icon>
+            </div>
           </div>
           <div class="remover" title="entfernen" (click)="removeBookmark(b.id)">
             <mat-icon>clear</mat-icon>
@@ -70,8 +76,10 @@
       <!-- applications tab -->
       <ng-container *ngIf="tabIndex == 1">
         <div class="application" *ngFor="let a of applications; index as i" [ngClass]="{'border-bottom': i<applications.length-1}">
-          <div class="linking-icon" (click)="openDialog(a.project)">
-            <mat-icon>open_in_new</mat-icon>
+          <div class="icon-wrapper">
+            <div class="linking-icon" title="Öffnen" (click)="openDialog(a.project)">
+              <mat-icon>open_in_new</mat-icon>
+            </div>
           </div>
           <div class="project-title">{{a.project.title}}</div>
           <div class="application-details">
@@ -88,7 +96,7 @@
       <!-- employee-applications tab-->
       <ng-container *ngIf="tabIndex == 2">
         <div class="employee-application" *ngFor="let a of employeeApplications; index as i" [ngClass]="{'border-bottom': i<employeeApplications.length-1}">
-          <div class="linking-icon" (click)="openDialog(a.project)">
+          <div class="linking-icon" title="Öffnen" (click)="openDialog(a.project)">
             <mat-icon>open_in_new</mat-icon>
           </div>
           <div class="project-title">{{a.project.title}}</div>
@@ -103,10 +111,10 @@
           Keine Projektanfragen deiner Mitarbeiter.
         </div>
         <div *ngIf="loadingEmployeeApplications" class="inset">
-            <div class="loading-spinner">
-              <mat-spinner [diameter]="50"></mat-spinner>
-            </div>
+          <div class="loading-spinner">
+            <mat-spinner [diameter]="50"></mat-spinner>
           </div>
+        </div>
       </ng-container>
     </div>
   </div>
