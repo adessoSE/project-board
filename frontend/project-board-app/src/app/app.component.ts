@@ -35,13 +35,12 @@ export class AppComponent implements OnInit, DoCheck {
   /* Sidenav responsive */
 
   NavToggle() {
-    if (/Mobi/.test(navigator.userAgent)) {
+
       if (this.sidenav.opened) {
         this.sidenav.close();
       } else {
         this.sidenav.open();
       }
-    }
   }
 
   openNav() {

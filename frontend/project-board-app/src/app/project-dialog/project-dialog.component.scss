@@ -6,25 +6,13 @@ mat-dialog-actions {
   // 80px header + 650px content = 730px
   margin: 0 -24px -24px -24px;
   padding: 8px 24px 8px 24px;
-  background-color: #F3F3F3;
-  &.fullscreen {
-    min-height: calc(100vh - 730px);
-  }
-}
-
-mat-dialog-actions.fullscreen div {
-  width: 100%;
-  text-align: center;
 }
 
 mat-dialog-content {
   max-height: 600px;
-  &.fullscreen {
-    max-height: 650px;
-  }
-  &.fullscreen.shorten {
-    max-height: calc(100vh - 340px);
-  }
+  padding-top: 5px;
+  padding-bottom: 5px;
+  background-color: #FFF;
 }
 
 .shorten {
@@ -33,8 +21,7 @@ mat-dialog-content {
 
 h1 {
   margin: -24px -24px 0 -24px;
-  padding: 24px 24px 24px 24px;
-  background-color: #F3F3F3;
+  padding: 24px 88px 24px 24px;
 }
 
 #applied-icon {
@@ -45,29 +32,59 @@ h1 {
 }
 
 #bookmark-icon {
+  display: block;
+  margin: 0 auto;
+  font-size: 30px;
+}
+
+#bookmark-icon.mat-icon.material-icons {
+  height: 30px;
+  width: 30px;
+}
+
+#bookmark-text {
+  font-size: 12px;
+  line-height: 100%;
+}
+
+#bookmark-icon-wrapper {
   float: left;
+  width: 64px;
+  height: 60px;
   cursor: pointer;
+  text-align: center;
+  margin-top: -10px;
+
   color: grey;
   &.active {
     color: #016EC7;
   }
 }
 
-#close-icon {
-  float: right;
-  cursor: pointer;
-  color: #887D75;
+#bookmark-icon-wrapper:hover #bookmark-icon {
+  color: darken(grey, 10);
+}
+
+#bookmark-icon-wrapper.active:hover #bookmark-icon {
+  color: darken(#016EC7, 10);
+}
+
+#bookmark-icon-wrapper:hover #bookmark-text {
+  color: darken(grey, 10);
+}
+
+#bookmark-icon-wrapper.active:hover #bookmark-text {
+  color: darken(#016EC7, 10);
 }
 
 #close-icon-wrapper :hover, #close-icon-wrapper #close-icon :hover {
   color: darken(#887D75, 10);
 }
 
-#bookmark-icon-wrapper :hover, #bookmark-icon-wrapper #bookmark-icon :hover {
-  color: darken(grey, 10);
-  &.active {
-    color: darken(#016EC7, 10);
-  }
+#close-icon {
+  float: right;
+  cursor: pointer;
+  color: #887D75;
 }
 
 #comment:focus {
@@ -84,6 +101,27 @@ h1 {
   overflow-y: auto;
   resize: none;
   display: block;
+}
+
+@include media-breakpoint-down(md) {
+
+ /* mat-dialog-actions {
+    min-height: calc(100vh - 730px);
+  } */
+
+  mat-dialog-actions div {
+    width: 100%;
+    text-align: center;
+  }
+
+  mat-dialog-content {
+      max-height: calc((100vh - 80px) - 54px); /*100vh - Titel - Actions*/
+  }
+
+  mat-dialog-content.shorten {
+    max-height: calc(100vh - 340px);
+  }
+
 }
 
 @include media-breakpoint-down(sm) {
