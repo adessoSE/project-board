@@ -89,7 +89,7 @@ export class ProfileComponent implements OnInit {
   removeBookmark(projectId) {
     this.employeeService.removeBookmark(this.authService.username, projectId)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.bookmarks = this.bookmarks.filter(p => p.id != projectId));
+      .subscribe(() => this.bookmarks = this.bookmarks.filter(p => p.id !== projectId));
   }
 
   getEmployeeApplications() {
