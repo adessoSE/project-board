@@ -57,8 +57,13 @@
       <!-- bookmarks tab -->
       <ng-container *ngIf="tabIndex == 0">
         <div class="bookmark" *ngFor="let b of bookmarks; index as i" [ngClass]="{'border-bottom': i<bookmarks.length-1}">
-          <div class="linking-icon" (click)="openDialog(b)">
-            <mat-icon>open_in_new</mat-icon>
+          <div class="icon-wrapper">
+            <div class="linking-icon" title="Öffnen" (click)="openDialog(b)">
+              <mat-icon>open_in_new</mat-icon>
+            </div>
+            <div *ngIf="!isProjectApplicable(b.id)" class="mail-icon">
+              <mat-icon title="bereits angefragt" style="cursor: default;">email</mat-icon>
+            </div>
           </div>
           <div class="remover" title="entfernen" (click)="removeBookmark(b.id)">
             <mat-icon>clear</mat-icon>
@@ -71,8 +76,10 @@
       <!-- applications tab -->
       <ng-container *ngIf="tabIndex == 1">
         <div class="application" *ngFor="let a of applications; index as i" [ngClass]="{'border-bottom': i<applications.length-1}">
-          <div class="linking-icon" (click)="openDialog(a.project)">
-            <mat-icon>open_in_new</mat-icon>
+          <div class="icon-wrapper">
+            <div class="linking-icon" title="Öffnen" (click)="openDialog(a.project)">
+              <mat-icon>open_in_new</mat-icon>
+            </div>
           </div>
           <div class="project-title">{{a.project.title}}</div>
           <div class="application-details">
@@ -89,7 +96,7 @@
       <!-- employee-applications tab-->
       <ng-container *ngIf="tabIndex == 2">
         <div class="employee-application" *ngFor="let a of employeeApplications; index as i" [ngClass]="{'border-bottom': i<employeeApplications.length-1}">
-          <div class="linking-icon" (click)="openDialog(a.project)">
+          <div class="linking-icon" title="Öffnen" (click)="openDialog(a.project)">
             <mat-icon>open_in_new</mat-icon>
           </div>
           <div class="project-title">{{a.project.title}}</div>

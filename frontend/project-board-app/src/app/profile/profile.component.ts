@@ -45,7 +45,6 @@ export class ProfileComponent implements OnInit {
         this.user = data.user;
         this.bookmarks = data.bookmarks;
         this.applications = data.applications;
-        this.projects = data.projects;
       });
 
     if (this.user.boss) {
@@ -104,7 +103,7 @@ export class ProfileComponent implements OnInit {
 
 
   isProjectApplicable(projectId: string) {
-    return this.projects ? !this.projects.some(p => p && p.id === projectId) : true;
+    return this.applications ? !this.applications.some(a => a && a.project.id === projectId) : true;
   }
 
   isProjectBookmarked(projectId: string) {

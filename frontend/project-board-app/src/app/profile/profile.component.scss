@@ -38,7 +38,7 @@
   padding: 0 20px;
 }
 
-.user-detail-oint {
+.user-detail-point {
   padding-top: 15px;
   border-top: 1px solid #e6e6e6;
 }
@@ -132,21 +132,44 @@
   height: 26px;
 }
 
-.linking-icon {
-  float: left;
-  margin-right: 16px;
+.icon-wrapper {
+  display: inline-block;
+  vertical-align: middle;
   height: 32px;
+}
+
+.icon-wrapper mat-icon {
+  height: 32px;
+  width: 32px;
+}
+
+.linking-icon {
+  display: inline-block;
+  vertical-align: bottom;
+  margin-right: 5px;
   cursor: pointer;
 }
 
 .linking-icon .material-icons {
   font-size: 32px !important;
-  margin-top: -5px;
   color: #016EC7;
 }
 
 .linking-icon .material-icons:hover {
   color: #338bd2;
+}
+
+.mail-icon {
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 4px;
+}
+
+.project-title {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 32px;
+  margin-top: 2px;
 }
 
 .inset {
@@ -182,6 +205,13 @@
   .left-bar {
     min-height: 50vh;
     z-index: 3;
+  }
+
+  .project-title {
+    display: inline-block;
+    margin: 0;
+    width: 100%;
+    line-height: inherit;
   }
 }
 
