@@ -6,7 +6,7 @@ import { AuthenticationService } from '../_services/authentication.service';
 import { Application, EmployeeService } from '../_services/employee.service';
 import { Project } from '../_services/project.service';
 
-export interface DialogData {
+export interface ProjectDialogData {
   project: Project;
   isUserBoss: boolean;
   bookmarked: boolean;
@@ -38,7 +38,7 @@ export class ProjectDialogComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<ProjectDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData,
+    @Inject(MAT_DIALOG_DATA) public data: ProjectDialogData,
     private authService: AuthenticationService,
     private employeeService: EmployeeService) {}
 

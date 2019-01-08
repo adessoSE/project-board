@@ -1,25 +1,55 @@
-<div class="row">
-  <div class="col-md-6">
-
-    <div id="employeeContainer" (swiperight)="swipebugplaceholder()">
-      <div class="list-group">
-        <ng-container *ngFor="let e of employees">
-            <button id="{{e.id}}" (click)="employeeClicked(e)" type="button" [ngClass]="{'list-group-item list-group-item-action': true, 'active': e.id == selectedEmployee?.id}">
-
-             <!-- Differentiate between boss and normal user for readability -->
-              <span *ngIf="e.boss" class="badge badge-success badge-width" title="{{badgeTooltip(e)}}">D</span>
-              <span *ngIf="!e.boss" title="{{badgeTooltip(e)}}" [ngClass]="{'badge badge-width': true, 'badge-success': e.accessInfo.hasAccess, 'badge-danger badge-red': !e.accessInfo.hasAccess}">{{e.duration || '0'}}</span>
-
-             {{e.lastName}}, {{e.firstName}}
-            </button>
-          <div *ngIf="mobile && selectedEmployee?.id == e.id" id="managementContainer">
-           <app-employee-management [selectedEmployee]="selectedEmployee"></app-employee-management>
-          </div>
-        </ng-container>
-      </div>
+<div class="search-input-wrapper">
+  <div class="imageWrapper">
+    <div class="input-group search-input-inner-wrapper">
+      <label for="search" class="sr-only">Suche</label>
+      <span class="square"><mat-icon>search</mat-icon></span>
+      <input #search [(ngModel)]="searchText" (ngModelChange)="searchEmployees()" class="search form-control" type="text" name="search" id="search" placeholder="Mitarbeiter suchen...">
     </div>
   </div>
-  <div *ngIf="!mobile" class="col-md-6" id="managementContainerLg">
-    <app-employee-management [selectedEmployee]="selectedEmployee"></app-employee-management>
+</div>
+
+<div class="outer">
+  <div class="inner">
+    <table id="result-table">
+      <thead>
+      <tr>
+        <th style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" *ngIf="!loading" id="total-hits">{{filteredEmployees?.length || 'Keine'}} Mitarbeiter{{searchText != '' ? ' für "' + searchText + '"' : ''}}</th>
+        <td *ngIf="!mobile">Status</td>
+        <td *ngIf="!mobile">Freigeschaltet bis</td>
+        <td *ngIf="!mobile">Anfragen</td>
+      </tr>
+      </thead>
+      <tbody *ngIf="!loading && filteredEmployees.length > 0">
+      <tr *ngFor="let e of filteredEmployees" (click)="openDialog(e)">
+        <th>
+          <table class="fixed-project-info hover-change" style="width: 100%;">
+            <tbody>
+            <tr [ngClass]="{'mobile': mobile}">
+              <td class="badges">
+                <!-- TODO: badge einfügen -->
+                <!-- Differentiate between boss and normal user for readability -->
+                <span *ngIf="e.boss" class="badge badge-success badge-width" title="{{badgeTooltip(e)}}">D</span>
+                <span *ngIf="!e.boss" title="{{badgeTooltip(e)}}" [ngClass]="{'badge badge-width': true, 'badge-success': e.accessInfo.hasAccess, 'badge-danger badge-red': !e.accessInfo.hasAccess}">{{e.duration || '0'}}</span>
+              </td>
+              <td class="td-project-title title-clickable">{{e.lastName + ', ' + e.firstName}}</td>
+              <td *ngIf="e.boss" style="float: right;">
+                <mat-icon class="dropdown-icon" (click)="toggleBoss()">keyboard_arrow_right</mat-icon>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </th>
+        <td *ngIf="!mobile" class="hover-change">{{e.accessInfo.hasAccess || e.boss ? 'Freigeschaltet' : 'Nicht freigeschaltet'}}</td>
+        <td *ngIf="!mobile" class="hover-change">{{e.boss ? 'Dauerhaft (Führungskraft)' : e.accessInfo.hasAccess ? (e.accessInfo.accessEnd | date) : '-'}}</td>
+        <td *ngIf="!mobile" class="hover-change">{{e.applications.count}}</td>
+      </tr>
+      <tr></tr>
+      </tbody>
+    </table>
+    <div *ngIf="loading" style="width: 100%; margin-top: 1rem">
+      <div class="loading-spinner">
+        <mat-spinner [diameter]="50"></mat-spinner>
+      </div>
+    </div>
   </div>
 </div>

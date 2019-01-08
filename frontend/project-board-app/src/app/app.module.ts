@@ -20,7 +20,7 @@ import { ProjectService } from './_services/project.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowseProjectsComponent } from './browse-projects/browse-projects.component';
-import { EmployeeManagementComponent } from './employee-management/employee-management.component';
+import { EmployeeDialogComponent } from './employee-dialog/employee-dialog.component';
 import { ExecutivesComponent } from './executives/executives.component';
 import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
@@ -55,7 +55,7 @@ registerLocaleData(localeDe, 'de');
     YesOrNoPipe,
     ProjectDetailsComponent,
     ProjectDialogComponent,
-    EmployeeManagementComponent,
+    EmployeeDialogComponent,
     ProjectRequestComponent,
     ProfileComponent,
     LogoutComponent
@@ -73,7 +73,8 @@ registerLocaleData(localeDe, 'de');
     BrowserAnimationsModule
   ],
   entryComponents: [
-    ProjectDialogComponent
+    ProjectDialogComponent,
+    EmployeeDialogComponent
   ],
   providers: [
     {provide: LOCALE_ID, useValue: 'de'},

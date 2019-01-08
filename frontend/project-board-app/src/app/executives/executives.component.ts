@@ -1,37 +1,42 @@
 import { Location } from '@angular/common';
-import { AfterViewChecked, Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
-import * as $ from 'jquery';
 import { combineLatest, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Employee, EmployeeService } from '../_services/employee.service';
+import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
 
 @Component({
   selector: 'app-executives',
   templateUrl: './executives.component.html',
   styleUrls: ['./executives.component.scss']
 })
-export class ExecutivesComponent implements OnInit, AfterViewChecked {
+export class ExecutivesComponent implements OnInit {
   employees: Employee[] = [];
+  filteredEmployees: Employee[] = [];
   selectedEmployee: Employee;
   mobile = false;
   smallMobile = false;
-  scroll = true;
-  below = false;
+
+  searchText = '';
+  loading = true;
+  dialogRef: MatDialogRef<EmployeeDialogComponent>;
 
   destroy$ = new Subject<void>();
 
   constructor(private employeeService: EmployeeService,
               private route: ActivatedRoute,
               private router: Router,
-              private location: Location) { }
+              private location: Location,
+              public dialog: MatDialog) { }
 
   @HostListener('window:resize') onResize() {
     this.mobile = document.body.clientWidth < 992;
     this.smallMobile = document.body.clientWidth < 768;
   }
 
-  swipebugplaceholder(){}
+  swipebugplaceholder() {}
 
   ngOnInit() {
     this.mobile = document.body.clientWidth < 992;
@@ -49,7 +54,13 @@ export class ExecutivesComponent implements OnInit, AfterViewChecked {
             return e;
           })
           .sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
+        this.filteredEmployees = this.employees;
+        this.loading = false;
         this.setSelectedEmployee(data[1].id);
+
+        if (this.selectedEmployee) {
+          this.openDialog(this.selectedEmployee);
+        }
       });
   }
 
@@ -61,58 +72,6 @@ export class ExecutivesComponent implements OnInit, AfterViewChecked {
       }
     }
     this.selectedEmployee = null;
-  }
-
-/* creates a valid Id in case it contains a dot*/
-  getValidId(employee){
-    var fixedEmployeeId = employee.id;
-    if((employee.id + "").indexOf(".") == 1){
-      var idAsArray = (employee.id + "").split(".");
-      var fixedId = idAsArray[0] + "\\." + idAsArray[1];
-      fixedEmployeeId = fixedId;
-    }
-    return fixedEmployeeId;
-  }
-
-  employeeClicked(employee) {
-
-    const newEmployeeOffset = $(`#${this.getValidId(employee)}`).offset().top;
-
-    if (this.selectedEmployee === employee) {
-      this.location.replaceState(`/admin`);
-      this.selectedEmployee = null;
-      this.scroll = false;
-      this.below = false;
-    } else {
-      this.location.replaceState(`/admin/${employee.id}`);
-      
-      if(this.selectedEmployee){
-
-      const oldEmployeeOffset = $(`#${this.getValidId(this.selectedEmployee)}`).offset().top;
-
-       if(oldEmployeeOffset > newEmployeeOffset){ // set "below" true, if employee is below opened
-        this.below = false;
-        } else {
-        this.below = true;
-      }
-    }
-      this.selectedEmployee = employee;
-      this.scroll = true;
-    }
-  }
-
-  ngAfterViewChecked() {
-    if (this.scroll && this.selectedEmployee && this.smallMobile) {
-      var offsetBonus = 56;
-      const btn = $(`#${this.getValidId(this.selectedEmployee)}`);
-      // navbar has 56 pixels height | if opened below selected calculate offset correctly
-      if(this.below){
-        $('html, body').animate({scrollTop: $(btn).offset().top - (document.getElementById('managementContainer').scrollHeight + offsetBonus)}, 'slow');
-      } else {
-        $('html, body').animate({scrollTop: $(btn).offset().top -  offsetBonus}, 'slow');
-      }
-      this.scroll = false;
-    }
   }
 
   private daysUntil(date: Date) {
@@ -141,4 +100,35 @@ export class ExecutivesComponent implements OnInit, AfterViewChecked {
     return `${employee.firstName} ${employee.lastName} hat keinen Zugang zum Project Board.`;
   }
 
+  searchEmployees(): void {
+    this.filteredEmployees = this.employees.filter(e => {
+      return (e.firstName + ' ' + e.lastName)
+        .toLowerCase()
+        .includes(this.searchText.toLowerCase());
+    });
+    if (this.searchText === '') {
+      this.filteredEmployees = this.employees;
+    }
+  }
+
+  openDialog(e: Employee) {
+    this.dialogRef = this.dialog.open(
+      EmployeeDialogComponent,
+      {
+        autoFocus: false,
+        panelClass: 'custom-dialog-container',
+        data: {
+          employee: e
+        }
+      });
+
+    this.location.replaceState(`/employees/${e.id}`);
+    this.dialogRef.afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.location.replaceState('/employees'));
+  }
+
+  toggleBoss() {
+    console.log('toggle clicked');
+  }
 }
