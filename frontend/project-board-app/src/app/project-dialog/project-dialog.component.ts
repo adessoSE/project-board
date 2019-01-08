@@ -3,7 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthenticationService } from '../_services/authentication.service';
-import { EmployeeService } from '../_services/employee.service';
+import { Application, EmployeeService } from '../_services/employee.service';
 import { Project } from '../_services/project.service';
 
 export interface DialogData {
@@ -25,7 +25,7 @@ export class ProjectDialogComponent implements OnInit {
   closeTooltip = 'Dialog schließen.';
   mobile: boolean;
   @Output() bookmark = new EventEmitter();
-  @Output() application = new EventEmitter();
+  @Output() application = new EventEmitter<Application>();
 
   destroy$ = new Subject<void>();
 
@@ -64,8 +64,8 @@ export class ProjectDialogComponent implements OnInit {
   sendApplication() {
     this.employeeService.applyForProject(this.authService.username, this.data.project.id, this.comment)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(appliedProject => {
-        this.application.emit(appliedProject);
+      .subscribe(application => {
+        this.application.emit(application);
         this.dialogRef.close();
       });
   }

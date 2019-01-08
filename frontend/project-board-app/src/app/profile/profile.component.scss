@@ -1,15 +1,15 @@
-.leftbar {
-  box-shadow: 0 0 0.25rem rgba(0,0,0,.25);
+.left-bar {
+  box-shadow: 0 0 0.25rem rgba(0, 0, 0, .25);
   padding: 0;
   height: 75vh;
   background-color: #FFF;
 }
 
-#avatarArea {
+#avatar-area {
   padding: 30px 30px 60px;
 }
 
-#userName {
+#username {
   color: #016EC7;
   font-weight: 500;
   font-size: 24px;
@@ -17,95 +17,92 @@
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
-  
 }
 
-#profileImg {
-  margin: 0 auto;
+#profile-image {
   height: 120px;
   width: 120px;
-  margin-top: 40px;
+  margin: 40px auto 0;
 }
 
-#profileImg img {
+#profile-image img {
   height: 110px;
   width: 110px;
-} 
+}
 
-#userInformation {
+#user-information {
   padding: 0 20px;
 }
 
-.userDetailPoint {
+.user-detail-oint {
   padding-top: 15px;
   border-top: 1px solid #e6e6e6;
 }
 
-.detailHeading {
+.detail-heading {
   color: #016EC7;
   font-size: 12px;
   padding: 0;
   margin: 0;
 }
 
-.pointText {
+.point-text {
   line-height: 19px;
   white-space: pre-wrap;
   font-size: 14px;
 }
 
 .middle {
-  padding: 0;
-  padding-left: 5%;
+  padding: 0 0 0 5%;
 }
 
-#profileNav {
-overflow: hidden;
-padding-top: 2px;
-padding-left: 2px;
-padding-right: 2px;
-margin-left: -2px;
-margin-right: -2px;
-margin-top: -2px;
+#profile-nav {
+  overflow: hidden;
+  padding-top: 2px;
+  padding-left: 2px;
+  padding-right: 2px;
+  margin-left: -2px;
+  margin-right: -2px;
+  margin-top: -2px;
 }
 
-.navPoint {
+.nav-point {
   display: inline-block;
   text-align: center;
-  padding: 5px;
-  padding-bottom: 10px;
+  padding: 5px 5px 10px;
 }
 
-.navPoint:hover {
+.nav-point:hover {
   color: white;
   background-color: #016EC7;
   cursor: pointer;
 }
 
-.navPoint.active {
+.nav-point.active {
   background-color: #FFF;
-  box-shadow: 0 0 0.25rem rgba(0,0,0,.25);
+  box-shadow: 0 0 0.25rem rgba(0, 0, 0, .25);
 }
-.navPoint.active:hover {
+
+.nav-point.active:hover {
   color: inherit;
   cursor: default;
 }
 
-.profileNavIcon {
+.profile-nav-icon {
   display: inline-block;
   vertical-align: bottom;
   height: 30px;
   margin-right: 5px;
 }
 
-.profileNavIcon mat-icon {
+.profile-nav-icon mat-icon {
   margin-top: 5px;
 }
 
-#profileNavContent {
+#profile-nav-content {
   z-index: 2;
   margin-bottom: 50px;
-  box-shadow: 0 0 0.25rem rgba(0,0,0,.25);
+  box-shadow: 0 0 0.25rem rgba(0, 0, 0, .25);
   padding: 0;
   background-color: #FFF;
 }
@@ -120,7 +117,7 @@ margin-top: -2px;
   padding: 15px;
 }
 
-.employeeApplication {
+.employee-application {
   border-bottom: 1px solid #e6e6e6;
   padding: 15px;
 }
@@ -131,23 +128,20 @@ margin-top: -2px;
   height: 26px;
 }
 
-.project-title {
-  font-weight: 550;
-}
-
-.linkingIcon {
-  float:left;
+.linking-icon {
+  float: left;
   margin-right: 16px;
   height: 32px;
+  cursor: pointer;
 }
 
-.linkingIcon .material-icons {
+.linking-icon .material-icons {
   font-size: 32px !important;
   margin-top: -5px;
   color: #016EC7;
 }
 
-.linkingIcon .material-icons:hover {
+.linking-icon .material-icons:hover {
   color: #338bd2;
 }
 
@@ -156,13 +150,13 @@ margin-top: -2px;
   text-align: center;
 }
 
-.applicationDetails {
-margin-top: 10px;
+.application-details {
+  margin-top: 10px;
 }
 
-.applicationDetails span {
- display: block;
- text-align: left;  
+.application-details span {
+  display: block;
+  text-align: left;
 }
 
 .requester {

@@ -1,64 +1,64 @@
 <div class="inner-container row">
-
-  <div class="aside col-md-3 leftbar">
-
-    <div id="avatarArea">
-      <div id="userName">{{user.firstName}} {{user.lastName}}</div>
-      <div id="profileImg"><img src="../../assets/avatar.png"></div> <!--TO DO Bild einfügen-->
+  <div class="aside col-md-3 left-bar">
+    <div id="avatar-area">
+      <div id="username">{{user.firstName}} {{user.lastName}}</div>
+      <div id="profile-image"><img src="../../assets/avatar.png"></div> <!--TO DO Bild einfügen-->
     </div>
 
-    <div id="userInformation">
-      <div style="border: 0;" class="userDetailPoint">
-        <p class="detailHeading">Status</p>
-        <span class="pointText">
+    <div id="user-information">
+      <div style="border: 0;" class="user-detail-point">
+        <p class="detail-heading">Status</p>
+        <span class="point-text">
           {{user.accessInfo.hasAccess || user.boss ? 'Freigeschaltet' : 'Nicht freigeschaltet'}}</span>
       </div>
-      <div class="userDetailPoint">
-        <p class="detailHeading">Freigeschaltet bis</p>
-        <span *ngIf="user.boss" class="pointText">Dauerhaft (Führungskraft)</span>
-        <span *ngIf="!user.boss" class="pointText">
+      <div class="user-detail-point">
+        <p class="detail-heading">Freigeschaltet bis</p>
+        <span *ngIf="user.boss" class="point-text">Dauerhaft (Führungskraft)</span>
+        <span *ngIf="!user.boss" class="point-text">
           {{user.accessInfo.hasAccess ? (user.accessInfo.accessEnd | date : 'dd.MM.yyyy') : '-'}}</span>
       </div>
-      <div *ngIf="!user.boss" class="userDetailPoint">
-        <p class="detailHeading">Projektanfragen</p>
-        <span class="pointText">{{applications.length}}</span>
+      <div *ngIf="!user.boss" class="user-detail-point">
+        <p class="detail-heading">Projektanfragen</p>
+        <span class="point-text">{{applications.length}}</span>
       </div>
-      <div *ngIf="user.boss" class="userDetailPoint">
-        <p class="detailHeading">Mitarbeiter</p> 
-        <span class="pointText">{{employees.length}}</span> <!--TO DO Mitarbeiter zählen -->
+      <div *ngIf="user.boss" class="user-detail-point">
+        <p class="detail-heading">Mitarbeiter</p>
+        <span class="point-text">{{employees.length}}</span>
       </div>
     </div>
   </div>
 
   <div class="aside col-md-9 middle">
-    <div id="profileNav">
-
-      <div *ngIf="!user.boss" (click)="selectTab(0)" id="tab0" class="navPoint col-md-6 active">
-        <div class="profileNavIcon">
+    <div id="profile-nav">
+      <div *ngIf="!user.boss" (click)="selectTab(0)" id="tab0" class="nav-point col-md-6 active">
+        <div class="profile-nav-icon">
           <mat-icon>bookmark</mat-icon>
-        </div>Lesezeichen
+        </div>
+        Lesezeichen
       </div>
 
-      <div *ngIf="!user.boss" (click)="selectTab(1)" id="tab1" class="navPoint col-md-6">
-        <div class="profileNavIcon">
+      <div *ngIf="!user.boss" (click)="selectTab(1)" id="tab1" class="nav-point col-md-6">
+        <div class="profile-nav-icon">
           <mat-icon>email</mat-icon>
-        </div>Projektanfragen
+        </div>
+        Projektanfragen
       </div>
 
-      <div *ngIf="user.boss" (click)="selectTab(2)" id="tab2" class="navPoint col-md-6 active">
-        <div class="profileNavIcon">
+      <div *ngIf="user.boss" (click)="selectTab(2)" id="tab2" class="nav-point col-md-6 active">
+        <div class="profile-nav-icon">
           <mat-icon>email</mat-icon>
-        </div>Projektanfragen Mitarbeiter
+        </div>
+        Projektanfragen Mitarbeiter
       </div>
-
     </div>
 
-    <div id="profileNavContent">
+    <div id="profile-nav-content">
+      <!-- bookmarks tab -->
       <ng-container *ngIf="tabIndex == 0">
         <div class="bookmark" *ngFor="let b of bookmarks; index as i" [ngClass]="{'border-bottom': i<bookmarks.length-1}">
-          <div class="linkingIcon"><a title="zum Projekt" routerLink="/browse/{{b.id}}">
-              <mat-icon>open_in_new</mat-icon>
-            </a></div>
+          <div class="linking-icon" (click)="openDialog(b)">
+            <mat-icon>open_in_new</mat-icon>
+          </div>
           <div class="remover" title="entfernen" (click)="removeBookmark(b.id)">
             <mat-icon>clear</mat-icon>
           </div>
@@ -67,14 +67,14 @@
         <div class="inset" *ngIf="!bookmarks || bookmarks.length === 0">Du hast keine Lesezeichen.</div>
       </ng-container>
 
+      <!-- applications tab -->
       <ng-container *ngIf="tabIndex == 1">
         <div class="application" *ngFor="let a of applications; index as i" [ngClass]="{'border-bottom': i<applications.length-1}">
-          <div class="linkingIcon"><a title="zum Projekt"  routerLink="/browse/{{a.project.id}}">
-              <mat-icon>open_in_new</mat-icon>
-            </a>
+          <div class="linking-icon" (click)="openDialog(a.project)">
+            <mat-icon>open_in_new</mat-icon>
           </div>
           <div class="project-title">{{a.project.title}}</div>
-          <div class="applicationDetails">
+          <div class="application-details">
             <span>Datum: {{a.date | date : 'dd.MM.yyyy'}}</span>
             <span>Mein Kommentar:</span>
             <span>{{a.comment}}</span>
@@ -85,15 +85,14 @@
         </div>
       </ng-container>
 
+      <!-- employee-applications tab-->
       <ng-container *ngIf="tabIndex == 2">
-        <!--TO DO Mitarbeiterprojekte laden-->
-        <div class="employeeApplication" *ngFor="let a of employeeApplications; index as i" [ngClass]="{'border-bottom': i<employeeApplications.length-1}">
-          <div class="linkingIcon"><a title="zum Projekt" routerLink="/browse/{{a.project.id}}">
-              <mat-icon>open_in_new</mat-icon>
-            </a>
+        <div class="employee-application" *ngFor="let a of employeeApplications; index as i" [ngClass]="{'border-bottom': i<employeeApplications.length-1}">
+          <div class="linking-icon" (click)="openDialog(a.project)">
+            <mat-icon>open_in_new</mat-icon>
           </div>
           <div class="project-title">{{a.project.title}}</div>
-          <div class="applicationDetails">
+          <div class="application-details">
             <span class="requester">{{a.user.lastName + ', ' + a.user.firstName}}</span>
             <span>Datum: {{a.date | date}}</span>
             <span>Kommentar:</span>
@@ -104,7 +103,6 @@
           Keine Projektanfragen deiner Mitarbeiter.
         </div>
       </ng-container>
-
     </div>
   </div>
 </div>

@@ -1,5 +1,5 @@
-import { formatDate } from '@angular/common';
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material';
 import { ActivatedRoute } from '@angular/router';
 import * as $ from 'jquery';
 import { Subject } from 'rxjs';
@@ -7,13 +7,14 @@ import { takeUntil } from 'rxjs/operators';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Application, Employee, EmployeeService } from '../_services/employee.service';
 import { Project } from '../_services/project.service';
+import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss']
 })
-export class ProfileComponent implements OnInit, OnChanges {
+export class ProfileComponent implements OnInit {
   @Input() adminControls = true;
   @Input() bookmarks: Project[] = [];
   @Input() applications: Application[] = [];
@@ -22,16 +23,20 @@ export class ProfileComponent implements OnInit, OnChanges {
   employeeApplications: Application[] = [];
 
   user: Employee;
-  tabIndex: number;
+  tabIndex = 0;
+  mobile = false;
+
+  dialogRef: MatDialogRef<ProjectDialogComponent>;
 
   destroy$ = new Subject<void>();
 
   constructor(private route: ActivatedRoute,
               private employeeService: EmployeeService,
-              private authService: AuthenticationService) {}
+              private authService: AuthenticationService,
+              public dialog: MatDialog) {}
 
   ngOnInit() {
-    this.tabIndex = 0;
+    this.mobile = document.body.clientWidth < 992;
 
     this.route.data
       .pipe(takeUntil(this.destroy$))
@@ -44,19 +49,31 @@ export class ProfileComponent implements OnInit, OnChanges {
 
     if (this.user.boss) {
       this.tabIndex = 2;
-    }
-
-    if (this.user.boss) {
       this.getEmployees();
+      this.getEmployeeApplications();
     }
+  }
 
-    if (!this.adminControls) {
-      this.getBookmarks();
-    }
-
-    if (this.user) {
-      this.getApplications();
-    }
+  openDialog(p: Project) {
+    this.dialogRef = this.dialog.open(ProjectDialogComponent, {
+      width: '70vw',
+      minWidth: this.mobile ? '100vw' : '',
+      maxHeight: this.mobile ? '' : '80vh',
+      minHeight: this.mobile ? '100vh' : '',
+      panelClass: this.mobile ? 'fullscreen' : '',
+      data: {
+        project: p,
+        applicable: this.isProjectApplicable(p.id),
+        bookmarked: this.isProjectBookmarked(p.id),
+        isUserBoss: this.user.boss
+      }
+    });
+    this.dialogRef.componentInstance.bookmark
+      .pipe(takeUntil(this.dialogRef.afterClosed()))
+      .subscribe(() => this.handleBookmark(p));
+    this.dialogRef.componentInstance.application
+      .pipe(takeUntil(this.dialogRef.afterClosed()))
+      .subscribe(application => this.handleApplication(application));
   }
 
   selectTab(tab) {
@@ -65,58 +82,10 @@ export class ProfileComponent implements OnInit, OnChanges {
     document.getElementById('tab' + tab).classList.add('active');
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (changes.user.currentValue && !changes.user.isFirstChange()) {
-      if (!this.adminControls) {
-        this.getBookmarks();
-      }
-      this.getApplications();
-    }
-  }
-
-  activate(duration) {
-    const accessEnd = new Date();
-    accessEnd.setDate(accessEnd.getDate() + Number(duration.value));
-    accessEnd.setHours(23, 59, 59, 999);
-    const dateString = formatDate(accessEnd, 'yyyy-MM-ddTHH:mm:ss.SSS', 'de');
-    this.employeeService.setEmployeeAccessInfo(this.user.id, dateString)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(user => {
-        this.user.accessInfo = user.accessInfo;
-        this.user.duration = duration.value;
-      });
-  }
-
-  deactivate() {
-    this.employeeService.deleteEmployeeAccessInfo(this.user.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(user => {
-        this.user.accessInfo = user.accessInfo;
-        this.user.duration = 0;
-      });
-  }
-
   getEmployees() {
     this.employeeService.getEmployeesForSuperUser(this.user.id)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(employees => {
-        this.employees = employees;
-        console.log(employees);
-        for (const e of employees) {
-          console.log(e.id + ' ' + e.applications.count);
-          if (e.applications.count > 0) {
-            this.employeeService.getApplications(e.id)
-              .pipe(takeUntil(this.destroy$))
-              .subscribe((applications: Application[]) => this.employeeApplications = this.employeeApplications.concat(applications));
-          }
-        }
-      });
-  }
-
-  getBookmarks() {
-    this.employeeService.getBookmarks(this.user.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(bookmarks => this.bookmarks = bookmarks);
+      .subscribe(employees => this.employees = employees);
   }
 
   removeBookmark(projectId) {
@@ -125,13 +94,30 @@ export class ProfileComponent implements OnInit, OnChanges {
       .subscribe(() => this.bookmarks = this.bookmarks.filter(p => p.id != projectId));
   }
 
-  getApplications() {
-    this.employeeService.getApplications(this.user.id)
+  getEmployeeApplications() {
+    this.employeeService.getApplicationsForEmployeesOfUser(this.user.id)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(appls => this.applications = appls);
+      .subscribe(employeeApplications => this.employeeApplications = employeeApplications);
   }
 
-  isAdmin() {
-    return this.authService.isAdmin;
+  isProjectApplicable(projectId: string) {
+    return this.projects ? !this.projects.some(p => p && p.id === projectId) : true;
+  }
+
+  isProjectBookmarked(projectId: string) {
+    return this.bookmarks ? this.bookmarks.some(p => p && p.id === projectId) : false;
+  }
+
+  handleBookmark(project: Project) {
+    const index = this.bookmarks.findIndex(p => p.id === project.id);
+    if (index > -1) {
+      this.bookmarks.splice(index, 1);
+    } else {
+      this.bookmarks.push(project);
+    }
+  }
+
+  handleApplication(application: Application) {
+    this.applications.push(application);
   }
 }

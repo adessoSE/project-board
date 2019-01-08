@@ -22,6 +22,10 @@ export class EmployeeService {
     return this.http.get<Employee>(`${environment.resourceServer}/users/${userId}`);
   }
 
+  getApplicationsForEmployeesOfUser(userId: string) {
+    return this.http.get<Application[]>(`${environment.resourceServer}/users/${userId}/staff/applications`);
+  }
+
   setEmployeeAccessInfo(userId: string, accessEnd) {
     const body = {
       'accessEnd': accessEnd
@@ -46,7 +50,7 @@ export class EmployeeService {
       'projectId': projectId,
       'comment': comment
     };
-    return this.http.post(`${environment.resourceServer}/users/${userId}/applications`, body);
+    return this.http.post<Application>(`${environment.resourceServer}/users/${userId}/applications`, body);
   }
 
   getBookmarks(userId: string) {

@@ -5,7 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { combineLatest, Subject } from 'rxjs';
 import { debounceTime, switchMap, takeUntil } from 'rxjs/operators';
 import { AlertService } from '../_services/alert.service';
-import { EmployeeService } from '../_services/employee.service';
+import { Application, EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
 import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
 
@@ -20,7 +20,7 @@ export class BrowseProjectsComponent implements OnInit {
   bmTooltip = 'Du hast ein Lesezeichen an diesem Projekt.';
 
   projects: Project[] = [];
-  appliedProjects: Project[] = [];
+  applications: Application[] = [];
   bookmarks: Project[] = [];
   selectedProject: Project;
   mobile = false;
@@ -63,7 +63,7 @@ export class BrowseProjectsComponent implements OnInit {
       .subscribe(() => this.handleBookmark(p));
     this.dialogRef.componentInstance.application
       .pipe(takeUntil(this.dialogRef.afterClosed()))
-      .subscribe(() => this.handleApplication(p));
+      .subscribe(application => this.handleApplication(application));
     this.dialogRef.afterClosed().subscribe(() => this.onDialogClosed());
 
     this.location.replaceState(`/browse/${p.id}`);
@@ -85,7 +85,7 @@ export class BrowseProjectsComponent implements OnInit {
         }
 
         // extract projects from applications
-        this.appliedProjects = data[0].applications ? data[0].applications.map(app => app.project) : [];
+        this.applications = data[0].applications;
         this.bookmarks = data[0].bookmarks;
         this.isUserBoss = data[0].isUserBoss;
 
@@ -139,7 +139,7 @@ export class BrowseProjectsComponent implements OnInit {
   }
 
   isProjectApplicable(projectId: string) {
-    return this.appliedProjects ? !this.appliedProjects.some(p => p && p.id === projectId) : true;
+    return this.applications ? !this.applications.some(a => a && a.project.id === projectId) : true;
   }
 
   isProjectBookmarked(projectId: string) {
@@ -155,8 +155,8 @@ export class BrowseProjectsComponent implements OnInit {
     }
   }
 
-  handleApplication(project: Project) {
-    this.appliedProjects.push(project);
+  handleApplication(application: Application) {
+    this.applications.push(application);
   }
 
   onDialogClosed() {
