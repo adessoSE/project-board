@@ -45,12 +45,7 @@ export class BrowseProjectsComponent implements OnInit {
   ) {}
 
   openDialog(p: Project) {
-    this.dialogRef = this.dialog.open(ProjectDialogComponent, {
-      width: '70vw',
-      minWidth: this.mobile ? '100vw' : '',
-      maxHeight: this.mobile ? '' : '80vh',
-      minHeight: this.mobile ? '100vh' : '',
-      panelClass: this.mobile ? 'fullscreen' : '',
+    this.dialogRef = this.dialog.open(ProjectDialogComponent, { autoFocus: false, panelClass: 'custom-dialog-container',
       data: {
         project: p,
         applicable: this.isProjectApplicable(p.id),
