@@ -99,10 +99,15 @@
             <span>{{a.comment}}</span>
           </div>
         </div>
-        <div class="inset" *ngIf="!employeeApplications || employeeApplications.length === 0">
+        <div class="inset" *ngIf="!loadingEmployeeApplications && (!employeeApplications || employeeApplications.length === 0)">
           Keine Projektanfragen deiner Mitarbeiter.
         </div>
       </ng-container>
+    </div>
+    <div *ngIf="loadingEmployeeApplications" style="width: 100%; margin-top: 1rem">
+      <div class="loading-spinner">
+        <mat-spinner [diameter]="50"></mat-spinner>
+      </div>
     </div>
   </div>
 </div>

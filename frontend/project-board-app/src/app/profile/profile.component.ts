@@ -25,6 +25,7 @@ export class ProfileComponent implements OnInit {
   user: Employee;
   tabIndex = 0;
   mobile = false;
+  loadingEmployeeApplications = true;
 
   dialogRef: MatDialogRef<ProjectDialogComponent>;
 
@@ -50,17 +51,14 @@ export class ProfileComponent implements OnInit {
     if (this.user.boss) {
       this.tabIndex = 2;
       this.getEmployees();
-      this.getEmployeeApplications();
+      // this.getEmployeeApplications();
     }
   }
 
   openDialog(p: Project) {
     this.dialogRef = this.dialog.open(ProjectDialogComponent, {
-      width: '70vw',
-      minWidth: this.mobile ? '100vw' : '',
-      maxHeight: this.mobile ? '' : '80vh',
-      minHeight: this.mobile ? '100vh' : '',
-      panelClass: this.mobile ? 'fullscreen' : '',
+      autoFocus: false,
+      panelClass: 'custom-dialog-container',
       data: {
         project: p,
         applicable: this.isProjectApplicable(p.id),
@@ -95,9 +93,13 @@ export class ProfileComponent implements OnInit {
   }
 
   getEmployeeApplications() {
+    this.loadingEmployeeApplications = true;
     this.employeeService.getApplicationsForEmployeesOfUser(this.user.id)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(employeeApplications => this.employeeApplications = employeeApplications);
+      .subscribe(employeeApplications => {
+        this.employeeApplications = employeeApplications;
+        // this.loadingEmployeeApplications = false;
+      });
   }
 
   isProjectApplicable(projectId: string) {
