@@ -26,7 +26,6 @@
             <tbody>
             <tr [ngClass]="{'mobile': mobile}">
               <td class="badges">
-                <!-- TODO: badge einfügen -->
                 <!-- Differentiate between boss and normal user for readability -->
                 <span *ngIf="e.boss" class="badge badge-success badge-width" title="{{badgeTooltip(e)}}">D</span>
                 <span *ngIf="!e.boss" title="{{badgeTooltip(e)}}" [ngClass]="{'badge badge-width': true, 'badge-success': e.accessInfo.hasAccess, 'badge-danger badge-red': !e.accessInfo.hasAccess}">{{e.duration || '0'}}</span>
