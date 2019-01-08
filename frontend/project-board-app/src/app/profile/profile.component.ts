@@ -51,7 +51,7 @@ export class ProfileComponent implements OnInit {
     if (this.user.boss) {
       this.tabIndex = 2;
       this.getEmployees();
-      // this.getEmployeeApplications();
+      this.getEmployeeApplications();
     }
   }
 
@@ -98,7 +98,7 @@ export class ProfileComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe(employeeApplications => {
         this.employeeApplications = employeeApplications;
-        // this.loadingEmployeeApplications = false;
+        this.loadingEmployeeApplications = false;
       });
   }
 
