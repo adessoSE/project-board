@@ -40,19 +40,6 @@ button span {
   overflow-y: auto;
 }
 
-#addProject {
-  cursor: pointer;
-  float: left;
-  font-size: 120%;
-  margin-bottom: 5px;
-}
-
-#addIcon {
-  float: left;
-  margin-right: 5px;
-  margin-top: 1px;
-}
-
 #divToScroll {
   overflow-x: hidden;
 }
@@ -170,25 +157,14 @@ table thead th, table thead td {
     padding: 0;
   }
 
-  #addProject {
-    padding-left: 15px;
-    font-size: 120%;
-  }
-
   .outer {
     padding-bottom: 25px;
   }
 }
 
-@include media-breakpoint-down(sm) {
-
-  #addProject {
-    font-size: 100%;
-  }
-
-  #addIcon {
-    margin-right: 3px;
-    margin-top: -2px;
+@include media-breakpoint-up(sm) {
+  .search {
+    background-color: rgba(255, 255, 255, 0.7);
   }
 }
 
@@ -236,7 +212,7 @@ table thead th, table thead td {
     min-width: 350px;
     max-width: 60%;
     line-height: 5rem;
-    padding: calc(4rem + 2px) calc(4rem + 7px) 4rem;
+    padding: calc(4rem + 4px) calc(4rem + 4px) 4rem;
     background: white url("../../assets/searchbackground.png") no-repeat;
   }
 

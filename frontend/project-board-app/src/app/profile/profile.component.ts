@@ -102,6 +102,7 @@ export class ProfileComponent implements OnInit {
       });
   }
 
+
   isProjectApplicable(projectId: string) {
     return this.projects ? !this.projects.some(p => p && p.id === projectId) : true;
   }

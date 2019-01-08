@@ -2,7 +2,8 @@
   <div class="aside col-md-3 left-bar">
     <div id="avatar-area">
       <div id="username">{{user.firstName}} {{user.lastName}}</div>
-      <div id="profile-image"><img src="../../assets/avatar.png"></div> <!--TO DO Bild einfügen-->
+      <div id="profile-image"><img src="../../assets/avatar.png"></div>
+      <!--TO DO Bild einfügen-->
     </div>
 
     <div id="user-information">
@@ -30,21 +31,21 @@
 
   <div class="aside col-md-9 middle">
     <div id="profile-nav">
-      <div *ngIf="!user.boss" (click)="selectTab(0)" id="tab0" class="nav-point col-md-6 active">
+      <div *ngIf="!user.boss" (click)="selectTab(0)" id="tab0" class="nav-point col-6 active">
         <div class="profile-nav-icon">
           <mat-icon>bookmark</mat-icon>
         </div>
         Lesezeichen
       </div>
 
-      <div *ngIf="!user.boss" (click)="selectTab(1)" id="tab1" class="nav-point col-md-6">
+      <div *ngIf="!user.boss" (click)="selectTab(1)" id="tab1" class="nav-point col-6">
         <div class="profile-nav-icon">
           <mat-icon>email</mat-icon>
         </div>
         Projektanfragen
       </div>
 
-      <div *ngIf="user.boss" (click)="selectTab(2)" id="tab2" class="nav-point col-md-12 active">
+      <div *ngIf="user.boss" (click)="selectTab(2)" id="tab2" class="nav-point col-12 active">
         <div class="profile-nav-icon">
           <mat-icon>email</mat-icon>
         </div>
@@ -103,10 +104,10 @@
           Keine Projektanfragen deiner Mitarbeiter.
         </div>
         <div *ngIf="loadingEmployeeApplications" class="inset">
-            <div class="loading-spinner">
-              <mat-spinner [diameter]="50"></mat-spinner>
-            </div>
+          <div class="loading-spinner">
+            <mat-spinner [diameter]="50"></mat-spinner>
           </div>
+        </div>
       </ng-container>
     </div>
   </div>
