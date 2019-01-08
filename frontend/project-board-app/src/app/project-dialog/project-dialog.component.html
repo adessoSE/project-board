@@ -1,8 +1,8 @@
 <span id="close-icon-wrapper">
   <mat-icon id="close-icon" title="{{closeTooltip}}" (click)="dialogRef.close()">close</mat-icon>
 </span>
-<span id="bookmark-icon-wrapper" (click)="bookmarkClicked()" title="{{data.bookmarked ? bmRemoveTooltip : bmAddTooltip}}"
-  [ngClass]="{'active': data.bookmarked}">
+<span *ngIf="!data.isUserBoss" id="bookmark-icon-wrapper" (click)="bookmarkClicked()" title="{{data.bookmarked ? bmRemoveTooltip : bmAddTooltip}}"
+      [ngClass]="{'active': data.bookmarked}">
   <mat-icon id="bookmark-icon">
     bookmark
   </mat-icon>
@@ -10,6 +10,7 @@
     {{!data.bookmarked ? 'Lesezeichen hinzufügen' : 'Lesezeichen entfernen'}}
   </div>
 </span>
+<span *ngIf="data.isUserBoss" id="bookmark-icon-wrapper-placeholder"></span>
 
 <h1 mat-dialog-title>Projekt-Details</h1>
 <mat-dialog-content [ngClass]="{'shorten': showBox}">
@@ -30,66 +31,74 @@
       <div class="col-sm-3 left-side">Stichwörter:</div>
       <div class="col-sm right-side">
         <ng-container *ngFor="let l of data.project.labels; index as i">{{l}}{{i < data.project.labels.length-1 ? ', '
-            : '' }}</ng-container> </div> </div> <div class="row">
-            <div class="col-sm-3 left-side">Aufgabe:</div>
-            <div class="col-sm right-side">{{data.project.job}}</div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3 left-side">Zuständige LOB:</div>
-        <div class="col-sm right-side">{{data.project.lob}}</div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3 left-side">Skills:</div>
-        <div class="col-sm right-side">{{data.project.skills}}</div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3 left-side">Kunde:</div>
-        <div class="col-sm right-side">{{data.project.customer}}</div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3 left-side">Einsatzort:</div>
-        <div class="col-sm right-side">{{data.project.location}}</div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3 left-side">Beginn Einsatz:</div>
-        <div class="col-sm right-side">{{(data.project.operationStart)}}</div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3 left-side">Ende Einsatz:</div>
-        <div class="col-sm right-side">{{data.project.operationEnd}}</div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3 left-side">Option auf Verlängerung:</div>
-        <div class="col-sm right-side">{{data.project.elongation}}</div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3 left-side">Aufwand:</div>
-        <div class="col-sm right-side">{{data.project.effort}}</div>
-      </div>
-      <div class="row">
-        <div class="col-sm-3 left-side">Beschreibung:</div>
-        <div class="col-sm right-side">{{data.project.description}}</div>
+          : '' }}
+        </ng-container>
       </div>
     </div>
+    <div class="row">
+      <div class="col-sm-3 left-side">Aufgabe:</div>
+      <div class="col-sm right-side">{{data.project.job}}</div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3 left-side">Zuständige LOB:</div>
+      <div class="col-sm right-side">{{data.project.lob}}</div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3 left-side">Skills:</div>
+      <div class="col-sm right-side">{{data.project.skills}}</div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3 left-side">Kunde:</div>
+      <div class="col-sm right-side">{{data.project.customer}}</div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3 left-side">Einsatzort:</div>
+      <div class="col-sm right-side">{{data.project.location}}</div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3 left-side">Beginn Einsatz:</div>
+      <div class="col-sm right-side">{{(data.project.operationStart)}}</div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3 left-side">Ende Einsatz:</div>
+      <div class="col-sm right-side">{{data.project.operationEnd}}</div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3 left-side">Option auf Verlängerung:</div>
+      <div class="col-sm right-side">{{data.project.elongation}}</div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3 left-side">Aufwand:</div>
+      <div class="col-sm right-side">{{data.project.effort}}</div>
+    </div>
+    <div class="row">
+      <div class="col-sm-3 left-side">Beschreibung:</div>
+      <div class="col-sm right-side">{{data.project.description}}</div>
+    </div>
+  </div>
 </mat-dialog-content>
 <mat-dialog-actions [ngClass]="{'fullscreen': mobile}" align="end">
   <div style="margin: 0 auto" *ngIf="!data.isUserBoss && !data.applicable">
     <mat-icon id="applied-icon" *ngIf="!data.applicable" title="{{appTooltip}}">email</mat-icon>
     <small>Du hast dieses Projekt bereits angefragt</small>
   </div>
+  <div style="margin: 0 auto;" *ngIf="data.isUserBoss">
+    <small>Führungskräfte können Projekte nicht anfragen.</small>
+  </div>
   <div style="width: 100%; text-align: left" *ngIf="showBox" id="requestArea">
     <div class="comment">
       <label class="comment-label" for="comment">Kommentar:</label>
       <textarea [(ngModel)]="comment" class="form-control comment-textarea" id="comment" name="comment" placeholder="Schreib einen Kommentar zu deiner Anfrage..."
-        rows="4"></textarea>
+                rows="4"></textarea>
     </div>
 
     <p>Dein Vorgesetzter wird per Email über deine Anfrage benachrichtigt.</p>
   </div>
-  <div id="buttonBox">
+  <div id="buttonBox" *ngIf="!data.isUserBoss">
     <button *ngIf="showBox" class="btn btn-primary" (click)="sendApplication()">Anfrage absenden</button>
     <button *ngIf="!showBox && data.applicable" class="btn btn-primary" (click)="toggleRequestArea()">Projekt
-      anfragen...</button>
+      anfragen...
+    </button>
     <button *ngIf="showBox" class="btn btn-outline-secondary ml-2" (click)="toggleRequestArea()">Abbrechen</button>
   </div>
 </mat-dialog-actions>

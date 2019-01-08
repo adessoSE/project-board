@@ -47,13 +47,20 @@ h1 {
   line-height: 100%;
 }
 
+#bookmark-icon-wrapper-placeholder {
+  float: left;
+  width: 64px;
+  height: 60px;
+  margin-top: -10px;
+}
+
 #bookmark-icon-wrapper {
   float: left;
   width: 64px;
   height: 60px;
+  margin-top: -10px;
   cursor: pointer;
   text-align: center;
-  margin-top: -10px;
 
   color: grey;
   &.active {
