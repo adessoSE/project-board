@@ -5,10 +5,13 @@ import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.persistence.structure.OrganizationStructure;
-import de.adesso.projectboard.base.user.util.ParentChildWrapper;
+import de.adesso.projectboard.base.user.persistence.structure.tree.TreeNode;
 import org.springframework.data.domain.Sort;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Service interface to provide functionality to manage {@link User}s and their
@@ -110,12 +113,12 @@ public interface UserService {
      *
      * @return
      *          The {@link UserData} of the {@code user}'s staff
-     *          members, wrapped in a {@link ParentChildWrapper}
+     *          members, wrapped in a {@link TreeNode}
      *          to indicate the parent-child relationship between
      *          different users. Sorted accordingly.
      *
      */
-    ParentChildWrapper<UserData> getStaffMemberUserDataOfUser(User user, Sort sort);
+    TreeNode<UserData> getStaffMemberUserDataOfUser(User user, Sort sort);
 
     /**
      *
@@ -124,10 +127,10 @@ public interface UserService {
      *
      * @return
      *          The {@code user}'s staff members, wrapped in a
-     *          {@link ParentChildWrapper} to indicate the parent
+     *          {@link TreeNode} to indicate the parent
      *          child relationship between different user.
      */
-    ParentChildWrapper<User> getStaffMembersOfUser(User user);
+    TreeNode<User> getStaffMembersOfUser(User user);
 
     /**
      *

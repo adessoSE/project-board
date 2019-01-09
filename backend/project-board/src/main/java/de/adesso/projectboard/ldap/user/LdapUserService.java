@@ -8,8 +8,8 @@ import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.persistence.data.UserDataRepository;
 import de.adesso.projectboard.base.user.persistence.structure.OrganizationStructure;
 import de.adesso.projectboard.base.user.persistence.structure.OrganizationStructureRepository;
+import de.adesso.projectboard.base.user.persistence.structure.tree.TreeNode;
 import de.adesso.projectboard.base.user.service.UserService;
-import de.adesso.projectboard.base.user.util.ParentChildWrapper;
 import de.adesso.projectboard.ldap.service.LdapService;
 import de.adesso.projectboard.ldap.service.util.data.StringStructure;
 import org.springframework.context.annotation.Profile;
@@ -227,30 +227,23 @@ public class LdapUserService implements UserService {
     }
 
     @Override
-    public ParentChildWrapper<UserData> getStaffMemberUserDataOfUser(User user, Sort sort) {
-        OrganizationStructure structureForUser = getStructureForUser(user);
-        if (structureForUser.getStaffMembers().isEmpty()) {
-            return new ParentChildWrapper<>(getUserData(user));
-        }
+    public TreeNode<UserData> getStaffMemberUserDataOfUser(User user, Sort sort) {
+        var staffTreeNode = getStaffMembersOfUser(user);
 
-        // assure that data of all users is present in the repo
-        List<User> nonCachedUsers = structureForUser
-                .getStaffMembers()
-                .stream()
-                .filter(staffMember -> !dataRepo.existsByUser(staffMember))
-                .collect(Collectors.toList());
-
-        if(!nonCachedUsers.isEmpty()) {
-            dataRepo.saveAll(ldapService.getUserData(nonCachedUsers));
-        }
-
-        // TODO
-        return null;
+        return new TreeNode<>(getUserData(user));
     }
 
     @Override
-    public ParentChildWrapper<User> getStaffMembersOfUser(User user) {
-        return new ArrayList<>(this.getStructureForUser(user).getStaffMembers());
+    public TreeNode<User> getStaffMembersOfUser(User user) {
+        var rootNode = new TreeNode<User>(user);
+
+        var structure = getStructureForUser(user);
+
+        structure.getStaffMembers().stream()
+                .map(this::getStaffMembersOfUser)
+                .forEach(rootNode::addChild);
+
+        return rootNode;
     }
 
     /**

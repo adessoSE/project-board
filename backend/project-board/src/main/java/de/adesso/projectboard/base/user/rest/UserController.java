@@ -8,7 +8,6 @@ import de.adesso.projectboard.base.project.rest.NonPageableProjectController;
 import de.adesso.projectboard.base.user.dto.UserDtoFactory;
 import de.adesso.projectboard.base.user.dto.UserResponseDTO;
 import de.adesso.projectboard.base.user.persistence.User;
-import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -18,7 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Collections;
 
 /**
  * {@link RestController REST Controller} to access {@link User}s.
@@ -55,10 +54,10 @@ public class UserController {
     public Iterable<UserResponseDTO> getStaffMembersOfUser(@PathVariable("userId") String userId, Sort sort) throws UserNotFoundException {
         User user = userService.getUserById(userId);
 
-        List<UserData> dataOfStaff = userService
+       var dataOfStaff = userService
                 .getStaffMemberUserDataOfUser(user, sort);
 
-        return userDtoFactory.createDtos(dataOfStaff, false);
+        return userDtoFactory.createDtos(Collections.emptyList());
     }
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")

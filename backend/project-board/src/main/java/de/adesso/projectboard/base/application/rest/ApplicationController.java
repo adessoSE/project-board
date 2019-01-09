@@ -81,7 +81,7 @@ public class ApplicationController {
         var user = userService.getUserById(userId);
         var staffMembers = userService.getStaffMembersOfUser(user);
 
-        return applicationService.getApplicationsOfUsers(staffMembers, sort).stream()
+        return applicationService.getApplicationsOfUsers(null, sort).stream()
                 .map(applicationDtoFactory::createDto)
                 .collect(Collectors.toList());
     }
