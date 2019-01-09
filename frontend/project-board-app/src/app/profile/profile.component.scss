@@ -1,0 +1,263 @@
+@import 'functions';
+@import '../../../node_modules/bootstrap/scss/variables';
+@import '../../../node_modules/bootstrap/scss/mixins';
+
+.left-bar {
+  box-shadow: 0 0 0.25rem rgba(0, 0, 0, .25);
+  padding: 0;
+  min-height: 75vh;
+  background-color: #FFF;
+}
+
+#avatar-area {
+  padding: 30px 30px 60px;
+}
+
+#username {
+  color: #016EC7;
+  font-weight: 500;
+  font-size: 24px;
+  text-align: center;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+#profile-image {
+  height: 120px;
+  width: 120px;
+  margin: 40px auto 0;
+}
+
+#profile-image img {
+  height: 110px;
+  width: 110px;
+}
+
+#user-information {
+  padding: 0 20px;
+}
+
+.user-detail-point {
+  padding-top: 15px;
+  border-top: 1px solid #e6e6e6;
+}
+
+.detail-heading {
+  color: #016EC7;
+  font-size: 12px;
+  padding: 0;
+  margin: 0;
+}
+
+.point-text {
+  line-height: 19px;
+  white-space: pre-wrap;
+  font-size: 14px;
+}
+
+.middle {
+  padding: 0 0 0 5%;
+}
+
+#profile-nav {
+  overflow: hidden;
+  padding-top: 2px;
+  padding-left: 2px;
+  padding-right: 2px;
+  margin-left: -2px;
+  margin-right: -2px;
+  margin-top: -2px;
+}
+
+.nav-point {
+  display: inline-block;
+  text-align: center;
+  padding: 5px 5px 10px;
+}
+
+.nav-point:hover {
+  color: white;
+  background-color: #016EC7;
+  cursor: pointer;
+}
+
+.nav-point.active {
+  background-color: #FFF;
+  box-shadow: 0 0 0.25rem rgba(0, 0, 0, .25);
+}
+
+.nav-point.active:hover {
+  color: inherit;
+  cursor: default;
+}
+
+.profile-nav-icon {
+  display: inline-block;
+  vertical-align: bottom;
+  height: 30px;
+  margin-right: 5px;
+}
+
+.profile-nav-icon mat-icon {
+  margin-top: 5px;
+}
+
+#profile-nav-content {
+  z-index: 2;
+  margin-bottom: 50px;
+  box-shadow: 0 0 0.25rem rgba(0, 0, 0, .25);
+  padding: 0;
+  background-color: #FFF;
+}
+
+.bookmark {
+  border-bottom: 1px solid #e6e6e6;
+  padding: 15px;
+}
+
+.application {
+  border-bottom: 1px solid #e6e6e6;
+  padding: 15px;
+}
+
+.employee-application {
+  border-bottom: 1px solid #e6e6e6;
+  padding: 15px;
+}
+
+.remover {
+  cursor: pointer;
+  float: right;
+  height: 26px;
+}
+
+.icon-wrapper {
+  display: inline-block;
+  vertical-align: middle;
+  height: 32px;
+}
+
+.icon-wrapper mat-icon {
+  height: 32px;
+  width: 32px;
+}
+
+.linking-icon {
+  display: inline-block;
+  vertical-align: bottom;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.linking-icon .material-icons {
+  font-size: 32px !important;
+  color: #016EC7;
+}
+
+.linking-icon .material-icons:hover {
+  color: #338bd2;
+}
+
+.mail-icon {
+  display: inline-block;
+  vertical-align: top;
+  margin-top: 4px;
+}
+
+.project-title {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 32px;
+  margin-top: 2px;
+}
+
+.inset {
+  padding: 20px;
+  text-align: center;
+}
+
+.application-details {
+  margin-top: 10px;
+}
+
+.application-details span {
+  display: block;
+  text-align: left;
+}
+
+.requester {
+  color: #016EC7;
+}
+
+.loading-spinner {
+  margin: 0 auto 1rem;
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+}
+
+@include media-breakpoint-down(md) {
+  .middle {
+    padding: 0 0 0 0;
+  }
+
+  .left-bar {
+    min-height: 50vh;
+    z-index: 3;
+  }
+
+  .project-title {
+    display: inline-block;
+    margin: 0;
+    width: 100%;
+    line-height: inherit;
+  }
+}
+
+@include media-breakpoint-down(sm) {
+
+  .row {
+    background-image: linear-gradient(rgb(255, 255, 255) 0px, rgb(238, 238, 238) 100%);
+  }
+
+  .left-bar {
+    box-shadow: none;
+    padding: 0;
+    padding-bottom: 10px;
+    min-height: 0;
+    background-color: #FFF;
+    border-bottom: 1px solid lightgrey;
+  }
+
+  #avatar-area {
+    padding: 0px 30px 10px;
+  }
+
+  .middle {
+    padding: 0 0 0 0;
+  }
+
+  .nav-point {
+    display: inline-block;
+    padding: 5px 5px 10px;
+    background-color: #FFF;
+  }
+  
+  .nav-point.active {
+    background-color: #016EC7;
+    color: white;
+    box-shadow: none;
+  }
+  
+  .nav-point.active:hover {
+    color: white;
+  }
+
+  #profile-nav-content {
+    border-top: 1px solid lightgrey;
+    box-shadow: none;
+    margin: 0;
+    padding-bottom: 10px;
+  }
+}

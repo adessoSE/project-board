@@ -1,31 +1,223 @@
 @import 'functions';
 @import '../../../node_modules/bootstrap/scss/variables';
 @import '../../../node_modules/bootstrap/scss/mixins';
+@import '../sass/variables';
 
-#brand-logo {
-  margin: -22px -10px -13px;
+.navbar-brand {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 85px;
+  padding: 12px 15px;
+  color: #016EC7;
+  background: linear-gradient(-45deg,transparent 18px,#F3F3F3 0) bottom right!important;
 }
 
 .custom-navbar {
-  margin-left: -15px;
-  margin-right: -15px;
-  background-color: #e3f2fd;
+  background-color: #F3F3F3;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+  padding-bottom: 0 !important;
+  padding-top: 0 !important;
+  height: 60px;
+}
+
+#navbarContent{
+  display: block;
+  padding-left: 340px;
+}
+
+.nav-link {
+  display: inline-block;
+  box-sizing: border-box;
+  color: #887D75 !important;
+  padding: 10px 15px 5px;
+  min-width: 101px;
+  height: 100%;
+  line-height: 20px;
+  text-align: center;
+  border-bottom: 4px solid #bbb2ac;
+  text-decoration: none;
+  font-size: smaller;
+  height: 60px;
+}
+
+.nav-link.active-link {
+  border-bottom: 4px solid #EF8200;
+  background-color: #FFF;
+  color: #887D75;
+}
+
+.nav-link.active-link:hover {
+  border-bottom: 4px solid #EF8200;
+  background-color: #FFF;
+  color: #887D75;
+}
+
+.nav-link:hover {
+  border-bottom: 4px solid #016EC7;
+  background-color: #FFF;
+  color: #887D75;
+}
+
+.navbar-icon{
+  display: block;
+  margin: 0 auto;
 }
 
 .back-to-top-badge {
   display: none;
 }
 
-@include media-breakpoint-down(sm) {
+#side-nav {
+  display: none;
+  min-width: 190px;
+}
+
+.mat-drawer-backdrop {
+  display: none;
+}
+
+.mat-drawer-container {
+  background-color: transparent;
+}
+
+*:focus {
+  outline: none;
+}
+
+#logout {
+  position: absolute;
+  right: 10px;
+}
+
+#innerContent {
+  padding-top: 50px;
+  padding-left: 5%;
+  padding-right: 5%;
+  color: #887D75;
+}
+
+@include media-breakpoint-down(md) {
+
+  .navbar-brand {
+    width: 200px;
+    height: 75px;
+    padding: 11px 15px;
+  }
+
+  #brand-logo {
+    height: 50px;
+  }
+
+  .navbar-toggler {
+    position: absolute;
+    top: 5;
+    right: 10px;
+  }
+
   .back-to-top-badge {
     position: fixed;
-    top: 105px;
-    right: 15px;
+    top: none;
+    bottom: 20px;
+    right: 20px;
     z-index: 100;
     width: 50px;
     height: 50px;
     border: none;
     border-radius: 50px;
     outline: none;
+  }
+
+  #side-nav {
+    display: block;
+    position: fixed;
+    top: 60px;
+  }
+
+  .mat-drawer-backdrop {
+    display: block;
+  }
+
+  .mat-drawer-container {
+    background-color: inherit;
+  }
+
+  #innerContent {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  #navbarContent {
+    display: none;
+  }
+
+  .side-link{
+    box-sizing: border-box;
+    color: #887D75 !important;
+    padding: 10px;
+    padding-top: 20px;
+    min-width: 101px;
+    height: 100%;
+    line-height: 20px;
+    background-color: #fff;
+    border-left: 3px solid #bbb2ac;
+    text-decoration: none;
+    font-size: smaller;
+    height: 60px;
+  }
+
+  .side-link:focus {
+    outline: 0 !important;
+  }
+
+  .side-link.active-link {
+    border-left: 3px solid #EF8200;
+    background-color: #FFF;
+    color: #887D75;
+  }
+
+  .side-field{
+    box-sizing: border-box;
+    padding: 10px;
+    padding-top: 20px;
+    min-width: 101px;
+    height: 100%;
+    line-height: 20px;
+    text-decoration: none;
+    height: 75px;
+  }
+
+  #side-username {
+    padding: 20px;
+    padding-top: 30px;
+    font-size: 140%;
+    max-width: 300px;
+    overflow: hidden;
+    font-weight: bold;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: #006ec7;
+    background-color: #fff;
+    text-align: center;
+    border-bottom: 1px solid lightgrey;
+  }
+
+  .nav-icon{
+    margin-left: 20px;
+    margin-right: 10px;
+    float: left;
+    margin-top: -2px;
+  }
+
+  #side-logout {
+    border-bottom: 1px solid lightgrey;
+  }
+
+  #innerContent {
+    padding-top: 30px;
   }
 }

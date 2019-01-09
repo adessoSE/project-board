@@ -1,35 +1,86 @@
+<!--Scroll Badge -->
 <button id="top-badge" class="btn btn-primary back-to-top-badge" (click)="scrollTop()">
   <fa-icon [icon]="faChevronUp"></fa-icon>
 </button>
 
-<div class="container background-inner">
-  <nav class="navbar navbar-expand-lg navbar-light custom-navbar sticky-top">
-    <a class="navbar-brand" routerLink="/"><img id="brand-logo" src="/assets/Adesso_AG_logo.png"></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+<!--Navbar-->
+<nav class="navbar navbar-expand-lg navbar-light custom-navbar sticky-top">
+  <!--BurgerMenuIcon-->
+  <button style="border: 0; outline: 0;" class="navbar-toggler" type="button" (click)="NavToggle()">
+    <span class="navbar-toggler-icon"></span>
+  </button>
 
-    <div #menu class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul *ngIf="isUserAuthenticated()" class="navbar-nav mr-auto">
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/overview">Übersicht</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/browse">Offene Projekte</a>
-        </li>
-        <li *ngIf="isAdmin" class="nav-item">
-          <a class="nav-link" routerLink="/projects/new">Neues Projekt</a>
-        </li>
-        <li *ngIf="isAdmin" class="nav-item">
-          <a class="nav-link" routerLink="/admin">Mitarbeiter</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/logout" (click)="logout()">Logout</a>
-        </li>
-      </ul>
+  <!--adesso Logo-->
+  <a class="navbar-brand" routerLink="/"><img id="brand-logo" src="/assets/adesso-projectboard-logo.png"></a>
+
+  <!--NavbarItems for large screens-->
+  <div id="navbarContent">
+    <ul *ngIf="isUserAuthenticated()" class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/profile" routerLinkActive="active-link">
+          <mat-icon class="navbar-icon">person</mat-icon>
+          <span>Mein Profil</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/browse" routerLinkActive="active-link">
+          <mat-icon class="navbar-icon">folder_open</mat-icon>
+          <span>Projekte</span></a>
+      </li>
+      <li *ngIf="isBoss" class="nav-item">
+        <a class="nav-link" routerLink="/employees" routerLinkActive="active-link">
+          <mat-icon class="navbar-icon">people</mat-icon>
+          <span>Mitarbeiter</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="logout" routerLink="/logout" (click)="logout()">
+          <mat-icon class="navbar-icon">logout</mat-icon>
+          <span>{{username}} abmelden</span></a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<!--Container for Sidenavigation-->
+<mat-sidenav-container class="sidenav-container" id="belowNavbar" (swipeleft)="closeNav()" (window:resize)="onResize()">
+  <!--Sidenavigation & Sidenavigation Items-->
+  <mat-sidenav #snav id="side-nav">
+    <mat-nav-list id="nav-list">
+      <div class="side-field" id="side-username">{{username}}</div>
+      <a (click)="snav.toggle()">
+        <div routerLink="/profile" routerLinkActive="active-link" class="side-link">
+          <mat-icon class="nav-icon">person</mat-icon>
+          Mein Profil
+        </div>
+        <mat-divider></mat-divider>
+      </a>
+      <a (click)="snav.toggle()">
+        <div routerLink="/browse" routerLinkActive="active-link" class="side-link">
+          <mat-icon class="nav-icon">folder_open</mat-icon>
+          Projekte
+        </div>
+        <mat-divider></mat-divider>
+      </a>
+      <a (click)="snav.toggle()" *ngIf="isBoss">
+        <div routerLink="/employees" routerLinkActive="active-link" class="side-link">
+          <mat-icon class="nav-icon">people</mat-icon>
+          Mitarbeiter
+        </div>
+        <mat-divider></mat-divider>
+      </a>
+      <a (click)="snav.toggle()">
+        <div routerLink="/logout" (click)="logout()" class="side-link" id="side-logout">
+          <mat-icon class="nav-icon">logout</mat-icon>
+          abmelden
+        </div>
+      </a>
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <!--Content Window for router-outlet & alert-->
+  <mat-sidenav-content>
+    <div class="container background-inner" id="innerContent" (swiperight)="openNav()">
+      <app-alert></app-alert>
+      <router-outlet></router-outlet>
     </div>
-  </nav>
-  <app-alert></app-alert>
-  <h1 class="display-1">Project-Board</h1>
-  <router-outlet></router-outlet>
-</div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

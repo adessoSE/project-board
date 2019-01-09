@@ -3,8 +3,8 @@
 @import '../../../node_modules/bootstrap/scss/mixins';
 
 h4 {
-  margin-top: 1rem;
   margin-bottom: 0.5rem;
+  display: inline-block;
 }
 
 button,
@@ -12,30 +12,219 @@ button span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  outline: 0;
 }
 
-@include media-breakpoint-down(sm) {
+.loading-spinner {
+  margin: 0 auto 1rem;
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+}
+
+#TooltipIcon {
+  display: inline-block;
+  height: 23px;
+  overflow: hidden;
+  margin-bottom: -6px;
+}
+
+#projectContainer {
+  max-height: calc(100vh - 270px);
+  overflow-y: auto;
+  padding-right: 1rem;
+}
+
+#detailContainerLg {
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+}
+
+#divToScroll {
+  overflow-x: hidden;
+}
+
+#result-table th, #result-table td {
+  word-break: break-word;
+  overflow-wrap: break-word;
+  text-align: left;
+}
+
+#result-table tbody tr:hover {
+  background: #016EC7;
+  cursor: pointer;
+}
+
+#result-table tbody tr:hover .hover-change, #result-table tbody tr:hover .hover-change a, #result-table tbody tr:hover .hover-change a:hover {
+  color: #fff
+}
+
+#result-table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+#result-table > tbody > tr > th, #result-table > tbody > tr > td, #result-table > thead > tr > th, #result-table > thead > tr > td {
+  max-width: 25%;
+  padding: 10px 0 10px 10px;
+}
+
+#result-table thead {
+  font-variant: small-caps;
+  cursor: default;
+}
+
+#total-hits {
+  color: #887D75;
+  font-weight: 700;
+  font-variant: small-caps;
+}
+
+#result-table thead td {
+  color: #887D75;
+  background-color: transparent;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+#result-table thead td:hover {
+  background-color: #016EC7;
+  color: #fff;
+  cursor: pointer;
+}
+
+#result-table td {
+  border: none !important;
+}
+
+.outer {
+  padding-bottom: 4rem;
+}
+
+.inner {
+  box-shadow: 0 0 0.25rem rgba(0, 0, 0, .25);
+  padding: 5px;
+  background-color: #fff;
+}
+
+td.icons {
+  width: 36px;
+}
+
+td.icons mat-icon {
+  display: block;
+}
+
+table thead th, table thead td {
+  height: 38px;
+}
+
+@include media-breakpoint-down(md) {
+
+  tbody tr:nth-child(2n) {
+    background-color: #F3F3F3;
+  }
+
+  #result-table > tbody > tr > th {
+    padding-right: 10px;
+  }
+
+  #projectContainer {
+    max-height: none;
+    overflow-y: auto;
+  }
+
+  #detailContainerLg {
+    max-height: none;
+    overflow-y: auto;
+  }
+
   h4 {
     padding-left: 15px;
-  }
-
-  .col-md-6 {
-    padding: 0;
-  }
-
-  .list-group-item {
-    border-left: 0;
-    border-right: 0;
-  }
-
-  .list-group-item:first-child,
-  .list-group-item:last-child {
-    border-radius: 0;
   }
 
   .search {
     margin-left: 15px;
     margin-right: 15px;
     width: calc(100% - 30px);
+  }
+
+  .col-md-6 {
+    max-width: 100%;
+    flex: 0 0 100%;
+    padding: 0;
+  }
+
+  .outer {
+    padding-bottom: 25px;
+  }
+}
+
+@include media-breakpoint-up(sm) {
+  .search {
+    background-color: rgba(255, 255, 255, 0.7);
+  }
+}
+
+#search {
+  display: inline-block;
+  margin: 0;
+  flex: none;
+  width: calc(100% - (2.25rem + 2px));
+  border-left: none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
+
+#search:focus {
+  border: 1px solid #016EC7;
+  border-left: none;
+  box-shadow: none;
+}
+
+.square {
+  display: table-cell;
+  text-align: center;
+  align-content: center;
+  height: calc(2.25rem + 2px);
+  width: calc(2.25rem + 2px);
+  color: #fff;
+  background-color: #016EC7;
+  user-select: none;
+  cursor: default;
+}
+
+.search-input-wrapper {
+  width: 100%;
+}
+
+.search-input-inner-wrapper {
+  align-content: center;
+  line-height: 3.25rem;
+  margin: 0 auto 2rem;
+}
+
+@include media-breakpoint-up(sm) {
+  .search-input-inner-wrapper {
+    min-width: 350px;
+    max-width: 60%;
+    line-height: 5rem;
+    padding: calc(4rem + 4px) calc(4rem + 4px) 4rem;
+    background: white url("../../assets/searchbackground.png") no-repeat;
+  }
+
+  .square {
+    height: 4rem;
+    width: 4rem;
+  }
+
+  #search {
+    height: 4rem;
+    width: calc(100% - 4rem);
+    flex: 1 1 auto;
+    margin: 0 auto;
   }
 }

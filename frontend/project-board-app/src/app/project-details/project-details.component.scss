@@ -3,8 +3,8 @@
 @import '../../../node_modules/bootstrap/scss/mixins';
 
 h4 {
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
+  padding-top: 0;
+  padding-bottom: 0.5rem;
 }
 
 .appliedInfo {
@@ -12,50 +12,53 @@ h4 {
   padding-bottom: 0.3rem;
 }
 
-.sticky {
-  top: 4rem;
-  position: sticky;
+#ButtonBox {
+  text-align: center;
 }
 
-.clip {
-  max-height: 90vh;
-  overflow-y: auto;
-  overflow-x: hidden;
+@include media-breakpoint-down(md){
+
+  h4 {
+    padding-top: 1rem;
+  }
+
+  #scrollable-area {
+    border-bottom: 2px solid #007bff;
+  }
+
 }
 
-/* width */
-::-webkit-scrollbar {
-  width: 10px;
-}
+@include media-breakpoint-up(sm) {
 
-/* Track */
-::-webkit-scrollbar-track {
-  background: #e3f2fd;
-  border-radius: 2px;
-}
+  #scrollable-area {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
 
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: $primary;
-  border-radius: 2px;
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: darken($primary, 10);
-}
-
-@include media-breakpoint-down(md) {
-
+  #ButtonBox {
+    text-align: center;
+  }
 }
 
 @include media-breakpoint-down(sm) {
-  .sticky {
-    top: 0;
-    position: relative;
-    padding: 15px;
-    background-color: lightgrey;
+
+  #detailButtons {
+    margin-left: 0;
+    max-width: 250px;
   }
+
+  #ButtonBox {
+    text-align: left;
+  }
+
+  //#scrollable-area {
+  //  top: 0;
+  //  position: relative;
+  //  padding: 15px;
+  //  padding-bottom: 0px;
+  //  max-height: 100%;
+  //  overflow: auto;
+  //}
 
   .left-side {
     font-weight: 500;
@@ -65,9 +68,7 @@ h4 {
     padding-left: 20px;
     padding-bottom: 0.5rem;
   }
-
-  .clip {
-    max-height: 100%;
-    overflow: auto;
+  .btn {
+    font-size: 90%;
   }
 }

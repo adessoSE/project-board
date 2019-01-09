@@ -1,36 +1,46 @@
 import { Location } from '@angular/common';
-import { AfterViewChecked, Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
+import { MatDialog, MatDialogRef } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
-import * as $ from 'jquery';
 import { combineLatest, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Employee, EmployeeService } from '../_services/employee.service';
+import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
 
 @Component({
   selector: 'app-executives',
   templateUrl: './executives.component.html',
   styleUrls: ['./executives.component.scss']
 })
-export class ExecutivesComponent implements OnInit, AfterViewChecked {
+export class ExecutivesComponent implements OnInit {
   employees: Employee[] = [];
+  filteredEmployees: Employee[] = [];
   selectedEmployee: Employee;
   mobile = false;
-  scroll = true;
+  smallMobile = false;
+
+  searchText = '';
+  loading = true;
+  dialogRef: MatDialogRef<EmployeeDialogComponent>;
 
   destroy$ = new Subject<void>();
-
-  @HostListener('window:resize') onResize() {
-    this.mobile = window.screen.width < 768;
-  }
 
   constructor(private employeeService: EmployeeService,
               private route: ActivatedRoute,
               private router: Router,
-              private location: Location) { }
+              private location: Location,
+              public dialog: MatDialog) { }
+
+  @HostListener('window:resize') onResize() {
+    this.mobile = document.body.clientWidth < 992;
+    this.smallMobile = document.body.clientWidth < 768;
+  }
+
+  swipebugplaceholder() {}
 
   ngOnInit() {
-    this.mobile = window.screen.width <= 768;
-
+    this.mobile = document.body.clientWidth < 992;
+    this.smallMobile = document.body.clientWidth < 768;
     combineLatest(this.route.data, this.route.params)
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
@@ -44,7 +54,13 @@ export class ExecutivesComponent implements OnInit, AfterViewChecked {
             return e;
           })
           .sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
+        this.filteredEmployees = this.employees;
+        this.loading = false;
         this.setSelectedEmployee(data[1].id);
+
+        if (this.selectedEmployee) {
+          this.openDialog(this.selectedEmployee);
+        }
       });
   }
 
@@ -56,27 +72,6 @@ export class ExecutivesComponent implements OnInit, AfterViewChecked {
       }
     }
     this.selectedEmployee = null;
-  }
-
-  employeeClicked(employee) {
-    if (this.selectedEmployee === employee) {
-      this.location.replaceState(`/admin`);
-      this.selectedEmployee = null;
-      this.scroll = false;
-    } else {
-      this.location.replaceState(`/admin/${employee.id}`);
-      this.selectedEmployee = employee;
-      this.scroll = true;
-    }
-  }
-
-  ngAfterViewChecked() {
-    if (this.mobile && this.scroll && this.selectedEmployee) {
-      const btn = $(`#${this.selectedEmployee.id}`);
-      // navbar has 56 pixels height
-      $('html, body').animate({scrollTop: $(btn).offset().top - 56}, 'slow');
-      this.scroll = false;
-    }
   }
 
   private daysUntil(date: Date) {
@@ -105,4 +100,35 @@ export class ExecutivesComponent implements OnInit, AfterViewChecked {
     return `${employee.firstName} ${employee.lastName} hat keinen Zugang zum Project Board.`;
   }
 
+  searchEmployees(): void {
+    this.filteredEmployees = this.employees.filter(e => {
+      return (e.firstName + ' ' + e.lastName)
+        .toLowerCase()
+        .includes(this.searchText.toLowerCase());
+    });
+    if (this.searchText === '') {
+      this.filteredEmployees = this.employees;
+    }
+  }
+
+  openDialog(e: Employee) {
+    this.dialogRef = this.dialog.open(
+      EmployeeDialogComponent,
+      {
+        autoFocus: false,
+        panelClass: 'custom-dialog-container',
+        data: {
+          employee: e
+        }
+      });
+
+    this.location.replaceState(`/employees/${e.id}`);
+    this.dialogRef.afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.location.replaceState('/employees'));
+  }
+
+  toggleBoss() {
+    console.log('toggle clicked');
+  }
 }

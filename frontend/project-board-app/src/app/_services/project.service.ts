@@ -10,20 +10,20 @@ export class ProjectService {
     return this.http.get<Project[]>(`${environment.resourceServer}/projects`);
   }
 
+  /*getAllProjectsPaginated(page: number, size: number) {
+    return this.http.get<Page<Project>>(`${environment.resourceServer}/projects?page=${page}&size=${size}`);
+  }*/
+
   getProjectWithID(projectId) {
     return this.http.get<Project>(`${environment.resourceServer}/projects/${projectId}`);
   }
 
-  createProject(project) {
-    return this.http.post<Project>(`${environment.resourceServer}/projects`, project);
+  search(keyword) {
+    return this.http.get<Project[]>(`${environment.resourceServer}/projects/search?keyword=${keyword}`);
   }
 
-  updateProject(project) {
-    return this.http.put<Project>(`${environment.resourceServer}/projects/${project.id}`, project);
-  }
-
-  deleteProject(projectId) {
-    return this.http.delete(`${environment.resourceServer}/projects/${projectId}`);
+  searchPaginated(keyword: string, page: number, size: number) {
+    return this.http.get<Page<Project>>(`${environment.resourceServer}/projects/search?keyword=${keyword}&page=${page}&size=${size}`);
   }
 }
 
@@ -49,4 +49,30 @@ export interface Project {
 
   created: Date;
   updated: Date;
+}
+
+export interface Page<T> {
+  content: T[];
+  pageable: {
+    sort: {
+      sorted: boolean,
+      unsorted: boolean
+    }
+    offset: number,
+    pageSize: number,
+    pageNumber: number,
+    paged: boolean,
+    unpaged: boolean
+  };
+  totalPages: number;
+  totalElements: number;
+  last: boolean;
+  size: number;
+  number: number;
+  sort: {
+    sorted: boolean,
+    unsorted: boolean
+  };
+  first: boolean;
+  numberOfElements: number;
 }

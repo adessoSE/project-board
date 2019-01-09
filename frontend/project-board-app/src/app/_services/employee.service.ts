@@ -9,31 +9,35 @@ export class EmployeeService {
 
   constructor(private http: HttpClient) {}
 
-  isUserBoss(userId) {
+  isUserBoss(userId: string) {
     return this.getEmployeeWithId(userId)
       .pipe(map(empl => empl.boss));
   }
 
-  getEmployeesForSuperUser(superUserId) {
+  getEmployeesForSuperUser(superUserId: string) {
     return this.http.get<Employee[]>(`${environment.resourceServer}/users/${superUserId}/staff`);
   }
 
-  getEmployeeWithId(userId) {
+  getEmployeeWithId(userId: string) {
     return this.http.get<Employee>(`${environment.resourceServer}/users/${userId}`);
   }
 
-  setEmployeeAccessInfo(userId, accessEnd) {
+  getApplicationsForEmployeesOfUser(userId: string) {
+    return this.http.get<Application[]>(`${environment.resourceServer}/users/${userId}/staff/applications`);
+  }
+
+  setEmployeeAccessInfo(userId: string, accessEnd) {
     const body = {
       'accessEnd': accessEnd
     };
     return this.http.post<Employee>(`${environment.resourceServer}/users/${userId}/access`, body);
   }
 
-  deleteEmployeeAccessInfo(userId) {
+  deleteEmployeeAccessInfo(userId: string) {
     return this.http.delete<Employee>(`${environment.resourceServer}/users/${userId}/access`);
   }
 
-  getApplications(userId) {
+  getApplications(userId: string) {
     return this.http.get<Application[]>(`${environment.resourceServer}/users/${userId}/applications`);
   }
 
@@ -41,27 +45,27 @@ export class EmployeeService {
     return this.http.delete(`${environment.resourceServer}/users/${userId}/applications/${appId}`);
   }
 
-  applyForProject(userId, projectId, comment) {
+  applyForProject(userId: string, projectId: string, comment: string) {
     const body = {
       'projectId': projectId,
       'comment': comment
     };
-    return this.http.post(`${environment.resourceServer}/users/${userId}/applications`, body);
+    return this.http.post<Application>(`${environment.resourceServer}/users/${userId}/applications`, body);
   }
 
-  getBookmarks(userId) {
+  getBookmarks(userId: string) {
     return this.http.get<Project[]>(`${environment.resourceServer}/users/${userId}/bookmarks`);
   }
 
-  addBookmark(userId, projectId) {
-    return this.http.post(`${environment.resourceServer}/users/${userId}/bookmarks`, {projectId});
+  addBookmark(userId: string, projectId: string) {
+    return this.http.post<Project>(`${environment.resourceServer}/users/${userId}/bookmarks`, {projectId});
   }
 
-  removeBookmark(userId, projectId) {
+  removeBookmark(userId: string, projectId: string) {
     return this.http.delete(`${environment.resourceServer}/users/${userId}/bookmarks/${projectId}`);
   }
 
-  getProjects(userId) {
+  getProjects(userId: string) {
     return this.http.get<Project[]>(`${environment.resourceServer}/users/${userId}/projects`);
   }
 }

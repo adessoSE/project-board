@@ -1,26 +1,20 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AccessGuard } from './_guards/access.guard';
-import { AdminGuard } from './_guards/admin.guard';
-import { AlreadyAppliedGuard } from './_guards/already-applied.guard';
 import { AuthGuard } from './_guards/auth.guard';
-import { EditableGuard } from './_guards/editable.guard';
-import { IsNoBossGuard } from './_guards/is-no-boss.guard';
+import { IsBossGuard } from './_guards/is-boss.guard';
 import { ApplicationsResolverService } from './_services/applications-resolver.service';
 import { BookmarksResolverService } from './_services/bookmarks-resolver.service';
 import { CreatedProjectsResolverService } from './_services/created-projects-resolver.service';
 import { EmployeeResolverService } from './_services/employee-resolver.service';
 import { IsBossResolverService } from './_services/is-boss-resolver.service';
-import { ProjectResolverService } from './_services/project-resolver.service';
 import { ProjectsResolverService } from './_services/projects-resolver.service';
 import { UserResolverService } from './_services/user-resolver.service';
 import { BrowseProjectsComponent } from './browse-projects/browse-projects.component';
 import { ExecutivesComponent } from './executives/executives.component';
 import { LogoutComponent } from './logout/logout.component';
-import { OverviewComponent } from './overview/overview.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
-import { ProjectRequestComponent } from './project-request/project-request.component';
-import { ProjectComponent } from './project/project.component';
+import { ProfileComponent } from './profile/profile.component';
 
 const routes: Routes = [
   {
@@ -28,58 +22,25 @@ const routes: Routes = [
     component: LogoutComponent
   },
   {
-    path: 'admin/:id',
+    path: 'employees/:id',
     component: ExecutivesComponent,
     resolve: {
       employees: EmployeeResolverService
     },
     canActivate: [
       AuthGuard,
-      AdminGuard
+      IsBossGuard
     ]
   },
   {
-    path: 'admin',
+    path: 'employees',
     component: ExecutivesComponent,
     resolve: {
       employees: EmployeeResolverService
     },
     canActivate: [
       AuthGuard,
-      AdminGuard
-    ]
-  },
-  {
-    path: 'projects/new',
-    component: ProjectComponent,
-    canActivate: [
-      AuthGuard,
-      AdminGuard
-    ]
-  },
-  {
-    path: 'projects/:id/edit',
-    component: ProjectComponent,
-    resolve: {
-      project: ProjectResolverService
-    },
-    canActivate: [
-      AuthGuard,
-      AdminGuard,
-      EditableGuard
-    ]
-  },
-  {
-    path: 'projects/:id/request',
-    component: ProjectRequestComponent,
-    resolve: {
-      project: ProjectResolverService
-    },
-    canActivate: [
-      AuthGuard,
-      AccessGuard,
-      AlreadyAppliedGuard,
-      IsNoBossGuard
+      IsBossGuard
     ]
   },
   {
@@ -111,13 +72,12 @@ const routes: Routes = [
     ]
   },
   {
-    path: 'overview',
-    component: OverviewComponent,
+    path: 'profile',
+    component: ProfileComponent,
     resolve: {
       user: UserResolverService,
       bookmarks: BookmarksResolverService,
-      applications: ApplicationsResolverService,
-      projects: CreatedProjectsResolverService
+      applications: ApplicationsResolverService
     },
     canActivate: [
       AuthGuard
