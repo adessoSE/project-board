@@ -1,6 +1,6 @@
 package de.adesso.projectboard.base.user.util;
 
-import de.adesso.projectboard.base.user.persistence.structure.tree.TreeNode;
+import de.adesso.projectboard.base.user.persistence.hierarchy.tree.TreeNode;
 import org.junit.Test;
 
 import java.util.Arrays;

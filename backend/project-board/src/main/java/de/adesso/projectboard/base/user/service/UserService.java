@@ -4,8 +4,8 @@ import de.adesso.projectboard.base.access.service.UserAccessService;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
-import de.adesso.projectboard.base.user.persistence.structure.OrganizationStructure;
-import de.adesso.projectboard.base.user.persistence.structure.tree.TreeNode;
+import de.adesso.projectboard.base.user.persistence.hierarchy.OrganizationStructure;
+import de.adesso.projectboard.base.user.persistence.hierarchy.tree.TreeNode;
 import org.springframework.data.domain.Sort;
 
 import java.util.HashMap;

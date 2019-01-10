@@ -1,7 +1,7 @@
 package de.adesso.projectboard.base.user.util;
 
-import de.adesso.projectboard.base.user.persistence.structure.tree.LevelOrderTreeIterator;
-import de.adesso.projectboard.base.user.persistence.structure.tree.TreeNode;
+import de.adesso.projectboard.base.user.persistence.hierarchy.LevelOrderTreeIterator;
+import de.adesso.projectboard.base.user.persistence.hierarchy.tree.TreeNode;
 import org.junit.Before;
 import org.junit.Test;
 
