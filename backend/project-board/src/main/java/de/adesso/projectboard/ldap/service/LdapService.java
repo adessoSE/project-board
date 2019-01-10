@@ -139,7 +139,7 @@ public class LdapService {
         LdapQuery query = query()
                 .base(base)
                 .countLimit(users.size())
-                .attributes(idAttribute, "name", "givenName", "userPrincipalName", "mail", "division", "objectClass")
+                .attributes(idAttribute, "name", "givenName", "userPrincipalName", "mail", "division", "objectClass", "thumbnailPhoto")
                 .where("name").isPresent()
                 .and("givenName").isPresent()
                 .and("division").isPresent()

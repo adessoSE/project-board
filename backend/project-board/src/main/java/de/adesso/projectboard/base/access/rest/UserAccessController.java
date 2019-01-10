@@ -58,7 +58,7 @@ public class UserAccessController {
         // call handler method
         userAccessHandler.onAccessGranted(updatedUser);
 
-        return userDtoFactory.createDto(updatedUser);
+        return userDtoFactory.createDto(updatedUser, false);
     }
 
     @PreAuthorize("hasElevatedAccessToUser(#userId) || hasRole('admin')")
@@ -66,7 +66,7 @@ public class UserAccessController {
     public UserResponseDTO deleteAccessForUser(@PathVariable("userId") String userId) {
         User user = userService.getUserById(userId);
 
-        return userDtoFactory.createDto(userAccessService.removeAccessFromUser(user));
+        return userDtoFactory.createDto(userAccessService.removeAccessFromUser(user), false);
     }
 
 }

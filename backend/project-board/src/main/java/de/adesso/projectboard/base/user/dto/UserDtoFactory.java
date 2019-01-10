@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -34,39 +32,45 @@ public class UserDtoFactory {
 
     /**
      * Method to create a DTO for a single User. Please use the
-     * {@link #createDtos(Collection)} method when creating
+     * {@link #createDtos(Collection, boolean)} method when creating
      * DTOs for multiple users instead of calling the method for
      * each user.
      *
      * @param user
      *          The {@link User} to create a DTO for.
      *
+     * @param includePicture
+     *          Whether the picture should be included.
+     *
      * @return
      *          The created {@link UserResponseDTO DTO}.
      */
-    public UserResponseDTO createDto(User user) {
+    public UserResponseDTO createDto(User user, boolean includePicture) {
         UserData userData = userService.getUserData(user);
         boolean isManager = userService.userIsManager(user);
 
-        return getDto(userData, isManager);
+        return getDto(userData, isManager, includePicture);
     }
 
     /**
      * Method to create a DTO for a single User. Please use the
-     * {@link #createDtos(Collection)} method when creating
+     * {@link #createDtos(Collection, boolean)}  method when creating
      * DTOs for multiple users instead of calling the method for
      * each user.
      *
      * @param userData
      *          The {@link UserData} instance to create a DTO from.
      *
+     * @param includePicture
+     *          Whether the picture should be included.
+     *
      * @return
      *          The created {@link UserResponseDTO DTO}.
      */
-    public UserResponseDTO createDto(UserData userData) {
+    public UserResponseDTO createDto(UserData userData, boolean includePicture) {
         boolean isManager = userService.userIsManager(userData.getUser());
 
-        return getDto(userData, isManager);
+        return getDto(userData, isManager, includePicture);
     }
 
     /**
@@ -75,10 +79,13 @@ public class UserDtoFactory {
      * @param userData
      *          The {@link UserData} instances to create DTOs from
      *
+     * @param includePicture
+     *          Whether the picture should be included.
+     *
      * @return
      *          A {@link Set} of {@link UserResponseDTO DTOs}.
      */
-    public Set<UserResponseDTO> createDtos(Collection<UserData> userData) {
+    public Set<UserResponseDTO> createDtos(Collection<UserData> userData, boolean includePicture) {
         Set<User> users = userData.parallelStream()
                 .map(UserData::getUser)
                 .collect(Collectors.toSet());
@@ -89,12 +96,12 @@ public class UserDtoFactory {
                 .map(data -> {
                     boolean isManager = userManagerMap.get(data.getUser());
 
-                    return getDto(data, isManager);
+                    return getDto(data, isManager, includePicture);
                 })
                 .collect(Collectors.toSet());
     }
 
-    UserResponseDTO getDto(UserData userData, boolean isManager) {
+    UserResponseDTO getDto(UserData userData, boolean isManager, boolean includePicture) {
         User user = userData.getUser();
 
         AccessInfoResponseDTO infoDTO = new AccessInfoResponseDTO();
@@ -107,6 +114,11 @@ public class UserDtoFactory {
                     .setAccessEnd(latestInfo.getAccessEnd());
         }
 
+        String pictureBase64 = null;
+        if(includePicture) {
+            pictureBase64 = getBase64Picture(userData);
+        }
+
         return new UserResponseDTO()
                 .setAccessInfo(infoDTO)
                 .setApplications(new UserResponseDTO.CollectionLink(user.getApplications().size()))
@@ -117,7 +129,17 @@ public class UserDtoFactory {
                 .setEmail(userData.getEmail())
                 .setFirstName(userData.getFirstName())
                 .setLastName(userData.getLastName())
-                .setLob(userData.getLob());
+                .setLob(userData.getLob())
+                .setPicture(pictureBase64);
+    }
+
+    String getBase64Picture(UserData userData) {
+        String pictureBase64 = null;
+        if(!Objects.isNull(userData.getPicture())) {
+            pictureBase64 = Base64.getEncoder().encodeToString(userData.getPicture());
+        }
+
+        return pictureBase64;
     }
 
 }

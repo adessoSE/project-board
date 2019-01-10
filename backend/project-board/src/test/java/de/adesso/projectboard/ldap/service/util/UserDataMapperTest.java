@@ -13,114 +13,161 @@ import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.when;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserDataMapperTest {
 
-    @Mock
-    Attributes attributes;
+    private final String ID_ATTR = "sAMAccountName";
+
+    private final String MAIL_ATTR = "mail";
+
+    private final String PRINCIPAL_NAME_ATTR = "userPrincipalName";
+
+    private final String PICTURE_ATTR = "thumbnailPhoto";
 
     @Mock
-    Attribute userIdAttribute;
+    private Attributes attributesMock;
 
     @Mock
-    Attribute fullNameAttribute;
+    private Attribute userIdAttributeMock;
 
     @Mock
-    Attribute firstNameAttribute;
+    private Attribute fullNameAttributeMock;
 
     @Mock
-    Attribute lobAttribute;
+    private Attribute firstNameAttributeMock;
 
     @Mock
-    Attribute mailAttribute;
+    private Attribute lobAttributeMock;
 
     @Mock
-    User user;
+    private Attribute mailAttributeMock;
 
-    UserDataMapper userDataMapper;
+    @Mock
+    private Attribute pictureAttributeMock;
+
+    @Mock
+    private Attribute userPrincipalNameAttributeMock;
+
+    @Mock
+    private User userMock;
+
+    private UserDataMapper userDataMapper;
 
     @Before
-    public void setUp() throws Exception {
-        // set up user mock
-        when(user.getId()).thenReturn("user");
-
-        // set up attribute mocks
-        when(userIdAttribute.get()).thenReturn("user");
-        when(fullNameAttribute.get()).thenReturn("User, Test");
-        when(firstNameAttribute.get()).thenReturn("Test");
-        when(lobAttribute.get()).thenReturn("LoB");
-        when(mailAttribute.get()).thenReturn("test@test.com");
-
-        // set up attributes mock
-        when(attributes.get("id")).thenReturn(userIdAttribute);
-        when(attributes.get("name")).thenReturn(fullNameAttribute);
-        when(attributes.get("givenName")).thenReturn(firstNameAttribute);
-        when(attributes.get("division")).thenReturn(lobAttribute);
-
-        // create new userDataMapper instance
-        userDataMapper = new UserDataMapper(Collections.singletonList(user), "id");
+    public void setUp() {
+        this.userDataMapper = new UserDataMapper(Collections.singletonList(userMock), ID_ATTR);
     }
 
     @Test
-    public void testMapFromAttributes_MailSet() throws NamingException {
-        // set up attributes mock
-        when(attributes.get("mail")).thenReturn(mailAttribute);
+    public void mapFromAttributesReturnsUserDataWithAllAttributesWhenPresent() {
+        // given
+        var expectedUserId = "user-id";
+        var expectedFirstName = "Test";
+        var expectedLastName = "Person";
+        var expectedLob = "LoB Test";
+        var expectedEmail = "test@email.com";
+        var expectedPicture = new byte[] {2, 68, 43};
+        var expectedUserData = new UserData(userMock, expectedFirstName, expectedLastName, expectedEmail, expectedLob, expectedPicture);
 
-        UserData userData = testMapFromAttributes_General();
-        testMapFromAttributes_Email(userData);
+        var fullName = String.format("%s, %s", expectedFirstName, expectedLastName);
+
+        // when
+
+
+        // then
     }
 
     @Test
-    public void testMapFromAttributes_MailNotSet() throws NamingException {
-        // set up attributes mock
-        when(attributes.get("mail")).thenReturn(null);
-        when(attributes.get("userPrincipalName")).thenReturn(mailAttribute);
+    public void extractLastNameReturnsLastNameWithLastNameCommaFirstNamePattern() {
+        // given
+        var expectedLastName = "Person";
+        var givenName = "Test";
+        var fullName = String.format("%s, %s", expectedLastName, givenName);
 
-        UserData userData = testMapFromAttributes_General();
-        testMapFromAttributes_Email(userData);
+        compareExtractLastNameWithExpectedLastName(givenName, fullName, expectedLastName);
     }
 
     @Test
-    public void testMapFromAttributes_NoneSet() throws NamingException {
-        // set up attributes mock
-        when(attributes.get("mail")).thenReturn(null);
-        when(attributes.get("userPrincipalName")).thenReturn(null);
+    public void extractLastNameReturnsLastNameWithFirstNameLastNamePattern() {
+        // given
+        var expectedLastName = "Person";
+        var givenName = "Test";
+        var fullName = String.format("%s %s", givenName, expectedLastName);
 
-        UserData userData = testMapFromAttributes_General();
-        assertNotNull(userData.getEmail());
+        compareExtractLastNameWithExpectedLastName(givenName, fullName, expectedLastName);
     }
 
     @Test
-    public void testExtractLastName_LastNameFirstName() {
-        String lastName = userDataMapper.extractLastName("Test", "User, Test");
-
-        assertEquals("User", lastName);
+    public void getPictureReturnsNullWhenPictureNotSet() throws NamingException {
+        compareGetPictureWithExpectedPicture(null);
     }
 
     @Test
-    public void testExtractLastName_FirstNameLastName() {
-        String lastName = userDataMapper.extractLastName("Test", "Test User");
+    public void getPictureReturnsPictureWhenPictureSet() throws NamingException {
+        // given
+        var expectedPicture = new byte[] {0, -29, 102, 20, -62};
 
-        assertEquals("User", lastName);
+        given(attributesMock.get(PICTURE_ATTR)).willReturn(pictureAttributeMock);
+        given(pictureAttributeMock.get()).willReturn(expectedPicture);
+
+        compareGetPictureWithExpectedPicture(expectedPicture);
     }
 
-    private UserData testMapFromAttributes_General() throws NamingException {
-        UserData userData = userDataMapper.mapFromAttributes(attributes);
+    @Test
+    public void getEmailReturnsPlaceholderWhenMailAndPrincipalNameNotSet() throws NamingException {
+        // given
+        var expectedEmail = "placeholder";
 
-        assertEquals(user, userData.getUser());
-        assertEquals("Test", userData.getFirstName());
-        assertEquals("User", userData.getLastName());
-        assertEquals("LoB", userData.getLob());
-
-        return userData;
+        compareGetEmailWithExpectedEmail(expectedEmail);
     }
 
-    private void testMapFromAttributes_Email(UserData userData) {
-        assertEquals("test@test.com", userData.getEmail());
+    @Test
+    public void getEmailReturnsMailWhenMailSet() throws NamingException {
+        // given
+        var expectedEmail = "test@email.com";
+
+        given(attributesMock.get(MAIL_ATTR)).willReturn(mailAttributeMock);
+        given(mailAttributeMock.get()).willReturn(expectedEmail);
+
+        compareGetEmailWithExpectedEmail(expectedEmail);
+    }
+
+    @Test
+    public void getEmailReturnsPrincipalNameWhenMailNotSet() throws NamingException {
+        // given
+        var expectedEmail = "test.mail@mail.com";
+
+        given(attributesMock.get(PRINCIPAL_NAME_ATTR)).willReturn(userPrincipalNameAttributeMock);
+        given(userPrincipalNameAttributeMock.get()).willReturn(expectedEmail);
+
+        compareGetEmailWithExpectedEmail(expectedEmail);
+    }
+
+    public void compareGetEmailWithExpectedEmail(String expectedEmail) throws NamingException {
+        // when
+        var actualEmail = userDataMapper.getEmail(attributesMock);
+
+        // then
+        assertThat(actualEmail).isEqualTo(expectedEmail);
+    }
+
+    public void compareGetPictureWithExpectedPicture(byte[] expectedPicture) throws NamingException {
+        // when
+        var actualPicture = userDataMapper.getPicture(attributesMock);
+
+        // then
+        assertThat(actualPicture).isEqualTo(expectedPicture);
+    }
+
+    public void compareExtractLastNameWithExpectedLastName(String givenName, String fullName, String expectedLastName) {
+        // when
+        var actualLastName = userDataMapper.extractLastName(givenName, fullName);
+
+        // then
+        assertThat(actualLastName).isEqualTo(expectedLastName);
     }
 
 }

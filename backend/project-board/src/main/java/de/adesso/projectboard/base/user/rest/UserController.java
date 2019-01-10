@@ -47,7 +47,7 @@ public class UserController {
     public UserResponseDTO getUserById(@PathVariable("userId") String userId) throws UserNotFoundException {
         User user = userService.getUserById(userId);
 
-        return userDtoFactory.createDto(user);
+        return userDtoFactory.createDto(user, true);
     }
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
@@ -58,7 +58,7 @@ public class UserController {
         List<UserData> dataOfStaff = userService
                 .getStaffMemberUserDataOfUser(user, sort);
 
-        return userDtoFactory.createDtos(dataOfStaff);
+        return userDtoFactory.createDtos(dataOfStaff, false);
     }
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")

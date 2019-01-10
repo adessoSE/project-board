@@ -29,6 +29,8 @@ public class UserResponseDTO implements Serializable {
 
     private boolean isBoss;
 
+    private String picture;
+
     private CollectionLink applications;
 
     private CollectionLink bookmarks;

@@ -41,6 +41,11 @@ public class UserData {
     @NotEmpty
     String lob;
 
+    @Lob
+    @Column(length = 102400)
+    @Basic(fetch = FetchType.LAZY)
+    byte[] picture;
+
     /**
      *
      * @param user
@@ -58,12 +63,13 @@ public class UserData {
      * @param lob
      *          The LoB of the user.
      */
-    public UserData(User user, String firstName, String lastName, String email, String lob) {
+    public UserData(User user, String firstName, String lastName, String email, String lob, byte[] picture) {
         this.user = user;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.lob = lob;
+        this.picture = picture;
     }
 
     /**

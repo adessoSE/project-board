@@ -271,7 +271,7 @@ public class LdapUserServiceTest {
     public void getUserDataCreatesNewInstanceWhenNoneIsPresent() {
         // given
         var user = new User(USER_ID);
-        var expectedUserData = new UserData(user, "First", "Last", "mail", "lob");
+        var expectedUserData = new UserData(user, "First", "Last", "mail", "lob", null);
 
         given(ldapServiceMock.getUserData(Collections.singletonList(user))).willReturn(Collections.singletonList(expectedUserData));
         given(ldapServiceMock.userExists(USER_ID)).willReturn(true);
@@ -292,7 +292,7 @@ public class LdapUserServiceTest {
     public void getUserDataReturnsPersistedInstanceWhenPresent() {
         // given
         var user = new User(USER_ID);
-        var expectedUserData = new UserData(user, "First", "Last", "mail", "lob");
+        var expectedUserData = new UserData(user, "First", "Last", "mail", "lob", null);
 
         given(userDataRepoMock.findByUser(user)).willReturn(Optional.of(expectedUserData));
 
@@ -485,8 +485,8 @@ public class LdapUserServiceTest {
         var staffMembers = Set.of(staffMemberWithData, staffMemberWithoutData);
         var structure = new OrganizationStructure(user, manager, staffMembers, true);
 
-        var staffMemberWithDataData = new UserData(staffMemberWithData, "First", "Last", "email", "lob");
-        var staffMemberWithoutDataData = new UserData(staffMemberWithoutData, "First", "Last", "email", "lob");
+        var staffMemberWithDataData = new UserData(staffMemberWithData, "First", "Last", "email", "lob", null);
+        var staffMemberWithoutDataData = new UserData(staffMemberWithoutData, "First", "Last", "email", "lob", null);
 
         given(structureRepoMock.findByUser(user)).willReturn(Optional.of(structure));
 

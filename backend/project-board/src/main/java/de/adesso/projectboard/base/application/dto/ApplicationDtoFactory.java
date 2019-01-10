@@ -37,7 +37,7 @@ public class ApplicationDtoFactory {
                 .setComment(application.getComment())
                 .setDate(application.getApplicationDate())
                 .setProject(application.getProject())
-                .setUser(userDtoFactory.createDto(user));
+                .setUser(userDtoFactory.createDto(user, false));
     }
 
 }

@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,8 +42,9 @@ public class UserDataPersistenceTest {
         String expectedLastName = "Last";
         String expectedEmail = "Email";
         String expectedLob = "LOB";
+        byte[] expectedPicture = Base64.getDecoder().decode("Test");
 
-        UserData userData = new UserData(expectedUser, expectedFirstName, expectedLastName, expectedEmail, expectedLob);
+        UserData userData = new UserData(expectedUser, expectedFirstName, expectedLastName, expectedEmail, expectedLob, expectedPicture);
 
         // when
         UserData savedUserData = userDataRepo.save(userData);
@@ -55,6 +57,7 @@ public class UserDataPersistenceTest {
         softly.assertThat(retrievedUserData.getLastName()).isEqualTo(expectedLastName);
         softly.assertThat(retrievedUserData.getEmail()).isEqualTo(expectedEmail);
         softly.assertThat(retrievedUserData.getLob()).isEqualTo(expectedLob);
+        softly.assertThat(retrievedUserData.getPicture()).isEqualTo(expectedPicture);
 
         softly.assertAll();
     }

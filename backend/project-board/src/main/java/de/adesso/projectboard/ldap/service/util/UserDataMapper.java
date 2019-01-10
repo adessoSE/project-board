@@ -47,15 +47,8 @@ public class UserDataMapper implements AttributesMapper<UserData> {
         String firstName = (String) attributes.get("givenName").get();
         String lob = (String) attributes.get("division").get();
         String lastName = extractLastName(firstName, fullName);
-
-        // mail attribute not set on every user
-        // use userPrincipalName as a fallback
-        String email = "placeholder";
-        if(attributes.get("mail") != null) {
-            email = (String) attributes.get("mail").get();
-        } else if(attributes.get("userPrincipalName") != null) {
-            email = (String) attributes.get("userPrincipalName").get();
-        }
+        String email = getEmail(attributes);
+        byte[] picture = getPicture(attributes);
 
         // get the corresponding user from the users list
         User owningUser = users.stream()
@@ -63,7 +56,7 @@ public class UserDataMapper implements AttributesMapper<UserData> {
                 .findFirst()
                 .orElseThrow(IllegalStateException::new);
 
-        return new UserData(owningUser, firstName, lastName, email, lob);
+        return new UserData(owningUser, firstName, lastName, email, lob, picture);
     }
 
     /**
@@ -99,6 +92,28 @@ public class UserDataMapper implements AttributesMapper<UserData> {
         }
 
         return lastName;
+    }
+
+    byte[] getPicture(Attributes attributes) throws NamingException {
+        var pictureAttr = attributes.get("thumbnailPhoto");
+        byte[] picture = null;
+
+        if(!Objects.isNull(pictureAttr)) {
+            picture = (byte[]) pictureAttr.get();
+        }
+
+        return picture;
+    }
+
+    String getEmail(Attributes attributes) throws NamingException {
+        var email = "placeholder";
+        if(!Objects.isNull(attributes.get("mail"))) {
+            email = (String) attributes.get("mail").get();
+        } else if(!Objects.isNull(attributes.get("userPrincipalName"))) {
+            email = (String) attributes.get("userPrincipalName").get();
+        }
+
+        return email;
     }
 
 }
