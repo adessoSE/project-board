@@ -75,6 +75,7 @@ export interface Employee {
   duration: number;
   firstName: string;
   lastName: string;
+  picture: string;
   email: string;
   boss: boolean;
   applications: {

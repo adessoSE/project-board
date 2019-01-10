@@ -63,6 +63,14 @@
   color: #887D75;
 }
 
+.nav-link:hover mat-icon {
+  color: #016EC7;
+}
+
+.nav-link.active-link:hover mat-icon {
+  color: #887D75;
+}
+
 .navbar-icon{
   display: block;
   margin: 0 auto;

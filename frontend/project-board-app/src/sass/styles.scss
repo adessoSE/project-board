@@ -56,6 +56,13 @@ h1 {
   min-width: 70vw;
   max-Height: 80vh;
   background-color: #F3F3F3;
+  border-radius: 0;
+}
+
+.btn {
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
 }
 
 @include media-breakpoint-down(md) {
