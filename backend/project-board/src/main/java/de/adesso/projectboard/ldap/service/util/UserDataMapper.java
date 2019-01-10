@@ -21,19 +21,19 @@ import java.util.Objects;
  */
 public class UserDataMapper implements AttributesMapper<UserData> {
 
-    final List<User> users;
+    private final List<User> users;
 
-    final String idAttribute;
+    private final String idAttribute;
 
     /**
      *
      * @param users
      *          The {@link User}s the mapped {@link UserData}
-     *          instances belong to.
+     *          instances belong to, not null.
      *
      * @param idAttribute
      *          The attribute name of the attribute used as the
-     *          user ID.
+     *          user ID, not null.
      */
     public UserDataMapper(List<User> users, String idAttribute) {
         this.users = Objects.requireNonNull(users);
@@ -50,11 +50,7 @@ public class UserDataMapper implements AttributesMapper<UserData> {
         String email = getEmail(attributes);
         byte[] picture = getPicture(attributes);
 
-        // get the corresponding user from the users list
-        User owningUser = users.stream()
-                .filter(user -> userId.equals(user.getId()))
-                .findFirst()
-                .orElseThrow(IllegalStateException::new);
+        var owningUser = getUserFromUsersById(userId);
 
         return new UserData(owningUser, firstName, lastName, email, lob, picture);
     }
@@ -94,6 +90,13 @@ public class UserDataMapper implements AttributesMapper<UserData> {
         return lastName;
     }
 
+    User getUserFromUsersById(String userId) {
+        return users.stream()
+                .filter(user -> userId.equals(user.getId()))
+                .findFirst()
+                .orElseThrow(IllegalStateException::new);
+    }
+
     byte[] getPicture(Attributes attributes) throws NamingException {
         var pictureAttr = attributes.get("thumbnailPhoto");
         byte[] picture = null;
@@ -115,5 +118,6 @@ public class UserDataMapper implements AttributesMapper<UserData> {
 
         return email;
     }
+
 
 }
