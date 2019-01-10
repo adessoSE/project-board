@@ -5,6 +5,7 @@ import { takeUntil } from 'rxjs/operators';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Application, EmployeeService } from '../_services/employee.service';
 import { Project } from '../_services/project.service';
+import { Router, NavigationStart } from '@angular/router';
 
 export interface ProjectDialogData {
   project: Project;
@@ -40,7 +41,14 @@ export class ProjectDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<ProjectDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ProjectDialogData,
     private authService: AuthenticationService,
-    private employeeService: EmployeeService) {}
+    private employeeService: EmployeeService,
+    private router: Router,) 
+    { router.events.subscribe( event => {
+        if(event instanceof NavigationStart) {
+          this.dialogRef.close();
+        }
+      });
+    }
 
   toggleRequestArea() {
     this.showBox = !this.showBox;

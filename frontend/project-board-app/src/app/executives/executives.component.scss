@@ -160,10 +160,10 @@ table thead th, table thead td {
 
 @include media-breakpoint-up(sm) {
   .search-input-inner-wrapper {
-    min-width: 350px;
+    min-width: 500px;
     max-width: 60%;
     line-height: 5rem;
-    padding: calc(4rem + 2px) calc(4rem + 7px) 4rem;
+    padding: 4rem calc(4rem + 6px) 4rem;
     background: transparent url("../../assets/searchbackground.png") no-repeat;
   }
 

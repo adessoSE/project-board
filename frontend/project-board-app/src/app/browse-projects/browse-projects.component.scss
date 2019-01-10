@@ -162,12 +162,6 @@ table thead th, table thead td {
   }
 }
 
-@include media-breakpoint-up(sm) {
-  .search {
-    background-color: rgba(255, 255, 255, 0.7);
-  }
-}
-
 #search {
   display: inline-block;
   margin: 0;
@@ -209,10 +203,10 @@ table thead th, table thead td {
 
 @include media-breakpoint-up(sm) {
   .search-input-inner-wrapper {
-    min-width: 350px;
+    min-width: 500px;
     max-width: 60%;
     line-height: 5rem;
-    padding: calc(4rem + 4px) calc(4rem + 4px) 4rem;
+    padding: 4rem calc(4rem + 6px) 4rem;
     background: white url("../../assets/searchbackground.png") no-repeat;
   }
 

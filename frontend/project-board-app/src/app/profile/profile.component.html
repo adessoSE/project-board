@@ -96,8 +96,10 @@
       <!-- employee-applications tab-->
       <ng-container *ngIf="tabIndex == 2">
         <div class="employee-application" *ngFor="let a of employeeApplications; index as i" [ngClass]="{'border-bottom': i<employeeApplications.length-1}">
-          <div class="linking-icon" title="Öffnen" (click)="openDialog(a.project)">
-            <mat-icon>open_in_new</mat-icon>
+          <div class="icon-wrapper">
+            <div class="linking-icon" title="Öffnen" (click)="openDialog(a.project)">
+              <mat-icon>open_in_new</mat-icon>
+            </div>
           </div>
           <div class="project-title">{{a.project.title}}</div>
           <div class="application-details">

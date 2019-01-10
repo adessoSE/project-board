@@ -6,6 +6,7 @@ import { takeUntil } from 'rxjs/operators';
 import { Application, Employee, EmployeeService } from '../_services/employee.service';
 import { Project } from '../_services/project.service';
 import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
+import { Router, NavigationStart } from '@angular/router';
 
 export interface EmployeeDialogData {
   employee: Employee;
@@ -31,7 +32,15 @@ export class EmployeeDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<EmployeeDialogComponent>,
     public projectDialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: EmployeeDialogData,
-    private employeeService: EmployeeService) {}
+    private employeeService: EmployeeService,
+    private router: Router,
+    ) {
+      router.events.subscribe( event => {
+        if(event instanceof NavigationStart) {
+          this.dialogRef.close();
+        }
+      });
+    }
 
   ngOnInit() {
     for (let i = 1; i < 29; i++) {

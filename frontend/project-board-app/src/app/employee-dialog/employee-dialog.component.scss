@@ -19,10 +19,14 @@ mat-dialog-actions {
 }
 
 mat-dialog-content {
-  max-height: 600px;
+  max-height: calc(80vh - 170px);
   padding-top: 5px;
   padding-bottom: 5px;
   background-color: #FFF;
+}
+
+mat-dialog-actions {
+  max-height: 90px;
 }
 
 h1 {
@@ -182,5 +186,9 @@ h4 {
 
   mat-dialog-content {
     max-height: calc(100vh - 224px);
+  }
+  
+  mat-dialog-actions {
+    max-height: 124px;
   }
 }
