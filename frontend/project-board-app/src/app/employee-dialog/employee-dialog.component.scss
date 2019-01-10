@@ -132,9 +132,6 @@ h4 {
 
 @include media-breakpoint-up(lg) {
   .btn-group > .btn {
-    -webkit-border-radius: 0.25rem;
-    -moz-border-radius: 0.25rem;
-    border-radius: 0.25rem;
     margin: 0 0 0 1rem;
   }
 }

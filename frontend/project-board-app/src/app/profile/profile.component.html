@@ -2,7 +2,10 @@
   <div class="aside col-md-3 left-bar">
     <div id="avatar-area">
       <div id="username">{{user.firstName}} {{user.lastName}}</div>
-      <div id="profile-image"><img src="../../assets/avatar.png"></div>
+      <div id="profile-image">
+        <img *ngIf="user.picture" src="data:image/gif;base64,{{user.picture}}">
+        <img *ngIf="!user.picture" src="../../assets/avatar.png">
+      </div>
       <!--TO DO Bild einfügen-->
     </div>
 
