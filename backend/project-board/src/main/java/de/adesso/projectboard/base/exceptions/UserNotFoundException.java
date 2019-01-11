@@ -1,19 +1,15 @@
 package de.adesso.projectboard.base.exceptions;
 
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import javax.persistence.EntityNotFoundException;
-
 @ResponseStatus(code = HttpStatus.NOT_FOUND, reason = "User not found!")
-public class UserNotFoundException extends EntityNotFoundException {
+@NoArgsConstructor
+public class UserNotFoundException extends NoSuchEntityException {
 
-    public UserNotFoundException() {
-        super();
-    }
-
-    public UserNotFoundException(String message) {
-        super(message);
+    public UserNotFoundException(String userId) {
+        super("User", userId);
     }
 
 }

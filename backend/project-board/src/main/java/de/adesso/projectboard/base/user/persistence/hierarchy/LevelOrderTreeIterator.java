@@ -86,7 +86,7 @@ public class LevelOrderTreeIterator implements Iterator<HierarchyTreeNode> {
      */
     void addFirstManagersEmployeesToNextDeque() {
          var firstIterated = iteratedManagersDeque.removeFirst();
-         nextDeque.addAll(firstIterated.getEmployees());
+         nextDeque.addAll(firstIterated.getStaff());
     }
 
     /**

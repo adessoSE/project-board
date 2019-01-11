@@ -1,11 +1,15 @@
 package de.adesso.projectboard.base.exceptions;
 
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import javax.persistence.EntityNotFoundException;
-
 @ResponseStatus(code = HttpStatus.NOT_FOUND, reason = "Application not found!")
-public class ApplicationNotFoundException extends EntityNotFoundException {
+@NoArgsConstructor
+public class ApplicationNotFoundException extends NoSuchEntityException {
+
+    public ApplicationNotFoundException(long applicationId) {
+        super("Application", applicationId);
+    }
 
 }
