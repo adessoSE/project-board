@@ -2,7 +2,11 @@
   <mat-icon id="close-icon" title="{{closeTooltip}}" (click)="dialogRef.close()">close</mat-icon>
 </span>
 
-<h1 mat-dialog-title>{{data.employee.firstName + ' ' + data.employee.lastName}}</h1>
+<img *ngIf="data.employee.picture" src="data:image/gif;base64,{{data.employee.picture}}">
+<img *ngIf="!data.employee.picture" src="../../assets/avatar.png">
+
+<h1 mat-dialog-title>
+  {{data.employee.firstName + ' ' + data.employee.lastName}}</h1>
 <mat-dialog-content>
   <div *ngIf="data.employee" class="details pb-2 border-bottom">
 

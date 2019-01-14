@@ -62,6 +62,11 @@ export class ExecutivesComponent implements OnInit {
           this.openDialog(this.selectedEmployee);
         }
       });
+    for (const e of this.employees) {
+      this.employeeService.getEmployeeWithId(e.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(employee => e.picture = employee.picture);
+    }
   }
 
   private setSelectedEmployee(employeeId) {

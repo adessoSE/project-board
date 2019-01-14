@@ -147,6 +147,7 @@
   display: inline-block;
   vertical-align: bottom;
   margin-right: 5px;
+  height: 32px;
   cursor: pointer;
 }
 
@@ -169,7 +170,7 @@
   display: inline-block;
   vertical-align: middle;
   line-height: 32px;
-  margin-top: 2px;
+  font-size: 18px;
 }
 
 .inset {
@@ -179,11 +180,6 @@
 
 .application-details {
   margin-top: 10px;
-}
-
-.application-details span {
-  display: block;
-  text-align: left;
 }
 
 .requester {

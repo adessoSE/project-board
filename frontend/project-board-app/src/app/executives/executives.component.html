@@ -28,10 +28,11 @@
           <table class="fixed-project-info hover-change" style="width: 100%;">
             <tbody>
             <tr [ngClass]="{'mobile': mobile}">
-              <td class="badges">
-                <!-- Differentiate between boss and normal user for readability -->
-                <span *ngIf="e.boss" class="badge badge-success badge-width" title="{{badgeTooltip(e)}}">D</span>
-                <span *ngIf="!e.boss" title="{{badgeTooltip(e)}}" [ngClass]="{'badge badge-width': true, 'badge-success': e.accessInfo.hasAccess, 'badge-danger badge-red': !e.accessInfo.hasAccess}">{{e.duration || '0'}}</span>
+              <td class="thumbnail" title="{{badgeTooltip(e)}}">
+                <img *ngIf="e.picture" src="data:image/gif;base64,{{e.picture}}">
+                <img *ngIf="!e.picture" src="../../assets/avatar.png">
+                <span *ngIf="e.boss" class="badge badge-success" title="{{badgeTooltip(e)}}">D</span>
+                <span *ngIf="!e.boss" [ngClass]="{'badge badge-width': true, 'badge-success': e.accessInfo.hasAccess, 'badge-danger badge-red': !e.accessInfo.hasAccess}">{{e.duration || '0'}}</span>
               </td>
               <td class="td-project-title title-clickable">{{e.lastName + ', ' + e.firstName}}</td>
               <td *ngIf="e.boss" style="float: right;">
