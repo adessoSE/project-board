@@ -20,6 +20,7 @@ import { ProjectService } from './_services/project.service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowseProjectsComponent } from './browse-projects/browse-projects.component';
+import { DatepickerHeaderComponent } from './datepicker-header/datepicker-header.component';
 import { EmployeeDialogComponent } from './employee-dialog/employee-dialog.component';
 import { ExecutivesComponent } from './executives/executives.component';
 import { LoginComponent } from './login/login.component';
@@ -35,10 +36,9 @@ declare var Hammer: any;
 
 export class MyHammerConfig extends HammerGestureConfig {
   buildHammer(element: HTMLElement) {
-    let mc = new Hammer(element, {
+    return new Hammer(element, {
       touchAction: 'pan-y'
     });
-    return mc;
   }
 }
 
@@ -58,7 +58,8 @@ registerLocaleData(localeDe, 'de');
     EmployeeDialogComponent,
     ProjectRequestComponent,
     ProfileComponent,
-    LogoutComponent
+    LogoutComponent,
+    DatepickerHeaderComponent
   ],
   imports: [
     BrowserModule,
@@ -74,7 +75,8 @@ registerLocaleData(localeDe, 'de');
   ],
   entryComponents: [
     ProjectDialogComponent,
-    EmployeeDialogComponent
+    EmployeeDialogComponent,
+    DatepickerHeaderComponent
   ],
   providers: [
     {provide: LOCALE_ID, useValue: 'de'},

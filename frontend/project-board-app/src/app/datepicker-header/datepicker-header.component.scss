@@ -1,0 +1,12 @@
+.calendar-header {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+}
+
+.calendar-header-label {
+  flex: 1;
+  height: 1rem;
+  font-weight: 500;
+  padding-left: 0.5rem;
+}

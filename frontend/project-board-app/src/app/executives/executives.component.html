@@ -14,9 +14,12 @@
       <thead>
       <tr>
         <th style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" *ngIf="!loading" id="total-hits">{{filteredEmployees?.length || 'Keine'}} Mitarbeiter{{searchText != '' ? ' für "' + searchText + '"' : ''}}</th>
-        <td *ngIf="!mobile">Status</td>
-        <td *ngIf="!mobile">Freigeschaltet bis</td>
-        <td *ngIf="!mobile">Anfragen</td>
+        <ng-container *ngIf="!mobile">
+          <td>Status</td>
+          <td>Freigeschaltet seit</td>
+          <td>Freigeschaltet bis</td>
+          <td>Anfragen</td>
+        </ng-container>
       </tr>
       </thead>
       <tbody *ngIf="!loading && filteredEmployees.length > 0">
@@ -38,9 +41,12 @@
             </tbody>
           </table>
         </th>
-        <td *ngIf="!mobile" class="hover-change">{{e.accessInfo.hasAccess || e.boss ? 'Freigeschaltet' : 'Nicht freigeschaltet'}}</td>
-        <td *ngIf="!mobile" class="hover-change">{{e.boss ? 'Dauerhaft (Führungskraft)' : e.accessInfo.hasAccess ? (e.accessInfo.accessEnd | date) : '-'}}</td>
-        <td *ngIf="!mobile" class="hover-change">{{e.applications.count}}</td>
+        <ng-container *ngIf="!mobile">
+          <td class="hover-change">{{e.accessInfo.hasAccess || e.boss ? 'Freigeschaltet' : 'Nicht freigeschaltet'}}</td>
+          <td class="hover-change">{{e.boss ? '-' : e.accessInfo.hasAccess ? (e.accessInfo.accessStart | date) : '-'}}</td>
+          <td class="hover-change">{{e.boss ? 'Dauerhaft (Führungskraft)' : e.accessInfo.hasAccess ? (e.accessInfo.accessEnd | date) : '-'}}</td>
+          <td class="hover-change">{{e.applications.count}}</td>
+        </ng-container>
       </tr>
       <tr></tr>
       </tbody>
