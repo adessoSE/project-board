@@ -1,7 +1,7 @@
-package de.adesso.projectboard.ldap.service.util;
+package de.adesso.projectboard.ldap.service.mapper;
 
 import de.adesso.projectboard.base.user.persistence.User;
-import de.adesso.projectboard.ldap.service.util.data.StringStructure;
+import de.adesso.projectboard.ldap.service.node.StringStructure;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,7 +12,6 @@ import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 

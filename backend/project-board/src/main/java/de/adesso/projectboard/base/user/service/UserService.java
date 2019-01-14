@@ -4,14 +4,10 @@ import de.adesso.projectboard.base.access.service.UserAccessService;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
-import de.adesso.projectboard.base.user.persistence.hierarchy.OrganizationStructure;
-import de.adesso.projectboard.base.user.persistence.hierarchy.tree.TreeNode;
+import de.adesso.projectboard.base.user.persistence.hierarchy.HierarchyTreeNode;
 import org.springframework.data.domain.Sort;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Service interface to provide functionality to manage {@link User}s and their
@@ -38,21 +34,20 @@ public interface UserService {
      *          The {@link User}.
      *
      * @return
-     *          {@code true}, iff the {@link User} is a manager.
+     *          {@code true}, iff the given {@code user} is a manager.
      */
     boolean userIsManager(User user);
 
     /**
      *
      * @param user
-     *          The {@code User} to get the {@link OrganizationStructure}
+     *          The {@link User} to get the {@link HierarchyTreeNode}
      *          for.
      *
      * @return
-     *          The {@link OrganizationStructure} instance for the given
-     *          {@code user}.
+     *          The {@link HierarchyTreeNode} for the given {@code user}.
      */
-    OrganizationStructure getStructureForUser(User user);
+    HierarchyTreeNode getHierarchyForUser(User user);
 
     /**
      *
@@ -112,13 +107,12 @@ public interface UserService {
      *          The {@link Sort} instance to sort by.
      *
      * @return
-     *          The {@link UserData} of the {@code user}'s staff
-     *          members, wrapped in a {@link TreeNode}
-     *          to indicate the parent-child relationship between
-     *          different users. Sorted accordingly.
+     *          The staff members' {@link UserData} of the
+     *          given {@code user}, sorted accordingly.
      *
+     * @see #getStaffMembersOfUser(User)
      */
-    TreeNode<UserData> getStaffMemberUserDataOfUser(User user, Sort sort);
+    List<User> getStaffMemberUserDataOfUser(User user, Sort sort);
 
     /**
      *
@@ -126,11 +120,9 @@ public interface UserService {
      *          The {@link User} to get the staff members of.
      *
      * @return
-     *          The {@code user}'s staff members, wrapped in a
-     *          {@link TreeNode} to indicate the parent
-     *          child relationship between different user.
+     *          The given {@code user}'s staff members.
      */
-    TreeNode<User> getStaffMembersOfUser(User user);
+    List<UserData> getStaffMembersOfUser(User user);
 
     /**
      *

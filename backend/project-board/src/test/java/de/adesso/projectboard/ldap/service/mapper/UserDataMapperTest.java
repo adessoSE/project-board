@@ -1,4 +1,4 @@
-package de.adesso.projectboard.ldap.service.util;
+package de.adesso.projectboard.ldap.service.mapper;
 
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.data.UserData;

@@ -1,4 +1,4 @@
-package de.adesso.projectboard.ldap.service.util;
+package de.adesso.projectboard.ldap.service.mapper;
 
 import org.springframework.ldap.core.AttributesMapper;
 

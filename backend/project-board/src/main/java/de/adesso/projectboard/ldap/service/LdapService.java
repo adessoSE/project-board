@@ -3,9 +3,6 @@ package de.adesso.projectboard.ldap.service;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.ldap.configuration.LdapConfigurationProperties;
-import de.adesso.projectboard.ldap.service.util.DnStructureMapper;
-import de.adesso.projectboard.ldap.service.util.UserDataMapper;
-import de.adesso.projectboard.ldap.service.util.data.StringStructure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.ldap.core.AttributesMapper;
@@ -15,10 +12,7 @@ import org.springframework.ldap.query.LdapQuery;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
@@ -147,47 +141,11 @@ public class LdapService {
                 .and(idAttribute).isPresent()
                 .and(idCriteria);
 
-        List<UserData> userDataList = ldapTemplate.search(query, new UserDataMapper(users, idAttribute));
+        List<UserData> userDataList = new ArrayList<>();
 
         validateQueryResult(userDataList, users.size());
 
         return userDataList;
-    }
-
-    /**
-     *
-     * @param user
-     *          The {@link User}
-     *
-     * @return
-     *          A {@link StringStructure} instance, where the {@link StringStructure#staffMembers staff members}
-     *          and {@link StringStructure#manager manager} fields contain the configured
-     *          {@link LdapConfigurationProperties#getUserIdAttribute() user ID attribute} values
-     *          of the users.
-     *
-     * @see DnStructureMapper
-     */
-    public StringStructure getIdStructure(User user) {
-        LdapQuery query = query()
-                .base(base)
-                .attributes("manager", "distinguishedName")
-                .where("distinguishedName").isPresent()
-                .and(idAttribute).is(user.getId());
-
-        List<StringStructure> userResultList = ldapTemplate.search(query, new DnStructureMapper(user));
-
-        validateQueryResult(userResultList, 1);
-        StringStructure dnStructure = userResultList.get(0);
-
-        // get the staff member IDs
-        String userDN = dnStructure.getUser();
-        Set<String> staffMemberIDs = getStaffMemberIDsByManagerDN(userDN);
-
-        // get the manager ID
-        String managerDN = dnStructure.getManager();
-        String managerID = getUserIdByDN(managerDN);
-
-        return new StringStructure(user, user.getId(), managerID, staffMemberIDs);
     }
 
     /**
