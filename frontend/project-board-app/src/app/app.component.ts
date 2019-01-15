@@ -91,7 +91,7 @@ export class AppComponent implements OnInit, DoCheck {
   logout() {
     this.oAuthService.logOut();
     sessionStorage.clear();
-    this.alertService.success('Du wurdest erfolgreich ausgeloggt.');
+    /* this.alertService.success('Du wurdest erfolgreich ausgeloggt.'); */
   }
 
   isUserAuthenticated() {

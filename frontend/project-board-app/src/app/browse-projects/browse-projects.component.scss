@@ -69,6 +69,12 @@ button span {
   padding: 10px 0 10px 10px;
 }
 
+td mat-icon {
+  font-variant: normal;
+  display: inline-block;
+  vertical-align: bottom;
+}
+
 #result-table thead {
   font-variant: small-caps;
   cursor: default;
@@ -78,6 +84,8 @@ button span {
   color: #887D75;
   font-weight: 700;
   font-variant: small-caps;
+  text-align: center !important;
+  padding-right: 10px !important;
 }
 
 #result-table thead td {

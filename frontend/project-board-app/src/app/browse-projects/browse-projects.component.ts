@@ -28,6 +28,7 @@ export class BrowseProjectsComponent implements OnInit {
   searchText = '';
   loadingProjects = true;
   projectsFound: number;
+  sortValue: number;
 
   dialogRef: MatDialogRef<ProjectDialogComponent>;
 
@@ -119,6 +120,17 @@ export class BrowseProjectsComponent implements OnInit {
     this.loadingProjects = true;
     this.projects = [];
     this.searchText$.next(this.searchText);
+  }
+
+  sortByLocation() {
+    if(this.sortValue === 0 || this.sortValue === undefined) {
+      this.projects = this.projects.sort((a: Project , b: Project) => { return a.location.localeCompare(b.location) });
+      this.sortValue = 1;
+    }
+    else {
+      this.projects = this.projects.sort((a: Project , b: Project) => { return b.location.localeCompare(a.location) });
+      this.sortValue = 0;
+      }
   }
 
   private setSelectedProject(projectId: string) {
