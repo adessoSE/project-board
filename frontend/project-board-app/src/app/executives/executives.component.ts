@@ -22,21 +22,22 @@ export class ExecutivesComponent implements OnInit {
   loading = true;
   dialogRef: MatDialogRef<EmployeeDialogComponent>;
   sortValue: number;
+  sortMemory: number;
 
   destroy$ = new Subject<void>();
 
   constructor(private employeeService: EmployeeService,
-              private route: ActivatedRoute,
-              private router: Router,
-              private location: Location,
-              public dialog: MatDialog) { }
+    private route: ActivatedRoute,
+    private router: Router,
+    private location: Location,
+    public dialog: MatDialog) { }
 
   @HostListener('window:resize') onResize() {
     this.mobile = document.body.clientWidth < 992;
     this.smallMobile = document.body.clientWidth < 768;
   }
 
-  swipebugplaceholder() {}
+  swipebugplaceholder() { }
 
   ngOnInit() {
     this.mobile = document.body.clientWidth < 992;
@@ -127,72 +128,108 @@ export class ExecutivesComponent implements OnInit {
       .subscribe(() => this.location.replaceState('/employees'));
   }
 
-  sortByState() {
-    if(this.sortValue === 0 || this.sortValue === undefined) {
-      this.filteredEmployees.sort((a: Employee , b: Employee) => { 
-        return (a.accessInfo.hasAccess === b.accessInfo.hasAccess)? 0 : a.accessInfo.hasAccess? -1 : 1 });
+  sortByState(memory: number) {
+    if (this.sortMemory !== memory) {
+      this.sortValue = 0;
+      this.sortMemory = memory;
+    }
+
+    if (this.sortValue === 0 || this.sortValue === undefined) {
+      this.filteredEmployees.sort((a: Employee, b: Employee) => {
+        return (a.accessInfo.hasAccess === b.accessInfo.hasAccess) ? 0 : a.accessInfo.hasAccess ? -1 : 1
+      });
       this.sortValue = 1;
     }
-    else if(this.sortValue === 1) {
-      this.filteredEmployees.sort((a: Employee , b: Employee) => {
-        return (a.accessInfo.hasAccess === b.accessInfo.hasAccess)? 0 : b.accessInfo.hasAccess? -1 : 1 });
+    else if (this.sortValue === 1) {
+      this.filteredEmployees.sort((a: Employee, b: Employee) => {
+        return (a.accessInfo.hasAccess === b.accessInfo.hasAccess) ? 0 : b.accessInfo.hasAccess ? -1 : 1
+      });
       this.sortValue = 2;
-      }
+    }
     else {
       this.filteredEmployees.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
       this.sortValue = 0;
     }
   }
 
-  sortBySince() {
-    if(this.sortValue === 0 || this.sortValue === undefined) {
-      this.filteredEmployees.sort((a: Employee , b: Employee) => { 
-        return Number(new Date(b.accessInfo.accessStart)) - Number(new Date(a.accessInfo.accessStart))});
+  sortBySince(memory: number) {
+    if (this.sortMemory !== memory) {
+      this.sortValue = 0;
+      this.sortMemory = memory;
+    }
+
+    if (this.sortValue === 0 || this.sortValue === undefined) {
+      this.filteredEmployees.sort((a: Employee, b: Employee) => {
+        return Number(new Date(b.accessInfo.accessStart)) - Number(new Date(a.accessInfo.accessStart))
+      });
       this.sortValue = 1;
     }
     else if (this.sortValue === 1) {
-      this.filteredEmployees.sort((a: Employee , b: Employee) => {
-        return Number(new Date(a.accessInfo.accessStart)) - Number(new Date(b.accessInfo.accessStart))});
+      this.filteredEmployees.sort((a: Employee, b: Employee) => {
+        if(a.accessInfo.accessEnd === null ){
+          return 1;
+        }
+        return Number(new Date(a.accessInfo.accessStart)) - Number(new Date(b.accessInfo.accessStart))
+      });
       this.sortValue = 2;
-      }
-      else {
-        this.filteredEmployees.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
-        this.sortValue = 0;
-      }
+    }
+    else {
+      this.filteredEmployees.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
+      this.sortValue = 0;
+    }
   }
 
-  sortByUntil() {
-    if(this.sortValue === 0 || this.sortValue === undefined) {
-      this.filteredEmployees.sort((a: Employee , b: Employee) => { 
-        return Number(new Date(a.accessInfo.accessEnd)) - Number(new Date(b.accessInfo.accessEnd))});
+  sortByUntil(memory: number) {
+    if (this.sortMemory !== memory) {
+      this.sortValue = 0;
+      this.sortMemory = memory;
+    }
+    if (this.sortValue === 0 || this.sortValue === undefined) {
+      this.filteredEmployees.sort((a: Employee, b: Employee) => {
+        if(a.boss){
+          console.log(a.lastName);
+        }
+        return Number(new Date(b.accessInfo.accessEnd)) - Number(new Date(a.accessInfo.accessEnd))
+      });
       this.sortValue = 1;
     }
-    else if (this.sortValue === 1){
-      this.filteredEmployees.sort((a: Employee , b: Employee) => {
-        return Number(new Date(b.accessInfo.accessEnd)) - Number(new Date(a.accessInfo.accessEnd))});
+    else if (this.sortValue === 1) {
+      this.filteredEmployees.sort((a: Employee, b: Employee) => {
+        if(a.accessInfo.accessEnd === null ){
+          return 1;
+        }
+        return Number(new Date(a.accessInfo.accessEnd)) - Number(new Date(b.accessInfo.accessEnd))
+      });
       this.sortValue = 2;
-      }
-      else {
-        this.filteredEmployees.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
-        this.sortValue = 0;
-      }
+    }
+    else {
+      this.filteredEmployees.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
+      this.sortValue = 0;
+    }
   }
 
-  sortByRequest() {
-    if(this.sortValue === 0 || this.sortValue === undefined) {
-      this.filteredEmployees.sort((a: Employee , b: Employee) => { 
-        return b.applications.count - a.applications.count});
-        this.sortValue = 1;
+  sortByRequest(memory: number) {
+    if (this.sortMemory !== memory) {
+      this.sortValue = 0;
+      this.sortMemory = memory;
     }
-    else if (this.sortValue === 1){
-      this.filteredEmployees.sort((a: Employee , b: Employee) => {
-        return a.applications.count - b.applications.count});
+
+    if (this.sortValue === 0 || this.sortValue === undefined) {
+      this.filteredEmployees.sort((a: Employee, b: Employee) => {
+        return b.applications.count - a.applications.count
+      });
+      this.sortValue = 1;
+    }
+    else if (this.sortValue === 1) {
+      this.filteredEmployees.sort((a: Employee, b: Employee) => {
+        return a.applications.count - b.applications.count
+      });
       this.sortValue = 2;
-      }
-      else {
-        this.filteredEmployees.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
-        this.sortValue = 0;
-      }
+    }
+    else {
+      this.filteredEmployees.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
+      this.sortValue = 0;
+    }
   }
 
   toggleBoss() {
