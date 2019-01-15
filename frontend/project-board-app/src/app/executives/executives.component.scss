@@ -12,19 +12,17 @@
   vertical-align: middle;
 }
 
-.badge-danger {
-background-color: grey;
-}
-
-.badge-red {
+.badge-grey {
+  background-color: grey;
   color: grey;
 }
 
-.badge-success {
+.badge-blue {
   background-color: #016EC7;
+  color: white;
 }
 
-#result-table tbody tr:hover .badge-success {
+#result-table tbody tr:hover .badge-blue {
   background-color: #FFF;
   color: #016EC7;
 }

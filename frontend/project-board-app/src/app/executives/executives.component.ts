@@ -93,6 +93,9 @@ export class ExecutivesComponent implements OnInit {
 
     const days = employee.duration;
     if (employee.accessInfo.hasAccess) {
+      if (days === 0) {
+        return `${fullName} hat nur noch heute Zugang zum Project Board.`;
+      }
       return `${fullName} hat noch ${days} ${days > 1 ? 'Tage' : 'Tag'} Zugang zum Project Board.`;
     }
     return `${employee.firstName} ${employee.lastName} hat keinen Zugang zum Project Board.`;

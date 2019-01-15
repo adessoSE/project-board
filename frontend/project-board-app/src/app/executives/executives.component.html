@@ -31,8 +31,8 @@
               <td class="thumbnail" title="{{badgeTooltip(e)}}">
                 <img *ngIf="e.picture" src="data:image/gif;base64,{{e.picture}}">
                 <img *ngIf="!e.picture" src="../../assets/avatar.png">
-                <span *ngIf="e.boss" class="badge badge-success" title="{{badgeTooltip(e)}}">D</span>
-                <span *ngIf="!e.boss" [ngClass]="{'badge badge-width': true, 'badge-success': e.accessInfo.hasAccess, 'badge-danger badge-red': !e.accessInfo.hasAccess}">{{e.duration || '0'}}</span>
+                <span *ngIf="e.boss" class="badge badge-blue" title="{{badgeTooltip(e)}}">D</span>
+                <span *ngIf="!e.boss" [ngClass]="{'badge badge-width': true, 'badge-blue': e.accessInfo.hasAccess, 'badge-grey': !e.accessInfo.hasAccess}">{{(e.duration > 0 ? e.duration : 'H') || '0'}}</span>
               </td>
               <td class="td-project-title title-clickable">{{e.lastName + ', ' + e.firstName}}</td>
               <td *ngIf="e.boss" style="float: right;">
