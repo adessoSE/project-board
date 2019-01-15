@@ -2,15 +2,16 @@
   <mat-icon id="close-icon" title="{{closeTooltip}}" (click)="dialogRef.close()">close</mat-icon>
 </span>
 
-<img *ngIf="data.employee.picture" src="data:image/gif;base64,{{data.employee.picture}}">
-<img *ngIf="!data.employee.picture" src="../../assets/avatar.png">
-
 <h1 mat-dialog-title>
   {{data.employee.firstName + ' ' + data.employee.lastName}}</h1>
 <mat-dialog-content>
   <div *ngIf="data.employee" class="details pb-2 border-bottom">
 
     <!--  User Info  -->
+    <div id="image-wrapper">
+      <img *ngIf="data.employee.picture" src="data:image/gif;base64,{{data.employee.picture}}">
+      <img *ngIf="!data.employee.picture" src="../../assets/avatar.png">
+    </div>
     <div class="inset">
       <div class="row">
         <div class="col-4">Status:</div>
