@@ -63,14 +63,16 @@
             <div class="linking-icon" title="Öffnen" (click)="openDialog(b)">
               <mat-icon>open_in_new</mat-icon>
             </div>
-            <div *ngIf="!isProjectApplicable(b.id)" class="mail-icon">
-              <mat-icon title="bereits angefragt" style="cursor: default;">email</mat-icon>
-            </div>
           </div>
           <div class="remover" title="entfernen" (click)="removeBookmark(b.id)">
             <mat-icon>clear</mat-icon>
           </div>
-          <div class="project-title">{{b.title}}</div>
+          <div class="project-title">
+            <div *ngIf="!isProjectApplicable(b.id)" class="mail-icon-wrapper">
+              <mat-icon title="bereits angefragt" class="mail-icon">email</mat-icon>
+            </div>
+            {{b.title}}
+          </div>
         </div>
         <div class="inset" *ngIf="!bookmarks || bookmarks.length === 0">Du hast keine Lesezeichen.</div>
       </ng-container>
@@ -104,12 +106,13 @@
               <mat-icon>open_in_new</mat-icon>
             </div>
           </div>
-          <div class="project-title">{{a.project.title}}</div>
+          <span class="project-title">{{a.project.title}}</span>
           <div class="application-details">
-            <span class="requester">{{a.user.lastName + ', ' + a.user.firstName}}</span>
-            <span>Datum: {{a.date | date}}</span>
-            <span>Kommentar:</span>
-            <span>{{a.comment}}</span>
+            <div class="requester">{{a.user.lastName}}, {{a.user.firstName}}</div>
+            <div class="font-weight-bold">Datum:</div>
+            <div>{{a.date | date}}</div>
+            <div class="font-weight-bold">Kommentar:</div>
+            <div>{{a.comment}}</div>
           </div>
         </div>
         <div class="inset" *ngIf="!loadingEmployeeApplications && (!employeeApplications || employeeApplications.length === 0)">
