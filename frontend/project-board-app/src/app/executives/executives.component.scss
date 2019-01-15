@@ -2,8 +2,14 @@
 @import '../../../node_modules/bootstrap/scss/variables';
 @import '../../../node_modules/bootstrap/scss/mixins';
 
-.badge-width {
+.badge {
   width: 1.5rem;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  line-height: 50px;
+  padding: 0;
+  vertical-align: middle;
 }
 
 .badge-red {
@@ -90,8 +96,16 @@ button span {
   background-color: #fff;
 }
 
-td.badges {
-  width: 36px;
+td.thumbnail {
+  // img width + badge width + spacing
+  width: calc(50px + 1.5rem + 12px);
+}
+
+td img {
+  width: 50px;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
 }
 
 table thead th, table thead td {

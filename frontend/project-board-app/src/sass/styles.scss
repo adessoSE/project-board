@@ -121,6 +121,15 @@ body {
   background-color: #016EC7;
 }
 
-.btn-primary:hover, .btn-primary:active, .btn-primary:focus {
+.btn-primary:not(.disabled):hover,
+.btn-primary:not(.disabled):active,
+.btn-primary:not(.disabled):focus {
   background-color: darken(#016EC7, 7);
+}
+
+button:focus, button:active {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  outline: none;
 }

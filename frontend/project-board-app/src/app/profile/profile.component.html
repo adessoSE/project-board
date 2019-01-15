@@ -6,7 +6,6 @@
         <img *ngIf="user.picture" src="data:image/gif;base64,{{user.picture}}">
         <img *ngIf="!user.picture" src="../../assets/avatar.png">
       </div>
-      <!--TO DO Bild einfügen-->
     </div>
 
     <div id="user-information">
@@ -84,11 +83,12 @@
               <mat-icon>open_in_new</mat-icon>
             </div>
           </div>
-          <div class="project-title">{{a.project.title}}</div>
+          <span class="project-title">{{a.project.title}}</span>
           <div class="application-details">
-            <span>Datum: {{a.date | date : 'dd.MM.yyyy'}}</span>
-            <span>Mein Kommentar:</span>
-            <span>{{a.comment}}</span>
+            <div class="font-weight-bold">Datum:</div>
+            <div>{{a.date | date}}</div>
+            <div class="font-weight-bold">Mein Kommentar:</div>
+            <div>{{a.comment}}</div>
           </div>
         </div>
         <div class="inset" *ngIf="!applications || applications.length === 0">

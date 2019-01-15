@@ -44,7 +44,7 @@ h4 {
   position: sticky;
 }
 
-.disabled {
+.greyed-out {
   color: lightgrey;
 }
 
@@ -184,8 +184,21 @@ h4 {
   mat-dialog-content {
     max-height: calc(100vh - 224px);
   }
-  
+
   mat-dialog-actions {
     max-height: 124px;
   }
+}
+
+button:focus, button:active {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  outline: none;
+}
+
+img {
+  margin-top: -9px;
+  float: left;
+  width: 50px;
 }

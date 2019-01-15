@@ -47,7 +47,7 @@ export class ExecutivesComponent implements OnInit {
         this.employees = data[0].employees
           .map(e => {
             if (e.accessInfo.hasAccess) {
-              e.duration = this.daysUntil(e.accessInfo.accessEnd);
+              e.duration = this.daysUntil(new Date(e.accessInfo.accessEnd));
             } else {
               e.duration = 0;
             }
@@ -62,6 +62,11 @@ export class ExecutivesComponent implements OnInit {
           this.openDialog(this.selectedEmployee);
         }
       });
+    for (const e of this.employees) {
+      this.employeeService.getEmployeeWithId(e.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(employee => e.picture = employee.picture);
+    }
   }
 
   private setSelectedEmployee(employeeId) {
@@ -74,17 +79,10 @@ export class ExecutivesComponent implements OnInit {
     this.selectedEmployee = null;
   }
 
-  private daysUntil(date: Date) {
-    date = new Date(date);
-    const time1 = new Date().getTime();
-    const time2 = date.getTime();
-    if (time1 >= time2) {
-      return 0;
-    }
-    let days = time2 - time1;
-    days /= 86400000;
-    days -= days % 1;
-    return days;
+  private daysUntil(date: Date): number {
+    let diff = date.getTime() - Date.now();
+    diff = Math.floor(diff / (1000 * 60 * 60 * 24));
+    return diff;
   }
 
   badgeTooltip(employee) {
@@ -93,7 +91,7 @@ export class ExecutivesComponent implements OnInit {
       return `${fullName} hat als Führungskraft dauerhaften Zugang zum Project Board.`;
     }
 
-    const days = this.daysUntil(employee.accessInfo.accessEnd);
+    const days = employee.duration;
     if (employee.accessInfo.hasAccess) {
       return `${fullName} hat noch ${days} ${days > 1 ? 'Tage' : 'Tag'} Zugang zum Project Board.`;
     }
@@ -101,6 +99,7 @@ export class ExecutivesComponent implements OnInit {
   }
 
   searchEmployees(): void {
+    // TODO: outsource to the backend
     this.filteredEmployees = this.employees.filter(e => {
       return (e.firstName + ' ' + e.lastName)
         .toLowerCase()
@@ -129,6 +128,7 @@ export class ExecutivesComponent implements OnInit {
   }
 
   toggleBoss() {
+    // TODO
     console.log('toggle clicked');
   }
 }
