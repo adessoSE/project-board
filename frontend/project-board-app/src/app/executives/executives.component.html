@@ -23,33 +23,9 @@
       </tr>
       </thead>
       <tbody *ngIf="!loading && filteredEmployees.length > 0">
-      <tr *ngFor="let e of filteredEmployees" (click)="openDialog(e)">
-        <th>
-          <table class="fixed-project-info hover-change" style="width: 100%;">
-            <tbody>
-            <tr [ngClass]="{'mobile': mobile}">
-              <td class="thumbnail" title="{{badgeTooltip(e)}}">
-                <img *ngIf="e.picture" src="data:image/gif;base64,{{e.picture}}">
-                <img *ngIf="!e.picture" src="../../assets/avatar.png">
-                <span *ngIf="e.boss" class="badge badge-blue" title="{{badgeTooltip(e)}}">D</span>
-                <span *ngIf="!e.boss" [ngClass]="{'badge badge-width': true, 'badge-blue': e.accessInfo.hasAccess, 'badge-grey': !e.accessInfo.hasAccess}">{{(e.duration > 0 ? e.duration : 'H') || '0'}}</span>
-              </td>
-              <td class="td-project-title title-clickable">{{e.lastName + ', ' + e.firstName}}</td>
-              <td *ngIf="e.boss" style="float: right;">
-                <mat-icon class="dropdown-icon" (click)="toggleBoss()">keyboard_arrow_right</mat-icon>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </th>
-        <ng-container *ngIf="!mobile">
-          <td class="hover-change">{{e.accessInfo.hasAccess || e.boss ? 'Freigeschaltet' : 'Nicht freigeschaltet'}}</td>
-          <td class="hover-change">{{e.boss ? '-' : e.accessInfo.hasAccess ? (e.accessInfo.accessStart | date) : '-'}}</td>
-          <td class="hover-change">{{e.boss ? 'Dauerhaft (Führungskraft)' : e.accessInfo.hasAccess ? (e.accessInfo.accessEnd | date) : '-'}}</td>
-          <td class="hover-change">{{e.applications.count}}</td>
-        </ng-container>
-      </tr>
-      <tr></tr>
+      <ng-container *ngFor="let e of filteredEmployees">
+        <ng-container *ngTemplateOutlet="employeeRow; context: {$implicit: e, child: false}"></ng-container>
+      </ng-container>
       </tbody>
     </table>
     <div *ngIf="loading" style="width: 100%; margin-top: 1rem">
@@ -59,3 +35,37 @@
     </div>
   </div>
 </div>
+
+<ng-template #employeeRow let-employee let-child="child" let-last="last">
+  <tr [ngClass]="{'child-row': child, 'last-child': last, 'parent-row': showEmployees.includes(employee.id)}" (click)="openDialog(employee)">
+    <th>
+      <table class="fixed-project-info hover-change" style="width: 100%;">
+        <tbody>
+        <tr [ngClass]="{'mobile': mobile}">
+          <td class="thumbnail" title="{{badgeTooltip(employee)}}">
+            <img *ngIf="employee.picture" src="data:image/gif;base64,{{employee.picture}}">
+            <img *ngIf="!employee.picture" src="../../assets/avatar.png">
+            <span *ngIf="employee.boss" class="badge badge-blue" title="{{badgeTooltip(employee)}}">D</span>
+            <span *ngIf="!employee.boss" [ngClass]="{'badge badge-width': true, 'badge-blue': employee.accessInfo.hasAccess, 'badge-grey': !employee.accessInfo.hasAccess}">{{(employee.duration > 0 ? employee.duration : 'H') || '0'}}</span>
+          </td>
+          <td class="td-project-title title-clickable">{{employee.lastName + ', ' + employee.firstName}}</td>
+          <td class="dropdown-icon-wrapper" *ngIf="employee.boss">
+            <mat-icon class="dropdown-icon" (click)="toggleBoss($event, employee)">{{showEmployees.includes(employee.id) ? 'keyboard_arrow_down' : 'keyboard_arrow_right'}}</mat-icon>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </th>
+    <ng-container #employeeRow *ngIf="!mobile">
+      <td class="hover-change">{{employee.accessInfo.hasAccess || employee.boss ? 'Freigeschaltet' : 'Nicht freigeschaltet'}}</td>
+      <td class="hover-change">{{employee.boss ? '-' : employee.accessInfo.hasAccess ? (employee.accessInfo.accessStart | date) : '-'}}</td>
+      <td class="hover-change">{{employee.boss ? 'Dauerhaft (Führungskraft)' : employee.accessInfo.hasAccess ? (employee.accessInfo.accessEnd | date) : '-'}}</td>
+      <td class="hover-change">{{employee.applications.count}}</td>
+    </ng-container>
+  </tr>
+  <ng-container *ngIf="employee.boss && showEmployees.includes(employee.id)">
+    <ng-container *ngFor="let e of employeeMap.get(employee.id); index as i;">
+      <ng-container *ngTemplateOutlet="employeeRow; context: {$implicit: e, child: true, last: (i === employeeMap.get(employee.id).length-1)}"></ng-container>
+    </ng-container>
+  </ng-container>
+</ng-template>

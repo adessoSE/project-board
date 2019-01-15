@@ -207,6 +207,11 @@ table thead th, table thead td {
 
 .dropdown-icon {
   border-radius: 6px;
+  margin-top: 13px;
+}
+
+.dropdown-icon-wrapper {
+  float: right;
 }
 
 tr:hover .dropdown-icon {
@@ -217,4 +222,17 @@ tr:hover .dropdown-icon {
 tr:hover .dropdown-icon:hover {
   background-color: lightgrey;
   color: black;
+}
+
+tr.parent-row {
+  background-color: lightgrey;
+  border: 3px solid lightgrey;
+}
+
+tr.child-row {
+  border-left: 3px solid lightgrey;
+  border-right: 3px solid lightgrey;
+  &.last-child {
+    border-bottom: 3px solid lightgrey;
+  }
 }

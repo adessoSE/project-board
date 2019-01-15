@@ -19,6 +19,9 @@ export class ExecutivesComponent implements OnInit {
   mobile = false;
   smallMobile = false;
 
+  showEmployees: string[] = [];
+  employeeMap: Map<string, Employee[]> = new Map<string, Employee[]>();
+
   searchText = '';
   loading = true;
   dialogRef: MatDialogRef<EmployeeDialogComponent>;
@@ -66,6 +69,10 @@ export class ExecutivesComponent implements OnInit {
       this.employeeService.getEmployeeWithId(e.id)
         .pipe(takeUntil(this.destroy$))
         .subscribe(employee => e.picture = employee.picture);
+      // if the employee is a boss, preload the embedded employees
+      if (e.boss) {
+        this.loadEmbeddedEmployees(e);
+      }
     }
   }
 
@@ -130,8 +137,40 @@ export class ExecutivesComponent implements OnInit {
       .subscribe(() => this.location.replaceState('/employees'));
   }
 
-  toggleBoss() {
-    // TODO
-    console.log('toggle clicked');
+  toggleBoss(event, employee: Employee) {
+    if (this.showEmployees.includes(employee.id)) {
+      this.showEmployees = this.showEmployees.filter(id => id !== employee.id);
+    } else {
+      this.showEmployees.push(employee.id);
+    }
+    // load embedded employees of deeper layers
+    this.loadEmbeddedEmployees(employee);
+    // prevent activation of the table row click event
+    event.stopPropagation();
+  }
+
+  loadEmbeddedEmployees(employee: Employee) {
+    if (!this.employeeMap.has(employee.id)) {
+      // load all employees
+      this.employeeService.getEmployeesForSuperUser(employee.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(employees => {
+          // initialise the map entry
+          this.employeeMap.set(employee.id, []);
+          // reload employees by id to get the images
+          for (const e of employees) {
+            this.employeeService.getEmployeeWithId(e.id)
+              .pipe(takeUntil(this.destroy$))
+              .subscribe(emp => {
+                // set the duration attribute to display on the badge
+                emp.duration = this.daysUntil(new Date(emp.accessInfo.accessEnd));
+                // push each employee into the list and reset the map entry
+                const list = this.employeeMap.get(employee.id);
+                list.push(emp);
+                this.employeeMap.set(employee.id, list);
+              });
+          }
+        });
+    }
   }
 }
