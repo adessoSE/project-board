@@ -9,7 +9,10 @@ import org.springframework.data.util.Streamable;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
 
 
 /**
@@ -51,8 +54,7 @@ public class HierarchyTreeNode implements Iterable<HierarchyTreeNode>, Streamabl
      */
     @ManyToOne
     @JoinColumn(
-            name = "MANAGER_NODE_ID",
-            nullable = false
+            name = "MANAGER_NODE_ID"
     )
     HierarchyTreeNode manager;
 
@@ -73,8 +75,8 @@ public class HierarchyTreeNode implements Iterable<HierarchyTreeNode>, Streamabl
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "ALL_STAFF",
-            joinColumns = @JoinColumn(name = "INDIRECT_MANAGER_NODE_ID", nullable = false),
-            inverseJoinColumns = @JoinColumn(name = "STAFF_NODE_ID", nullable = false)
+            joinColumns = @JoinColumn(name = "MANAGER_NODE_ID", nullable = false),
+            inverseJoinColumns = @JoinColumn(name = "NODE_ID", nullable = false)
     )
     List<HierarchyTreeNode> staff;
 
@@ -93,21 +95,6 @@ public class HierarchyTreeNode implements Iterable<HierarchyTreeNode>, Streamabl
     boolean managingUser;
 
     /**
-     * Constructs a new instance.
-     *
-     * @param manager
-     *          The manager's node, not null.
-     *
-     * @param user
-     *          The user this node belongs to, not null.
-     *
-     * @see #HierarchyTreeNode(HierarchyTreeNode, User, Collection, Collection)
-     */
-    public HierarchyTreeNode(HierarchyTreeNode manager, User user) {
-        this(manager, user, Collections.emptyList(), Collections.emptyList());
-    }
-
-    /**
      * Constructs a new instance. The manager of the
      * node is set to {@code this} node.
      *
@@ -119,31 +106,6 @@ public class HierarchyTreeNode implements Iterable<HierarchyTreeNode>, Streamabl
         this.staff = new ArrayList<>();
 
         this.user = Objects.requireNonNull(user);
-        this.manager = this;
-    }
-
-    /**
-     *
-     * @param manager
-     *          The manager's node, not null.
-     *
-     * @param user
-     *          The user this node belongs to, not null.
-     *
-     * @param directStaff
-     *          The direct staff of the user, not null.
-     *
-     * @param staff
-     *          The staff of the user, not null.
-     */
-    public HierarchyTreeNode(HierarchyTreeNode manager, User user, Collection<HierarchyTreeNode> directStaff, Collection<HierarchyTreeNode> staff) {
-        this.directStaff = new ArrayList<>(Objects.requireNonNull(directStaff));
-        this.staff = new ArrayList<>(Objects.requireNonNull(staff));
-
-        this.user = Objects.requireNonNull(user);
-        this.manager = Objects.requireNonNull(manager);
-
-        this.managingUser = directStaff.isEmpty() || !staff.isEmpty();
     }
 
     /**
@@ -163,7 +125,7 @@ public class HierarchyTreeNode implements Iterable<HierarchyTreeNode>, Streamabl
      *          manager node.
      */
     public boolean isRoot() {
-        return this.equals(manager);
+        return Objects.isNull(manager);
     }
 
     /**
@@ -182,6 +144,81 @@ public class HierarchyTreeNode implements Iterable<HierarchyTreeNode>, Streamabl
     }
 
     /**
+     * Adds a given {@code staffNode} to the direct staff as well as the
+     * staff of itself and all parent nodes until the root is reached
+     * after removing it from the old manager's direct staff.
+     *
+     * @param staffNode
+     *          The node to add to the direct staff, not null.
+     */
+    public void addDirectStaffMember(HierarchyTreeNode staffNode) {
+        Objects.requireNonNull(staffNode);
+
+        if(!staffNode.isRoot()) {
+            staffNode.manager.removeDirectStaffMember(staffNode);
+        }
+
+        directStaff.add(staffNode);
+        staffNode.manager = this;
+
+        updateIsManagingUser();
+        addStaffMember(staffNode);
+    }
+
+    /**
+     * Adds the given {@code staffNode} to the staff of this
+     * node as well as all parent nodes until the root is reached.
+     *
+     * @param staffNode
+     *          The node to add to the staff, not null.
+     */
+    void addStaffMember(HierarchyTreeNode staffNode) {
+        staff.add(staffNode);
+        updateIsManagingUser();
+
+        if(!isRoot()) {
+            manager.addStaffMember(staffNode);
+        }
+    }
+
+    /**
+     * Removes a given {@code staffNode} from the direct staff
+     * and staff of itself and all parent nodes until the root
+     * is reached.
+     *
+     * @param staffNode
+     *          The node to remove from the direct staff, not null.
+     */
+    public void removeDirectStaffMember(HierarchyTreeNode staffNode) {
+        Objects.requireNonNull(staffNode);
+
+        directStaff.remove(staffNode);
+
+        updateIsManagingUser();
+        removeStaffMember(staffNode);
+    }
+
+    /**
+     * Removes the given {@code staffNode} from the staff
+     * of this node and all parent nodes until the root is reached.
+     *
+     * @param staffNode
+     *          The node to remove from the staff, not null.
+     */
+    void removeStaffMember(HierarchyTreeNode staffNode) {
+        staff.remove(staffNode);
+        updateIsManagingUser();
+
+        if(!isRoot()) {
+            manager.removeStaffMember(staffNode);
+        }
+    }
+
+    void updateIsManagingUser() {
+        this.managingUser = !this.directStaff.isEmpty() || this.staff.isEmpty();
+    }
+
+    /**
      *
      * @param other
      *          The other node to compare the manager of, not null.
@@ -192,7 +229,14 @@ public class HierarchyTreeNode implements Iterable<HierarchyTreeNode>, Streamabl
      */
     boolean managersEqual(HierarchyTreeNode other) {
         var otherManager = Objects.requireNonNull(other).manager;
-        return (manager == otherManager) || Objects.equals(manager.id, otherManager.id);
+
+        if(manager == otherManager) {
+            return true;
+        } else if(Objects.isNull(manager) || Objects.isNull(otherManager)) {
+            return false;
+        }
+
+        return Objects.equals(manager.id, otherManager.id);
     }
 
     /**
@@ -225,7 +269,8 @@ public class HierarchyTreeNode implements Iterable<HierarchyTreeNode>, Streamabl
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, staff, user, managingUser, directStaff, manager.id);
+        return Objects.hash(id, staff, user, managingUser, directStaff) +
+                (!Objects.isNull(manager) ? Objects.hash(manager.id) : 0);
     }
 
 }

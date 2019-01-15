@@ -1,6 +1,5 @@
 package de.adesso.projectboard.base.user.persistence.data;
 
-import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
@@ -12,12 +11,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
-import java.util.Arrays;
-import java.util.Base64;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,37 +22,38 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class UserDataPersistenceTest {
 
     @Autowired
-    UserDataRepository userDataRepo;
+    private UserDataRepository userDataRepo;
 
     @Autowired
-    UserRepository userRepo;
+    private UserRepository userRepo;
 
     @Test
     @Sql("classpath:de/adesso/projectboard/persistence/Users.sql")
     public void save() {
         // given
-        User expectedUser = userRepo.findById("User1").orElseThrow(EntityNotFoundException::new);
+        var expectedUser = userRepo.findById("User1").orElseThrow();
 
-        String expectedFirstName = "First";
-        String expectedLastName = "Last";
-        String expectedEmail = "Email";
-        String expectedLob = "LOB";
-        byte[] expectedPicture = Base64.getDecoder().decode("Test");
+        var expectedFirstName = "First";
+        var expectedLastName = "Last";
+        var expectedEmail = "Email";
+        var expectedLob = "LOB";
+        var expectedPicture = new byte[] {10, -3, 54, 20};
 
-        UserData userData = new UserData(expectedUser, expectedFirstName, expectedLastName, expectedEmail, expectedLob, expectedPicture);
+        var userData = new UserData(expectedUser, expectedFirstName, expectedLastName,
+                expectedEmail, expectedLob, expectedPicture);
 
         // when
-        UserData savedUserData = userDataRepo.save(userData);
-        UserData retrievedUserData = userDataRepo.findById(savedUserData.getId()).orElseThrow(EntityNotFoundException::new);
+        var savedUserData = userDataRepo.save(userData);
+        var retrievedUserData = userDataRepo.findById(savedUserData.getId()).orElseThrow(EntityNotFoundException::new);
 
         // then
-        SoftAssertions softly = new SoftAssertions();
+        var softly = new SoftAssertions();
 
-        softly.assertThat(retrievedUserData.getFirstName()).isEqualTo(expectedFirstName);
-        softly.assertThat(retrievedUserData.getLastName()).isEqualTo(expectedLastName);
-        softly.assertThat(retrievedUserData.getEmail()).isEqualTo(expectedEmail);
-        softly.assertThat(retrievedUserData.getLob()).isEqualTo(expectedLob);
-        softly.assertThat(retrievedUserData.getPicture()).isEqualTo(expectedPicture);
+        softly.assertThat(retrievedUserData.firstName).isEqualTo(expectedFirstName);
+        softly.assertThat(retrievedUserData.lastName).isEqualTo(expectedLastName);
+        softly.assertThat(retrievedUserData.email).isEqualTo(expectedEmail);
+        softly.assertThat(retrievedUserData.lob).isEqualTo(expectedLob);
+        softly.assertThat(retrievedUserData.picture).isEqualTo(expectedPicture);
 
         softly.assertAll();
     }
@@ -69,19 +65,23 @@ public class UserDataPersistenceTest {
     })
     public void findByUser() {
         // given
-        String firstUserId = "User1";
-        String thirdUserId = "User3";
+        var firstUserId = "User1";
+        var thirdUserId = "User3";
 
-        User firstUser = userRepo.findById(firstUserId).orElseThrow(EntityExistsException::new);
-        User thirdUser = userRepo.findById(thirdUserId).orElseThrow(EntityExistsException::new);
+        var firstUser = userRepo.findById(firstUserId).orElseThrow();
+        var thirdUser = userRepo.findById(thirdUserId).orElseThrow();
 
         // when
-        Optional<UserData> firstUserDataOptional = userDataRepo.findByUser(firstUser);
-        Optional<UserData> thirdUserDataOptional = userDataRepo.findByUser(thirdUser);
+        var firstUserDataOptional = userDataRepo.findByUser(firstUser);
+        var thirdUserDataOptional = userDataRepo.findByUser(thirdUser);
 
         // then
-        assertThat(firstUserDataOptional).isPresent();
-        assertThat(thirdUserDataOptional).isNotPresent();
+        var softly = new SoftAssertions();
+
+        softly.assertThat(firstUserDataOptional).isPresent();
+        softly.assertThat(thirdUserDataOptional).isNotPresent();
+
+        softly.assertAll();
     }
 
     @Test
@@ -91,18 +91,18 @@ public class UserDataPersistenceTest {
     })
     public void findByUserIn() {
         // given
-        String firstUserId = "User1";
-        String secondUserId = "User2";
-        String thirdUserId = "User3";
+        var firstUserId = "User1";
+        var secondUserId = "User2";
+        var thirdUserId = "User3";
 
-        User firstUser = userRepo.findById(firstUserId).orElseThrow(EntityExistsException::new);
-        User secondUser = userRepo.findById(secondUserId).orElseThrow(EntityExistsException::new);
-        User thirdUser = userRepo.findById(thirdUserId).orElseThrow(EntityExistsException::new);
+        var firstUser = userRepo.findById(firstUserId).orElseThrow();
+        var secondUser = userRepo.findById(secondUserId).orElseThrow();
+        var thirdUser = userRepo.findById(thirdUserId).orElseThrow();
 
-        List<User> userList = Arrays.asList(firstUser, secondUser, thirdUser);
+        var users = List.of(firstUser, secondUser, thirdUser);
 
         // when
-        List<UserData> userDataList = userDataRepo.findByUserIn(userList, Sort.unsorted());
+        var userDataList = userDataRepo.findByUserIn(users, Sort.unsorted());
 
         // then
         assertThat(userDataList).hasSize(2);
@@ -115,19 +115,23 @@ public class UserDataPersistenceTest {
     })
     public void existsByUser() {
         // given
-        String firstUserId = "User1";
-        String thirdUserId = "User3";
+        var firstUserId = "User1";
+        var thirdUserId = "User3";
 
-        User firstUser = userRepo.findById(firstUserId).orElseThrow(EntityExistsException::new);
-        User thirdUser = userRepo.findById(thirdUserId).orElseThrow(EntityExistsException::new);
+        var firstUser = userRepo.findById(firstUserId).orElseThrow();
+        var thirdUser = userRepo.findById(thirdUserId).orElseThrow();
 
         // when
         boolean userDataForFirstUserExists = userDataRepo.existsByUser(firstUser);
         boolean userDataForThirdUserExists = userDataRepo.existsByUser(thirdUser);
 
         // then
-        assertThat(userDataForFirstUserExists).isTrue();
-        assertThat(userDataForThirdUserExists).isFalse();
+        var softly = new SoftAssertions();
+
+        softly.assertThat(userDataForFirstUserExists).isTrue();
+        softly.assertThat(userDataForThirdUserExists).isFalse();
+
+        softly.assertAll();
     }
 
 }

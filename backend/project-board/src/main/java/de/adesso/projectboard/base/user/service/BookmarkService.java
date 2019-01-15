@@ -1,9 +1,9 @@
 package de.adesso.projectboard.base.user.service;
 
+import de.adesso.projectboard.ad.project.service.RepositoryProjectService;
 import de.adesso.projectboard.base.exceptions.BookmarkNotFoundException;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.user.persistence.User;
-import de.adesso.projectboard.project.service.RepositoryProjectService;
 
 import java.util.List;
 

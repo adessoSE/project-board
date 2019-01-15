@@ -42,34 +42,27 @@ public class UserData {
     String lob;
 
     @Lob
-    @Column(length = 102400)
+    @Column(name = "PICTURE")
     @Basic(fetch = FetchType.LAZY)
     byte[] picture;
 
-    /**
-     *
-     * @param user
-     *          The {@link User} this instance belongs to.
-     *
-     * @param firstName
-     *          The first name of the user.
-     *
-     * @param lastName
-     *          The last name of the user.
-     *
-     * @param email
-     *          The email of the user.
-     *
-     * @param lob
-     *          The LoB of the user.
-     */
-    public UserData(User user, String firstName, String lastName, String email, String lob, byte[] picture) {
+    @Column(name = "IS_PICTURE_INITIALIZED")
+    boolean pictureInitialized;
+
+    public UserData(User user, String firstName, String lastName, String email, String lob) {
         this.user = user;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.lob = lob;
         this.picture = picture;
+    }
+
+    public UserData(User user, String firstName, String lastName, String mail, String lob, byte[] picture) {
+        this(user, firstName, lastName, mail, lob);
+
+        this.picture = picture;
+        this.pictureInitialized = true;
     }
 
     /**

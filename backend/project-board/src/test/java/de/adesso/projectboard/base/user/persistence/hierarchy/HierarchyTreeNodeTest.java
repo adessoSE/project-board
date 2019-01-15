@@ -21,6 +21,23 @@ public class HierarchyTreeNodeTest {
     private User otherUserMock;
 
     @Test
+    public void constructorInitializesListsAndSetsManagerItself() {
+        // given
+
+        // when
+        var node = new HierarchyTreeNode(userMock);
+
+        // then
+        var softly = new SoftAssertions();
+
+        softly.assertThat(node.manager).isNull();
+        softly.assertThat(node.staff).isEmpty();
+        softly.assertThat(node.directStaff).isEmpty();
+
+        softly.assertAll();
+    }
+
+    @Test
     public void equalsReturnsTrueWhenSameInstance() {
         // given
         var node = new HierarchyTreeNode(userMock);
@@ -129,7 +146,6 @@ public class HierarchyTreeNodeTest {
         compareEqualsWithExpectedEquals(node, otherNode, false);
     }
 
-
     @Test
     public void isLeafReturnsTrueWhenDirectStaffAndStaffAreEmpty() {
         // given
@@ -190,14 +206,16 @@ public class HierarchyTreeNodeTest {
     public void isRootReturnsFalseWhenOtherNodeIsManager() {
         // given
         var managerNode = new HierarchyTreeNode(otherUserMock);
-        var node = new HierarchyTreeNode(managerNode, userMock);
+
+        var node = new HierarchyTreeNode(userMock);
+        node.manager = managerNode;
 
         // when / then
         assertThat(node.isRoot()).isFalse();
     }
 
     @Test
-    public void getRootReturnsNodeWhenNodeIsRoot() {
+    public void getRootReturnsNodeWhenManagerIsNull() {
         // given
         var node = new HierarchyTreeNode(userMock);
 
@@ -209,10 +227,48 @@ public class HierarchyTreeNodeTest {
     public void getRootReturnsManagerWhenNodeIsNoRoot() {
         // given
         var managerNode = new HierarchyTreeNode(otherUserMock);
-        var node = new HierarchyTreeNode(managerNode, userMock);
+
+        var node = new HierarchyTreeNode(userMock);
+        node.manager = managerNode;
 
         // when / then
         assertThat(node.getRoot()).isSameAs(managerNode);
+    }
+
+    @Test
+    public void addDirectStaffMemberAddsNodeToItselfAndAllParents() {
+        // given
+        var rootNode = new HierarchyTreeNode(userMock);
+        rootNode.managingUser = true;
+
+        var managerNode = new HierarchyTreeNode(otherUserMock);
+        managerNode.manager = rootNode;
+        rootNode.staff.add(managerNode);
+        rootNode.directStaff.add(managerNode);
+
+        var nodeToAdd = new HierarchyTreeNode(userMock);
+
+        // when
+        managerNode.addDirectStaffMember(nodeToAdd);
+
+        // then
+        var softly = new SoftAssertions();
+
+        softly.assertThat(rootNode.staff).containsExactlyInAnyOrder(managerNode, nodeToAdd);
+        softly.assertThat(rootNode.directStaff).containsExactlyInAnyOrder(managerNode);
+        softly.assertThat(rootNode.managingUser).isTrue();
+
+        softly.assertThat(managerNode.manager).isSameAs(rootNode);
+        softly.assertThat(managerNode.staff).containsExactlyInAnyOrder(nodeToAdd);
+        softly.assertThat(managerNode.directStaff).containsExactlyInAnyOrder(nodeToAdd);
+        softly.assertThat(managerNode.managingUser).isTrue();
+
+        softly.assertThat(nodeToAdd.manager).isSameAs(managerNode);
+        softly.assertThat(nodeToAdd.staff).isEmpty();
+        softly.assertThat(nodeToAdd.directStaff).isEmpty();
+        softly.assertThat(nodeToAdd.managingUser).isFalse();
+
+        softly.assertAll();
     }
 
     @Test
@@ -235,11 +291,36 @@ public class HierarchyTreeNodeTest {
         managerNode.id = managerNodeId;
         otherManagerNode.id = managerNodeId;
 
-        var node = new HierarchyTreeNode(managerNode, userMock);
-        var otherNode = new HierarchyTreeNode(otherManagerNode, userMock);
+        var node = new HierarchyTreeNode(userMock);
+        node.manager = managerNode;
+
+        var otherNode = new HierarchyTreeNode(userMock);
+        otherNode.manager = otherManagerNode;
 
         // when / then
         assertThat(node.managersEqual(otherNode)).isTrue();
+    }
+
+    @Test
+    public void managersEqualReturnsTrueWhenBothManagersNull() {
+        // given
+        var node = new HierarchyTreeNode(userMock);
+        var otherNode = new HierarchyTreeNode(otherUserMock);
+
+        // when / then
+        assertThat(node.managersEqual(otherNode)).isTrue();
+    }
+
+    @Test
+    public void managersEqualReturnsFalseWhenOneNull() {
+        // given
+        var node = new HierarchyTreeNode(userMock);
+
+        var otherNode = new HierarchyTreeNode(otherUserMock);
+        otherNode.manager = node;
+
+        // when / then
+        assertThat(node.managersEqual(otherNode)).isFalse();
     }
 
     @Test
@@ -254,8 +335,11 @@ public class HierarchyTreeNodeTest {
         managerNode.id = managerNodeId;
         otherManagerNode.id = otherManagerNodeId;
 
-        var node = new HierarchyTreeNode(managerNode, userMock);
-        var otherNode = new HierarchyTreeNode(otherManagerNode, userMock);
+        var node = new HierarchyTreeNode(userMock);
+        node.manager = managerNode;
+
+        var otherNode = new HierarchyTreeNode(userMock);
+        otherManagerNode.manager = otherManagerNode;
 
         // when / then
         assertThat(node.managersEqual(otherNode)).isFalse();

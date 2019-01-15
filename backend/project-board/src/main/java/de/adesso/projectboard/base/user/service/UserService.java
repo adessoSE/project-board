@@ -112,7 +112,7 @@ public interface UserService {
      *
      * @see #getStaffMembersOfUser(User)
      */
-    List<User> getStaffMemberUserDataOfUser(User user, Sort sort);
+    List<UserData> getStaffMemberUserDataOfUser(User user, Sort sort);
 
     /**
      *
@@ -122,7 +122,7 @@ public interface UserService {
      * @return
      *          The given {@code user}'s staff members.
      */
-    List<UserData> getStaffMembersOfUser(User user);
+    List<User> getStaffMembersOfUser(User user);
 
     /**
      *

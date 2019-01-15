@@ -3,6 +3,7 @@ package de.adesso.projectboard.base.user.persistence.hierarchy;
 import de.adesso.projectboard.base.user.persistence.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -12,7 +13,7 @@ public interface HierarchyTreeNodeRepository extends JpaRepository<HierarchyTree
 
     Optional<HierarchyTreeNode> findByUser(User user);
 
-    boolean existsByUser(User user);
+    List<HierarchyTreeNode> findByUserIn(Iterable<User> users);
 
     boolean existsByUserAndManagingUserTrue(User user);
 
