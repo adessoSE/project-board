@@ -15,6 +15,10 @@ mat-dialog-content {
   background-color: #FFF;
 }
 
+.row {
+  padding-bottom: 1rem;
+}
+
 .shorten {
   max-height: calc(65vh - 182px);
 }
@@ -110,6 +114,10 @@ h1 {
   display: block;
 }
 
+.right-side {
+  white-space: pre-line;
+}
+
 @include media-breakpoint-down(md) {
 
  /* mat-dialog-actions {
@@ -137,6 +145,7 @@ h1 {
   }
 
   .right-side {
+    white-space: pre-line;
     padding-left: 20px;
     padding-bottom: 0.5rem;
   }
