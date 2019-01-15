@@ -15,10 +15,10 @@
       <tr>
         <th style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" *ngIf="!loading" id="total-hits">{{filteredEmployees?.length || 'Keine'}} Mitarbeiter{{searchText != '' ? ' für "' + searchText + '"' : ''}}</th>
         <ng-container *ngIf="!mobile">
-          <td>Status</td>
-          <td>Freigeschaltet seit</td>
-          <td>Freigeschaltet bis</td>
-          <td>Anfragen</td>
+          <td (click)="sortByState(1)" >Status <mat-icon *ngIf="sortMemory === 1 && sortValue !== 0">{{(sortValue === 1) ? 'expand_more' : 'expand_less'}}</mat-icon></td>
+          <td (click)="sortBySince(2)" >Freigeschaltet seit <mat-icon *ngIf="sortMemory === 2 && sortValue !== 0">{{(sortValue === 1) ? 'expand_more' : 'expand_less'}}</mat-icon></td>
+          <td (click)="sortByUntil(3)" >Freigeschaltet bis <mat-icon *ngIf="sortMemory === 3 && sortValue !== 0">{{(sortValue === 1) ? 'expand_more' : 'expand_less'}}</mat-icon></td>
+          <td (click)="sortByRequest(4)" >Anfragen <mat-icon *ngIf="sortMemory === 4 && sortValue !== 0">{{(sortValue === 1) ? 'expand_more' : 'expand_less'}}</mat-icon></td>
         </ng-container>
       </tr>
       </thead>

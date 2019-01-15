@@ -8,7 +8,7 @@
     text-align: center;
     left: calc(50vw - 125px);
     z-index: 50;
-    top: 3%;
+    top: 2%;
     -webkit-animation: slideTop 1s; /* Safari 4.0 - 8.0 */
     animation: slideTop 1s;
 }
@@ -16,13 +16,13 @@
 /* Safari 4.0 - 8.0 */
 @-webkit-keyframes slideTop {
   0%   {top: -50px;}
-  100% {top:3%;}
+  100% {top:2%;}
 }
 
 /* Standard syntax */
 @keyframes slideTop {
   0%   {top: -50px;}
-  100% {top:3%;}
+  100% {top:2%;}
 }
 
 .close-icon {

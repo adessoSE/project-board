@@ -9,7 +9,7 @@ mat-dialog-actions {
 }
 
 mat-dialog-content {
-  max-height: 600px;
+  max-height: calc(80vh - (80px + 54px));
   padding-top: 5px;
   padding-bottom: 5px;
   background-color: #FFF;
