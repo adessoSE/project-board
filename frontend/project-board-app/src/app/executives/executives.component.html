@@ -15,10 +15,10 @@
       <tr>
         <th style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" *ngIf="!loading" id="total-hits">{{filteredEmployees?.length || 'Keine'}} Mitarbeiter{{searchText != '' ? ' für "' + searchText + '"' : ''}}</th>
         <ng-container *ngIf="!mobile">
-          <td>Status</td>
-          <td>Freigeschaltet seit</td>
-          <td>Freigeschaltet bis</td>
-          <td>Anfragen</td>
+          <td (click)="sortByState()" >Status <mat-icon>unfold_more</mat-icon></td>
+          <td (click)="sortBySince()" >Freigeschaltet seit <mat-icon>unfold_more</mat-icon></td>
+          <td (click)="sortByUntil()" >Freigeschaltet bis <mat-icon>unfold_more</mat-icon></td>
+          <td (click)="sortByRequest()" >Anfragen <mat-icon></mat-icon></td>
         </ng-container>
       </tr>
       </thead>

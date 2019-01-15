@@ -2,6 +2,12 @@
 @import '../../../node_modules/bootstrap/scss/variables';
 @import '../../../node_modules/bootstrap/scss/mixins';
 
+td mat-icon {
+  font-variant: normal;
+  display: inline-block;
+  vertical-align: bottom;
+}
+
 .badge {
   width: 1.5rem;
   -webkit-border-radius: 0;

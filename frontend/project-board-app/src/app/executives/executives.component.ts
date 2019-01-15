@@ -18,10 +18,10 @@ export class ExecutivesComponent implements OnInit {
   selectedEmployee: Employee;
   mobile = false;
   smallMobile = false;
-
   searchText = '';
   loading = true;
   dialogRef: MatDialogRef<EmployeeDialogComponent>;
+  sortValue: number;
 
   destroy$ = new Subject<void>();
 
@@ -125,6 +125,74 @@ export class ExecutivesComponent implements OnInit {
     this.dialogRef.afterClosed()
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.location.replaceState('/employees'));
+  }
+
+  sortByState() {
+    if(this.sortValue === 0 || this.sortValue === undefined) {
+      this.filteredEmployees.sort((a: Employee , b: Employee) => { 
+        return (a.accessInfo.hasAccess === b.accessInfo.hasAccess)? 0 : a.accessInfo.hasAccess? -1 : 1 });
+      this.sortValue = 1;
+    }
+    else if(this.sortValue === 1) {
+      this.filteredEmployees.sort((a: Employee , b: Employee) => {
+        return (a.accessInfo.hasAccess === b.accessInfo.hasAccess)? 0 : b.accessInfo.hasAccess? -1 : 1 });
+      this.sortValue = 2;
+      }
+    else {
+      this.filteredEmployees.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
+      this.sortValue = 0;
+    }
+  }
+
+  sortBySince() {
+    if(this.sortValue === 0 || this.sortValue === undefined) {
+      this.filteredEmployees.sort((a: Employee , b: Employee) => { 
+        return Number(new Date(b.accessInfo.accessStart)) - Number(new Date(a.accessInfo.accessStart))});
+      this.sortValue = 1;
+    }
+    else if (this.sortValue === 1) {
+      this.filteredEmployees.sort((a: Employee , b: Employee) => {
+        return Number(new Date(a.accessInfo.accessStart)) - Number(new Date(b.accessInfo.accessStart))});
+      this.sortValue = 2;
+      }
+      else {
+        this.filteredEmployees.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
+        this.sortValue = 0;
+      }
+  }
+
+  sortByUntil() {
+    if(this.sortValue === 0 || this.sortValue === undefined) {
+      this.filteredEmployees.sort((a: Employee , b: Employee) => { 
+        return Number(new Date(a.accessInfo.accessEnd)) - Number(new Date(b.accessInfo.accessEnd))});
+      this.sortValue = 1;
+    }
+    else if (this.sortValue === 1){
+      this.filteredEmployees.sort((a: Employee , b: Employee) => {
+        return Number(new Date(b.accessInfo.accessEnd)) - Number(new Date(a.accessInfo.accessEnd))});
+      this.sortValue = 2;
+      }
+      else {
+        this.filteredEmployees.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
+        this.sortValue = 0;
+      }
+  }
+
+  sortByRequest() {
+    if(this.sortValue === 0 || this.sortValue === undefined) {
+      this.filteredEmployees.sort((a: Employee , b: Employee) => { 
+        return b.applications.count - a.applications.count});
+        this.sortValue = 1;
+    }
+    else if (this.sortValue === 1){
+      this.filteredEmployees.sort((a: Employee , b: Employee) => {
+        return a.applications.count - b.applications.count});
+      this.sortValue = 2;
+      }
+      else {
+        this.filteredEmployees.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
+        this.sortValue = 0;
+      }
   }
 
   toggleBoss() {
