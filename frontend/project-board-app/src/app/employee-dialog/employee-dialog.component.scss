@@ -198,7 +198,30 @@ button:focus, button:active {
 }
 
 img {
-  margin-top: -9px;
+  width: 80px;
+}
+
+#image-wrapper {
+  display: inline;
+  width: 160px;
+  height: 96px;
   float: left;
-  width: 50px;
+  background: white url("../../assets/profileborder.png") no-repeat center bottom;
+  background-size: contain;
+  padding: 8px 40px;
+}
+
+@include media-breakpoint-down(md) {
+  #image-wrapper {
+    float: none;
+    display: block;
+    margin: 0 auto;
+    width: 200px;
+    height: 120px;
+    padding: 8px 48px;
+  }
+
+  #image-wrapper img {
+    width: 104px;
+  }
 }

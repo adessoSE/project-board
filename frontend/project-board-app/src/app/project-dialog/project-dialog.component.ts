@@ -1,11 +1,11 @@
 import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { NavigationStart, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Application, EmployeeService } from '../_services/employee.service';
 import { Project } from '../_services/project.service';
-import { Router, NavigationStart } from '@angular/router';
 
 export interface ProjectDialogData {
   project: Project;
@@ -33,22 +33,43 @@ export class ProjectDialogComponent implements OnInit {
   showBox = false;
   comment = '';
 
-  ngOnInit() {
-    this.mobile = document.body.clientWidth < 992;
-  }
-
   constructor(
     public dialogRef: MatDialogRef<ProjectDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ProjectDialogData,
     private authService: AuthenticationService,
     private employeeService: EmployeeService,
-    private router: Router,) 
-    { router.events.subscribe( event => {
-        if(event instanceof NavigationStart) {
-          this.dialogRef.close();
-        }
-      });
+    private router: Router) {
+    router.events.subscribe(event => {
+      if (event instanceof NavigationStart) {
+        this.dialogRef.close();
+      }
+    });
+  }
+
+  ngOnInit() {
+    this.mobile = document.body.clientWidth < 992;
+    this.data.project.skills = this.cleanUpString(this.data.project.skills);
+    this.data.project.description = this.cleanUpString(this.data.project.description);
+    this.data.project.job = this.cleanUpString(this.data.project.job);
+    this.data.project.title = this.cleanUpString(this.data.project.title);
+    this.data.project.operationStart = this.cleanUpString(this.data.project.operationStart);
+    this.data.project.operationEnd = this.cleanUpString(this.data.project.operationEnd);
+  }
+
+  cleanUpString(string: string): string {
+    if (string) {
+      string = string.replace(/\t{2,}/, '\t');
+      string = string.replace(/ {2,}/, ' ');
+      string = string.replace(/\n{3,}/gm, '\n\n');
+      string = string.replace(/\s*$/, '');
+      string = string.replace(/^\s*/, '');
+      string = string.replace(/,$/, '');
+      string = string.replace(/,[^ ]/, ', ');
+      string = string.replace(/[ \t]*,/, ',');
+      return string;
     }
+    return null;
+  }
 
   toggleRequestArea() {
     this.showBox = !this.showBox;

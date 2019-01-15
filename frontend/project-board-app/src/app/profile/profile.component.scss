@@ -161,10 +161,12 @@
   color: #338bd2;
 }
 
-.mail-icon {
+.mail-icon-wrapper {
   display: inline-block;
-  vertical-align: top;
-  margin-top: 4px;
+}
+
+.mail-icon {
+  vertical-align: text-bottom;
 }
 
 .project-title {
