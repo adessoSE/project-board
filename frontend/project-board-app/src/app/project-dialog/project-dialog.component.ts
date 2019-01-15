@@ -52,19 +52,20 @@ export class ProjectDialogComponent implements OnInit {
     this.data.project.description = this.cleanUpString(this.data.project.description);
     this.data.project.job = this.cleanUpString(this.data.project.job);
     this.data.project.title = this.cleanUpString(this.data.project.title);
+    this.data.project.operationStart = this.cleanUpString(this.data.project.operationStart);
+    this.data.project.operationEnd = this.cleanUpString(this.data.project.operationEnd);
   }
 
   cleanUpString(string: string): string {
     if (string) {
-      string = string.replace(/\n{2,}/gm, '\n');
-      string = string.replace(/\t{2,}/gm, '\t');
-      string = string.replace(/ {2,}/gm, ' ');
-      string = string.replace(/\A\s*/gm, '');
-      string = string.replace(/\s*\z/gm, '');
-      string = string.replace(/^\s$/gm, '');
-      string = string.replace(/\s*,/, ',');
-      string = string.replace(/,\w/, ', ');
-      string = string.replace(/,[^ ]/, '');
+      string = string.replace(/\t{2,}/, '\t');
+      string = string.replace(/ {2,}/, ' ');
+      string = string.replace(/\n{3,}/gm, '\n\n');
+      string = string.replace(/\s*$/, '');
+      string = string.replace(/^\s*/, '');
+      string = string.replace(/,$/, '');
+      string = string.replace(/,[^ ]/, ', ');
+      string = string.replace(/[ \t]*,/, ',');
       return string;
     }
     return null;
