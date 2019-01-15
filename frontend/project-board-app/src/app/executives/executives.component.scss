@@ -12,8 +12,21 @@
   vertical-align: middle;
 }
 
+.badge-danger {
+background-color: grey;
+}
+
 .badge-red {
-  color: #dc3545;
+  color: grey;
+}
+
+.badge-success {
+  background-color: #016EC7;
+}
+
+#result-table tbody tr:hover .badge-success {
+  background-color: #FFF;
+  color: #016EC7;
 }
 
 button,
