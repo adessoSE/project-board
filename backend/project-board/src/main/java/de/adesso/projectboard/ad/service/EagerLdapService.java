@@ -142,6 +142,31 @@ public class EagerLdapService {
         return rootHierarchyNode;
     }
 
+    /**
+     * Returns the child nodes of a given {@code node} in level order. When iterating
+     * the returned list the parent node of a returned node will always be returned
+     * first. The returned list does not contain the given {@code node} though.
+     * <br>
+     * Example:
+     * <pre>
+     *         A
+     *       /  \
+     *      B   C
+     *      |
+     *      D
+     * </pre>
+     * When node <i>A</i> is passed, the list contains the following elements in
+     * order: <i>B, C, D</i>
+     *
+     * @param node
+     *          The node to get the child nodes of, not null.
+     *
+     * @param dnNodeMap
+     *          A map to map a node's DN to the node itself, not null.
+     *
+     * @return
+     *          The child nodes in level order.
+     */
     List<LdapUserNode> getChildNodesInLevelOrder(LdapUserNode node, Map<String, LdapUserNode> dnNodeMap) {
         Objects.requireNonNull(node);
         Objects.requireNonNull(dnNodeMap);
@@ -151,10 +176,15 @@ public class EagerLdapService {
 
         while(!childDnDeque.isEmpty()) {
             var childDn = childDnDeque.removeFirst();
+
+            if(!dnNodeMap.containsKey(childDn)) {
+                var message = String.format("Child node with DN '%s' not found!", childDn);
+
+                throw new IllegalArgumentException(message);
+            }
+
             var childNode = dnNodeMap.get(childDn);
-
             childDnDeque.addAll(childNode.getDirectReportsDn());
-
             childNodesInLevelOrder.add(childNode);
         }
 

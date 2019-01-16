@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -29,6 +30,6 @@ public class LdapUserNode {
 
     String managerDn;
 
-    List<String> directReportsDn;
+    List<String> directReportsDn = new ArrayList<>();
 
 }
