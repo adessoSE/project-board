@@ -3,7 +3,6 @@ package de.adesso.projectboard.ad.user;
 import de.adesso.projectboard.base.exceptions.HierarchyNotFoundException;
 import de.adesso.projectboard.base.exceptions.UserDataNotFoundException;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
-import de.adesso.projectboard.base.security.AuthenticationInfoRetriever;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
@@ -22,13 +21,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * {@link UserService} implementation that uses LDAP queries to retrieve
- * user data from a AD.
- *
- * @see UserRepository
- * @see AuthenticationInfoRetriever
- */
 @Profile("adesso-ad")
 @Service
 @Transactional
@@ -142,6 +134,13 @@ public class RepositoryUserService implements UserService {
         }
 
         return userManagerMap;
+    }
+
+    public User getOrCreateUserById(String userId) {
+        Objects.requireNonNull(userId);
+
+        return userRepo.findById(userId)
+                .orElseGet(() -> userRepo.save(new User(userId)));
     }
 
 }

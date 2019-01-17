@@ -311,6 +311,34 @@ public class RepositoryUserServiceTest {
                 .hasMessage(expectedMessage);
     }
 
+    @Test
+    public void getOrCreateUserByIdReturnsUserWhenPresent() {
+        // given
+        given(userRepoMock.findById(USER_ID)).willReturn(Optional.of(userMock));
+
+        // when
+        var actualUser = repoUserService.getOrCreateUserById(USER_ID);
+
+        // then
+        assertThat(actualUser).isEqualTo(userMock);
+    }
+
+    @Test
+    public void getOrCreateUserByIdCreatesNewUserWhenNotPresent() {
+        // given
+        var expectedUser = new User(USER_ID);
+
+        given(userRepoMock.findById(USER_ID)).willReturn(Optional.empty());
+        given(userRepoMock.save(expectedUser)).willReturn(expectedUser);
+
+        // when
+        var actualUser = repoUserService.getOrCreateUserById(USER_ID);
+
+        // then
+        assertThat(actualUser).isEqualTo(expectedUser);
+        verify(userRepoMock).save(actualUser);
+    }
+
     private void compareUserExistsWithExpectedExists(String userId, boolean expected) {
         // when
         var actualExists = repoUserService.userExists(userId);
