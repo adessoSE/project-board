@@ -7,6 +7,7 @@ import { environment } from '../environments/environment';
 import { AlertService } from './_services/alert.service';
 import { AuthenticationService } from './_services/authentication.service';
 import { EmployeeService } from './_services/employee.service';
+import { style } from '@angular/animations';
 
 @Component({
   selector: 'app-root',
@@ -73,6 +74,24 @@ export class AppComponent implements OnInit, DoCheck {
     this.sidenav.close();
     $('body').css('overflow', 'auto');
     document.getElementById('top-badge').style.visibility = 'visible';
+    this.miniNavVisibility();
+    this.mainNavPosition();
+  }
+
+  miniNavVisibility(){
+    if (/Mobi/.test(navigator.userAgent) || (window.innerWidth < 992)) {
+      document.getElementById("mini-nav").style.display = "none";
+    } else {
+      document.getElementById("mini-nav").style.display = "block";
+    }
+  }
+
+  mainNavPosition() {
+    if (!(/Mobi/.test(navigator.userAgent) || (window.innerWidth < 992))){
+      document.getElementById("main-nav").style.position = "relative";
+    } else {
+      document.getElementById("main-nav").style.position = "sticky";
+    }
   }
 
   getUsername() {
@@ -82,6 +101,8 @@ export class AppComponent implements OnInit, DoCheck {
   ngOnInit() {
     this.sidenav.openedStart.subscribe(() => this.onNavOpen());
     this.sidenav.closedStart.subscribe(() => this.onNavClosed());
+    this.miniNavVisibility();
+    this.mainNavPosition(); 
   }
 
   ngDoCheck() {
@@ -107,6 +128,27 @@ export class AppComponent implements OnInit, DoCheck {
   }
 
   @HostListener('window:scroll') onScroll() {
+
+    //Toggle for the mini-menu
+
+      if (document.documentElement.scrollTop > 400) {  
+        if((document.getElementById('mini-nav').offsetLeft === -45) && !($("#mini-nav").is(':animated'))){
+        $("#mini-nav").animate({left: '0px'}, function() {
+          if(document.documentElement.scrollTop <= 400) {
+            $("#mini-nav").animate({left: '-45px'});
+          }
+        });
+        }
+      } else {
+        if((document.getElementById('mini-nav').offsetLeft === 0) && !($("#mini-nav").is(':animated'))){
+        $("#mini-nav").animate({left: '-45px'}, function() {
+          if(document.documentElement.scrollTop > 400) {
+          $("#mini-nav").animate({left: '0px'});
+          }
+        });
+        }
+      }
+
     if (/Mobi/.test(navigator.userAgent)) {
       // mobile!
       if (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400) {
