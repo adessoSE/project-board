@@ -20,7 +20,7 @@ public class LdapUserNode {
 
     String surname;
 
-    String userPrincipalName;
+    String mail;
 
     String division;
 

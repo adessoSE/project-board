@@ -1,14 +1,16 @@
-package de.adesso.projectboard.ad.service;
+package de.adesso.projectboard.ad.updater;
 
 import de.adesso.projectboard.ad.configuration.LdapConfigurationProperties;
+import de.adesso.projectboard.ad.service.LdapService;
 import de.adesso.projectboard.ad.service.node.LdapUserNode;
+import de.adesso.projectboard.ad.user.RepositoryUserService;
+import de.adesso.projectboard.base.user.persistence.data.UserDataRepository;
 import de.adesso.projectboard.base.user.persistence.hierarchy.HierarchyTreeNodeRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.ldap.core.LdapTemplate;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,24 +21,30 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
-public class EagerLdapServiceTest {
+public class UserUpdaterTest {
 
     @Mock
     private HierarchyTreeNodeRepository hierarchyTreeNodeRepoMock;
 
     @Mock
-    private LdapTemplate ldapTemplateMock;
+    private LdapService ldapServiceMock;
 
     @Mock
     private LdapConfigurationProperties configPropertiesMock;
 
-    private EagerLdapService ldapService;
+    @Mock
+    private RepositoryUserService repoUserServiceMock;
+
+    @Mock
+    private UserDataRepository userDataRepo;
+
+    private UserUpdater userUpdater;
 
     @Before
     public void setUp() throws Exception {
         given(configPropertiesMock.getLdapBase()).willReturn("base");
 
-        this.ldapService = new EagerLdapService(ldapTemplateMock, hierarchyTreeNodeRepoMock, configPropertiesMock);
+        this.userUpdater = new UserUpdater(hierarchyTreeNodeRepoMock, repoUserServiceMock, userDataRepo, ldapServiceMock);
     }
 
     @Test
@@ -61,7 +69,7 @@ public class EagerLdapServiceTest {
         var expectedOrder = List.of(firstLevelNode1, firstLevelNode2, secondLevelNode);
 
         // when
-        var actualOrder = ldapService.getChildNodesInLevelOrder(rootNode, dnNodeMap);
+        var actualOrder = userUpdater.getChildNodesInLevelOrder(rootNode, dnNodeMap);
 
         // then
         assertThat(actualOrder).containsExactlyElementsOf(expectedOrder);
@@ -78,7 +86,7 @@ public class EagerLdapServiceTest {
         var expectedMessage = String.format("Child node with DN '%s' not found!", childNodeDn);
 
         // when / then
-        assertThatThrownBy(() -> ldapService.getChildNodesInLevelOrder(rootNode, Collections.emptyMap()))
+        assertThatThrownBy(() -> userUpdater.getChildNodesInLevelOrder(rootNode, Collections.emptyMap()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(expectedMessage);
     }

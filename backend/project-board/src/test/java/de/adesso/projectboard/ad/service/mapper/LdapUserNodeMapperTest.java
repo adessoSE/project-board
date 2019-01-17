@@ -29,7 +29,7 @@ public class LdapUserNodeMapperTest {
         var expectedId = "ID";
         var expectedName = "full name";
         var expectedGivenName = "given name";
-        var expectedPrincipalName = "principal";
+        var expectedMail = "mail@test.com";
         var expectedManagerDn = "manager DN";
         var expectedSurname = "surname";
         var expectedDepartment = "department";
@@ -40,7 +40,7 @@ public class LdapUserNodeMapperTest {
         var idAttr = createAttribute(ID_ATTR_ID, expectedId);
         var nameAttr = createAttribute("name", expectedName);
         var givenNameAttr = createAttribute("givenName", expectedGivenName);
-        var principalNameAttr = createAttribute("userPrincipalName", expectedPrincipalName);
+        var mailAttr = createAttribute("mail", expectedMail);
         var managerAttr = createAttribute("manager", expectedManagerDn);
         var surnameAttr = createAttribute("sn", expectedSurname);
         var departmentAttr = createAttribute("department", expectedDepartment);
@@ -49,12 +49,14 @@ public class LdapUserNodeMapperTest {
         var directReportsAttr = createAttribute("directReports", "D1", "D2");
 
         var attributes = new BasicAttributes();
-        for(var attr : List.of(idAttr, nameAttr, givenNameAttr, principalNameAttr, managerAttr, surnameAttr, departmentAttr, divisionAttr, dnAttr, directReportsAttr)) {
+        for(var attr : List.of(idAttr, nameAttr, givenNameAttr, mailAttr, managerAttr,
+                surnameAttr, departmentAttr, divisionAttr, dnAttr, directReportsAttr)) {
             attributes.put(attr);
         }
 
         var expectedNode = new LdapUserNode(expectedId, expectedName, expectedGivenName, expectedSurname,
-                expectedPrincipalName, expectedDivision, expectedDepartment, expectedDn, expectedManagerDn, expectedDirectReports);
+                expectedMail, expectedDivision, expectedDepartment, expectedDn,
+                expectedManagerDn, expectedDirectReports);
 
         // when
         var actualNode = mapper.mapFromAttributes(attributes);

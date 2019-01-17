@@ -18,7 +18,7 @@ public class LdapUserNodeMapper extends BaseAttributeMapper<LdapUserNode> {
         var idAttrValue = getSingleAttributeValue(attributes, idAttribute, String.class);
         var nameAttrValue = getSingleAttributeValue(attributes, "name", String.class);
         var givenNameAttrValue = getSingleAttributeValue(attributes, "givenName", String.class);
-        var userPrincipalAttrValue = getSingleAttributeValue(attributes, "userPrincipalName", String.class);
+        var mailAttrValue = getSingleAttributeValue(attributes, "mail", String.class);
         var managerAttrValue = getSingleAttributeValue(attributes, "manager", String.class);
         var snAttrValue = getSingleAttributeValue(attributes, "sn", String.class);
         var departmentAttrValue = getSingleAttributeValue(attributes, "department", String.class);
@@ -27,8 +27,8 @@ public class LdapUserNodeMapper extends BaseAttributeMapper<LdapUserNode> {
 
         var directReportsAttrValue = getAllAttributeValues(attributes, "directReports", String.class);
 
-        return new LdapUserNode(idAttrValue, nameAttrValue, givenNameAttrValue, snAttrValue, userPrincipalAttrValue,
-                divisionAttrValue, departmentAttrValue, dnAttrValue, managerAttrValue, directReportsAttrValue);
+        return new LdapUserNode(idAttrValue, nameAttrValue, givenNameAttrValue, snAttrValue,
+                mailAttrValue, divisionAttrValue, departmentAttrValue, dnAttrValue, managerAttrValue, directReportsAttrValue);
     }
 
 }
