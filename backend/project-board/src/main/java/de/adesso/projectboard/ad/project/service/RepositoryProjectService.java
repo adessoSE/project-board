@@ -39,25 +39,12 @@ public class RepositoryProjectService implements ProjectService {
     public RepositoryProjectService(ProjectRepository projectRepo,
                                     ProjectApplicationRepository applicationRepo,
                                     UserRepository userRepo,
-                                    UserService userService) {
+                                    UserService userService,
+                                    Clock clock) {
         this.projectRepo = projectRepo;
         this.applicationRepo = applicationRepo;
         this.userRepo = userRepo;
         this.userService = userService;
-
-        this.clock = Clock.systemDefaultZone();
-    }
-
-    RepositoryProjectService(ProjectRepository projectRepo,
-                             ProjectApplicationRepository applicationRepo,
-                             UserRepository userRepo,
-                             UserService userService,
-                             Clock clock) {
-        this.projectRepo = projectRepo;
-        this.applicationRepo = applicationRepo;
-        this.userRepo = userRepo;
-        this.userService = userService;
-
         this.clock = clock;
     }
 
@@ -153,7 +140,7 @@ public class RepositoryProjectService implements ProjectService {
      *          The {@link Project} to create/update a project from.
      *
      * @param projectId
-     *          The {@link Project#id ID} of the {@link Project}
+     *          The {@link Project#getId() ID} of the {@link Project}
      *          to update. If {@code null} or no {@link Project}
      *          with the given {@code projectId} exists, a new
      *          one is created.

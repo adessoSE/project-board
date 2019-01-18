@@ -1,5 +1,6 @@
 package de.adesso.projectboard.base.updater;
 
+import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.reader.ProjectReader;
@@ -49,10 +50,13 @@ public class ProjectUpdaterTest {
     private ProjectReader projectReaderMock;
 
     @Mock
-    Project projectMock;
+    private Project projectMock;
 
     @Mock
-    UpdateJob updateJobMock;
+    private UpdateJob updateJobMock;
+
+    @Mock
+    private ProjectBoardConfigurationProperties propertiesMock;
 
     private ProjectUpdater projectUpdater;
 
@@ -60,13 +64,15 @@ public class ProjectUpdaterTest {
 
     @Before
     public void setUp() {
+        given(propertiesMock.getRefreshInterval()).willReturn(REFRESH_INTERVAL);
+
         Instant instant = Instant.parse(INSTANT_STRING);
         ZoneId zoneId = ZoneId.systemDefault();
 
         this.clock = Clock.fixed(instant, zoneId);
 
         this.projectUpdater
-                = new ProjectUpdater(projectServiceMock, updateJobRepoMock, projectReaderMock, REFRESH_INTERVAL, clock);
+                = new ProjectUpdater(projectServiceMock, updateJobRepoMock, projectReaderMock, propertiesMock, clock);
     }
 
     @Test

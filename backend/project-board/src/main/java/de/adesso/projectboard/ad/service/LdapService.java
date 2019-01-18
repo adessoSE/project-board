@@ -4,13 +4,22 @@ import de.adesso.projectboard.ad.configuration.LdapConfigurationProperties;
 import de.adesso.projectboard.ad.service.mapper.LdapUserNodeMapper;
 import de.adesso.projectboard.ad.service.mapper.ThumbnailPhotoMapper;
 import de.adesso.projectboard.ad.service.node.LdapUserNode;
+import lombok.NonNull;
 import org.bouncycastle.util.Arrays;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.query.ContainerCriteria;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
-import java.math.BigInteger;
-import java.util.*;
+import javax.validation.constraints.NotNull;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
@@ -20,14 +29,20 @@ public class LdapService {
 
     private static final String[] USER_NODE_ATTRIBUTES = new String[] {"name", "givenName", "mail", "manager", "sn", "department", "division", "directReports", "distinguishedName"};
 
+    private static final long EPOCH_OFFSET = 116_444_736_000_000_000L;
+
     private final LdapTemplate ldapTemplate;
+
+    private final Clock clock;
 
     private final String base;
 
     private final String idAttribute;
 
-    public LdapService(LdapTemplate ldapTemplate, LdapConfigurationProperties properties) {
+    @Autowired
+    public LdapService(LdapTemplate ldapTemplate, LdapConfigurationProperties properties, Clock clock) {
         this.ldapTemplate = ldapTemplate;
+        this.clock = clock;
 
         this.base = properties.getLdapBase();
         this.idAttribute = properties.getUserIdAttribute();
@@ -35,30 +50,34 @@ public class LdapService {
 
     /**
      * Creates a LDAP query searching for users whose account is not
-     * expired and contains an <i>employeeId</i> and <i>manager</i>
-     * attribute. The query result is filtered via {@link #filterNodes(Collection)}.
+     * expired and contains an <i>employeeId, mail</i> and <i>manager</i>
+     * attribute.
+     * <p>
+     *      <b>Note:</b> A node's manager DN attribute or direct reports DN may refer to a node
+     *      which is not present!
+     * </p>
      *
      * @return
-     *          All user nodes matching query after filtering.
+     *          All user nodes matching the query.
      */
     public Collection<LdapUserNode> getAllUserNodes() {
         String[] adAttributes = Arrays.append(USER_NODE_ATTRIBUTES, idAttribute);
 
+        var adTimestamp = getActiveDirectoryTimestamp(LocalDateTime.now(clock));
         var query = query()
                 .base(base)
                 .attributes(adAttributes)
-                .where("accountExpires").gte(getCurrentTimeInADFormat())
+                .where("accountExpires").gte(adTimestamp)
                 .and("employeeId").isPresent()
                 .and("manager").isPresent()
                 .and("mail").isPresent();
 
-        var unfilteredNodes = ldapTemplate.search(query, new LdapUserNodeMapper(idAttribute));
-        return filterNodes(unfilteredNodes);
+        return ldapTemplate.search(query, new LdapUserNodeMapper(idAttribute));
     }
 
     /**
      * Retrieves the thumbnail photo for a given list of {@code userId}. The returned map
-     * may not contain every user ID.
+     * may not contain every user ID in case no user was found with the given ID.
      *
      * @param userIds
      *          The user IDs to get the thumbnail photos for, not null.
@@ -66,9 +85,7 @@ public class LdapService {
      * @return
      *          A map that maps a user ID to a thumbnail photo.
      */
-    public Map<String, byte[]> getThumbnailPhotos(List<String> userIds) {
-        Objects.requireNonNull(userIds);
-
+    public Map<String, byte[]> getThumbnailPhotos(@NonNull List<String> userIds) {
         if(userIds.isEmpty()) {
             return new HashMap<>();
         }
@@ -78,49 +95,12 @@ public class LdapService {
                 .attributes(idAttribute, "thumbnailPhoto")
                 .countLimit(userIds.size())
                 .where(idAttribute).isPresent()
-                .and(buildIdSubQuery(userIds));
+                .and(buildIdCriteria(userIds));
 
         var mapEntries = ldapTemplate.search(query, new ThumbnailPhotoMapper(idAttribute));
 
         return mapEntries.stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-
-    /**
-     * Removes all nodes from the given {@code nodes} that have
-     * a manager DN referencing a node that is not contained
-     * inside the given {@code nodes} collection.
-     * <br/>
-     * Also removes all distinguished names from the direct reports
-     * when the distinguished name references a node that is not present
-     * in the given {@code nodes} or the distinguished name is equal
-     * to the node's own distinguished name.
-     *
-     * @param nodes
-     *          The nodes to filter, not null.
-     *
-     * @return
-     *          A filtered collection of nodes.
-     */
-    Collection<LdapUserNode> filterNodes(Collection<LdapUserNode> nodes) {
-        Objects.requireNonNull(nodes);
-
-        var allDistinguishedNames = nodes.stream()
-                .map(LdapUserNode::getDn)
-                .collect(Collectors.toList());
-
-        return nodes.stream()
-                .filter(node -> allDistinguishedNames.contains(node.getManagerDn()))
-                .map(node -> {
-                    var directReports = node.getDirectReportsDn();
-
-                    var filteredDirectReports = directReports.stream()
-                            .filter(directReport -> !node.getDn().equals(directReport))
-                            .filter(allDistinguishedNames::contains)
-                            .collect(Collectors.toList());
-
-                    return node.setDirectReportsDn(filteredDirectReports);
-                }).collect(Collectors.toList());
     }
 
     /**
@@ -130,43 +110,34 @@ public class LdapService {
      *          The IDs to build the sub-query from, not null and not empty.
      *
      * @return
-     *          The sub-query.
+     *          A sub-query to query multiple IDs at once.
      */
-    ContainerCriteria buildIdSubQuery(List<String> userIds) {
-        Objects.requireNonNull(userIds);
-
-        if(userIds.isEmpty()) {
-            throw new IllegalArgumentException("No user ID found!");
-        }
+    ContainerCriteria buildIdCriteria(@NotNull List<String> userIds) {
+        Assert.notEmpty(userIds, "List must contain at least one User ID!");
 
         var subQuery = query()
                 .where(idAttribute).is(userIds.get(0));
-        for(int i = 1; i < userIds.size(); i++) {
-            subQuery
-                    .or(idAttribute).is(userIds.get(i));
-        }
+
+        userIds.subList(1, userIds.size())
+                .forEach(userId -> subQuery.or(idAttribute).is(userId));
 
         return subQuery;
     }
 
     /**
      *
+     * @param dateTime
+     *          The {@code LocalDateTime} to create the AD timestamp for, not null.
+     *
      * @return
-     *          The time passed since 01.01.1601 in 100 nanosecond
-     *          intervals.
+     *          The time passed between 01.01.1601 and the given {@code dateTime}
+     *          (UTC) in 100 nanosecond intervals.
      */
-    String getCurrentTimeInADFormat() {
-        // the offset (in 100ns) between 01.01.1601 and 01.01.1970
-        BigInteger offSetTo1970 = new BigInteger("116444736000000000");
+    String getActiveDirectoryTimestamp(@NonNull LocalDateTime dateTime) {
+        var epochSec = dateTime.toEpochSecond(ZoneOffset.UTC);
+        var epochNanos = epochSec * 1_000L * 10_000L;
 
-        // the passed time in ms between 01.01.1970 and now
-        String millisSince1970 = Long.toString(System.currentTimeMillis());
-
-        // multiply by 10.000 (-> append 4 zeros) to get to 100ns interval
-        BigInteger current100NanosSince1970 = new BigInteger(millisSince1970 + "0000");
-
-        // add the offset and return it as a string
-        return current100NanosSince1970.add(offSetTo1970).toString();
+        return Long.toString(epochNanos + EPOCH_OFFSET);
     }
 
 }

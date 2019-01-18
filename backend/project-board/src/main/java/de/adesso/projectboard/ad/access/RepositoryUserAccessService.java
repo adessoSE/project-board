@@ -24,27 +24,7 @@ public class RepositoryUserAccessService implements UserAccessService {
     private final Clock clock;
 
     @Autowired
-    public RepositoryUserAccessService(RepositoryUserService userService, AccessInfoRepository infoRepo) {
-        this.userService = userService;
-        this.infoRepo = infoRepo;
-
-        this.clock = Clock.systemDefaultZone();
-    }
-
-    /**
-     * Package private constructor for testing purposes.
-     *
-     * @param userService
-     *          The {@link RepositoryUserService}.
-     *
-     * @param infoRepo
-     *          The {@link AccessInfoRepository}.
-     *
-     * @param clock
-     *          The {@link Clock} to get the current time from
-     *          when using {@link LocalDateTime#now(Clock)}.
-     */
-    RepositoryUserAccessService(RepositoryUserService userService, AccessInfoRepository infoRepo, Clock clock) {
+    public RepositoryUserAccessService(RepositoryUserService userService, AccessInfoRepository infoRepo, Clock clock) {
         this.userService = userService;
         this.infoRepo = infoRepo;
         this.clock = clock;

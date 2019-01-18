@@ -73,7 +73,7 @@ dependencies {
 	testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test')
 	testCompile(group: 'org.springframework.security', name: 'spring-security-test')
     testCompile(group: 'org.springframework.ldap', name: 'spring-ldap-test')
-	testCompile(group: 'com.unboundid', name: 'unboundid-ldapsdk', version: "${unboundIDVersion}")
+	// testCompile(group: 'com.unboundid', name: 'unboundid-ldapsdk', version: "${unboundIDVersion}")
 
 	annotationProcessor(group: 'org.projectlombok', name: 'lombok')
 

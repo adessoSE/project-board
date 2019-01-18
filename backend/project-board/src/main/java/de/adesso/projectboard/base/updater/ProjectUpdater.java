@@ -36,26 +36,14 @@ public class ProjectUpdater {
     public ProjectUpdater(ProjectService projectService,
                           UpdateJobRepository updateJobRepo,
                           ProjectReader projectReader,
-                          ProjectBoardConfigurationProperties properties) {
+                          ProjectBoardConfigurationProperties properties,
+                          Clock clock) {
         this.updateJobRepo = updateJobRepo;
         this.projectService = projectService;
         this.projectReader = projectReader;
+        this.clock = clock;
 
         this.refreshIntervalDuration = Duration.ofMinutes(properties.getRefreshInterval());
-        this.clock = Clock.systemDefaultZone();
-    }
-
-    protected ProjectUpdater(ProjectService projectService,
-                             UpdateJobRepository updateJobRepo,
-                             ProjectReader projectReader,
-                             long refreshInterval,
-                             Clock clock) {
-        this.updateJobRepo = updateJobRepo;
-        this.projectService = projectService;
-        this.projectReader = projectReader;
-
-        this.refreshIntervalDuration = Duration.ofMinutes(refreshInterval);
-        this.clock = clock;
     }
 
     /**

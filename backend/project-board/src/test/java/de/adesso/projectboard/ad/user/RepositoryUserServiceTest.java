@@ -257,6 +257,8 @@ public class RepositoryUserServiceTest {
                 .hasMessage(expectedMessage);
     }
 
+
+
     @Test
     public void saveReturnsSavedUser() {
         // given

@@ -38,7 +38,6 @@ public class UserData {
     String email;
 
     @Column(name = "LOB")
-    @NotEmpty
     String lob;
 
     @Lob

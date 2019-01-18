@@ -35,30 +35,8 @@ public class RepositoryApplicationService implements ApplicationService {
 
     @Autowired
     public RepositoryApplicationService(ProjectService projectService,
-                                        ProjectApplicationRepository applicationRepo) {
-        this.projectService = projectService;
-        this.applicationRepo = applicationRepo;
-
-        this.clock = Clock.systemDefaultZone();
-    }
-
-    /**
-     * Package private constructor for testing.
-     *
-     * @param projectService
-     *          The {@link ProjectService}.
-     *
-     * @param applicationRepo
-     *          The {@link ProjectApplicationRepository}.
-     *
-     * @param clock
-     *          The {@link Clock} to use when setting the
-     *          {@link ProjectApplication}'s
-     *          {@link ProjectApplication#applicationDate application date}.
-     */
-    RepositoryApplicationService(ProjectService projectService,
-                                 ProjectApplicationRepository applicationRepo,
-                                 Clock clock) {
+                                        ProjectApplicationRepository applicationRepo,
+                                        Clock clock) {
         this.projectService = projectService;
         this.applicationRepo = applicationRepo;
         this.clock = clock;

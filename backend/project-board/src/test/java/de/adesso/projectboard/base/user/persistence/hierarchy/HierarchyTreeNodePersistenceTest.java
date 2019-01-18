@@ -9,6 +9,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
@@ -46,6 +48,123 @@ public class HierarchyTreeNodePersistenceTest {
         assertThat(actualRootNode).isEqualTo(rootNode);
     }
 
+    @Test
+    @Sql({
+            "classpath:de/adesso/projectboard/persistence/Users.sql",
+            "classpath:de/adesso/projectboard/persistence/HierarchyTreeNode.sql"
+    })
+    public void findByUserReturnsHierarchyNodeWhenPresent() {
+        // given
+        var user = userRepo.findById("User1").orElseThrow();
+        var expectedNode = hierarchyTreeNodeRepo.findById(1L).orElseThrow();
 
+        // when
+        var actualNodeOptional = hierarchyTreeNodeRepo.findByUser(user);
+
+        // then
+        assertThat(actualNodeOptional)
+                .isPresent()
+                .contains(expectedNode);
+    }
+
+    @Test
+    @Sql({
+            "classpath:de/adesso/projectboard/persistence/Users.sql",
+            "classpath:de/adesso/projectboard/persistence/HierarchyTreeNode.sql"
+    })
+    public void findByUserDoesNotReturnHierarchyNodeWhenNotPresent() {
+        // given
+        var user = userRepo.findById("User5").orElseThrow();
+
+        // when
+        var actualNodeOptional = hierarchyTreeNodeRepo.findByUser(user);
+
+        // then
+        assertThat(actualNodeOptional)
+                .isEmpty();
+    }
+
+    @Test
+    @Sql({
+            "classpath:de/adesso/projectboard/persistence/Users.sql",
+            "classpath:de/adesso/projectboard/persistence/HierarchyTreeNode.sql"
+    })
+    public void findByUserInReturnsHierarchyNodeForUserWhenPresent() {
+        // given
+        var userWithNodePresent = userRepo.findById("User1").orElseThrow();
+        var userWithNoNodePresent = userRepo.findById("User5").orElseThrow();
+
+        var expectedNode = hierarchyTreeNodeRepo.findById(1L).orElseThrow();
+
+        // when
+        var actualNodes = hierarchyTreeNodeRepo.findByUserIn(List.of(userWithNodePresent, userWithNoNodePresent));
+
+        // then
+        assertThat(actualNodes).containsExactly(expectedNode);
+    }
+
+    @Test
+    @Sql({
+            "classpath:de/adesso/projectboard/persistence/Users.sql",
+            "classpath:de/adesso/projectboard/persistence/HierarchyTreeNode.sql"
+    })
+    public void existsByUserAndManagingUserTrueReturnsTrueWhenPresent() {
+        // given / when / then
+        compareExistsByUserAndManagingUserTrueWithExpectedExists("User1", true);
+    }
+
+    @Test
+    @Sql({
+            "classpath:de/adesso/projectboard/persistence/Users.sql",
+            "classpath:de/adesso/projectboard/persistence/HierarchyTreeNode.sql"
+    })
+    public void existsByUserAndManagingUserTrueReturnsFalseWhenNotPresent() {
+        // given / when / then
+        compareExistsByUserAndManagingUserTrueWithExpectedExists("User3", false);
+    }
+
+    @Test
+    @Sql({
+            "classpath:de/adesso/projectboard/persistence/Users.sql",
+            "classpath:de/adesso/projectboard/persistence/HierarchyTreeNode.sql"
+    })
+    public void existsByUserAndStaffContainingReturnsTrueWhenPresent() {
+        // given / when / then
+        compareExistsByUserAndStaffContainingWithExpectedExists("User2",4, true);
+    }
+
+    @Test
+    @Sql({
+            "classpath:de/adesso/projectboard/persistence/Users.sql",
+            "classpath:de/adesso/projectboard/persistence/HierarchyTreeNode.sql"
+    })
+    public void existsByUserAndStaffContainingReturnsFalseWhenNotPresent() {
+        // given / when / then
+        compareExistsByUserAndStaffContainingWithExpectedExists("User1",4, true);
+    }
+
+    private void compareExistsByUserAndManagingUserTrueWithExpectedExists(String userId, boolean expectedExists) {
+        // given
+        var user = userRepo.findById(userId).orElseThrow();
+
+        // when
+        var actualExists = hierarchyTreeNodeRepo.existsByUserAndManagingUserTrue(user);
+
+        // then
+        assertThat(actualExists).isEqualTo(expectedExists);
+    }
+
+    private void compareExistsByUserAndStaffContainingWithExpectedExists(String userId, long nodeId, boolean expectedExists) {
+        // given
+        var user = userRepo.findById(userId).orElseThrow();
+
+        var staffHierarchyNode = hierarchyTreeNodeRepo.findById(nodeId).orElseThrow();
+
+        // when
+        var actualExists = hierarchyTreeNodeRepo.existsByUserAndStaffContaining(user, staffHierarchyNode);
+
+        // then
+        assertThat(actualExists).isEqualTo(expectedExists);
+    }
 
 }
