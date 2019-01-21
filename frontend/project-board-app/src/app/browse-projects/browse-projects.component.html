@@ -12,11 +12,13 @@
   <div class="inner">
     <table id="result-table">
       <thead>
-        <tr style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" *ngIf="!loadingProjects">
-        <td id="total-hits">{{projects?.length || 'Keine'}} Treffer{{searchText != '' ? ' für "' + searchText + '"' : ''}}</td>
-        <td *ngIf="!mobile" (click)="sortByLocation(1)">Standort <mat-icon *ngIf="sortMemory === 1 && sortValue !== 0">{{(sortValue === 1) ? 'expand_less' : 'expand_more'}}</mat-icon></td>
-        <td *ngIf="!mobile">Beginn</td>
-        <td *ngIf="!mobile">Aufwand</td>
+      <tr style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" *ngIf="!loadingProjects">
+        <th id="total-hits">{{projects?.length || 'Keine'}} Treffer{{searchText != '' ? ' für "' + searchText + '"' : ''}}</th>
+        <th *ngIf="!mobile" (click)="sortByLocation(1)">Standort
+          <mat-icon *ngIf="sortMemory === 1 && sortValue !== 0">{{(sortValue === 1) ? 'expand_less' : 'expand_more'}}</mat-icon>
+        </th>
+        <th *ngIf="!mobile">Beginn</th>
+        <th *ngIf="!mobile">Aufwand</th>
       </tr>
       </thead>
       <tbody *ngIf="!loadingProjects && projects.length > 0">

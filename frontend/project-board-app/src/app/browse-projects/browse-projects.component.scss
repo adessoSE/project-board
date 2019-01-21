@@ -44,38 +44,44 @@ button span {
   overflow-x: hidden;
 }
 
-#result-table th, #result-table td {
+table#result-table th,
+table#result-table td {
   word-break: break-word;
   overflow-wrap: break-word;
   text-align: left;
 }
 
-#result-table tbody tr:hover {
+table#result-table tbody tr:hover {
   background: #016EC7;
   cursor: pointer;
 }
 
-#result-table tbody tr:hover .hover-change, #result-table tbody tr:hover .hover-change a, #result-table tbody tr:hover .hover-change a:hover {
+table#result-table tbody tr:hover .hover-change,
+table#result-table tbody tr:hover .hover-change a,
+table#result-table tbody tr:hover .hover-change a:hover {
   color: #fff
 }
 
-#result-table {
+table#result-table {
   width: 100%;
   table-layout: fixed;
 }
 
-#result-table > tbody > tr > th, #result-table > tbody > tr > td, #result-table > thead > tr > th, #result-table > thead > tr > td {
+table#result-table > tbody > tr > th,
+table#result-table > tbody > tr > td,
+table#result-table > thead > tr > th {
   max-width: 25%;
   padding: 10px 0 10px 10px;
 }
 
-td mat-icon {
+table#result-table thead td mat-icon,
+table#result-table thead th mat-icon {
   font-variant: normal;
   display: inline-block;
   vertical-align: bottom;
 }
 
-#result-table thead {
+table#result-table thead {
   font-variant: small-caps;
   cursor: default;
 }
@@ -88,7 +94,8 @@ td mat-icon {
   padding-right: 10px !important;
 }
 
-#result-table thead td {
+table#result-table thead td,
+table#result-table thead th {
   color: #887D75;
   background-color: transparent;
   -webkit-user-select: none;
@@ -97,13 +104,14 @@ td mat-icon {
   user-select: none;
 }
 
-#result-table thead td:hover {
+table#result-table thead td:hover,
+table#result-table thead th:hover {
   background-color: #016EC7;
   color: #fff;
   cursor: pointer;
 }
 
-#result-table td {
+table#result-table td {
   border: none !important;
 }
 
@@ -125,17 +133,17 @@ td.icons mat-icon {
   display: block;
 }
 
-table thead th, table thead td {
+table thead th,
+table thead td {
   height: 38px;
 }
 
 @include media-breakpoint-down(md) {
-
   tbody tr:nth-child(2n) {
     background-color: #F3F3F3;
   }
 
-  #result-table > tbody > tr > th {
+  table#result-table > tbody > tr > th {
     padding-right: 10px;
   }
 
@@ -215,7 +223,7 @@ table thead th, table thead td {
     max-width: 60%;
     line-height: 5rem;
     padding: 4rem calc(4rem + 6px) 4rem;
-    background: white url("../../assets/searchbackground.png") no-repeat;
+    background: transparent url("../../assets/searchbackground.png") no-repeat;
   }
 
   .square {
@@ -229,4 +237,12 @@ table thead th, table thead td {
     flex: 1 1 auto;
     margin: 0 auto;
   }
+}
+
+table#result-table > thead th {
+  background: white;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 1020;
 }

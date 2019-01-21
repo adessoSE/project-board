@@ -36,7 +36,6 @@
   color: #887D75 !important;
   padding: 10px 15px 5px;
   min-width: 101px;
-  height: 100%;
   line-height: 20px;
   text-align: center;
   border-bottom: 4px solid #bbb2ac;
@@ -173,13 +172,11 @@
 
   .navbar-toggler {
     position: absolute;
-    top: 5;
     right: 10px;
   }
 
   .back-to-top-badge {
     position: fixed;
-    top: none;
     bottom: 20px;
     right: 20px;
     z-index: 100;
@@ -216,10 +213,8 @@
   .side-link{
     box-sizing: border-box;
     color: #887D75 !important;
-    padding: 10px;
-    padding-top: 20px;
+    padding: 20px 10px 10px;
     min-width: 101px;
-    height: 100%;
     line-height: 20px;
     background-color: #fff;
     border-left: 3px solid #bbb2ac;
@@ -240,18 +235,15 @@
 
   .side-field{
     box-sizing: border-box;
-    padding: 10px;
-    padding-top: 20px;
+    padding: 20px 10px 10px;
     min-width: 101px;
-    height: 100%;
     line-height: 20px;
     text-decoration: none;
     height: 75px;
   }
 
   #side-username {
-    padding: 20px;
-    padding-top: 30px;
+    padding: 30px 20px 20px;
     font-size: 140%;
     max-width: 300px;
     overflow: hidden;

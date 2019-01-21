@@ -36,7 +36,7 @@ $project-board-app-theme: mat-light-theme($project-board-app-primary, $project-b
 
 .container {
   max-width: 100%;
-  min-height: calc(100vh - 50px);
+  min-height: calc(100vh - 60px); // the navbar is 60px high
   background-image: linear-gradient(rgb(255, 255, 255) 0px, rgb(238, 238, 238) 100%);
 }
 
@@ -132,4 +132,10 @@ button:focus, button:active {
   -moz-box-shadow: none;
   box-shadow: none;
   outline: none;
+}
+
+// needs to be overridden for 'position: sticky' to work
+mat-sidenav-container,
+mat-sidenav-content {
+  overflow: inherit !important;
 }
