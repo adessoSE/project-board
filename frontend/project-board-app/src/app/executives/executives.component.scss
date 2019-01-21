@@ -2,7 +2,7 @@
 @import '../../../node_modules/bootstrap/scss/variables';
 @import '../../../node_modules/bootstrap/scss/mixins';
 
-td mat-icon {
+th mat-icon {
   font-variant: normal;
   display: inline-block;
   vertical-align: bottom;
@@ -48,7 +48,8 @@ button span {
   overflow: hidden;
 }
 
-#result-table th, #result-table td {
+#result-table th,
+#result-table td {
   word-break: break-word;
   overflow-wrap: break-word;
   text-align: left;
@@ -59,7 +60,9 @@ button span {
   cursor: pointer;
 }
 
-#result-table tbody tr:hover .hover-change, #result-table tbody tr:hover .hover-change a, #result-table tbody tr:hover .hover-change a:hover {
+#result-table tbody tr:hover .hover-change,
+#result-table tbody tr:hover .hover-change a,
+#result-table tbody tr:hover .hover-change a:hover {
   color: #fff
 }
 
@@ -68,7 +71,9 @@ button span {
   table-layout: fixed;
 }
 
-#result-table > tbody > tr > th, #result-table > tbody > tr > td, #result-table > thead > tr > th, #result-table > thead > tr > td {
+#result-table > tbody > tr > th,
+#result-table > tbody > tr > td,
+#result-table > thead > tr > th {
   max-width: 25%;
   padding: 10px 0 10px 10px;
 }
@@ -84,7 +89,7 @@ button span {
   font-variant: small-caps;
 }
 
-#result-table thead td {
+#result-table thead th {
   color: #887D75;
   background-color: transparent;
   -webkit-user-select: none;
@@ -93,7 +98,7 @@ button span {
   user-select: none;
 }
 
-#result-table thead td:hover {
+#result-table thead th.hover-change:hover {
   background-color: #016EC7;
   color: #fff;
   cursor: pointer;
@@ -125,7 +130,7 @@ td img {
   border-radius: 0;
 }
 
-table thead th, table thead td {
+table thead th {
   height: 38px;
 }
 
@@ -230,7 +235,6 @@ tr:hover .dropdown-icon-wrapper button:hover {
 
 tr.parent-row {
   background-color: lightgrey;
-  
 }
 
 tr.parent-row button {

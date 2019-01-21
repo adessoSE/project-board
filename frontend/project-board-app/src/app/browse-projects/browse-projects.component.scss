@@ -104,8 +104,7 @@ table#result-table thead th {
   user-select: none;
 }
 
-table#result-table thead td:hover,
-table#result-table thead th:hover {
+table#result-table thead th.hover-change:hover {
   background-color: #016EC7;
   color: #fff;
   cursor: pointer;
