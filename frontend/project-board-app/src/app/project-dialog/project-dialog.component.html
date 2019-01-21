@@ -17,7 +17,17 @@
   <div *ngIf="data.project">
     <div class="row">
       <div class="col-sm-3 left-side">Schlüssel:</div>
-      <div class="col-sm right-side">{{data.project.id}}</div>
+      <div class="col-sm right-side">
+        <a title="Zum Jira-Projekt" *ngIf="data.isUserBoss" target="_blank" href="https://jira.adesso.de/browse/{{data.project.id}}">
+          <div class="icon-wrapper">
+            <div class="linking-icon">
+              <mat-icon>open_in_new</mat-icon>
+            </div>
+          </div>
+          {{data.project.id}}
+        </a>
+        {{!data.isUserBoss ? data.project.id : ''}}
+      </div>
     </div>
     <div class="row" *ngIf="data.project.title">
       <div class="col-sm-3 left-side">Titel:</div>

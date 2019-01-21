@@ -2,6 +2,10 @@
 @import '../../../node_modules/bootstrap/scss/variables';
 @import '../../../node_modules/bootstrap/scss/mixins';
 
+h1 {
+  font-family: Klavika-regular, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
 #close-icon-wrapper :hover, #close-icon-wrapper #close-icon :hover {
   color: darken(#887D75, 10);
 }

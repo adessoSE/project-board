@@ -8,6 +8,9 @@ mat-dialog-actions {
   padding: 8px 24px 8px 24px;
 }
 
+h1 {
+  font-family: Klavika-regular, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
 mat-dialog-content {
   max-height: calc(80vh - (80px + 54px));
   padding-top: 5px;
@@ -116,6 +119,31 @@ h1 {
 
 .right-side {
   white-space: pre-line;
+}
+
+.icon-wrapper {
+  display: inline-block;
+  vertical-align: middle;
+  height: 24px;
+}
+
+.linking-icon {
+  display: inline-block;
+  vertical-align: bottom;
+  height: 24px;
+  cursor: pointer;
+}
+
+.linking-icon .material-icons,
+a {
+  color: #338bd2;
+}
+
+div:hover > a .icon-wrapper .linking-icon .material-icons,
+div:hover > a,
+.linking-icon .material-icons:hover,
+a:hover {
+  color: #016EC7;
 }
 
 @include media-breakpoint-down(md) {
