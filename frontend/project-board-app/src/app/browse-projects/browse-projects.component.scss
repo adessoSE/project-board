@@ -84,6 +84,10 @@ table#result-table thead th mat-icon {
 table#result-table thead {
   font-variant: small-caps;
   cursor: default;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
 }
 
 #total-hits {

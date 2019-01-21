@@ -15,17 +15,17 @@
       <tr>
         <th style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" *ngIf="!loading" id="total-hits">{{filteredEmployees?.length || 'Keine'}} Mitarbeiter{{searchText != '' ? ' für "' + searchText + '"' : ''}}</th>
         <ng-container *ngIf="!mobile">
-          <th class="hover-change" (click)="sortByState(1)">Status
-            <mat-icon *ngIf="sortMemory === 1 && sortValue !== 0">{{(sortValue === 1) ? 'expand_more' : 'expand_less'}}</mat-icon>
+          <th class="hover-change" (click)="sort(1)">Status
+            <mat-icon *ngIf="sortMemory === 1 && sortValue !== 0">{{(sortValue === 1) ? 'expand_less' : 'expand_more'}}</mat-icon>
           </th>
-          <th class="hover-change" (click)="sortBySince(2)">Freigeschaltet seit
-            <mat-icon *ngIf="sortMemory === 2 && sortValue !== 0">{{(sortValue === 1) ? 'expand_more' : 'expand_less'}}</mat-icon>
+          <th class="hover-change" (click)="sort(2)">Freigeschaltet seit
+            <mat-icon *ngIf="sortMemory === 2 && sortValue !== 0">{{(sortValue === 1) ? 'expand_less' : 'expand_more'}}</mat-icon>
           </th>
-          <th class="hover-change" (click)="sortByUntil(3)">Freigeschaltet bis
-            <mat-icon *ngIf="sortMemory === 3 && sortValue !== 0">{{(sortValue === 1) ? 'expand_more' : 'expand_less'}}</mat-icon>
+          <th class="hover-change" (click)="sort(3)">Freigeschaltet bis
+            <mat-icon *ngIf="sortMemory === 3 && sortValue !== 0">{{(sortValue === 1) ? 'expand_less' : 'expand_more'}}</mat-icon>
           </th>
-          <th class="hover-change" (click)="sortByRequest(4)">Anfragen
-            <mat-icon *ngIf="sortMemory === 4 && sortValue !== 0">{{(sortValue === 1) ? 'expand_more' : 'expand_less'}}</mat-icon>
+          <th class="hover-change" (click)="sort(4)">Anfragen
+            <mat-icon *ngIf="sortMemory === 4 && sortValue !== 0">{{(sortValue === 1) ? 'expand_less' : 'expand_more'}}</mat-icon>
           </th>
         </ng-container>
       </tr>

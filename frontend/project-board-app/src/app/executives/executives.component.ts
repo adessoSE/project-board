@@ -25,8 +25,8 @@ export class ExecutivesComponent implements OnInit {
   searchText = '';
   loading = true;
   dialogRef: MatDialogRef<EmployeeDialogComponent>;
-  sortValue: number;
-  sortMemory: number;
+  sortValue = 0; // 0: alphabetically ascending, 1: column ascending, 2: column descending
+  sortMemory: number; // memorizes the last column that was sorted
 
   destroy$ = new Subject<void>();
 
@@ -139,100 +139,196 @@ export class ExecutivesComponent implements OnInit {
       .subscribe(() => this.location.replaceState('/employees'));
   }
 
-  sortByState(memory: number) {
+  sort(memory: number) {
     if (this.sortMemory !== memory) {
       this.sortValue = 0;
       this.sortMemory = memory;
     }
 
-    if (this.sortValue === 0 || this.sortValue === undefined) {
-      this.filteredEmployees.sort((a: Employee, b: Employee) => {
-        return (a.accessInfo.hasAccess === b.accessInfo.hasAccess) ? 0 : a.accessInfo.hasAccess ? -1 : 1;
-      });
-      this.sortValue = 1;
-    } else if (this.sortValue === 1) {
-      this.filteredEmployees.sort((a: Employee, b: Employee) => {
-        return (a.accessInfo.hasAccess === b.accessInfo.hasAccess) ? 0 : b.accessInfo.hasAccess ? -1 : 1;
-      });
-      this.sortValue = 2;
-    } else {
-      this.filteredEmployees.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
-      this.sortValue = 0;
+    switch (memory) {
+      case 1:
+        this.filteredEmployees = this.sortByState(this.filteredEmployees);
+        this.employeeMap.forEach((employees: Employee[], key: string) => {
+          this.employeeMap.set(key, this.sortByState(employees));
+        });
+        break;
+      case 2:
+        this.filteredEmployees = this.sortBySince(this.filteredEmployees);
+        this.employeeMap.forEach((employees: Employee[], key: string) => {
+          this.employeeMap.set(key, this.sortBySince(employees));
+        });
+        break;
+      case 3:
+        this.filteredEmployees = this.sortByUntil(this.filteredEmployees);
+        this.employeeMap.forEach((employees: Employee[], key: string) => {
+          this.employeeMap.set(key, this.sortByUntil(employees));
+        });
+        break;
+      case 4:
+        this.filteredEmployees = this.sortByRequest(this.filteredEmployees);
+        this.employeeMap.forEach((employees: Employee[], key: string) => {
+          this.employeeMap.set(key, this.sortByRequest(employees));
+        });
+        break;
+      default:
     }
+    this.sortValue = ++this.sortValue % 3;
   }
 
-  sortBySince(memory: number) {
-    if (this.sortMemory !== memory) {
-      this.sortValue = 0;
-      this.sortMemory = memory;
+  sortByState(toSort: Employee[]): Employee[] {
+    if (this.sortValue === 0) {
+      toSort.sort((a: Employee, b: Employee) => {
+        if (a.boss && b.boss) {
+          return 0;
+        } else if (a.boss !== b.boss) {
+          if (a.boss && !b.accessInfo.hasAccess || b.boss && a.accessInfo.hasAccess) {
+            return -1;
+          } else if (a.boss && b.accessInfo.hasAccess || b.boss && !a.accessInfo.hasAccess) {
+            return 1;
+          }
+        }
+        return a.accessInfo.hasAccess === b.accessInfo.hasAccess ? 0 : a.accessInfo.hasAccess ? -1 : 1;
+      });
+    } else if (this.sortValue === 1) {
+      toSort.sort((a: Employee, b: Employee) => {
+        if (a.boss && b.boss) {
+          return 0;
+        } else if (a.boss !== b.boss) {
+          if (a.boss && !b.accessInfo.hasAccess || b.boss && a.accessInfo.hasAccess) {
+            return 1;
+          } else if (a.boss && b.accessInfo.hasAccess || b.boss && !a.accessInfo.hasAccess) {
+            return -1;
+          }
+        }
+        return a.accessInfo.hasAccess === b.accessInfo.hasAccess ? 0 : a.accessInfo.hasAccess ? 1 : -1;
+      });
+    } else {
+      toSort.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
     }
 
-    if (this.sortValue === 0 || this.sortValue === undefined) {
-      this.filteredEmployees.sort((a: Employee, b: Employee) => {
-        return Number(new Date(b.accessInfo.accessStart)) - Number(new Date(a.accessInfo.accessStart));
-      });
-      this.sortValue = 1;
-    } else if (this.sortValue === 1) {
-      this.filteredEmployees.sort((a: Employee, b: Employee) => {
-        if (a.accessInfo.accessEnd === null) {
+    return toSort;
+  }
+
+  sortBySince(toSort: Employee[]): Employee[] {
+    if (this.sortValue === 0) {
+      toSort.sort((a: Employee, b: Employee) => {
+        if (a.boss && b.boss) {
+          return 0;
+        } else if (a.boss !== b.boss) {
+          if (a.boss && !b.accessInfo.hasAccess || b.boss && a.accessInfo.hasAccess) {
+            return -1;
+          } else if (a.boss && b.accessInfo.hasAccess || b.boss && !a.accessInfo.hasAccess) {
+            return 1;
+          }
+        }
+        if (!a.accessInfo.hasAccess && !b.accessInfo.hasAccess) {
+          return 0;
+        } else if (a.accessInfo.hasAccess && !b.accessInfo.hasAccess) {
+          return -1;
+        } else if (!a.accessInfo.hasAccess && b.accessInfo.hasAccess) {
           return 1;
         }
-        return Number(new Date(a.accessInfo.accessStart)) - Number(new Date(b.accessInfo.accessStart));
+        return new Date(b.accessInfo.accessStart).getTime() - new Date(a.accessInfo.accessStart).getTime();
       });
-      this.sortValue = 2;
-    } else {
-      this.filteredEmployees.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
-      this.sortValue = 0;
-    }
-  }
-
-  sortByUntil(memory: number) {
-    if (this.sortMemory !== memory) {
-      this.sortValue = 0;
-      this.sortMemory = memory;
-    }
-    if (this.sortValue === 0 || this.sortValue === undefined) {
-      this.filteredEmployees.sort((a: Employee, b: Employee) => {
-        if (a.boss) {
-          console.log(a.lastName);
-        }
-        return Number(new Date(b.accessInfo.accessEnd)) - Number(new Date(a.accessInfo.accessEnd));
-      });
-      this.sortValue = 1;
     } else if (this.sortValue === 1) {
-      this.filteredEmployees.sort((a: Employee, b: Employee) => {
-        if (a.accessInfo.accessEnd === null) {
+      toSort.sort((a: Employee, b: Employee) => {
+        if (a.boss && b.boss) {
+          return 0;
+        } else if (a.boss !== b.boss) {
+          if (a.boss && !b.accessInfo.hasAccess || b.boss && a.accessInfo.hasAccess) {
+            return -1;
+          } else if (a.boss && b.accessInfo.hasAccess || b.boss && !a.accessInfo.hasAccess) {
+            return 1;
+          }
+        }
+        if (!a.accessInfo.hasAccess && !b.accessInfo.hasAccess) {
+          return 0;
+        } else if (a.accessInfo.hasAccess && !b.accessInfo.hasAccess) {
+          return -1;
+        } else if (!a.accessInfo.hasAccess && b.accessInfo.hasAccess) {
           return 1;
         }
-        return Number(new Date(a.accessInfo.accessEnd)) - Number(new Date(b.accessInfo.accessEnd));
+        return new Date(a.accessInfo.accessStart).getTime() - new Date(b.accessInfo.accessStart).getTime();
       });
-      this.sortValue = 2;
     } else {
-      this.filteredEmployees.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
-      this.sortValue = 0;
+      toSort.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
     }
+
+    return toSort;
   }
 
-  sortByRequest(memory: number) {
-    if (this.sortMemory !== memory) {
-      this.sortValue = 0;
-      this.sortMemory = memory;
+  sortByUntil(toSort: Employee[]): Employee[] {
+    if (this.sortValue === 0) {
+      toSort.sort((a: Employee, b: Employee) => {
+        if (a.boss && b.boss) {
+          return 0;
+        } else if (a.boss !== b.boss) {
+          if (a.boss && !b.accessInfo.hasAccess || b.boss && a.accessInfo.hasAccess) {
+            return -1;
+          } else if (a.boss && b.accessInfo.hasAccess || b.boss && !a.accessInfo.hasAccess) {
+            return 1;
+          }
+        }
+        if (!a.accessInfo.hasAccess && !b.accessInfo.hasAccess) {
+          return 0;
+        } else if (a.accessInfo.hasAccess && !b.accessInfo.hasAccess) {
+          return -1;
+        } else if (!a.accessInfo.hasAccess && b.accessInfo.hasAccess) {
+          return 1;
+        }
+        return new Date(a.accessInfo.accessEnd).getTime() - new Date(b.accessInfo.accessEnd).getTime();
+      });
+    } else if (this.sortValue === 1) {
+      toSort.sort((a: Employee, b: Employee) => {
+        if (a.boss && b.boss) {
+          return 0;
+        } else if (a.boss !== b.boss) {
+          if (a.boss && !b.accessInfo.hasAccess || b.boss && a.accessInfo.hasAccess) {
+            return -1;
+          } else if (a.boss && b.accessInfo.hasAccess || b.boss && !a.accessInfo.hasAccess) {
+            return 1;
+          }
+        }
+        if (!a.accessInfo.hasAccess && !b.accessInfo.hasAccess) {
+          return 0;
+        } else if (a.accessInfo.hasAccess && !b.accessInfo.hasAccess) {
+          return -1;
+        } else if (!a.accessInfo.hasAccess && b.accessInfo.hasAccess) {
+          return 1;
+        }
+        return new Date(b.accessInfo.accessEnd).getTime() - new Date(a.accessInfo.accessEnd).getTime();
+      });
+    } else {
+      toSort.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
     }
 
-    if (this.sortValue === 0 || this.sortValue === undefined) {
-      this.filteredEmployees.sort((a: Employee, b: Employee) => {
-        return b.applications.count - a.applications.count;
-      });
-      this.sortValue = 1;
-    } else if (this.sortValue === 1) {
-      this.filteredEmployees.sort((a: Employee, b: Employee) => {
+    return toSort;
+  }
+
+  sortByRequest(toSort: Employee[]): Employee[] {
+    if (this.sortValue === 0) {
+      toSort.sort((a: Employee, b: Employee) => {
+        if (a.boss && b.boss) {
+          return 0;
+        } else if (a.boss !== b.boss) {
+          return a.boss ? 1 : -1;
+        }
         return a.applications.count - b.applications.count;
       });
-      this.sortValue = 2;
+    } else if (this.sortValue === 1) {
+      toSort.sort((a: Employee, b: Employee) => {
+        if (a.boss && b.boss) {
+          return 0;
+        } else if (a.boss !== b.boss) {
+          return a.boss ? 1 : -1;
+        }
+        return b.applications.count - a.applications.count;
+      });
     } else {
-      this.filteredEmployees.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
-      this.sortValue = 0;
+      toSort.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
     }
+
+    return toSort;
   }
 
   toggleBoss(event, employee: Employee) {
@@ -266,7 +362,7 @@ export class ExecutivesComponent implements OnInit {
                 const list = this.employeeMap.get(employee.id);
                 list.push(emp);
                 list.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
-                this.employeeMap.set(employee.id, list);            
+                this.employeeMap.set(employee.id, list);
               });
           }
         });
