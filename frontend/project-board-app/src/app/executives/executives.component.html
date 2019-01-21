@@ -50,7 +50,7 @@
           </td>
           <td class="td-project-title title-clickable">{{employee.lastName + ', ' + employee.firstName}}</td>
           <td class="dropdown-icon-wrapper" *ngIf="employee.boss">
-            <mat-icon class="dropdown-icon" (click)="toggleBoss($event, employee)">{{showEmployees.includes(employee.id) ? 'keyboard_arrow_down' : 'keyboard_arrow_right'}}</mat-icon>
+            <button mat-icon-button (click)="toggleBoss($event, employee)" title="Mitarbeiter anzeigen / verbergen"><mat-icon aria-label="Schalter um Angestellte des Mitarbeiters anzuzeigen/auszublenden" class="dropdown-icon">{{showEmployees.includes(employee.id) ? 'expand_less' : 'expand_more'}}</mat-icon></button>
           </td>
         </tr>
         </tbody>

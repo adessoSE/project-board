@@ -265,7 +265,8 @@ export class ExecutivesComponent implements OnInit {
                 // push each employee into the list and reset the map entry
                 const list = this.employeeMap.get(employee.id);
                 list.push(emp);
-                this.employeeMap.set(employee.id, list);
+                list.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
+                this.employeeMap.set(employee.id, list);            
               });
           }
         });

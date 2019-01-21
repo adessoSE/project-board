@@ -109,7 +109,57 @@
   color: #887D75;
 }
 
+#mini-nav {
+  background-color: #F3F3F3;
+  width: 45px;
+  height: 227px;
+  position: fixed;
+  left: -45px;
+  top: calc(50vh - 300px);
+  z-index: 2;
+  box-shadow: 0 0 0.25rem rgba(0, 0, 0, .25);
+}
+
+#mini-nav-content {
+  color: #887D75;
+}
+
+#mini-nav img {
+  height: 45px;
+  width: 45px;
+}
+
+#mini-nav-content mat-icon {
+  display: block;
+  padding: 10px;
+  height: 45px;
+  width: 43px;
+  cursor: pointer;
+}
+
+#mini-nav-content mat-icon:hover {
+  color: #016EC7;
+}
+
+#mini-nav-content mat-icon.active-mini-link {
+  color: #EF8200;
+}
+
+#mini-nav-content mat-icon.active-mini-link:hover {
+  color: #EF8200;
+}
+
+@include media-breakpoint-up(md) {
+  #top-badge {
+    display: none !important;
+  }
+}
+
 @include media-breakpoint-down(md) {
+
+  #mini-nav {
+    display: none;
+  }
 
   .navbar-brand {
     width: 200px;
