@@ -8,9 +8,6 @@ mat-dialog-actions {
   padding: 8px 24px 8px 24px;
 }
 
-h1 {
-  font-family: Klavika-regular, "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
 mat-dialog-content {
   max-height: calc(80vh - (80px + 54px));
   padding-top: 5px;
@@ -27,6 +24,7 @@ mat-dialog-content {
 }
 
 h1 {
+  font-family: Klavika-regular, "Helvetica Neue", Helvetica, Arial, sans-serif;
   margin: -24px -24px 0 -24px;
   padding: 24px 88px 24px 24px;
 }
@@ -99,6 +97,16 @@ h1 {
   float: right;
   cursor: pointer;
   color: #887D75;
+  margin-top: 4px;
+}
+
+#top-button {
+  float: right;
+  margin-top: -3px;
+  margin-right: 1rem;
+  @include media-breakpoint-down(sm) {
+    display: none;
+  }
 }
 
 #comment:focus {
