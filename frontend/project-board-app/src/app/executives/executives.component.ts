@@ -3,7 +3,7 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { combineLatest, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { map, takeUntil } from 'rxjs/operators';
 import { Employee, EmployeeService } from '../_services/employee.service';
 import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
 
@@ -68,9 +68,10 @@ export class ExecutivesComponent implements OnInit {
         }
       });
     for (const e of this.employees) {
+      // TODO: change the picture load process to the new projection way, when the backend is ready
       this.employeeService.getEmployeeWithId(e.id)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(employee => e.picture = employee.picture);
+        .pipe(takeUntil(this.destroy$), map(employee => employee.picture))
+        .subscribe(pic => e.picture = pic);
       // if the employee is a boss, preload the embedded employees
       if (e.boss) {
         this.loadEmbeddedEmployees(e);
@@ -343,14 +344,15 @@ export class ExecutivesComponent implements OnInit {
     event.stopPropagation();
   }
 
-  loadEmbeddedEmployees(employee: Employee) {
-    if (!this.employeeMap.has(employee.id)) {
+  loadEmbeddedEmployees(boss: Employee) {
+    // TODO: change the picture load process to the new projection way, when the backend is ready
+    if (!this.employeeMap.has(boss.id)) {
       // load all employees
-      this.employeeService.getEmployeesForSuperUser(employee.id)
+      this.employeeService.getEmployeesForSuperUser(boss.id)
         .pipe(takeUntil(this.destroy$))
         .subscribe(employees => {
           // initialise the map entry
-          this.employeeMap.set(employee.id, []);
+          this.employeeMap.set(boss.id, []);
           // reload employees by id to get the images
           for (const e of employees) {
             this.employeeService.getEmployeeWithId(e.id)
@@ -359,10 +361,10 @@ export class ExecutivesComponent implements OnInit {
                 // set the duration attribute to display on the badge
                 emp.duration = this.daysUntil(new Date(emp.accessInfo.accessEnd));
                 // push each employee into the list and reset the map entry
-                const list = this.employeeMap.get(employee.id);
+                const list = this.employeeMap.get(boss.id);
                 list.push(emp);
                 list.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
-                this.employeeMap.set(employee.id, list);
+                this.employeeMap.set(boss.id, list);
               });
           }
         });
