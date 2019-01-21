@@ -17,34 +17,34 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @TestPropertySource("classpath:application-persistence-test.properties")
-public class UpdateJobPersistenceTest {
+public class ProjectUpdateJobPersistenceTest {
 
     @Autowired
-    UpdateJobRepository jobRepo;
+    ProjectUpdateJobRepository jobRepo;
 
     @Test
     public void testSave() {
         LocalDateTime time = LocalDateTime.of(2018, 1, 1, 13, 37);
-        UpdateJob updateJob = new UpdateJob(time, UpdateJob.Status.FAILURE);
+        ProjectUpdateJob updateJob = new ProjectUpdateJob(time, ProjectUpdateJob.Status.FAILURE);
         updateJob.setFailureReason("Testreason");
 
-        UpdateJob persistedjob = jobRepo.save(updateJob);
+        ProjectUpdateJob persistedjob = jobRepo.save(updateJob);
 
-        assertEquals(UpdateJob.Status.FAILURE, persistedjob.getStatus());
+        assertEquals(ProjectUpdateJob.Status.FAILURE, persistedjob.getStatus());
         assertEquals(time, persistedjob.getTime());
         assertEquals("Testreason", persistedjob.getFailureReason());
     }
 
     @Test
-    @Sql("classpath:de/adesso/projectboard/persistence/UpdateJobs.sql")
+    @Sql("classpath:de/adesso/projectboard/persistence/ProjectUpdateJobs.sql")
     public void testFindFirstByStatusOrderByTimeDesc() {
-        Optional<UpdateJob> jobOptional
-                = jobRepo.findFirstByStatusOrderByTimeDesc(UpdateJob.Status.SUCCESS);
+        Optional<ProjectUpdateJob> jobOptional
+                = jobRepo.findFirstByStatusOrderByTimeDesc(ProjectUpdateJob.Status.SUCCESS);
         assertTrue(jobOptional.isPresent());
 
-        UpdateJob job = jobOptional.get();
+        ProjectUpdateJob job = jobOptional.get();
 
-        for(UpdateJob otherJob : jobRepo.findAll()) {
+        for(ProjectUpdateJob otherJob : jobRepo.findAll()) {
             if(otherJob.getStatus().equals(job.getStatus())) {
                 boolean after = job.getTime().isAfter(otherJob.getTime());
                 boolean equal = job.getTime().isEqual(otherJob.getTime());
@@ -55,21 +55,21 @@ public class UpdateJobPersistenceTest {
     }
 
     @Test
-    @Sql("classpath:de/adesso/projectboard/persistence/UpdateJobs.sql")
+    @Sql("classpath:de/adesso/projectboard/persistence/ProjectUpdateJobs.sql")
     public void testFindLatest() {
-        Optional<UpdateJob> latestOptional = jobRepo.findLatest();
+        Optional<ProjectUpdateJob> latestOptional = jobRepo.findLatest();
         assertTrue(latestOptional.isPresent());
 
-        UpdateJob latest = latestOptional.get();
+        ProjectUpdateJob latest = latestOptional.get();
         assertEquals(LocalDateTime.of(2018, 1, 5, 13, 37), latest.getTime());
-        assertEquals(UpdateJob.Status.SUCCESS, latest.getStatus());
+        assertEquals(ProjectUpdateJob.Status.SUCCESS, latest.getStatus());
     }
 
     @Test
-    @Sql("classpath:de/adesso/projectboard/persistence/UpdateJobs.sql")
+    @Sql("classpath:de/adesso/projectboard/persistence/ProjectUpdateJobs.sql")
     public void testCountByStatus() {
-        assertEquals(3L, jobRepo.countByStatus(UpdateJob.Status.FAILURE));
-        assertEquals(2L, jobRepo.countByStatus(UpdateJob.Status.SUCCESS));
+        assertEquals(3L, jobRepo.countByStatus(ProjectUpdateJob.Status.FAILURE));
+        assertEquals(2L, jobRepo.countByStatus(ProjectUpdateJob.Status.SUCCESS));
     }
 
 }

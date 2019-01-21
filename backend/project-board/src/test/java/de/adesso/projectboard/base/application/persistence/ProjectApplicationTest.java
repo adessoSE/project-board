@@ -19,25 +19,25 @@ import static org.mockito.BDDMockito.given;
 public class ProjectApplicationTest {
 
     @Mock
-    Project projectMock;
+    private Project projectMock;
 
     @Mock
-    Project otherProjectMock;
+    private Project otherProjectMock;
 
     @Mock
-    User userMock;
+    private User userMock;
 
     @Mock
-    User otherUserMock;
+    private User otherUserMock;
 
     @Test
     public void equalsReturnsTrueForSameInstance() {
         // given
         long applicationId = 1;
-        String comment = "This is a comment!";
-        LocalDateTime date = LocalDateTime.now();
+        var comment = "This is a comment!";
+        var date = LocalDateTime.now();
 
-        ProjectApplication application = new ProjectApplication(projectMock, comment, userMock, date);
+        var application = new ProjectApplication(projectMock, comment, userMock, date);
         application.id = applicationId;
 
         // when
@@ -50,15 +50,15 @@ public class ProjectApplicationTest {
     @Test
     public void equalsReturnsTrueForBothIdsNullAndHashCodeEquals() {
         // given
-        String userId = "user";
-        String comment = "This is a comment!";
-        LocalDateTime date = LocalDateTime.now();
+        var userId = "user";
+        var comment = "This is a comment!";
+        var date = LocalDateTime.now();
 
         given(userMock.getId()).willReturn(userId);
 
-        ProjectApplication application = new ProjectApplication(projectMock, comment, userMock, date);
+        var application = new ProjectApplication(projectMock, comment, userMock, date);
 
-        ProjectApplication otherApplication = new ProjectApplication(projectMock, comment, userMock, date);
+        var otherApplication = new ProjectApplication(projectMock, comment, userMock, date);
 
         // when
         boolean actualEquals = application.equals(otherApplication);
@@ -67,7 +67,7 @@ public class ProjectApplicationTest {
         int otherApplicationHash = otherApplication.hashCode();
 
         // then
-        SoftAssertions softly = new SoftAssertions();
+        var softly = new SoftAssertions();
 
         softly.assertThat(actualEquals).isTrue();
         softly.assertThat(applicationHash).isEqualTo(otherApplicationHash);
@@ -79,16 +79,16 @@ public class ProjectApplicationTest {
     public void equalsReturnsTrueForBothProjectsNullAndHashCodeEquals() {
         // given
         long applicationId = 1;
-        String userId = "user";
-        String comment = "This is a comment!";
-        LocalDateTime date = LocalDateTime.now();
+        var userId = "user";
+        var comment = "This is a comment!";
+        var date = LocalDateTime.now();
 
         given(userMock.getId()).willReturn(userId);
 
-        ProjectApplication application = new ProjectApplication(null, comment, userMock, date);
+        var application = new ProjectApplication(null, comment, userMock, date);
         application.id = applicationId;
 
-        ProjectApplication otherApplication = new ProjectApplication(null, comment, userMock, date);
+        var otherApplication = new ProjectApplication(null, comment, userMock, date);
         otherApplication.id = applicationId;
 
         // when & then
@@ -99,15 +99,15 @@ public class ProjectApplicationTest {
     public void equalsReturnsTrueForBothCommentsNullAndHashCodeEquals() {
         // given
         long applicationId = 1;
-        String userId = "user";
-        LocalDateTime date = LocalDateTime.now();
+        var userId = "user";
+        var date = LocalDateTime.now();
 
         given(userMock.getId()).willReturn(userId);
 
-        ProjectApplication application = new ProjectApplication(projectMock, null, userMock, date);
+        var application = new ProjectApplication(projectMock, null, userMock, date);
         application.id = applicationId;
 
-        ProjectApplication otherApplication = new ProjectApplication(projectMock, null, userMock, date);
+        var otherApplication = new ProjectApplication(projectMock, null, userMock, date);
         otherApplication.id = applicationId;
 
         // when & then
@@ -118,15 +118,15 @@ public class ProjectApplicationTest {
     public void equalsReturnsTrueForBothDatesNullAndHashCodeEquals() {
         // given
         long applicationId = 1;
-        String userId = "user";
-        String comment = "This is a comment!";
+        var userId = "user";
+        var comment = "This is a comment!";
 
         given(userMock.getId()).willReturn(userId);
 
-        ProjectApplication application = new ProjectApplication(projectMock, comment, userMock, null);
+        var application = new ProjectApplication(projectMock, comment, userMock, null);
         application.id = applicationId;
 
-        ProjectApplication otherApplication = new ProjectApplication(projectMock, comment, userMock, null);
+        var otherApplication = new ProjectApplication(projectMock, comment, userMock, null);
         otherApplication.id = applicationId;
 
         // when & then
@@ -136,14 +136,14 @@ public class ProjectApplicationTest {
     @Test
     public void equalsReturnsTrueForBothUserIdsNullAndHashCodeEquals() {
         // given
-        String comment = "This is a comment!";
-        LocalDateTime date = LocalDateTime.now();
+        var comment = "This is a comment!";
+        var date = LocalDateTime.now();
 
         given(userMock.getId()).willReturn(null);
 
-        ProjectApplication application = new ProjectApplication(projectMock, comment, userMock, date);
+        var application = new ProjectApplication(projectMock, comment, userMock, date);
 
-        ProjectApplication otherApplication = new ProjectApplication(projectMock, comment, userMock, date);
+        var otherApplication = new ProjectApplication(projectMock, comment, userMock, date);
 
         // when & then
         assertEqualsAndHashCodeEquals(application, otherApplication);
@@ -153,16 +153,16 @@ public class ProjectApplicationTest {
     public void equalsReturnsTrueForSameFieldValuesAndHashCodeEquals() {
         // given
         long applicationId = 1;
-        String userId = "user";
-        String comment = "This is a comment!";
-        LocalDateTime date = LocalDateTime.now();
+        var userId = "user";
+        var comment = "This is a comment!";
+        var date = LocalDateTime.now();
 
         given(userMock.getId()).willReturn(userId);
 
-        ProjectApplication application = new ProjectApplication(projectMock, comment, userMock, date);
+        var application = new ProjectApplication(projectMock, comment, userMock, date);
         application.id = applicationId;
 
-        ProjectApplication otherApplication = new ProjectApplication(projectMock, comment, userMock, date);
+        var otherApplication = new ProjectApplication(projectMock, comment, userMock, date);
         otherApplication.id = applicationId;
 
         // when & then
@@ -173,17 +173,17 @@ public class ProjectApplicationTest {
     public void equalsReturnsTrueForDifferentUserWithSameIdAndHashCodeEquals() {
         // given
         long applicationId = 1;
-        String userId = "user";
-        String comment = "This is a comment!";
-        LocalDateTime date = LocalDateTime.now();
+        var userId = "user";
+        var comment = "This is a comment!";
+        var date = LocalDateTime.now();
 
         given(userMock.getId()).willReturn(userId);
         given(otherUserMock.getId()).willReturn(userId);
 
-        ProjectApplication application = new ProjectApplication(projectMock, comment, userMock, date);
+        var application = new ProjectApplication(projectMock, comment, userMock, date);
         application.id = applicationId;
 
-        ProjectApplication otherApplication = new ProjectApplication(projectMock, comment, otherUserMock, date);
+        var otherApplication = new ProjectApplication(projectMock, comment, otherUserMock, date);
         otherApplication.id = applicationId;
 
         // when & then
@@ -191,20 +191,35 @@ public class ProjectApplicationTest {
     }
 
     @Test
+    public void equalsReturnsFalseForDifferentType() {
+        // given
+        var comment = "This is a comment!";
+        var date = LocalDateTime.now();
+
+        var application = new ProjectApplication(projectMock, comment, userMock, date);
+
+        // when
+        boolean actualEquals = application.equals("Test");
+
+        // then
+        assertThat(actualEquals).isFalse();
+    }
+
+    @Test
     public void equalsReturnsFalseForDifferentId() {
         // given
         long applicationId = 1;
         long otherApplicationId = 2;
-        String userId = "user";
-        String comment = "This is a comment!";
-        LocalDateTime date = LocalDateTime.now();
+        var userId = "user";
+        var comment = "This is a comment!";
+        var date = LocalDateTime.now();
 
         given(userMock.getId()).willReturn(userId);
 
-        ProjectApplication application = new ProjectApplication(projectMock, comment, userMock, date);
+        var application = new ProjectApplication(projectMock, comment, userMock, date);
         application.id = applicationId;
 
-        ProjectApplication otherApplication = new ProjectApplication(projectMock, comment, userMock, date);
+        var otherApplication = new ProjectApplication(projectMock, comment, userMock, date);
         otherApplication.id = otherApplicationId;
 
         // when
@@ -218,16 +233,16 @@ public class ProjectApplicationTest {
     public void equalsReturnsFalseForDifferentProject() {
         // given
         long applicationId = 1;
-        String userId = "user";
-        String comment = "This is a comment!";
-        LocalDateTime date = LocalDateTime.now();
+        var userId = "user";
+        var comment = "This is a comment!";
+        var date = LocalDateTime.now();
 
         given(userMock.getId()).willReturn(userId);
 
-        ProjectApplication application = new ProjectApplication(projectMock, comment, userMock, date);
+        var application = new ProjectApplication(projectMock, comment, userMock, date);
         application.id = applicationId;
 
-        ProjectApplication otherApplication = new ProjectApplication(otherProjectMock, comment, userMock, date);
+        var otherApplication = new ProjectApplication(otherProjectMock, comment, userMock, date);
         otherApplication.id = applicationId;
 
         // when
@@ -241,17 +256,17 @@ public class ProjectApplicationTest {
     public void equalsReturnsFalseForDifferentComment() {
         // given
         long applicationId = 1;
-        String userId = "user";
-        String comment = "This is a comment!";
-        String otherComment = "This is a different comment!";
-        LocalDateTime date = LocalDateTime.now();
+        var userId = "user";
+        var comment = "This is a comment!";
+        var otherComment = "This is a different comment!";
+        var date = LocalDateTime.now();
 
         given(userMock.getId()).willReturn(userId);
 
-        ProjectApplication application = new ProjectApplication(projectMock, comment, userMock, date);
+        var application = new ProjectApplication(projectMock, comment, userMock, date);
         application.id = applicationId;
 
-        ProjectApplication otherApplication = new ProjectApplication(projectMock, otherComment, userMock, date);
+        var otherApplication = new ProjectApplication(projectMock, otherComment, userMock, date);
         otherApplication.id = applicationId;
 
         // when
@@ -265,17 +280,17 @@ public class ProjectApplicationTest {
     public void equalsReturnsFalseForDifferentDate() {
         // given
         long applicationId = 1;
-        String userId = "user";
-        String comment = "This is a comment!";
-        LocalDateTime date = LocalDateTime.now();
-        LocalDateTime otherDate = date.minus(1L, ChronoUnit.MINUTES);
+        var userId = "user";
+        var comment = "This is a comment!";
+        var date = LocalDateTime.now();
+        var otherDate = date.minus(1L, ChronoUnit.MINUTES);
 
         given(userMock.getId()).willReturn(userId);
 
-        ProjectApplication application = new ProjectApplication(projectMock, comment, userMock, date);
+        var application = new ProjectApplication(projectMock, comment, userMock, date);
         application.id = applicationId;
 
-        ProjectApplication otherApplication = new ProjectApplication(projectMock, comment, userMock, otherDate);
+        var otherApplication = new ProjectApplication(projectMock, comment, userMock, otherDate);
         otherApplication.id = applicationId;
 
         // when
@@ -289,18 +304,18 @@ public class ProjectApplicationTest {
     public void equalsReturnsFalseForDifferentUserIds() {
         // given
         long applicationId = 1;
-        String userId = "user";
-        String otherUserId = "other-user";
-        String comment = "This is a comment!";
-        LocalDateTime date = LocalDateTime.now();
+        var userId = "user";
+        var otherUserId = "other-user";
+        var comment = "This is a comment!";
+        var date = LocalDateTime.now();
 
         given(userMock.getId()).willReturn(userId);
         given(otherUserMock.getId()).willReturn(otherUserId);
 
-        ProjectApplication application = new ProjectApplication(projectMock, comment, userMock, date);
+        var application = new ProjectApplication(projectMock, comment, userMock, date);
         application.id = applicationId;
 
-        ProjectApplication otherApplication = new ProjectApplication(projectMock, comment, otherUserMock, date);
+        var otherApplication = new ProjectApplication(projectMock, comment, otherUserMock, date);
         otherApplication.id = applicationId;
 
         // when

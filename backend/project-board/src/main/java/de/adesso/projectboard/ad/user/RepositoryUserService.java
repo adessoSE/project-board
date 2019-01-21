@@ -1,5 +1,6 @@
 package de.adesso.projectboard.ad.user;
 
+import de.adesso.projectboard.ad.service.LdapService;
 import de.adesso.projectboard.base.exceptions.HierarchyNotFoundException;
 import de.adesso.projectboard.base.exceptions.UserDataNotFoundException;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
@@ -16,9 +17,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Profile("adesso-ad")
@@ -30,13 +31,17 @@ public class RepositoryUserService implements UserService {
 
     private final UserDataRepository dataRepo;
 
+    private final LdapService ldapService;
+
     private final HierarchyTreeNodeRepository hierarchyTreeNodeRepo;
 
     public RepositoryUserService(UserRepository userRepo,
                                  UserDataRepository dataRepo,
+                                 LdapService ldapService,
                                  HierarchyTreeNodeRepository hierarchyTreeNodeRepo) {
         this.userRepo = userRepo;
         this.dataRepo = dataRepo;
+        this.ldapService = ldapService;
         this.hierarchyTreeNodeRepo = hierarchyTreeNodeRepo;
     }
 
@@ -58,8 +63,11 @@ public class RepositoryUserService implements UserService {
 
     @Override
     public UserData getUserData(@NonNull User user) {
-        return dataRepo.findByUser(user)
+        var data = dataRepo.findByUser(user)
                 .orElseThrow(() -> new UserDataNotFoundException(user.getId()));
+
+        return initializeThumbnailPhotos(Collections.singletonList(data))
+                .get(0);
     }
 
     @Override
@@ -94,12 +102,12 @@ public class RepositoryUserService implements UserService {
             throw new IllegalStateException("Data for some staff members is not present!");
         }
 
-        return directStaffData;
+        return initializeThumbnailPhotos(directStaffData);
     }
 
     @Override
     public List<User> getStaffMembersOfUser(@NonNull User user) {
-        return getHierarchyForUser(user).stream()
+        return getHierarchyForUser(user).getDirectStaff().stream()
                 .map(HierarchyTreeNode::getUser)
                 .collect(Collectors.toList());
     }
@@ -137,6 +145,52 @@ public class RepositoryUserService implements UserService {
     public User getOrCreateUserById(@NonNull String userId) {
         return userRepo.findById(userId)
                 .orElseGet(() -> userRepo.save(new User(userId)));
+    }
+
+    List<UserData> initializeThumbnailPhotos(@NonNull List<UserData> userData) {
+        var uninitializedUserIds = userData.stream()
+                .filter(Predicate.not(UserData::isPictureInitialized))
+                .map(data -> data.getUser().getId())
+                .collect(Collectors.toList());
+
+        var userIdDataMap = userData.stream()
+                .collect(Collectors.toMap(
+                            data -> data.getUser().getId(),
+                            Function.identity()
+                        ));
+
+        var idPhotoMap = ldapService.getThumbnailPhotos(uninitializedUserIds);
+        var newlyInitialized = uninitializedUserIds.stream()
+                .map(userId -> {
+                    var thumbnailPhoto = idPhotoMap.get(userId);
+                    var uninitialized = userIdDataMap.get(userId);
+                    return copyAndSetThumbnailPhoto(uninitialized, thumbnailPhoto);
+                })
+                .collect(Collectors.toList());
+
+        var allData = new ArrayList<>(userData);
+
+        dataRepo.saveAll(newlyInitialized)
+                .forEach(newlyInit -> {
+                    var newlyInitializedUserId = newlyInit.getUser().getId();
+                    var uninitializedIndex = allData.indexOf(userIdDataMap.get(newlyInitializedUserId));
+
+                    allData.set(uninitializedIndex, newlyInit);
+                });
+
+        return allData;
+    }
+
+    UserData copyAndSetThumbnailPhoto(@NonNull UserData userData, byte[] thumbnailPhoto) {
+        var id = userData.getId();
+        var user = userData.getUser();
+        var firstName = userData.getFirstName();
+        var lastName = userData.getLastName();
+        var email = userData.getEmail();
+        var lob = userData.getLob();
+
+        return new UserData(user, firstName, lastName, email, lob, thumbnailPhoto)
+                .setId(id);
     }
 
 }

@@ -118,12 +118,8 @@ public class ProjectApplication {
             ProjectApplication other = (ProjectApplication) obj;
 
             // only compare the user IDs because of the cyclic reference: User <-> Application
-            boolean userEquals;
-            if(Objects.nonNull(this.user) && Objects.nonNull(other.user)) {
-                userEquals = Objects.equals(this.user.getId(), other.user.getId());
-            } else {
-                userEquals = Objects.isNull(this.user) && Objects.isNull(other.user);
-            }
+            boolean userEquals = Objects.nonNull(this.user) && Objects.nonNull(other.user)
+                    && Objects.equals(this.user.getId(), other.user.getId());
 
             return userEquals &&
                     Objects.equals(this.id, other.id) &&

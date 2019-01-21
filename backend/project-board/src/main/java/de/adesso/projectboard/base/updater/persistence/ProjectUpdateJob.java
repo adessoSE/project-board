@@ -12,14 +12,14 @@ import java.time.LocalDateTime;
  * A info object for the {@link de.adesso.projectboard.base.updater.ProjectUpdater}
  * to persist information about the project database updates.
  *
- * @see UpdateJobRepository
+ * @see ProjectUpdateJobRepository
  */
 @Entity
-@Table(name = "UPDATE_JOB")
+@Table(name = "PROJECT_UPDATE_JOB")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class UpdateJob {
+public class ProjectUpdateJob {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,12 +41,12 @@ public class UpdateJob {
     )
     String failureReason;
 
-    public UpdateJob(LocalDateTime time, Status status) {
+    public ProjectUpdateJob(LocalDateTime time, Status status) {
         this.time = time;
         this.status = status;
     }
 
-    public UpdateJob(LocalDateTime time, Status status, Exception exception) {
+    public ProjectUpdateJob(LocalDateTime time, Status status, Exception exception) {
         this.time = time;
         this.status = status;
         this.failureReason = exception != null ? exception.getMessage() : null;

@@ -1,7 +1,7 @@
 package de.adesso.projectboard.base.updater;
 
-import de.adesso.projectboard.base.updater.persistence.UpdateJob;
-import de.adesso.projectboard.base.updater.persistence.UpdateJobRepository;
+import de.adesso.projectboard.base.updater.persistence.ProjectUpdateJob;
+import de.adesso.projectboard.base.updater.persistence.ProjectUpdateJobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -17,10 +17,10 @@ import java.util.Optional;
 @Component
 public class UpdaterHealthIndicator implements HealthIndicator {
 
-    private final UpdateJobRepository updaterRepository;
+    private final ProjectUpdateJobRepository updaterRepository;
 
     @Autowired
-    public UpdaterHealthIndicator(UpdateJobRepository repository) {
+    public UpdaterHealthIndicator(ProjectUpdateJobRepository repository) {
         this.updaterRepository = repository;
     }
 
@@ -32,12 +32,12 @@ public class UpdaterHealthIndicator implements HealthIndicator {
      */
     @Override
     public Health health() {
-        Optional<UpdateJob> lastInfoOptional = updaterRepository.findLatest();
+        Optional<ProjectUpdateJob> lastInfoOptional = updaterRepository.findLatest();
 
         if(lastInfoOptional.isPresent()) {
-            UpdateJob lastInfo = lastInfoOptional.get();
+            ProjectUpdateJob lastInfo = lastInfoOptional.get();
 
-            if(UpdateJob.Status.FAILURE.equals(lastInfo.getStatus())) {
+            if(ProjectUpdateJob.Status.FAILURE.equals(lastInfo.getStatus())) {
                 return Health.down()
                         .withDetail("reason", lastInfoOptional.get().getFailureReason())
                         .build();
@@ -45,7 +45,7 @@ public class UpdaterHealthIndicator implements HealthIndicator {
                 return Health.up()
                         .withDetail("lastUpdate", lastInfo.getTime())
                         .withDetail("totalUpdates", updaterRepository.count())
-                        .withDetail("successfulUpdates", updaterRepository.countByStatus(UpdateJob.Status.SUCCESS))
+                        .withDetail("successfulUpdates", updaterRepository.countByStatus(ProjectUpdateJob.Status.SUCCESS))
                         .build();
             }
 

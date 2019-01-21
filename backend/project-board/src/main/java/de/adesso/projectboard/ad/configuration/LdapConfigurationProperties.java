@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 
 @Profile("adesso-ad")
@@ -30,5 +32,15 @@ public class LdapConfigurationProperties {
      */
     @NotEmpty
     private String userIdAttribute = "sAMAccountName";
+
+    /**
+     * The hour of the day the users should be updated in
+     * a 24 hour format.
+     *
+     * default: <i>4</i> ['o clock]
+     */
+    @Min(0L)
+    @Max(23L)
+    private long updateHour = 4;
 
 }

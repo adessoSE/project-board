@@ -17,8 +17,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
-
 /**
  * {@link RestController REST Controller} to access {@link User}s.
  *
@@ -54,10 +52,10 @@ public class UserController {
     public Iterable<UserResponseDTO> getStaffMembersOfUser(@PathVariable("userId") String userId, Sort sort) throws UserNotFoundException {
         User user = userService.getUserById(userId);
 
-       var dataOfStaff = userService
+        var dataOfStaff = userService
                 .getStaffMemberUserDataOfUser(user, sort);
 
-        return userDtoFactory.createDtos(Collections.emptyList());
+        return userDtoFactory.createDtos(dataOfStaff);
     }
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")

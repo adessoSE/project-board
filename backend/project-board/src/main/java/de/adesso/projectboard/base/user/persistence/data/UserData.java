@@ -41,7 +41,7 @@ public class UserData {
     String lob;
 
     @Lob
-    @Column(name = "PICTURE")
+    @Column(name = "PICTURE", length = 102400)
     @Basic(fetch = FetchType.LAZY)
     byte[] picture;
 
@@ -57,8 +57,8 @@ public class UserData {
         this.picture = picture;
     }
 
-    public UserData(User user, String firstName, String lastName, String mail, String lob, byte[] picture) {
-        this(user, firstName, lastName, mail, lob);
+    public UserData(User user, String firstName, String lastName, String email, String lob, byte[] picture) {
+        this(user, firstName, lastName, email, lob);
 
         this.picture = picture;
         this.pictureInitialized = true;

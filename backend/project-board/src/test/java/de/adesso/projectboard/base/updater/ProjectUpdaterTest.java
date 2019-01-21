@@ -4,8 +4,8 @@ import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProper
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.reader.ProjectReader;
-import de.adesso.projectboard.base.updater.persistence.UpdateJob;
-import de.adesso.projectboard.base.updater.persistence.UpdateJobRepository;
+import de.adesso.projectboard.base.updater.persistence.ProjectUpdateJob;
+import de.adesso.projectboard.base.updater.persistence.ProjectUpdateJobRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,13 +38,13 @@ public class ProjectUpdaterTest {
     private final String INSTANT_STRING = "2018-01-01T13:00:00.00Z";
 
     @Captor
-    private ArgumentCaptor<UpdateJob> updateJobArgumentCaptor;
+    private ArgumentCaptor<ProjectUpdateJob> updateJobArgumentCaptor;
 
     @Mock
     private ProjectService projectServiceMock;
 
     @Mock
-    private UpdateJobRepository updateJobRepoMock;
+    private ProjectUpdateJobRepository updateJobRepoMock;
 
     @Mock
     private ProjectReader projectReaderMock;
@@ -53,7 +53,7 @@ public class ProjectUpdaterTest {
     private Project projectMock;
 
     @Mock
-    private UpdateJob updateJobMock;
+    private ProjectUpdateJob updateJobMock;
 
     @Mock
     private ProjectBoardConfigurationProperties propertiesMock;
@@ -78,8 +78,8 @@ public class ProjectUpdaterTest {
     @Test
     public void refreshProjectDatabaseGetsInitialProjectsOnFirstUpdate() throws Exception {
         // given
-        UpdateJob expectedUpdateJob = new UpdateJob(LocalDateTime.now(clock), UpdateJob.Status.SUCCESS);
-        given(updateJobRepoMock.findFirstByStatusOrderByTimeDesc(UpdateJob.Status.SUCCESS)).willReturn(Optional.empty());
+        ProjectUpdateJob expectedUpdateJob = new ProjectUpdateJob(LocalDateTime.now(clock), ProjectUpdateJob.Status.SUCCESS);
+        given(updateJobRepoMock.findFirstByStatusOrderByTimeDesc(ProjectUpdateJob.Status.SUCCESS)).willReturn(Optional.empty());
 
         given(projectReaderMock.getInitialProjects()).willReturn(Collections.singletonList(projectMock));
 
@@ -90,20 +90,20 @@ public class ProjectUpdaterTest {
         verify(projectServiceMock).saveAll(Collections.singletonList(projectMock));
 
         verify(updateJobRepoMock).save(updateJobArgumentCaptor.capture());
-        UpdateJob actualUpdateJob = updateJobArgumentCaptor.getValue();
+        ProjectUpdateJob actualUpdateJob = updateJobArgumentCaptor.getValue();
         assertThat(actualUpdateJob).isEqualTo(expectedUpdateJob);
     }
 
     @Test
     public void refreshProjectDatabaseGetsProjectsSinceLastUpdateWhenLastUpdateIsMoreThan10MinutesAgo() throws Exception {
         // given
-        UpdateJob expectedUpdateJob = new UpdateJob(LocalDateTime.now(clock), UpdateJob.Status.SUCCESS);
+        ProjectUpdateJob expectedUpdateJob = new ProjectUpdateJob(LocalDateTime.now(clock), ProjectUpdateJob.Status.SUCCESS);
         List<Project> expectedProjects = Collections.singletonList(projectMock);
         LocalDateTime lastUpdateTime = LocalDateTime.now(clock).plus(11L, ChronoUnit.MINUTES);
 
         given(updateJobMock.getTime()).willReturn(lastUpdateTime);
 
-        given(updateJobRepoMock.findFirstByStatusOrderByTimeDesc(UpdateJob.Status.SUCCESS))
+        given(updateJobRepoMock.findFirstByStatusOrderByTimeDesc(ProjectUpdateJob.Status.SUCCESS))
                 .willReturn(Optional.of(updateJobMock));
 
         given(updateJobMock.getTime()).willReturn(lastUpdateTime);
@@ -116,7 +116,7 @@ public class ProjectUpdaterTest {
         verify(projectServiceMock).saveAll(expectedProjects);
 
         verify(updateJobRepoMock).save(updateJobArgumentCaptor.capture());
-        UpdateJob actualUpdateJob = updateJobArgumentCaptor.getValue();
+        ProjectUpdateJob actualUpdateJob = updateJobArgumentCaptor.getValue();
         assertThat(actualUpdateJob).isEqualTo(expectedUpdateJob);
     }
 
@@ -127,7 +127,7 @@ public class ProjectUpdaterTest {
 
         given(updateJobMock.getTime()).willReturn(lastUpdateTime);
 
-        given(updateJobRepoMock.findFirstByStatusOrderByTimeDesc(UpdateJob.Status.SUCCESS))
+        given(updateJobRepoMock.findFirstByStatusOrderByTimeDesc(ProjectUpdateJob.Status.SUCCESS))
                 .willReturn(Optional.of(updateJobMock));
 
         // when
@@ -143,9 +143,9 @@ public class ProjectUpdaterTest {
     @Test
     public void refreshProjectDatabaseCatchesExceptionsAndSavesFailure() throws Exception {
         // given
-        UpdateJob expectedUpdateJob = new UpdateJob(LocalDateTime.now(clock), UpdateJob.Status.FAILURE, new IOException());
+        ProjectUpdateJob expectedUpdateJob = new ProjectUpdateJob(LocalDateTime.now(clock), ProjectUpdateJob.Status.FAILURE, new IOException());
 
-        given(updateJobRepoMock.findFirstByStatusOrderByTimeDesc(UpdateJob.Status.SUCCESS))
+        given(updateJobRepoMock.findFirstByStatusOrderByTimeDesc(ProjectUpdateJob.Status.SUCCESS))
                 .willReturn(Optional.empty());
 
         given(projectReaderMock.getInitialProjects()).willThrow(new IOException());
@@ -155,7 +155,7 @@ public class ProjectUpdaterTest {
 
         // then
         verify(updateJobRepoMock).save(updateJobArgumentCaptor.capture());
-        UpdateJob actualUpdateJob = updateJobArgumentCaptor.getValue();
+        ProjectUpdateJob actualUpdateJob = updateJobArgumentCaptor.getValue();
 
         assertThat(actualUpdateJob).isEqualTo(expectedUpdateJob);
     }

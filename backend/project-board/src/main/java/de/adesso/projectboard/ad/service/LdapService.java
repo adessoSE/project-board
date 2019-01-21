@@ -16,9 +16,9 @@ import javax.validation.constraints.NotNull;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -85,7 +85,7 @@ public class LdapService {
      * @return
      *          A map that maps a user ID to a thumbnail photo.
      */
-    public Map<String, byte[]> getThumbnailPhotos(@NonNull List<String> userIds) {
+    public Map<String, byte[]> getThumbnailPhotos(@NonNull Collection<String> userIds) {
         if(userIds.isEmpty()) {
             return new HashMap<>();
         }
@@ -112,13 +112,13 @@ public class LdapService {
      * @return
      *          A sub-query to query multiple IDs at once.
      */
-    ContainerCriteria buildIdCriteria(@NotNull List<String> userIds) {
+    ContainerCriteria buildIdCriteria(@NotNull Collection<String> userIds) {
         Assert.notEmpty(userIds, "List must contain at least one User ID!");
+        var userIdList = new ArrayList<>(userIds);
 
         var subQuery = query()
-                .where(idAttribute).is(userIds.get(0));
-
-        userIds.subList(1, userIds.size())
+                .where(idAttribute).is(userIdList.get(0));
+        userIdList.subList(1, userIds.size())
                 .forEach(userId -> subQuery.or(idAttribute).is(userId));
 
         return subQuery;

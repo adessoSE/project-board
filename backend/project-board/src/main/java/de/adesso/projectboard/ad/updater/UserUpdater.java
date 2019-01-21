@@ -234,9 +234,6 @@ public class UserUpdater {
      * Removes a direct report DN from the direct reports in case the DN is equal
      * to the nodes DN (<i>circular reference</i>) or no node with that DN exists
      * in the given {@code nodes}.
-     * <p>
-     *     <b>Note:</b> The nodes contained in the given {@code nodes} are modified!
-     * </p>
      *
      * @param nodes
      *          The nodes to clean up the direct reports of, not null.

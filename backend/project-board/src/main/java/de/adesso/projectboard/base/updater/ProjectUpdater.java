@@ -4,8 +4,8 @@ import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProper
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.reader.ProjectReader;
-import de.adesso.projectboard.base.updater.persistence.UpdateJob;
-import de.adesso.projectboard.base.updater.persistence.UpdateJobRepository;
+import de.adesso.projectboard.base.updater.persistence.ProjectUpdateJob;
+import de.adesso.projectboard.base.updater.persistence.ProjectUpdateJobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class ProjectUpdater {
 
     private final ProjectService projectService;
 
-    private final UpdateJobRepository updateJobRepo;
+    private final ProjectUpdateJobRepository updateJobRepo;
 
     private final ProjectReader projectReader;
 
@@ -34,7 +34,7 @@ public class ProjectUpdater {
 
     @Autowired
     public ProjectUpdater(ProjectService projectService,
-                          UpdateJobRepository updateJobRepo,
+                          ProjectUpdateJobRepository updateJobRepo,
                           ProjectReader projectReader,
                           ProjectBoardConfigurationProperties properties,
                           Clock clock) {
@@ -49,12 +49,12 @@ public class ProjectUpdater {
     /**
      * Refreshes the project database by using a {@link ProjectReader}.
      *
-     * @see #shouldUpdate(UpdateJob)
+     * @see #shouldUpdate(ProjectUpdateJob)
      */
     @Scheduled(fixedDelay = 30000L)
     public void refreshProjectDatabase() {
-        Optional<UpdateJob> lastSuccessfulUpdate
-                = updateJobRepo.findFirstByStatusOrderByTimeDesc(UpdateJob.Status.SUCCESS);
+        Optional<ProjectUpdateJob> lastSuccessfulUpdate
+                = updateJobRepo.findFirstByStatusOrderByTimeDesc(ProjectUpdateJob.Status.SUCCESS);
 
         try {
             List<Project> projects;
@@ -71,10 +71,10 @@ public class ProjectUpdater {
 
             this.projectService.saveAll(projects);
 
-            updateJobRepo.save(new UpdateJob(LocalDateTime.now(clock), UpdateJob.Status.SUCCESS));
+            updateJobRepo.save(new ProjectUpdateJob(LocalDateTime.now(clock), ProjectUpdateJob.Status.SUCCESS));
         } catch (Exception e) {
-            UpdateJob info = new UpdateJob(LocalDateTime.now(clock),
-                    UpdateJob.Status.FAILURE,
+            ProjectUpdateJob info = new ProjectUpdateJob(LocalDateTime.now(clock),
+                    ProjectUpdateJob.Status.FAILURE,
                     e);
 
             updateJobRepo.save(info);
@@ -85,14 +85,14 @@ public class ProjectUpdater {
     /**
      *
      * @param lastUpdate
-     *          The {@link UpdateJob} object of the last successful update.
+     *          The {@link ProjectUpdateJob} object of the last successful update.
      *
      * @return
      *          {@code true} if the difference between {@link LocalDateTime#now(Clock) now} and
-     *          {@link UpdateJob#getTime()} is longer than
+     *          {@link ProjectUpdateJob#getTime()} is longer than
      *          {@link ProjectBoardConfigurationProperties#getRefreshInterval()} minutes.
      */
-    private boolean shouldUpdate(UpdateJob lastUpdate) {
+    private boolean shouldUpdate(ProjectUpdateJob lastUpdate) {
         Duration lastUpdateDeltaDuration = Duration.between(lastUpdate.getTime(), LocalDateTime.now(clock)).abs();
 
         return refreshIntervalDuration.compareTo(lastUpdateDeltaDuration) <= 0;
