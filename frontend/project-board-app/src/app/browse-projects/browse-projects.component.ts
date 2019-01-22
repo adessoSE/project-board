@@ -1,14 +1,15 @@
 import { Location } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material';
+import { MatDialog, MatDialogRef, MatIconRegistry } from '@angular/material';
+import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
+import * as $ from 'jquery';
 import { combineLatest, Subject } from 'rxjs';
 import { debounceTime, switchMap, takeUntil } from 'rxjs/operators';
 import { AlertService } from '../_services/alert.service';
 import { Application, EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
 import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
-import * as $ from 'jquery';
 
 @Component({
   selector: 'app-browse-projects',
@@ -40,7 +41,9 @@ export class BrowseProjectsComponent implements OnInit {
   private searchText$ = new Subject<string>();
 
   constructor(private employeeService: EmployeeService,
+              private matIconRegistry: MatIconRegistry,
               private projectsService: ProjectService,
+              private domSanitizer: DomSanitizer,
               private alertService: AlertService,
               private route: ActivatedRoute,
               private location: Location,
@@ -99,6 +102,15 @@ export class BrowseProjectsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.matIconRegistry.addSvgIcon(
+      'sort_ascending',
+      this.domSanitizer.bypassSecurityTrustResourceUrl('../assets/long-arrow-alt-up-solid.svg')
+    );
+    this.matIconRegistry.addSvgIcon(
+      'sort_descending',
+      this.domSanitizer.bypassSecurityTrustResourceUrl('../assets/long-arrow-alt-down-solid.svg')
+    );
+
     this.mobile = document.body.clientWidth < 992;
 
     this.searchText$
@@ -130,20 +142,18 @@ export class BrowseProjectsComponent implements OnInit {
       this.sortMemory = memory;
     }
 
-    if(this.sortValue === 0 || this.sortValue === undefined) {
-      this.projects.sort((a: Project , b: Project) => { return a.location.localeCompare(b.location) });
+    if (this.sortValue === 0 || this.sortValue === undefined) {
+      this.projects.sort((a: Project, b: Project) => a.location.localeCompare(b.location));
       this.sortValue = 1;
-    }
-    else if(this.sortValue === 1){
-      this.projects.sort((a: Project , b: Project) => { return b.location.localeCompare(a.location) });
+    } else if (this.sortValue === 1) {
+      this.projects.sort((a: Project, b: Project) => b.location.localeCompare(a.location));
       this.sortValue = 2;
-      }
-    else {
+    } else {
       this.projects.sort((a: Project, b: Project) => {
-        return Number(new Date(b.updated)) - Number(new Date(a.updated))
+        return Number(new Date(b.updated)) - Number(new Date(a.updated));
       });
       this.sortValue = 0;
-    }  
+    }
   }
 
   private setSelectedProject(projectId: string) {
@@ -187,16 +197,16 @@ export class BrowseProjectsComponent implements OnInit {
   }
 
   @HostListener('window:scroll') onScroll() {
-    if(!this.mobile){
-      if(((document.getElementById('total-hits').offsetTop - window.scrollY + 60) === 0) && this.toggle){
-        $("#result-table > thead th").css('-webkit-box-shadow', 'inset 0 -1px 1px -1px rgba(128,128,128, 0.6)');
-        $("#result-table > thead th").css('-moz-box-shadow', 'inset 0 -1px 1px -1px rgba(128,128,128, 0.6)');
-        $("#result-table > thead th").css('box-shadow', 'inset 0 -1px 1px -1px rgba(128,128,128, 0.6)');
+    if (!this.mobile) {
+      if (((document.getElementById('total-hits').offsetTop - window.scrollY + 60) === 0) && this.toggle) {
+        $('#result-table > thead th').css('-webkit-box-shadow', 'inset 0 -1px 1px -1px rgba(128,128,128, 0.6)');
+        $('#result-table > thead th').css('-moz-box-shadow', 'inset 0 -1px 1px -1px rgba(128,128,128, 0.6)');
+        $('#result-table > thead th').css('box-shadow', 'inset 0 -1px 1px -1px rgba(128,128,128, 0.6)');
         this.toggle = false;
       } else if (!this.toggle && ((document.getElementById('total-hits').offsetTop - window.scrollY + 60) !== 0)) {
-        $("#result-table > thead th").css('-webkit-box-shadow', 'none');
-        $("#result-table > thead th").css('-moz-box-shadow', 'none');
-        $("#result-table > thead th").css('box-shadow', 'none');
+        $('#result-table > thead th').css('-webkit-box-shadow', 'none');
+        $('#result-table > thead th').css('-moz-box-shadow', 'none');
+        $('#result-table > thead th').css('box-shadow', 'none');
         this.toggle = true;
       }
     }

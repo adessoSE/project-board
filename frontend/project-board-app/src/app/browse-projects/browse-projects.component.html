@@ -15,7 +15,7 @@
       <tr style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" *ngIf="!loadingProjects">
         <th id="total-hits">{{projects?.length || 'Keine'}} Treffer{{searchText != '' ? ' für "' + searchText + '"' : ''}}</th>
         <th class="hover-change" *ngIf="!mobile" (click)="sortByLocation(1)">Standort
-          <mat-icon *ngIf="sortMemory === 1 && sortValue !== 0">{{(sortValue === 1) ? 'expand_less' : 'expand_more'}}</mat-icon>
+          <mat-icon *ngIf="sortMemory === 1 && sortValue > 0" svgIcon="sort_{{sortValue === 1 ? 'a' : 'de'}}scending"></mat-icon>
         </th>
         <th class="hover-change" *ngIf="!mobile">Beginn</th>
         <th class="hover-change" *ngIf="!mobile">Aufwand</th>

@@ -1,12 +1,13 @@
 import { Location } from '@angular/common';
 import { Component, HostListener, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material';
-import { ActivatedRoute, Router } from '@angular/router';
+import { MatDialog, MatDialogRef, MatIconRegistry } from '@angular/material';
+import { DomSanitizer } from '@angular/platform-browser';
+import { ActivatedRoute } from '@angular/router';
+import * as $ from 'jquery';
 import { combineLatest, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { Employee, EmployeeService } from '../_services/employee.service';
 import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
-import * as $ from 'jquery';
 
 @Component({
   selector: 'app-executives',
@@ -25,14 +26,15 @@ export class ExecutivesComponent implements OnInit {
   searchText = '';
   loading = true;
   dialogRef: MatDialogRef<EmployeeDialogComponent>;
-  sortValue = 0; // 0: alphabetically ascending, 1: column ascending, 2: column descending
-  sortMemory: number; // memorizes the last column that was sorted
+  sortValue = 0; // 0: alphabetically ascending, 1: column ascending, 2: alphabetically/column descending
+  sortMemory = 0; // memorizes the last column that was sorted
 
   destroy$ = new Subject<void>();
 
   constructor(private employeeService: EmployeeService,
+              private matIconRegistry: MatIconRegistry,
+              private domSanitizer: DomSanitizer,
               private route: ActivatedRoute,
-              private router: Router,
               private location: Location,
               public dialog: MatDialog) { }
 
@@ -43,6 +45,22 @@ export class ExecutivesComponent implements OnInit {
   swipebugplaceholder() {}
 
   ngOnInit() {
+    this.matIconRegistry.addSvgIcon(
+      'sort_alpha_ascending',
+      this.domSanitizer.bypassSecurityTrustResourceUrl('../assets/sort-alpha-down-solid.svg')
+    );
+    this.matIconRegistry.addSvgIcon(
+      'sort_alpha_descending',
+      this.domSanitizer.bypassSecurityTrustResourceUrl('../assets/sort-alpha-up-solid.svg')
+    );
+    this.matIconRegistry.addSvgIcon(
+      'sort_ascending',
+      this.domSanitizer.bypassSecurityTrustResourceUrl('../assets/long-arrow-alt-up-solid.svg')
+    );
+    this.matIconRegistry.addSvgIcon(
+      'sort_descending',
+      this.domSanitizer.bypassSecurityTrustResourceUrl('../assets/long-arrow-alt-down-solid.svg')
+    );
     this.mobile = document.body.clientWidth < 992;
     combineLatest(this.route.data, this.route.params)
       .pipe(takeUntil(this.destroy$))
@@ -138,13 +156,20 @@ export class ExecutivesComponent implements OnInit {
       .subscribe(() => this.location.replaceState('/employees'));
   }
 
-  sort(memory: number) {
+  sort(memory: number, sortValue?: number) {
     if (this.sortMemory !== memory) {
-      this.sortValue = 0;
+      this.sortValue = sortValue || 0;
       this.sortMemory = memory;
     }
 
     switch (memory) {
+      case 0:
+        this.filteredEmployees = this.sortAlphabetically(this.filteredEmployees);
+        this.employeeMap.forEach((employees: Employee[], key: string) => {
+          this.employeeMap.set(key, this.sortAlphabetically(employees));
+        });
+        this.sortValue = this.sortValue === 0 ? ++this.sortValue : this.sortValue;
+        break;
       case 1:
         this.filteredEmployees = this.sortByState(this.filteredEmployees);
         this.employeeMap.forEach((employees: Employee[], key: string) => {
@@ -171,7 +196,11 @@ export class ExecutivesComponent implements OnInit {
         break;
       default:
     }
-    this.sortValue = ++this.sortValue % 3;
+    if (this.sortMemory !== 0 && this.sortValue === 2) {
+      this.sort(0, 2);
+    } else {
+      this.sortValue = ++this.sortValue % 3;
+    }
   }
 
   sortByState(toSort: Employee[]): Employee[] {
@@ -201,8 +230,6 @@ export class ExecutivesComponent implements OnInit {
         }
         return a.accessInfo.hasAccess === b.accessInfo.hasAccess ? 0 : a.accessInfo.hasAccess ? 1 : -1;
       });
-    } else {
-      toSort.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
     }
 
     return toSort;
@@ -249,8 +276,6 @@ export class ExecutivesComponent implements OnInit {
         }
         return new Date(a.accessInfo.accessStart).getTime() - new Date(b.accessInfo.accessStart).getTime();
       });
-    } else {
-      toSort.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
     }
 
     return toSort;
@@ -297,8 +322,6 @@ export class ExecutivesComponent implements OnInit {
         }
         return new Date(b.accessInfo.accessEnd).getTime() - new Date(a.accessInfo.accessEnd).getTime();
       });
-    } else {
-      toSort.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
     }
 
     return toSort;
@@ -323,10 +346,17 @@ export class ExecutivesComponent implements OnInit {
         }
         return b.applications.count - a.applications.count;
       });
-    } else {
-      toSort.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
     }
 
+    return toSort;
+  }
+
+  sortAlphabetically(toSort: Employee[]): Employee[] {
+    if (this.sortValue === 0) {
+      toSort.sort((a: Employee, b: Employee) => a.lastName >= b.lastName ? -1 : 1);
+    } else {
+      toSort.sort((a: Employee, b: Employee) => a.lastName >= b.lastName ? 1 : -1);
+    }
     return toSort;
   }
 
@@ -370,16 +400,16 @@ export class ExecutivesComponent implements OnInit {
   }
 
   @HostListener('window:scroll') onScroll() {
-    if(!this.mobile){
-      if(((document.getElementById('total-hits').offsetTop - window.scrollY + 60) === 0) && this.toggle){
-        $("#result-table > thead th").css('-webkit-box-shadow', 'inset 0 -1px 1px -1px rgba(128,128,128, 0.6)');
-        $("#result-table > thead th").css('-moz-box-shadow', 'inset 0 -1px 1px -1px rgba(128,128,128, 0.6)');
-        $("#result-table > thead th").css('box-shadow', 'inset 0 -1px 1px -1px rgba(128,128,128, 0.6)');
+    if (!this.mobile) {
+      if (((document.getElementById('total-hits').offsetTop - window.scrollY + 60) === 0) && this.toggle) {
+        $('#result-table > thead th').css('-webkit-box-shadow', 'inset 0 -1px 1px -1px rgba(128,128,128, 0.6)');
+        $('#result-table > thead th').css('-moz-box-shadow', 'inset 0 -1px 1px -1px rgba(128,128,128, 0.6)');
+        $('#result-table > thead th').css('box-shadow', 'inset 0 -1px 1px -1px rgba(128,128,128, 0.6)');
         this.toggle = false;
       } else if (!this.toggle && ((document.getElementById('total-hits').offsetTop - window.scrollY + 60) !== 0)) {
-        $("#result-table > thead th").css('-webkit-box-shadow', 'none');
-        $("#result-table > thead th").css('-moz-box-shadow', 'none');
-        $("#result-table > thead th").css('box-shadow', 'none');
+        $('#result-table > thead th').css('-webkit-box-shadow', 'none');
+        $('#result-table > thead th').css('-moz-box-shadow', 'none');
+        $('#result-table > thead th').css('box-shadow', 'none');
         this.toggle = true;
       }
     }
