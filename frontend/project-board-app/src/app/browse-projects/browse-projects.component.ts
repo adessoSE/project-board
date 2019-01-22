@@ -8,6 +8,7 @@ import { AlertService } from '../_services/alert.service';
 import { Application, EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
 import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
+import * as $ from 'jquery';
 
 @Component({
   selector: 'app-browse-projects',
@@ -30,7 +31,7 @@ export class BrowseProjectsComponent implements OnInit {
   projectsFound: number;
   sortValue: number;
   sortMemory: number;
-
+  toggle = true;
   dialogRef: MatDialogRef<ProjectDialogComponent>;
 
   private divToScroll;
@@ -184,4 +185,21 @@ export class BrowseProjectsComponent implements OnInit {
     this.selectedProject = null;
     this.location.replaceState('/browse');
   }
+
+  @HostListener('window:scroll') onScroll() {
+    if(!this.mobile){
+      if(((document.getElementById('total-hits').offsetTop - window.scrollY + 60) === 0) && this.toggle){
+        $("#result-table > thead th").css('-webkit-box-shadow', 'inset 0 -1px 1px -1px rgba(128,128,128, 0.6)');
+        $("#result-table > thead th").css('-moz-box-shadow', 'inset 0 -1px 1px -1px rgba(128,128,128, 0.6)');
+        $("#result-table > thead th").css('box-shadow', 'inset 0 -1px 1px -1px rgba(128,128,128, 0.6)');
+        this.toggle = false;
+      } else if (!this.toggle && ((document.getElementById('total-hits').offsetTop - window.scrollY + 60) !== 0)) {
+        $("#result-table > thead th").css('-webkit-box-shadow', 'none');
+        $("#result-table > thead th").css('-moz-box-shadow', 'none');
+        $("#result-table > thead th").css('box-shadow', 'none');
+        this.toggle = true;
+      }
+    }
+  }
+
 }

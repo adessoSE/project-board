@@ -6,6 +6,7 @@ import { combineLatest, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { Employee, EmployeeService } from '../_services/employee.service';
 import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
+import * as $ from 'jquery';
 
 @Component({
   selector: 'app-executives',
@@ -17,8 +18,7 @@ export class ExecutivesComponent implements OnInit {
   filteredEmployees: Employee[] = [];
   selectedEmployee: Employee;
   mobile = false;
-  smallMobile = false;
-
+  toggle = true;
   showEmployees: string[] = [];
   employeeMap: Map<string, Employee[]> = new Map<string, Employee[]>();
 
@@ -38,14 +38,12 @@ export class ExecutivesComponent implements OnInit {
 
   @HostListener('window:resize') onResize() {
     this.mobile = document.body.clientWidth < 992;
-    this.smallMobile = document.body.clientWidth < 768;
   }
 
   swipebugplaceholder() {}
 
   ngOnInit() {
     this.mobile = document.body.clientWidth < 992;
-    this.smallMobile = document.body.clientWidth < 768;
     combineLatest(this.route.data, this.route.params)
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
@@ -368,6 +366,22 @@ export class ExecutivesComponent implements OnInit {
               });
           }
         });
+    }
+  }
+
+  @HostListener('window:scroll') onScroll() {
+    if(!this.mobile){
+      if(((document.getElementById('total-hits').offsetTop - window.scrollY + 60) === 0) && this.toggle){
+        $("#result-table > thead th").css('-webkit-box-shadow', 'inset 0 -1px 1px -1px rgba(128,128,128, 0.6)');
+        $("#result-table > thead th").css('-moz-box-shadow', 'inset 0 -1px 1px -1px rgba(128,128,128, 0.6)');
+        $("#result-table > thead th").css('box-shadow', 'inset 0 -1px 1px -1px rgba(128,128,128, 0.6)');
+        this.toggle = false;
+      } else if (!this.toggle && ((document.getElementById('total-hits').offsetTop - window.scrollY + 60) !== 0)) {
+        $("#result-table > thead th").css('-webkit-box-shadow', 'none');
+        $("#result-table > thead th").css('-moz-box-shadow', 'none');
+        $("#result-table > thead th").css('box-shadow', 'none');
+        this.toggle = true;
+      }
     }
   }
 }

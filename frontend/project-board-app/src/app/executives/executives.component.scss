@@ -218,6 +218,14 @@ table thead th {
     flex: 1 1 auto;
     margin: 0 auto;
   }
+
+  table#result-table > thead th {
+    background: white;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+  }
 }
 
 .dropdown-icon {

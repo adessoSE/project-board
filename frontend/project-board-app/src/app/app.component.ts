@@ -131,10 +131,10 @@ export class AppComponent implements OnInit, DoCheck {
 
     //Toggle for the mini-menu
 
-      if (document.documentElement.scrollTop > 400) {  
+      if (document.documentElement.scrollTop > 340) {  
         if((document.getElementById('mini-nav').offsetLeft === -45) && !($("#mini-nav").is(':animated'))){
         $("#mini-nav").animate({left: '0px'}, function() {
-          if(document.documentElement.scrollTop <= 400) {
+          if(document.documentElement.scrollTop <= 340) {
             $("#mini-nav").animate({left: '-45px'});
           }
         });
@@ -142,7 +142,7 @@ export class AppComponent implements OnInit, DoCheck {
       } else {
         if((document.getElementById('mini-nav').offsetLeft === 0) && !($("#mini-nav").is(':animated'))){
         $("#mini-nav").animate({left: '-45px'}, function() {
-          if(document.documentElement.scrollTop > 400) {
+          if(document.documentElement.scrollTop > 340) {
           $("#mini-nav").animate({left: '0px'});
           }
         });
