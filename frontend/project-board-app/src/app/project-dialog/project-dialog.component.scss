@@ -3,7 +3,6 @@
 @import '../../../node_modules/bootstrap/scss/mixins';
 
 mat-dialog-actions {
-  // 80px header + 650px content = 730px
   margin: 0 -24px -24px -24px;
   padding: 8px 24px 8px 24px;
 }
@@ -20,13 +19,16 @@ mat-dialog-content {
 }
 
 .shorten {
-  max-height: calc(65vh - 182px);
+  max-height: calc(80vh - (80px + 236px));
 }
 
 h1 {
   font-family: Klavika-regular, "Helvetica Neue", Helvetica, Arial, sans-serif;
   margin: -24px -24px 0 -24px;
-  padding: 24px 88px 24px 24px;
+  padding: 24px 152px 24px 24px;
+  @include media-breakpoint-down(md) {
+    padding-right: 88px; 
+  }
 }
 
 #applied-icon {
@@ -89,6 +91,47 @@ h1 {
   color: darken(#016EC7, 10);
 }
 
+#request-icon {
+  display: block;
+  margin: 0 auto;
+  font-size: 30px;
+}
+
+#request-icon.mat-icon.material-icons {
+  height: 30px;
+  width: 30px;
+}
+
+#request-text {
+  font-size: 12px;
+  line-height: 100%;
+}
+
+#request-icon-wrapper-placeholder {
+  float: left;
+  width: 64px;
+  height: 60px;
+  margin-top: -10px;
+}
+
+#request-icon-wrapper {
+  float: left;
+  width: 64px;
+  height: 60px;
+  margin-top: -10px;
+  cursor: pointer;
+  text-align: center;
+  color: grey;
+}
+
+#request-icon-wrapper:hover #request-icon {
+  color: darken(grey, 10);
+}
+
+#request-icon-wrapper:hover #request-text {
+  color: darken(grey, 10);
+}
+
 #close-icon-wrapper :hover, #close-icon-wrapper #close-icon :hover {
   color: darken(#887D75, 10);
 }
@@ -101,12 +144,16 @@ h1 {
 }
 
 #top-button {
-  float: right;
+  float: left;
   margin-top: -3px;
   margin-right: 1rem;
   @include media-breakpoint-down(sm) {
     display: none;
   }
+}
+
+.comment {
+  text-align: center;
 }
 
 #comment:focus {
@@ -152,6 +199,11 @@ div:hover > a,
 .linking-icon .material-icons:hover,
 a:hover {
   color: #016EC7;
+}
+
+#buttonBox mat-icon{ 
+  float: left;
+  margin-right: 5px;
 }
 
 @include media-breakpoint-down(md) {

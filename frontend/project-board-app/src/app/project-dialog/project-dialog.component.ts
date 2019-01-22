@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Inject, OnInit, Output, HostListener } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { NavigationStart, Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -54,6 +54,10 @@ export class ProjectDialogComponent implements OnInit {
     this.data.project.title = this.cleanUpString(this.data.project.title);
     this.data.project.operationStart = this.cleanUpString(this.data.project.operationStart);
     this.data.project.operationEnd = this.cleanUpString(this.data.project.operationEnd);
+  }
+
+  @HostListener('window:resize') onResize() {
+    this.mobile = document.body.clientWidth < 992;
   }
 
   cleanUpString(string: string): string {

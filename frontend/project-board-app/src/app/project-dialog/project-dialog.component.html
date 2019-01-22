@@ -17,10 +17,24 @@
 <!-- bookmark icon placeholder -->
 <span *ngIf="data.isUserBoss" id="bookmark-icon-wrapper-placeholder"></span>
 
-<!-- top request button -->
-<button *ngIf="!mobile && !data.isUserBoss && !showBox && data.applicable" class="btn btn-primary" id="top-button" (click)="toggleRequestArea()">Projekt
-  anfragen...
-</button>
+<!-- request icon -->
+<span *ngIf="!mobile && !data.isUserBoss && !showBox && data.applicable" id="request-icon-wrapper" (click)="toggleRequestArea()" title="Projektanfrage erstellen">
+  <mat-icon id="request-icon">
+    create
+  </mat-icon>
+  <div id="request-text">
+    Anfrage erstellen
+  </div>
+</span>
+
+<!-- request icon placeholder -->
+<span *ngIf="!mobile && (data.isUserBoss || showBox || !data.applicable)" id="request-icon-wrapper-placeholder"></span>
+
+
+<!-- top request button 
+<button *ngIf="!mobile && !data.isUserBoss && !showBox && data.applicable" class="btn btn-primary" id="top-button" (click)="toggleRequestArea()">
+    <mat-icon>create</mat-icon> Projekt anfragen...
+</button> -->
 
 <h1 mat-dialog-title>Projekt-Details</h1>
 <mat-dialog-content [ngClass]="{'shorten': showBox}">
@@ -119,17 +133,17 @@
   </div>
   <div style="width: 100%; text-align: left" *ngIf="showBox" id="requestArea">
     <div class="comment">
-      <label class="comment-label" for="comment">Kommentar:</label>
-      <textarea [(ngModel)]="comment" class="form-control comment-textarea" id="comment" name="comment" placeholder="Schreib einen Kommentar zu deiner Anfrage..."
+      <label class="comment-label" for="comment">Projektanfrage</label>
+      <textarea [(ngModel)]="comment" class="form-control comment-textarea" id="comment" name="comment" placeholder="Schreibe einen Kommentar zu deiner Anfrage..."
                 rows="4"></textarea>
     </div>
 
     <p>Dein Vorgesetzter wird per Email über deine Anfrage benachrichtigt.</p>
   </div>
   <div id="buttonBox" *ngIf="!data.isUserBoss">
-    <button *ngIf="showBox" class="btn btn-primary" (click)="sendApplication()">Anfrage absenden</button>
-    <button *ngIf="!showBox && data.applicable" class="btn btn-primary" (click)="toggleRequestArea()">Projekt
-      anfragen...
+    <button *ngIf="showBox" class="btn btn-primary" (click)="sendApplication()"><mat-icon>send</mat-icon> absenden</button>
+    <button *ngIf="!showBox && data.applicable" class="btn btn-primary" (click)="toggleRequestArea()">
+      <mat-icon>create</mat-icon> Anfrage erstellen
     </button>
     <button *ngIf="showBox" class="btn btn-outline-secondary ml-2" (click)="toggleRequestArea()">Abbrechen</button>
   </div>
