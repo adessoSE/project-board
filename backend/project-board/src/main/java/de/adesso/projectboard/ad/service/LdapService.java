@@ -77,7 +77,8 @@ public class LdapService {
 
     /**
      * Retrieves the thumbnail photo for a given list of {@code userId}. The returned map
-     * may not contain every user ID in case no user was found with the given ID.
+     * may not contain every user ID in case no user was found with the given ID or no
+     * thumbnail photo is present.
      *
      * @param userIds
      *          The user IDs to get the thumbnail photos for, not null.
@@ -95,6 +96,7 @@ public class LdapService {
                 .attributes(idAttribute, "thumbnailPhoto")
                 .countLimit(userIds.size())
                 .where(idAttribute).isPresent()
+                .and("thumbnailPhoto").isPresent()
                 .and(buildIdCriteria(userIds));
 
         var mapEntries = ldapTemplate.search(query, new ThumbnailPhotoMapper(idAttribute));

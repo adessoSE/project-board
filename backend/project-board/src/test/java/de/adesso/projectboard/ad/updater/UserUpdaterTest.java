@@ -90,8 +90,8 @@ public class UserUpdaterTest {
                 .setName(expectedSecondName)
                 .setMail(expectedSecondMail);
 
-        var firstExpected = new UserData(firstUser, expectedFirstGivenName, expectedFirstSurname, expectedFirstMail, expectedFirstDepartment);
-        var secondExpected = new UserData(secondUser, expectedSecondGivenName, expectedSecondSurname, expectedSecondMail, expectedSecondDepartment);
+        var firstExpected = new UserData(firstUser, expectedFirstGivenName, expectedFirstSurname, expectedFirstMail, expectedFirstDivision);
+        var secondExpected = new UserData(secondUser, expectedSecondGivenName, expectedSecondSurname, expectedSecondMail, expectedSecondDivision);
 
         given(repoUserServiceMock.getOrCreateUserById(firstUserId)).willReturn(firstUser);
         given(repoUserServiceMock.getOrCreateUserById(secondUserId)).willReturn(secondUser);

@@ -61,7 +61,7 @@ public class UserUpdater {
                 .map(node -> {
                     var user = repoUserService.getOrCreateUserById(node.getId());
 
-                    return new UserData(user, node.getGivenName(), node.getSurname(), node.getMail(), node.getDepartment());
+                    return new UserData(user, node.getGivenName(), node.getSurname(), node.getMail(), node.getDivision());
                 })
                 .collect(Collectors.toSet());
 
