@@ -1,71 +1,50 @@
 package de.adesso.projectboard.base.project.rest;
 
-import de.adesso.projectboard.base.project.dto.ProjectDtoMapper;
-import de.adesso.projectboard.base.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.project.service.ProjectService;
+import de.adesso.projectboard.base.project.projection.FullProjectProjection;
+import de.adesso.projectboard.base.project.projection.ReducedProjectProjection;
 import de.adesso.projectboard.base.user.service.UserAuthService;
-import de.adesso.projectboard.base.user.service.UserProjectService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import lombok.NonNull;
+import org.springframework.data.domain.Page;
+import org.springframework.data.projection.ProjectionFactory;
+import org.springframework.http.ResponseEntity;
 
-import javax.validation.Valid;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
-/**
- * {@link RestController REST Controller} to access/create/delete a single
- * {@link Project}.
- *
- * @see NonPageableProjectController
- * @see PageableProjectController
- */
-@RestController
-@RequestMapping(path = "/projects")
-public class BaseProjectController {
+public abstract class BaseProjectController {
 
-    private final ProjectService projectService;
-
-    private final UserProjectService userProjectService;
+    private final ProjectionFactory projectionFactory;
 
     private final UserAuthService userAuthService;
 
-    private final ProjectDtoMapper projectDtoMapper;
-
-    @Autowired
-    public BaseProjectController(ProjectService projectService,
-                                 UserProjectService userProjectService,
-                                 UserAuthService userAuthService,
-                                 ProjectDtoMapper projectDtoMapper) {
-        this.projectService = projectService;
-        this.userProjectService = userProjectService;
+    protected BaseProjectController(ProjectionFactory projectionFactory, UserAuthService userAuthService) {
+        this.projectionFactory = projectionFactory;
         this.userAuthService = userAuthService;
-        this.projectDtoMapper = projectDtoMapper;
     }
 
-    @PreAuthorize("hasAccessToProject(#projectId) || hasRole('admin')")
-    @GetMapping(path = "/{projectId}")
-    public Project getById(@PathVariable String projectId) {
-        return projectService.getProjectById(projectId);
+    public abstract ResponseEntity<? extends ReducedProjectProjection> getById(String projectId);
+
+    protected Collection<? extends ReducedProjectProjection> getProjectionOfProjects(@NonNull Collection<Project> projects) {
+        var projectionType = getProjectionTypeForAuthenticatedUser();
+
+        return projects.stream()
+                .map(project -> projectionFactory.createProjection(projectionType, project))
+                .collect(Collectors.toList());
     }
 
-    @PreAuthorize("hasPermissionToCreateProjects() || hasRole('admin')")
-    @PostMapping
-    public Project createProject(@Valid @RequestBody ProjectRequestDTO projectDTO) {
-        var user = userAuthService.getAuthenticatedUser();
+    protected Page<? extends ReducedProjectProjection> mapToProjection(@NonNull Page<Project> projectPage) {
+        var projectionType = getProjectionTypeForAuthenticatedUser();
 
-        return userProjectService.createProjectForUser(projectDtoMapper.toProject(projectDTO), user);
+        return projectPage
+                .map(project -> projectionFactory.createProjection(projectionType, project));
     }
 
-    @PreAuthorize("hasPermissionToEditProject(#projectId) || hasRole('admin')")
-    @PutMapping(path = "/{projectId}")
-    public Project updateProject(@PathVariable String projectId, @Valid @RequestBody ProjectRequestDTO projectDTO) {
-        return projectService.updateProject(projectDtoMapper.toProject(projectDTO), projectId);
-    }
+    Class<? extends ReducedProjectProjection> getProjectionTypeForAuthenticatedUser() {
+        var authenticatedUser = userAuthService.getAuthenticatedUser();
 
-    @PreAuthorize("hasPermissionToEditProject(#projectId) || hasRole('admin')")
-    @DeleteMapping(path = "/{projectId}")
-    public void deleteProject(@PathVariable String projectId) {
-        projectService.deleteProjectById(projectId);
+        return userAuthService.userHasAccessToAllProjectFields(authenticatedUser)
+                ? FullProjectProjection.class : ReducedProjectProjection.class;
     }
 
 }

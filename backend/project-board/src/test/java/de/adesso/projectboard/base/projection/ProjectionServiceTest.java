@@ -1,7 +1,7 @@
 package de.adesso.projectboard.base.projection;
 
 import de.adesso.projectboard.base.projection.exception.MultipleDefaultProjectionsException;
-import de.adesso.projectboard.base.projection.exception.MultipleSimilarNamedProjectionsException;
+import de.adesso.projectboard.base.projection.exception.MultipleSimilarlyNamedProjectionsException;
 import de.adesso.projectboard.base.projection.util.ClassUtils;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Before;
@@ -75,7 +75,7 @@ public class ProjectionServiceTest {
     }
 
     @Test
-    public void addProjectionInterfacesAddsAllProjectionInterfaces() throws ClassNotFoundException, MultipleDefaultProjectionsException, MultipleSimilarNamedProjectionsException {
+    public void addProjectionInterfacesAddsAllProjectionInterfaces() throws ClassNotFoundException, MultipleDefaultProjectionsException, MultipleSimilarlyNamedProjectionsException {
         // given
         var basePackage = "de/test";
         var beanClassName = "TestClass";
@@ -123,7 +123,7 @@ public class ProjectionServiceTest {
     }
 
     @Test
-    public void addProjectionInterfaceDoesNotAddProjectionAsDefaultWithSimpleClassNameWhenNotMarkedAsDefaultAndNameNotSet() throws MultipleDefaultProjectionsException, MultipleSimilarNamedProjectionsException {
+    public void addProjectionInterfaceDoesNotAddProjectionAsDefaultWithSimpleClassNameWhenNotMarkedAsDefaultAndNameNotSet() throws MultipleDefaultProjectionsException, MultipleSimilarlyNamedProjectionsException {
         var expectedTarget = ProjectionTarget.USER;
         var expectedName = annotatedClass.getSimpleName().toLowerCase();
         var expectedPair = Pair.of(expectedName, expectedTarget);
@@ -144,7 +144,7 @@ public class ProjectionServiceTest {
     }
 
     @Test
-    public void addProjectionInterfaceAddsProjectionsAsDefaultWithSimpleClassNameWhenMarkedAsDefaultAndNameNotSet() throws MultipleDefaultProjectionsException, MultipleSimilarNamedProjectionsException {
+    public void addProjectionInterfaceAddsProjectionsAsDefaultWithSimpleClassNameWhenMarkedAsDefaultAndNameNotSet() throws MultipleDefaultProjectionsException, MultipleSimilarlyNamedProjectionsException {
         // given
         var expectedTarget = ProjectionTarget.USER;
         var expectedName = annotatedClass.getSimpleName().toLowerCase();
@@ -167,7 +167,7 @@ public class ProjectionServiceTest {
     }
 
     @Test
-    public void addProjectionInterfaceDoesNotAddProjectionAsDefaultWithNameWhenNotMarkedAsDefault() throws MultipleDefaultProjectionsException, MultipleSimilarNamedProjectionsException {
+    public void addProjectionInterfaceDoesNotAddProjectionAsDefaultWithNameWhenNotMarkedAsDefault() throws MultipleDefaultProjectionsException, MultipleSimilarlyNamedProjectionsException {
         // given
         var expectedTarget = ProjectionTarget.USER;
         var expectedName = "cool-projection-name";
@@ -190,7 +190,7 @@ public class ProjectionServiceTest {
     }
 
     @Test
-    public void addProjectionInterfaceAddsProjectionAsDefaultWithNameWhenMarkedAsDefault() throws MultipleDefaultProjectionsException, MultipleSimilarNamedProjectionsException {
+    public void addProjectionInterfaceAddsProjectionAsDefaultWithNameWhenMarkedAsDefault() throws MultipleDefaultProjectionsException, MultipleSimilarlyNamedProjectionsException {
         // given
         var expectedTarget = ProjectionTarget.USER;
         var expectedName = "cool-projection-name";
@@ -225,7 +225,7 @@ public class ProjectionServiceTest {
 
         // when / then
         assertThatThrownBy(() -> projectionService.addProjectionInterface(namedProjectionAnnotationMock, annotatedClass))
-                .isInstanceOf(MultipleSimilarNamedProjectionsException.class)
+                .isInstanceOf(MultipleSimilarlyNamedProjectionsException.class)
                 .hasMessage(String.format("Multiple interfaces annotated with @NamedInterface " +
                         "have the same name ('%s') for the target '%s'!", projectionName, projectionTarget.toString()));
     }

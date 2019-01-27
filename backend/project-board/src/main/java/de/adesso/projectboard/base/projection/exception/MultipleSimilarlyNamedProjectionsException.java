@@ -7,7 +7,7 @@ import lombok.NonNull;
 
 @Getter
 @EqualsAndHashCode(callSuper = false)
-public class MultipleSimilarNamedProjectionsException extends Exception {
+public class MultipleSimilarlyNamedProjectionsException extends Exception {
 
     private static final String MESSAGE_TEMPLATE = "Multiple interfaces annotated with @NamedInterface " +
             "have the same name ('%s') for the target '%s'!";
@@ -16,7 +16,7 @@ public class MultipleSimilarNamedProjectionsException extends Exception {
 
     private final ProjectionTarget target;
 
-    public MultipleSimilarNamedProjectionsException(@NonNull String name, @NonNull ProjectionTarget target) {
+    public MultipleSimilarlyNamedProjectionsException(@NonNull String name, @NonNull ProjectionTarget target) {
         super(String.format(MESSAGE_TEMPLATE, name, target.toString()));
 
         this.name = name;

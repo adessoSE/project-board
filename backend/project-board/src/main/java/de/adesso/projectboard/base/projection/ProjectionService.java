@@ -1,7 +1,7 @@
 package de.adesso.projectboard.base.projection;
 
 import de.adesso.projectboard.base.projection.exception.MultipleDefaultProjectionsException;
-import de.adesso.projectboard.base.projection.exception.MultipleSimilarNamedProjectionsException;
+import de.adesso.projectboard.base.projection.exception.MultipleSimilarlyNamedProjectionsException;
 import de.adesso.projectboard.base.projection.util.ClassUtils;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -76,7 +76,7 @@ public class ProjectionService implements InitializingBean {
      * @param basePackage
      *          The base package to search annotated interfaces in, not null.
      */
-    void addProjectionInterfaces(String basePackage) throws MultipleDefaultProjectionsException, MultipleSimilarNamedProjectionsException {
+    void addProjectionInterfaces(String basePackage) throws MultipleDefaultProjectionsException, MultipleSimilarlyNamedProjectionsException {
         for(var annotationInterfacePair : getAnnotatedInterfaces(basePackage)) {
             var annotation = annotationInterfacePair.getFirst();
             var annotatedInterface = annotationInterfacePair.getSecond();
@@ -119,7 +119,7 @@ public class ProjectionService implements InitializingBean {
      * @param projectionInterface
      *          The class instance of the annotated interface, not null.
      *
-     * @throws MultipleSimilarNamedProjectionsException
+     * @throws MultipleSimilarlyNamedProjectionsException
      *              When at least two {@link NamedProjection} annotations on
      *              different interfaces are present that have the same {@code name}
      *              and {@code target} values.
@@ -129,14 +129,14 @@ public class ProjectionService implements InitializingBean {
      *              different interfaces are present that have the same {@code target}
      *              value and are marked as the default projection for that type.
      */
-    void addProjectionInterface(NamedProjection annotation, Class<?> projectionInterface) throws MultipleSimilarNamedProjectionsException, MultipleDefaultProjectionsException {
+    void addProjectionInterface(NamedProjection annotation, Class<?> projectionInterface) throws MultipleSimilarlyNamedProjectionsException, MultipleDefaultProjectionsException {
         var projectionName = getProjectionName(annotation, projectionInterface);
         var projectionTarget = annotation.target();
         var defaultProjection = annotation.defaultProjection();
         var nameTargetPair = Pair.of(projectionName, projectionTarget);
 
         if(projectionClassMap.containsKey(nameTargetPair)) {
-            throw new MultipleSimilarNamedProjectionsException(projectionName, projectionTarget);
+            throw new MultipleSimilarlyNamedProjectionsException(projectionName, projectionTarget);
         }
         projectionClassMap.put(nameTargetPair, projectionInterface);
 
