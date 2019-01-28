@@ -1,39 +1,20 @@
 package de.adesso.projectboard.base.application.rest;
 
-import de.adesso.projectboard.base.access.rest.UserAccessController;
-import de.adesso.projectboard.base.application.dto.ApplicationDtoFactory;
-import de.adesso.projectboard.base.application.dto.ProjectApplicationRequestDTO;
-import de.adesso.projectboard.base.application.dto.ProjectApplicationResponseDTO;
 import de.adesso.projectboard.base.application.handler.ProjectApplicationHandler;
-import de.adesso.projectboard.base.application.persistence.ProjectApplication;
+import de.adesso.projectboard.base.application.projection.ApplicationProjection;
+import de.adesso.projectboard.base.application.projection.ApplicationProjectionFactory;
 import de.adesso.projectboard.base.application.service.ApplicationService;
-import de.adesso.projectboard.base.project.rest.NonPageableProjectController;
-import de.adesso.projectboard.base.user.rest.BookmarkController;
-import de.adesso.projectboard.base.user.rest.UserController;
 import de.adesso.projectboard.base.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import java.util.Collection;
-import java.util.stream.Collectors;
-
-/**
- * {@link RestController REST Controller} for {@link ProjectApplication}s.
- *
- * @see NonPageableProjectController
- * @see BookmarkController
- * @see UserAccessController
- * @see UserController
- */
 @RestController
 @RequestMapping("/users")
 public class ApplicationController {
-
-    private final ApplicationDtoFactory applicationDtoFactory;
 
     private final UserService userService;
 
@@ -41,49 +22,50 @@ public class ApplicationController {
 
     private final ProjectApplicationHandler applicationHandler;
 
+    private final ApplicationProjectionFactory applicationProjectionFactory;
+
     @Autowired
-    public ApplicationController(ApplicationDtoFactory applicationDtoFactory,
-                                 UserService userService,
+    public ApplicationController(UserService userService,
                                  ApplicationService applicationService,
-                                 ProjectApplicationHandler applicationHandler) {
-        this.applicationDtoFactory = applicationDtoFactory;
+                                 ProjectApplicationHandler applicationHandler,
+                                 ApplicationProjectionFactory applicationProjectionFactory) {
         this.userService = userService;
         this.applicationService = applicationService;
         this.applicationHandler = applicationHandler;
+        this.applicationProjectionFactory = applicationProjectionFactory;
     }
 
     @PreAuthorize("(hasPermissionToAccessUser(#userId) && hasPermissionToApply()) || hasRole('admin')")
     @PostMapping(path = "/{userId}/applications")
-    public ProjectApplicationResponseDTO createApplicationForUser(@Valid @RequestBody ProjectApplicationRequestDTO requestDTO, @PathVariable String userId) {
+    public ResponseEntity<?> createApplicationForUser(@RequestParam String projectId, @RequestParam String comment, @PathVariable String userId) {
         var user = userService.getUserById(userId);
 
-        var application = applicationService.createApplicationForUser(user, requestDTO);
+        var application = applicationService.createApplicationForUser(user, projectId, comment);
 
         // call the handler method
         applicationHandler.onApplicationReceived(application);
 
-        return applicationDtoFactory.createDto(application);
+        return ResponseEntity.ok(applicationProjectionFactory.createProjection(application, ApplicationProjection.class));
     }
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @GetMapping(path = "/{userId}/applications")
-    public Collection<ProjectApplicationResponseDTO> getApplicationsOfUser(@PathVariable String userId) {
+    public ResponseEntity<?> getApplicationsOfUser(@PathVariable String userId) {
         var user = userService.getUserById(userId);
+        var staffApplications = applicationService.getApplicationsOfUser(user);
 
-        return applicationService.getApplicationsOfUser(user).stream()
-                .map(applicationDtoFactory::createDto)
-                .collect(Collectors.toList());
+        return ResponseEntity.ok(applicationProjectionFactory.createProjections(staffApplications,
+                ApplicationProjection.class));
     }
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @GetMapping(path = "/{userId}/staff/applications")
-    public Collection<ProjectApplicationResponseDTO> getApplicationsOfStaffMembers(@PathVariable String userId, @SortDefault(sort = "applicationDate", direction = Sort.Direction.DESC) Sort sort) {
+    public ResponseEntity<?> getApplicationsOfStaffMembers(@PathVariable String userId, @SortDefault(sort = "applicationDate", direction = Sort.Direction.DESC) Sort sort) {
         var user = userService.getUserById(userId);
         var staffMembers = userService.getStaffMembersOfUser(user);
+        var applications =  applicationService.getApplicationsOfUsers(staffMembers, sort);
 
-        return applicationService.getApplicationsOfUsers(null, sort).stream()
-                .map(applicationDtoFactory::createDto)
-                .collect(Collectors.toList());
+        return ResponseEntity.ok(applicationProjectionFactory.createProjections(applications, ApplicationProjection.class));
     }
 
 }

@@ -1,82 +1,49 @@
 package de.adesso.projectboard.base.user.rest;
 
-import de.adesso.projectboard.base.access.rest.UserAccessController;
-import de.adesso.projectboard.base.application.rest.ApplicationController;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.project.rest.NonPageableProjectController;
-import de.adesso.projectboard.base.projection.ProjectionService;
-import de.adesso.projectboard.base.projection.ProjectionTarget;
-import de.adesso.projectboard.base.user.persistence.User;
-import de.adesso.projectboard.base.user.persistence.data.UserData;
-import de.adesso.projectboard.base.user.projection.ProjectionSource;
+import de.adesso.projectboard.base.projection.ProjectionType;
+import de.adesso.projectboard.base.user.projection.UserProjectionFactory;
+import de.adesso.projectboard.base.user.projection.UserProjectionSource;
 import de.adesso.projectboard.base.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.stream.Collectors;
-
-/**
- * {@link RestController REST Controller} to access {@link User}s.
- *
- * @see NonPageableProjectController
- * @see ApplicationController
- * @see BookmarkController
- * @see UserAccessController
- */
 @RestController
 @RequestMapping(path = "/users")
 public class UserController {
 
     private final UserService userService;
 
-    private final ProjectionService projectionService;
-
-    private final ProjectionFactory projectionFactory;
+    private final UserProjectionFactory userProjectionFactory;
 
     @Autowired
-    public UserController(UserService userService, ProjectionService projectionService, ProjectionFactory projectionFactory) {
+    public UserController(UserService userService, UserProjectionFactory userProjectionFactory) {
         this.userService = userService;
-        this.projectionService = projectionService;
-        this.projectionFactory = projectionFactory;
+        this.userProjectionFactory = userProjectionFactory;
     }
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @GetMapping(path = "/{userId}")
-    public ResponseEntity<?> getUserById(@PathVariable("userId") String userId, @RequestParam(required = false, defaultValue = "") String projection) {
+    public ResponseEntity<?> getUserById(@PathVariable("userId") String userId, @ProjectionType(UserProjectionSource.class) Class<?> projectionType) {
         var user = userService.getUserById(userId);
-        var projectionType = projectionService.getByNameOrDefault(projection, ProjectionTarget.USER);
 
-        return ResponseEntity.ok(projectionFactory.createProjection(projectionType, user));
+        return ResponseEntity.ok(userProjectionFactory.createProjection(user, projectionType));
     }
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @GetMapping(path = "/{userId}/staff")
-    public ResponseEntity<?> getStaffMembersOfUser(@PathVariable("userId") String userId, Sort sort, @RequestParam(required = false, defaultValue = "") String projection) {
-        var projectionType = projectionService.getByNameOrDefault(projection, ProjectionTarget.USER);
-
+    public ResponseEntity<?> getStaffMembersOfUser(@PathVariable("userId") String userId, Sort sort, @ProjectionType(UserProjectionSource.class) Class<?> projectionType) {
         var user = userService.getUserById(userId);
         var staffData = userService.getStaffMemberUserDataOfUser(user, sort);
-        var staff = staffData.parallelStream()
-                .map(UserData::getUser)
-                .collect(Collectors.toSet());
-        var staffManagerMap = userService.usersAreManagers(staff);
 
-        var projections = staffData.stream()
-                .map(data -> {
-                    var staffMember = data.getUser();
-                    var manager = staffManagerMap.get(staffMember);
-
-                    return new ProjectionSource(staffMember, data, manager);
-                })
-                .map(source -> projectionFactory.createProjection(projectionType, source))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(projections);
+        return ResponseEntity.ok(userProjectionFactory.createProjections(staffData, projectionType));
     }
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")

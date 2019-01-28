@@ -5,7 +5,7 @@ import de.adesso.projectboard.base.user.persistence.data.UserData;
 import lombok.Value;
 
 @Value
-public class ProjectionSource {
+public class UserProjectionSource {
 
     User user;
 

@@ -1,6 +1,5 @@
 package de.adesso.projectboard.ad.application.service;
 
-import de.adesso.projectboard.base.application.dto.ProjectApplicationRequestDTO;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.persistence.ProjectApplicationRepository;
 import de.adesso.projectboard.base.exceptions.AlreadyAppliedException;
@@ -90,10 +89,6 @@ public class RepositoryApplicationServiceTest {
         var expectedComment = "Comment!";
         var expectedDate = LocalDateTime.now(clock);
 
-        var dto = mock(ProjectApplicationRequestDTO.class);
-        given(dto.getComment()).willReturn(expectedComment);
-        given(dto.getProjectId()).willReturn(PROJECT_ID);
-
         given(applicationRepoMock.existsByUserAndProject(userMock, projectMock)).willReturn(false);
         given(projectServiceMock.getProjectById(PROJECT_ID)).willReturn(projectMock);
         given(applicationRepoMock.existsByUserAndProject(userMock, projectMock)).willReturn(false);
@@ -105,7 +100,7 @@ public class RepositoryApplicationServiceTest {
         });
 
         // when
-        var createdApplication = applicationService.createApplicationForUser(userMock, dto);
+        var createdApplication = applicationService.createApplicationForUser(userMock, PROJECT_ID, expectedComment);
 
         // then
         var softly = new SoftAssertions();
@@ -123,14 +118,11 @@ public class RepositoryApplicationServiceTest {
     @Test
     public void createApplicationForUserThrowsExceptionWhenAlreadyApplied() {
         // given
-        var dtoMock = mock(ProjectApplicationRequestDTO.class);
-        given(dtoMock.getProjectId()).willReturn(PROJECT_ID);
-
         given(projectServiceMock.getProjectById(PROJECT_ID)).willReturn(projectMock);
         given(applicationRepoMock.existsByUserAndProject(userMock, projectMock)).willReturn(true);
 
         // when
-        assertThatThrownBy(() -> applicationService.createApplicationForUser(userMock, dtoMock))
+        assertThatThrownBy(() -> applicationService.createApplicationForUser(userMock, PROJECT_ID, ""))
                 .isInstanceOf(AlreadyAppliedException.class);
     }
 

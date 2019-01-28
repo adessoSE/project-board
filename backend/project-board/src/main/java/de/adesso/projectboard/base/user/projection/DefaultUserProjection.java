@@ -1,25 +1,16 @@
 package de.adesso.projectboard.base.user.projection;
 
 import de.adesso.projectboard.base.projection.NamedProjection;
-import de.adesso.projectboard.base.projection.ProjectionTarget;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.time.LocalDateTime;
 
 @NamedProjection(
-        target = ProjectionTarget.USER,
+        name = "default",
+        target = UserProjectionSource.class,
         defaultProjection = true
 )
-public interface DefaultProjection {
-
-    @Value("#{target.user.id}")
-    String getId();
-
-    @Value("#{target.data.firstName}")
-    String getFirstName();
-
-    @Value("#{target.data.lastName}")
-    String getLastName();
+public interface DefaultUserProjection extends NameAndIdProjection {
 
     @Value("#{target.data.email}")
     String getEmail();

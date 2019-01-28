@@ -4,8 +4,6 @@ import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.persistence.ProjectApplicationRepository;
 import de.adesso.projectboard.base.exceptions.ProjectNotEditableException;
 import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
-import de.adesso.projectboard.base.project.dto.ProjectDtoMapper;
-import de.adesso.projectboard.base.project.dto.ProjectRequestDTO;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.persistence.ProjectRepository;
 import de.adesso.projectboard.base.project.service.ProjectService;
@@ -148,7 +146,6 @@ public class RepositoryProjectService implements ProjectService {
      * @return
      *          The <b>persisted</b> updated/created {@link Project}.
      *          
-     * @see ProjectDtoMapper#toProject(ProjectRequestDTO)
      */
     public Project createOrUpdateProject(Project project, String projectId) {
         Optional<Project> existingProjectOptional = projectId != null ? projectRepo.findById(projectId) : Optional.empty();

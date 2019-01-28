@@ -2,37 +2,48 @@ package de.adesso.projectboard.base.projection;
 
 import de.adesso.projectboard.base.projection.exception.MultipleDefaultProjectionsException;
 import de.adesso.projectboard.base.projection.exception.MultipleSimilarlyNamedProjectionsException;
-import de.adesso.projectboard.base.projection.util.ClassUtils;
+import de.adesso.projectboard.base.projection.util.AnnotationUtilsWrapper;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.AnnotatedTypeScanner;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+/**
+ * {@link Service} to scan for projection interfaces annotated with a {@link NamedProjection}
+ * annotation. Provides methods to retrieve projections by name and/or target class.
+ */
 @Service
 @Slf4j
 public class ProjectionService implements InitializingBean {
 
     private final String BASE_PACKAGE = "de/adesso/projectboard/base";
 
-    private final NamedProjectionCandidateComponentProvider componentProvider;
+    private final AnnotatedTypeScanner typeScanner;
 
-    private final ClassUtils classUtils;
+    private final AnnotationUtilsWrapper annotationUtilsWrapper;
 
-    final Map<Pair<String, ProjectionTarget>, Class<?>> projectionClassMap;
+    /**
+     * Maps a projection name and target class to a projection.
+     */
+    final Map<Pair<String, Class<?>>, Class<?>> projectionClassMap;
 
-    final Map<ProjectionTarget, Class<?>> defaultProjectionClassMap;
+    /**
+     * Maps a target class to its default projection.
+     */
+    final Map<Class<?>, Class<?>> defaultProjectionClassMap;
 
     @Autowired
-    public ProjectionService(NamedProjectionCandidateComponentProvider componentProvider, ClassUtils classUtils) {
-        this.componentProvider = componentProvider;
-        this.classUtils = classUtils;
+    public ProjectionService(AnnotatedTypeScanner typeScanner, AnnotationUtilsWrapper annotationUtilsWrapper) {
+        this.typeScanner = typeScanner;
+        this.annotationUtilsWrapper = annotationUtilsWrapper;
 
         this.projectionClassMap = new HashMap<>();
         this.defaultProjectionClassMap = new HashMap<>();
@@ -43,44 +54,43 @@ public class ProjectionService implements InitializingBean {
      * @param projectionName
      *          The name of the projection, not null.
      *
-     * @param target
+     * @param projectionTarget
      *          The target of the projection, not null.
      *
      * @return
      *          The projection matching the given {@code projectionName}
-     *          and {@code target} or the default projection for the given {@code target}
+     *          and {@code projectionTarget} or the default projection for the given {@code projectionTarget}
      *          when no matching projection is present.
      *
-     * @see #getDefault(ProjectionTarget)
+     * @see #getDefault(Class)
      */
-    public Class<?> getByNameOrDefault(@NonNull String projectionName, @NonNull ProjectionTarget target) {
-        return projectionClassMap.getOrDefault(Pair.of(projectionName, target), getDefault(target));
+    public Class<?> getByNameOrDefault(@NonNull String projectionName, @NonNull Class<?> projectionTarget) {
+        return projectionClassMap.getOrDefault(Pair.of(projectionName, projectionTarget), getDefault(projectionTarget));
     }
 
     /**
      *
-     * @param target
-     *          The target of the projection, not null.
+     * @param projectionTarget
+     *          The target class of the projection, not null.
      *
      * @return
-     *          The default projection for the given {@code target}.
+     *          The default projection for the given {@code projectionTarget},
+     *          may be null.
      */
-    public Class<?> getDefault(ProjectionTarget target) {
-        return defaultProjectionClassMap.get(target);
+    public Class<?> getDefault(Class<?> projectionTarget) {
+        return defaultProjectionClassMap.get(projectionTarget);
     }
 
     /**
-     * Calls the {@link #addProjectionInterface(NamedProjection, Class)} method for each
-     * pair returned by {@link #getAnnotatedInterfaces(String)}.
+     * Call the {@link #addProjectionInterface(NamedProjection, Class)} for each class
+     * returned by {@link #getAnnotatedInterfaces(String)}.
      *
      * @param basePackage
      *          The base package to search annotated interfaces in, not null.
      */
     void addProjectionInterfaces(String basePackage) throws MultipleDefaultProjectionsException, MultipleSimilarlyNamedProjectionsException {
-        for(var annotationInterfacePair : getAnnotatedInterfaces(basePackage)) {
-            var annotation = annotationInterfacePair.getFirst();
-            var annotatedInterface = annotationInterfacePair.getSecond();
-
+        for(var annotatedInterface : getAnnotatedInterfaces(basePackage)) {
+            var annotation = annotationUtilsWrapper.findAnnotation(annotatedInterface, NamedProjection.class);
             addProjectionInterface(annotation, annotatedInterface);
         }
     }
@@ -91,24 +101,12 @@ public class ProjectionService implements InitializingBean {
      *          The base package to search annotated interfaces in, not null.
      *
      * @return
-     *          All annotated class instances and their corresponding
-     *          annotation.
+     *          All interface class instances annotated with {@link NamedProjection}.
      */
-    Set<Pair<NamedProjection, Class<?>>> getAnnotatedInterfaces(String basePackage) {
-        var annotationClassPairs = new HashSet<Pair<NamedProjection, Class<?>>>();
-
-        for(var beanDefinition : componentProvider.findCandidateComponents(basePackage)) {
-            try {
-                var annotatedClass = classUtils.getClassForName(beanDefinition.getBeanClassName());
-                var annotation = classUtils.getAnnotation(annotatedClass, NamedProjection.class);
-
-                annotationClassPairs.add(Pair.of(annotation, annotatedClass));
-            } catch (ClassNotFoundException e) {
-                log.debug("Annotated class not found!", e);
-            }
-        }
-
-        return annotationClassPairs;
+    Set<Class<?>> getAnnotatedInterfaces(String basePackage) {
+        return typeScanner.findTypes(basePackage).stream()
+                .filter(Class::isInterface)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -116,7 +114,7 @@ public class ProjectionService implements InitializingBean {
      * @param annotation
      *          The annotation of the annotated interface, not null.
      *
-     * @param projectionInterface
+     * @param annotatedInterface
      *          The class instance of the annotated interface, not null.
      *
      * @throws MultipleSimilarlyNamedProjectionsException
@@ -129,16 +127,16 @@ public class ProjectionService implements InitializingBean {
      *              different interfaces are present that have the same {@code target}
      *              value and are marked as the default projection for that type.
      */
-    void addProjectionInterface(NamedProjection annotation, Class<?> projectionInterface) throws MultipleSimilarlyNamedProjectionsException, MultipleDefaultProjectionsException {
-        var projectionName = getProjectionName(annotation, projectionInterface);
+    void addProjectionInterface(NamedProjection annotation, Class<?> annotatedInterface) throws MultipleSimilarlyNamedProjectionsException, MultipleDefaultProjectionsException {
+        var projectionName = getProjectionName(annotation, annotatedInterface);
         var projectionTarget = annotation.target();
         var defaultProjection = annotation.defaultProjection();
-        var nameTargetPair = Pair.of(projectionName, projectionTarget);
+        Pair<String, Class<?>> nameTargetPair = Pair.of(projectionName, projectionTarget);
 
         if(projectionClassMap.containsKey(nameTargetPair)) {
             throw new MultipleSimilarlyNamedProjectionsException(projectionName, projectionTarget);
         }
-        projectionClassMap.put(nameTargetPair, projectionInterface);
+        projectionClassMap.put(nameTargetPair, annotatedInterface);
 
         log.debug(String.format("Added projection for target '%s' with name '%s'!",
                 projectionTarget.toString(), projectionName));
@@ -147,7 +145,7 @@ public class ProjectionService implements InitializingBean {
             if(defaultProjectionClassMap.containsKey(projectionTarget)) {
                 throw new MultipleDefaultProjectionsException(projectionTarget);
             }
-            defaultProjectionClassMap.put(projectionTarget, projectionInterface);
+            defaultProjectionClassMap.put(projectionTarget, annotatedInterface);
 
             log.debug(String.format("Added default projection for target '%s' with name '%s'!",
                     projectionTarget.toString(), projectionName));
@@ -161,6 +159,7 @@ public class ProjectionService implements InitializingBean {
      *
      * @param projectionInterface
      *          The class instance of the annotated interface, not null.
+     *
      * @return
      *          The {@code name} value of the given {@code annotation} or the lower case simple
      *          class name in case it is empty.

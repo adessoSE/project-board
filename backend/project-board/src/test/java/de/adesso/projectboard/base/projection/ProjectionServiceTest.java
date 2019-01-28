@@ -2,14 +2,14 @@ package de.adesso.projectboard.base.projection;
 
 import de.adesso.projectboard.base.projection.exception.MultipleDefaultProjectionsException;
 import de.adesso.projectboard.base.projection.exception.MultipleSimilarlyNamedProjectionsException;
-import de.adesso.projectboard.base.projection.util.ClassUtils;
+import de.adesso.projectboard.base.projection.util.AnnotationUtilsWrapper;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.data.util.AnnotatedTypeScanner;
 import org.springframework.data.util.Pair;
 
 import java.util.Set;
@@ -18,19 +18,17 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("unchecked")
 public class ProjectionServiceTest {
-
-    @Mock
-    private NamedProjectionCandidateComponentProvider interfaceProviderMock;
-
-    @Mock
-    private ClassUtils classUtilsMock;
 
     @Mock
     private NamedProjection namedProjectionAnnotationMock;
 
     @Mock
-    private BeanDefinition beanDefinitionMock;
+    private AnnotatedTypeScanner typeScannerMock;
+
+    @Mock
+    private AnnotationUtilsWrapper annotationUtilsWrapperMock;
 
     private Class annotatedClass;
 
@@ -38,17 +36,17 @@ public class ProjectionServiceTest {
 
     @Before
     public void setUp() {
-        this.annotatedClass = String.class;
-        this.projectionService = new ProjectionService(interfaceProviderMock, classUtilsMock);
-    }
+        this.annotatedClass = Iterable.class;
 
+        this.projectionService = new ProjectionService(typeScannerMock, annotationUtilsWrapperMock);
+    }
 
     @Test
     public void getByNameOrDefaultReturnsProjectWithMatchingNameAndTarget() {
         // given
         var expectedName = "projection-name";
-        var expectedTarget = ProjectionTarget.USER;
-        var pair = Pair.of(expectedName, expectedTarget);
+        var expectedTarget = String.class;
+        Pair<String, Class<?>> pair = Pair.of(expectedName, expectedTarget);
 
         projectionService.projectionClassMap.put(pair, annotatedClass);
 
@@ -60,10 +58,10 @@ public class ProjectionServiceTest {
     }
 
     @Test
-    public void getByNameOrDefaultReturnsDefaultWhenNoProjectionWithGivenAndTargetNameExists() {
+    public void getByNameOrDefaultReturnsDefaultWhenNoProjectionWithGivenNameAndTargetNameExists() {
         // given
         var expectedName = "projection-name";
-        var expectedTarget = ProjectionTarget.USER;
+        var expectedTarget = String.class;
 
         projectionService.defaultProjectionClassMap.put(expectedTarget, annotatedClass);
 
@@ -75,61 +73,63 @@ public class ProjectionServiceTest {
     }
 
     @Test
-    public void addProjectionInterfacesAddsAllProjectionInterfaces() throws ClassNotFoundException, MultipleDefaultProjectionsException, MultipleSimilarlyNamedProjectionsException {
+    public void addProjectionInterfacesAddsProjectionInterfaces() throws MultipleDefaultProjectionsException, MultipleSimilarlyNamedProjectionsException {
         // given
-        var basePackage = "de/test";
-        var beanClassName = "TestClass";
-        var expectedProjectionName = "projection-name";
-        var expectedProjectionTarget = ProjectionTarget.USER;
-        var expectedPair = Pair.of(expectedProjectionName, expectedProjectionTarget);
+        var expectedName = "name";
+        var expectedTarget = (Class) Integer.class;
+        var expectedBasePackage = "de/test";
 
-        given(interfaceProviderMock.findCandidateComponents(basePackage)).willReturn(Set.of(beanDefinitionMock));
-        given(beanDefinitionMock.getBeanClassName()).willReturn(beanClassName);
-        given(classUtilsMock.getClassForName(beanClassName)).willReturn(annotatedClass);
-        given(classUtilsMock.getAnnotation(annotatedClass, NamedProjection.class)).willReturn(namedProjectionAnnotationMock);
+        given(typeScannerMock.findTypes(expectedBasePackage)).willReturn(Set.of(annotatedClass));
 
-        given(namedProjectionAnnotationMock.name()).willReturn(expectedProjectionName);
-        given(namedProjectionAnnotationMock.target()).willReturn(expectedProjectionTarget);
-        given(namedProjectionAnnotationMock.defaultProjection()).willReturn(true);
+        given(annotationUtilsWrapperMock.findAnnotation(annotatedClass, NamedProjection.class))
+                .willReturn(namedProjectionAnnotationMock);
+
+        given(namedProjectionAnnotationMock.target())
+                .willReturn(expectedTarget);
+        given(namedProjectionAnnotationMock.name())
+                .willReturn(expectedName);
+        given(namedProjectionAnnotationMock.defaultProjection())
+                .willReturn(true);
 
         // when
-        projectionService.addProjectionInterfaces(basePackage);
+        projectionService.addProjectionInterfaces(expectedBasePackage);
 
         // then
         var softly = new SoftAssertions();
 
-        softly.assertThat(projectionService.projectionClassMap).containsExactly(entry(expectedPair, (Class<?>) annotatedClass));
-        softly.assertThat(projectionService.defaultProjectionClassMap).containsExactly(entry(expectedProjectionTarget, (Class<?>) annotatedClass));
+        softly.assertThat(projectionService.projectionClassMap)
+                .containsExactly(entry(Pair.of(expectedName, expectedTarget), (Class<?>) annotatedClass));
+
+        softly.assertThat(projectionService.defaultProjectionClassMap)
+                .containsExactly(entry((Class<?>) expectedTarget, (Class<?>) annotatedClass));
 
         softly.assertAll();
     }
 
     @Test
-    public void getAnnotatedInterfaceReturnsAllAnnotatedInterfaces() throws ClassNotFoundException {
+    public void getAnnotatedMethodsOnlyReturnsInterfaces() {
         // given
-        var basePackage = "de/test";
-        var beanClassName = "TestClass";
+        var expectedBasePackage = "de/test";
+        var allAnnotatedClasses = Set.of(String.class, Iterable.class, Comparable.class);
+        var expectedReturnedClasses = Set.of(Iterable.class, Comparable.class);
 
-        given(interfaceProviderMock.findCandidateComponents(basePackage)).willReturn(Set.of(beanDefinitionMock));
-        given(beanDefinitionMock.getBeanClassName()).willReturn(beanClassName);
-        given(classUtilsMock.getClassForName(beanClassName)).willReturn(annotatedClass);
-        given(classUtilsMock.getAnnotation(annotatedClass, NamedProjection.class)).willReturn(namedProjectionAnnotationMock);
+        given(typeScannerMock.findTypes(expectedBasePackage)).willReturn(allAnnotatedClasses);
 
         // when
-        var actualAnnotatedInterfaces = projectionService.getAnnotatedInterfaces(basePackage);
+        var actualAnnotatedClasses = projectionService.getAnnotatedInterfaces(expectedBasePackage);
 
         // then
-        assertThat(actualAnnotatedInterfaces).containsExactly(Pair.of(namedProjectionAnnotationMock, annotatedClass));
+        assertThat(actualAnnotatedClasses).containsExactlyInAnyOrderElementsOf(expectedReturnedClasses);
     }
 
     @Test
-    public void addProjectionInterfaceDoesNotAddProjectionAsDefaultWithSimpleClassNameWhenNotMarkedAsDefaultAndNameNotSet() throws MultipleDefaultProjectionsException, MultipleSimilarlyNamedProjectionsException {
-        var expectedTarget = ProjectionTarget.USER;
+    public void addProjectionInterfaceAddsProjectionWithSimpleClassNameWhenNameNotSet() throws MultipleDefaultProjectionsException, MultipleSimilarlyNamedProjectionsException {
+        var expectedTarget = (Class) Integer.class;
         var expectedName = annotatedClass.getSimpleName().toLowerCase();
-        var expectedPair = Pair.of(expectedName, expectedTarget);
 
         given(namedProjectionAnnotationMock.target()).willReturn(expectedTarget);
         given(namedProjectionAnnotationMock.name()).willReturn("");
+        given(namedProjectionAnnotationMock.defaultProjection()).willReturn(false);
 
         // when
         projectionService.addProjectionInterface(namedProjectionAnnotationMock, annotatedClass);
@@ -137,18 +137,19 @@ public class ProjectionServiceTest {
         // then
         var softly = new SoftAssertions();
 
-        softly.assertThat(projectionService.projectionClassMap).containsExactly(entry(expectedPair, (Class<?>) annotatedClass));
+        softly.assertThat(projectionService.projectionClassMap)
+                .containsExactly(entry(Pair.of(expectedName, expectedTarget), (Class<?>) annotatedClass));
+
         softly.assertThat(projectionService.defaultProjectionClassMap).isEmpty();
 
         softly.assertAll();
     }
 
     @Test
-    public void addProjectionInterfaceAddsProjectionsAsDefaultWithSimpleClassNameWhenMarkedAsDefaultAndNameNotSet() throws MultipleDefaultProjectionsException, MultipleSimilarlyNamedProjectionsException {
+    public void addProjectionInterfaceAddsProjectionAsDefaultWithSimpleClassNameWhenMarkedAsDefaultAndNameNotSet() throws MultipleDefaultProjectionsException, MultipleSimilarlyNamedProjectionsException {
         // given
-        var expectedTarget = ProjectionTarget.USER;
+        var expectedTarget = (Class) Integer.class;
         var expectedName = annotatedClass.getSimpleName().toLowerCase();
-        var expectedPair = Pair.of(expectedName, expectedTarget);
 
         given(namedProjectionAnnotationMock.target()).willReturn(expectedTarget);
         given(namedProjectionAnnotationMock.name()).willReturn("");
@@ -160,22 +161,24 @@ public class ProjectionServiceTest {
         // then
         var softly = new SoftAssertions();
 
-        softly.assertThat(projectionService.projectionClassMap).containsOnly(entry(expectedPair, (Class<?>) annotatedClass));
-        softly.assertThat(projectionService.defaultProjectionClassMap).containsExactly(entry(expectedTarget, (Class<?>) annotatedClass));
+        softly.assertThat(projectionService.projectionClassMap)
+                .containsOnly(entry(Pair.of(expectedName, expectedTarget), (Class<?>) annotatedClass));
+
+        softly.assertThat(projectionService.defaultProjectionClassMap)
+                .containsExactly(entry((Class<?>) expectedTarget, (Class<?>) annotatedClass));
 
         softly.assertAll();
     }
 
     @Test
-    public void addProjectionInterfaceDoesNotAddProjectionAsDefaultWithNameWhenNotMarkedAsDefault() throws MultipleDefaultProjectionsException, MultipleSimilarlyNamedProjectionsException {
+    public void addProjectionInterfaceAddsProjectionWithName() throws MultipleDefaultProjectionsException, MultipleSimilarlyNamedProjectionsException {
         // given
-        var expectedTarget = ProjectionTarget.USER;
+        var expectedTarget = (Class) Integer.class;
         var expectedName = "cool-projection-name";
-        var expectedPair = Pair.of(expectedName, expectedTarget);
 
         given(namedProjectionAnnotationMock.target()).willReturn(expectedTarget);
-        given(namedProjectionAnnotationMock.name()).willReturn("");
         given(namedProjectionAnnotationMock.name()).willReturn(expectedName);
+        given(namedProjectionAnnotationMock.defaultProjection()).willReturn(false);
 
         // when
         projectionService.addProjectionInterface(namedProjectionAnnotationMock, annotatedClass);
@@ -183,8 +186,11 @@ public class ProjectionServiceTest {
         // then
         var softly = new SoftAssertions();
 
-        softly.assertThat(projectionService.projectionClassMap).containsOnly(entry(expectedPair, (Class<?>) annotatedClass));
-        softly.assertThat(projectionService.defaultProjectionClassMap).isEmpty();
+        softly.assertThat(projectionService.projectionClassMap)
+                .containsOnly(entry(Pair.of(expectedName, expectedTarget), (Class<?>) annotatedClass));
+
+        softly.assertThat(projectionService.defaultProjectionClassMap)
+                .isEmpty();
 
         softly.assertAll();
     }
@@ -192,9 +198,8 @@ public class ProjectionServiceTest {
     @Test
     public void addProjectionInterfaceAddsProjectionAsDefaultWithNameWhenMarkedAsDefault() throws MultipleDefaultProjectionsException, MultipleSimilarlyNamedProjectionsException {
         // given
-        var expectedTarget = ProjectionTarget.USER;
+        var expectedTarget = (Class) Integer.class;
         var expectedName = "cool-projection-name";
-        var expectedPair = Pair.of(expectedName, expectedTarget);
 
         given(namedProjectionAnnotationMock.target()).willReturn(expectedTarget);
         given(namedProjectionAnnotationMock.name()).willReturn(expectedName);
@@ -206,8 +211,11 @@ public class ProjectionServiceTest {
         // then
         var softly = new SoftAssertions();
 
-        softly.assertThat(projectionService.projectionClassMap).containsOnly(entry(expectedPair, (Class<?>) annotatedClass));
-        softly.assertThat(projectionService.defaultProjectionClassMap).containsExactly(entry(expectedTarget, (Class<?>) annotatedClass));
+        softly.assertThat(projectionService.projectionClassMap)
+                .containsOnly(entry(Pair.of(expectedName, expectedTarget), (Class<?>) annotatedClass));
+
+        softly.assertThat(projectionService.defaultProjectionClassMap)
+                .containsExactly(entry((Class<?>) expectedTarget, (Class<?>) annotatedClass));
 
         softly.assertAll();
     }
@@ -216,37 +224,38 @@ public class ProjectionServiceTest {
     public void addProjectionInterfaceThrowsExceptionWhenMultipleSimilarlyNamedPresent() {
         // given
         var projectionName = "projection-name";
-        var projectionTarget = ProjectionTarget.USER;
+        var projectionTarget = (Class) Integer.class;
 
         projectionService.projectionClassMap.put(Pair.of(projectionName, projectionTarget), annotatedClass);
 
         given(namedProjectionAnnotationMock.name()).willReturn(projectionName);
         given(namedProjectionAnnotationMock.target()).willReturn(projectionTarget);
+        given(namedProjectionAnnotationMock.defaultProjection()).willReturn(false);
 
         // when / then
         assertThatThrownBy(() -> projectionService.addProjectionInterface(namedProjectionAnnotationMock, annotatedClass))
                 .isInstanceOf(MultipleSimilarlyNamedProjectionsException.class)
                 .hasMessage(String.format("Multiple interfaces annotated with @NamedInterface " +
-                        "have the same name ('%s') for the target '%s'!", projectionName, projectionTarget.toString()));
+                        "have the same name ('%s') for the target class '%s'!", projectionName, projectionTarget.getName()));
     }
 
     @Test
     public void addProjectionInterfaceThrowsExceptionWhenMultipleDefaultsPresent() {
         // given
-        var defaultTarget = ProjectionTarget.USER;
         var projectionName = "any-name";
+        var projectionTarget = (Class) Integer.class;
 
-        projectionService.defaultProjectionClassMap.put(defaultTarget, annotatedClass);
+        projectionService.defaultProjectionClassMap.put(projectionTarget, annotatedClass);
 
         given(namedProjectionAnnotationMock.name()).willReturn(projectionName);
-        given(namedProjectionAnnotationMock.target()).willReturn(defaultTarget);
+        given(namedProjectionAnnotationMock.target()).willReturn(projectionTarget);
         given(namedProjectionAnnotationMock.defaultProjection()).willReturn(true);
 
         // when / then
         assertThatThrownBy(() -> projectionService.addProjectionInterface(namedProjectionAnnotationMock, annotatedClass))
                 .isInstanceOf(MultipleDefaultProjectionsException.class)
                 .hasMessage(String.format("Multiple interfaces annotated with @NamedInterface " +
-                        "are marked as the default projections for target '%s'!", defaultTarget.toString()));
+                        "are marked as the default projections for target class '%s'!", projectionTarget.getName()));
     }
 
     @Test

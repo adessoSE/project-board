@@ -1,6 +1,5 @@
 package de.adesso.projectboard.ad.application.service;
 
-import de.adesso.projectboard.base.application.dto.ProjectApplicationRequestDTO;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.persistence.ProjectApplicationRepository;
 import de.adesso.projectboard.base.application.service.ApplicationService;
@@ -49,8 +48,8 @@ public class RepositoryApplicationService implements ApplicationService {
 
     @Override
     @Transactional
-    public ProjectApplication createApplicationForUser(User user, ProjectApplicationRequestDTO applicationDTO) throws AlreadyAppliedException {
-        Project project = projectService.getProjectById(applicationDTO.getProjectId());
+    public ProjectApplication createApplicationForUser(User user, String projectId, String comment) throws AlreadyAppliedException {
+        Project project = projectService.getProjectById(projectId);
 
         if(userHasAppliedForProject(user, project)) {
             throw new AlreadyAppliedException();
@@ -58,7 +57,7 @@ public class RepositoryApplicationService implements ApplicationService {
 
         // use a clock for testing
         LocalDateTime applicationDate = LocalDateTime.now(clock);
-        ProjectApplication application = new ProjectApplication(project, applicationDTO.getComment(), user, applicationDate);
+        ProjectApplication application = new ProjectApplication(project, comment, user, applicationDate);
 
         return applicationRepo.save(application);
     }

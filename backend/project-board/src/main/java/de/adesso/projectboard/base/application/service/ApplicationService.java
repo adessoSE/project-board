@@ -1,6 +1,5 @@
 package de.adesso.projectboard.base.application.service;
 
-import de.adesso.projectboard.base.application.dto.ProjectApplicationRequestDTO;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.exceptions.AlreadyAppliedException;
 import de.adesso.projectboard.base.project.persistence.Project;
@@ -36,8 +35,11 @@ public interface ApplicationService {
      * @param user
      *          The {@link User} to create an application for.
      *
-     * @param applicationDTO
-     *          The {@link ProjectApplicationRequestDTO} instance.
+     * @param projectId
+     *          The ID of the {@link Project} the user applied for.
+     *
+     * @param comment
+     *          A optional comment.
      *
      * @return
      *          The created {@link ProjectApplication}.
@@ -45,7 +47,7 @@ public interface ApplicationService {
      * @throws AlreadyAppliedException
      *          When the given {@code user} has already applied for the project.
      */
-    ProjectApplication createApplicationForUser(User user, ProjectApplicationRequestDTO applicationDTO) throws AlreadyAppliedException;
+    ProjectApplication createApplicationForUser(User user, String projectId, String comment) throws AlreadyAppliedException;
 
     /**
      *
