@@ -1,4 +1,4 @@
-package de.adesso.projectboard.base.user.bookmark.dto;
+package de.adesso.projectboard.base.user.bookmark.payload;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class BookmarkRequestDTO {
+public class BookmarkPayload {
 
     @NotNull
     private String projectId;

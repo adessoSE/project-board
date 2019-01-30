@@ -1,10 +1,10 @@
 package de.adesso.projectboard.base.access.rest;
 
-import de.adesso.projectboard.base.access.dto.AccessInfoRequestDTO;
 import de.adesso.projectboard.base.access.handler.UserAccessHandler;
+import de.adesso.projectboard.base.access.payload.UserAccessPayload;
 import de.adesso.projectboard.base.access.service.UserAccessService;
+import de.adesso.projectboard.base.projection.BaseProjectionFactory;
 import de.adesso.projectboard.base.user.projection.DefaultUserProjection;
-import de.adesso.projectboard.base.user.projection.UserProjectionFactory;
 import de.adesso.projectboard.base.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,38 +23,38 @@ public class UserAccessController {
 
     private final UserAccessHandler userAccessHandler;
 
-    private final UserProjectionFactory userProjectionFactory;
+    private final BaseProjectionFactory projectionFactory;
 
     @Autowired
     public UserAccessController(UserService userService,
                                 UserAccessService userAccessService,
                                 UserAccessHandler userAccessHandler,
-                                UserProjectionFactory userProjectionFactory) {
+                                BaseProjectionFactory projectionFactory) {
         this.userService = userService;
         this.userAccessService = userAccessService;
         this.userAccessHandler = userAccessHandler;
-        this.userProjectionFactory = userProjectionFactory;
+        this.projectionFactory = projectionFactory;
     }
 
     @PreAuthorize("hasElevatedAccessToUser(#userId) || hasRole('admin')")
     @PostMapping(path = "/{userId}/access")
-    public ResponseEntity<?> createAccessForUser(@Valid @RequestBody AccessInfoRequestDTO infoDTO, @PathVariable("userId") String userId) {
+    public ResponseEntity<?> createAccessForUser(@Valid @RequestBody UserAccessPayload payload, @PathVariable String userId) {
         var user = userService.getUserById(userId);
-        var updatedUser = userAccessService.giveUserAccessUntil(user, infoDTO.getAccessEnd());
+        var updatedUser = userAccessService.giveUserAccessUntil(user, payload.getAccessEnd());
 
         // call handler method
         userAccessHandler.onAccessGranted(updatedUser);
 
-        return ResponseEntity.ok(userProjectionFactory.createProjection(updatedUser, DefaultUserProjection.class));
+        return ResponseEntity.ok(projectionFactory.createProjection(updatedUser, DefaultUserProjection.class));
     }
 
     @PreAuthorize("hasElevatedAccessToUser(#userId) || hasRole('admin')")
     @DeleteMapping(path = "/{userId}/access")
-    public ResponseEntity<?> deleteAccessForUser(@PathVariable("userId") String userId) {
+    public ResponseEntity<?> deleteAccessForUser(@PathVariable String userId) {
         var user = userService.getUserById(userId);
         var updatedUser = userAccessService.removeAccessFromUser(user);
 
-        return ResponseEntity.ok(userProjectionFactory.createProjection(updatedUser, DefaultUserProjection.class));
+        return ResponseEntity.ok(projectionFactory.createProjection(updatedUser, DefaultUserProjection.class));
     }
 
 }

@@ -1,7 +1,5 @@
 package de.adesso.projectboard.base.user.rest;
 
-import de.adesso.projectboard.base.exceptions.UserNotFoundException;
-import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.projection.ProjectionType;
 import de.adesso.projectboard.base.user.projection.UserProjectionFactory;
 import de.adesso.projectboard.base.user.projection.UserProjectionSource;
@@ -44,14 +42,6 @@ public class UserController {
         var staffData = userService.getStaffMemberUserDataOfUser(user, sort);
 
         return ResponseEntity.ok(userProjectionFactory.createProjections(staffData, projectionType));
-    }
-
-    @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
-    @GetMapping(path = "/{userId}/projects")
-    public Iterable<Project> getOwnedProjectsOfUser(@PathVariable("userId") String userId) throws UserNotFoundException {
-        return userService
-                .getUserById(userId)
-                .getOwnedProjects();
     }
 
 }

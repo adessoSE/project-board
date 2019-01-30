@@ -1,6 +1,10 @@
 package de.adesso.projectboard.base.project.rest;
 
 import de.adesso.projectboard.base.project.persistence.Project;
+import de.adesso.projectboard.base.project.projection.FullProjectProjection;
+import de.adesso.projectboard.base.project.projection.ReducedProjectProjection;
+import de.adesso.projectboard.base.project.service.ProjectService;
+import de.adesso.projectboard.base.projection.BaseProjectionFactory;
 import de.adesso.projectboard.base.user.service.PageableUserProjectService;
 import de.adesso.projectboard.base.user.service.UserAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,11 +12,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * {@link RestController REST Controller} to access {@link Project}s. This
@@ -23,35 +25,59 @@ import org.springframework.web.bind.annotation.RestController;
 @Profile("rest-pagination")
 @RestController
 @RequestMapping(path = "/projects")
-public class PageableProjectController {
+public class PageableProjectController extends BaseProjectController {
+
+    private final ProjectService projectService;
 
     private final PageableUserProjectService userProjectService;
 
     private final UserAuthService userAuthService;
 
+    private final BaseProjectionFactory projectionFactory;
+
     @Autowired
-    public PageableProjectController(PageableUserProjectService userProjectService, UserAuthService userAuthService) {
+    public PageableProjectController(ProjectService projectService,
+                                     PageableUserProjectService userProjectService,
+                                     UserAuthService userAuthService,
+                                     BaseProjectionFactory projectionFactory) {
+        this.projectService = projectService;
         this.userProjectService = userProjectService;
         this.userAuthService = userAuthService;
+        this.projectionFactory = projectionFactory;
+    }
+
+    @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
+    @GetMapping("/{projectId}")
+    @Override
+    public ResponseEntity<?> getById(@PathVariable String projectId) {
+        var project = projectService.getProjectById(projectId);
+
+        var projection = projectionFactory.createProjectionForAuthenticatedUser(project,
+                ReducedProjectProjection.class, FullProjectProjection.class);
+        return ResponseEntity.ok(projection);
     }
 
     @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
     @GetMapping
-    public Iterable<Project> getAllForUser(@SortDefault(direction = Sort.Direction.DESC, sort = "updated") Pageable pageable) {
-        var user = userAuthService.getAuthenticatedUser();
+    public ResponseEntity<?> getAllForUser(@SortDefault(direction = Sort.Direction.DESC, sort = "updated") Pageable pageable) {
+        var authenticatedUser = userAuthService.getAuthenticatedUser();
+        var projectsPage = userProjectService.getProjectsForUserPaginated(authenticatedUser, pageable);
 
-        return userProjectService.getProjectsForUserPaginated(user, pageable);
+        var projectionsPage = projectionFactory.createProjectionsForAuthenticatedUser(projectsPage,
+                ReducedProjectProjection.class, FullProjectProjection.class);
+        return ResponseEntity.ok(projectionsPage);
     }
 
     @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
     @GetMapping(path = "/search", params = "keyword")
-    public Iterable<Project> searchByKeyword(@RequestParam String keyword, @SortDefault(direction = Sort.Direction.DESC, sort = "updated") Pageable pageable) {
+    public ResponseEntity<?> searchByKeyword(@RequestParam String keyword, @SortDefault(direction = Sort.Direction.DESC, sort = "updated") Pageable pageable) {
         if(keyword == null || keyword.isEmpty()) {
             return getAllForUser(pageable);
         } else {
-            var user = userAuthService.getAuthenticatedUser();
+            var authenticatedUser = userAuthService.getAuthenticatedUser();
 
-            return userProjectService.searchProjectsForUserPaginated(keyword, user, pageable);
+            var projectionsPage = userProjectService.searchProjectsForUserPaginated(keyword, authenticatedUser, pageable);
+            return ResponseEntity.ok(projectionsPage);
         }
     }
 

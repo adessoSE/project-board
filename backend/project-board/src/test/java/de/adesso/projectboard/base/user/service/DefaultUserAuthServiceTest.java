@@ -85,7 +85,7 @@ public class DefaultUserAuthServiceTest {
     }
 
     @Test
-    public void userHasAccessToAllProjectFieldsReturnsFalseWhenUserIsNoManagerAndNoAdmin() {
+    public void userIsEffectivelyAManagerReturnsFalseWhenUserIsNoManagerAndNoAdmin() {
         // given
         given(retrieverMock.getUserId()).willReturn(USER_ID);
 
@@ -93,14 +93,14 @@ public class DefaultUserAuthServiceTest {
         given(userServiceMock.getUserById(USER_ID)).willReturn(userMock);
 
         // when
-        boolean actualHasAccess = userAuthService.userHasAccessToAllProjectFields(userMock);
+        boolean actualHasAccess = userAuthService.userIsEffectivelyAManager(userMock);
 
         // then
         assertThat(actualHasAccess).isFalse();
     }
 
     @Test
-    public void userHasAccessToAllProjectFieldsReturnsTrueWhenUserIsManager() {
+    public void userIsEffectivelyAManagerReturnsTrueWhenUserIsManager() {
         // given
         given(retrieverMock.getUserId()).willReturn(USER_ID);
 
@@ -108,21 +108,21 @@ public class DefaultUserAuthServiceTest {
         given(userServiceMock.getUserById(USER_ID)).willReturn(userMock);
 
         // when
-        boolean actualHasAccess = userAuthService.userHasAccessToAllProjectFields(userMock);
+        boolean actualHasAccess = userAuthService.userIsEffectivelyAManager(userMock);
 
         // then
         assertThat(actualHasAccess).isTrue();
     }
 
     @Test
-    public void userHasAccessToAllProjectFieldsReturnsFalseWhenAuthenticatedUserIsAdminButUserDoesNotEqual() {
+    public void userIsEffectivelyAManagerReturnsFalseWhenAuthenticatedUserIsAdminButUserDoesNotEqual() {
         // given
         given(retrieverMock.getUserId()).willReturn(USER_ID);
 
         given(userServiceMock.getUserById(USER_ID)).willReturn(userMock);
 
         // when
-        boolean actualHasAccess = userAuthService.userHasAccessToAllProjectFields(otherUserMock);
+        boolean actualHasAccess = userAuthService.userIsEffectivelyAManager(otherUserMock);
 
         // then
         assertThat(actualHasAccess).isFalse();

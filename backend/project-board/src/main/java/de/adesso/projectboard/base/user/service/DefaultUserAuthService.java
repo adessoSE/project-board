@@ -35,7 +35,7 @@ public class DefaultUserAuthService implements UserAuthService {
     }
 
     @Override
-    public boolean userHasAccessToAllProjectFields(User user) {
+    public boolean userIsEffectivelyAManager(User user) {
         return (getAuthenticatedUser().equals(user) && authenticatedUserIsAdmin()) ||
                 (userService.userIsManager(user));
     }

@@ -1,8 +1,10 @@
 package de.adesso.projectboard.base.project.rest;
 
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.project.projection.ProjectProjectionFactory;
+import de.adesso.projectboard.base.project.projection.FullProjectProjection;
+import de.adesso.projectboard.base.project.projection.ReducedProjectProjection;
 import de.adesso.projectboard.base.project.service.ProjectService;
+import de.adesso.projectboard.base.projection.BaseProjectionFactory;
 import de.adesso.projectboard.base.user.service.UserAuthService;
 import de.adesso.projectboard.base.user.service.UserProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,17 +33,17 @@ public class NonPageableProjectController extends BaseProjectController {
 
     private final UserAuthService userAuthService;
 
-    private final ProjectProjectionFactory projectProjectionFactory;
+    private final BaseProjectionFactory projectionFactory;
 
     @Autowired
     public NonPageableProjectController(ProjectService projectService,
                                         UserProjectService userProjectService,
                                         UserAuthService userAuthService,
-                                        ProjectProjectionFactory projectProjectionFactory) {
+                                        BaseProjectionFactory projectionFactory) {
         this.projectService = projectService;
         this.userProjectService = userProjectService;
         this.userAuthService = userAuthService;
-        this.projectProjectionFactory = projectProjectionFactory;
+        this.projectionFactory = projectionFactory;
     }
 
     @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
@@ -49,27 +51,34 @@ public class NonPageableProjectController extends BaseProjectController {
     @Override
     public ResponseEntity<?> getById(@PathVariable String projectId) {
         var project = projectService.getProjectById(projectId);
-        var authenticatedUser = userAuthService.getAuthenticatedUser();
-        var projection = projectProjectionFactory.createProjectionForUser(project, authenticatedUser);
 
+        var projection = projectionFactory.createProjectionForAuthenticatedUser(project,
+                ReducedProjectProjection.class, FullProjectProjection.class);
         return ResponseEntity.ok(projection);
     }
 
     @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
     @GetMapping
-    public Iterable<Project> getAllForUser(@SortDefault(direction = Sort.Direction.DESC, sort = "updated") Sort sort) {
-        return userProjectService.getProjectsForUser(userAuthService.getAuthenticatedUser(), sort);
+    public ResponseEntity<?> getAllForUser(@SortDefault(direction = Sort.Direction.DESC, sort = "updated") Sort sort) {
+        var projects = userProjectService.getProjectsForUser(userAuthService.getAuthenticatedUser(), sort);
+
+        var projections = projectionFactory.createProjectionsForAuthenticatedUser(projects,
+                ReducedProjectProjection.class, FullProjectProjection.class);
+        return ResponseEntity.ok(projections);
     }
 
     @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
     @GetMapping(path = "/search", params = "keyword")
-    public Iterable<Project> searchByKeyword(@RequestParam String keyword, @SortDefault(direction = Sort.Direction.DESC, sort = "updated") Sort sort) {
+    public ResponseEntity<?> searchByKeyword(@RequestParam String keyword, @SortDefault(direction = Sort.Direction.DESC, sort = "updated") Sort sort) {
         if(keyword == null || keyword.isEmpty()) {
             return getAllForUser(sort);
         } else {
             var user = userAuthService.getAuthenticatedUser();
+            var projectsMatchingKeyword = userProjectService.searchProjectsForUser(user, keyword, sort);
 
-            return userProjectService.searchProjectsForUser(user, keyword, sort);
+            var projections = projectionFactory.createProjectionsForAuthenticatedUser(projectsMatchingKeyword,
+                    ReducedProjectProjection.class, FullProjectProjection.class);
+            return ResponseEntity.ok(projections);
         }
     }
 

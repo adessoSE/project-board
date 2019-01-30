@@ -33,9 +33,11 @@ public interface UserAuthService {
      *          The user to check.
      *
      * @return
-     *          {@code true}, iff the given {@code user} has
-     *          access to all project fields.
+     *          {@code true}, iff the given {@code user} is <i>effectively</i>
+     *          a manager.
+     *
+     * @see UserService#userIsManager(User)
      */
-    boolean userHasAccessToAllProjectFields(User user);
+    boolean userIsEffectivelyAManager(User user);
 
 }
