@@ -3,8 +3,8 @@ package de.adesso.projectboard.base.access.rest;
 import de.adesso.projectboard.base.access.handler.UserAccessHandler;
 import de.adesso.projectboard.base.access.payload.UserAccessPayload;
 import de.adesso.projectboard.base.access.service.UserAccessService;
-import de.adesso.projectboard.base.projection.BaseProjectionFactory;
 import de.adesso.projectboard.base.user.projection.DefaultUserProjection;
+import de.adesso.projectboard.base.user.projection.UserProjectionFactory;
 import de.adesso.projectboard.base.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,13 +23,13 @@ public class UserAccessController {
 
     private final UserAccessHandler userAccessHandler;
 
-    private final BaseProjectionFactory projectionFactory;
+    private final UserProjectionFactory projectionFactory;
 
     @Autowired
     public UserAccessController(UserService userService,
                                 UserAccessService userAccessService,
                                 UserAccessHandler userAccessHandler,
-                                BaseProjectionFactory projectionFactory) {
+                                UserProjectionFactory projectionFactory) {
         this.userService = userService;
         this.userAccessService = userAccessService;
         this.userAccessHandler = userAccessHandler;

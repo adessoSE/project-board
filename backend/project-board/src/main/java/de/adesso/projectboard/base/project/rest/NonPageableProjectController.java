@@ -60,7 +60,8 @@ public class NonPageableProjectController extends BaseProjectController {
     @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
     @GetMapping
     public ResponseEntity<?> getAllForUser(@SortDefault(direction = Sort.Direction.DESC, sort = "updated") Sort sort) {
-        var projects = userProjectService.getProjectsForUser(userAuthService.getAuthenticatedUser(), sort);
+        var authenticatedUser = userAuthService.getAuthenticatedUser();
+        var projects = userProjectService.getProjectsForUser(authenticatedUser, sort);
 
         var projections = projectionFactory.createProjectionsForAuthenticatedUser(projects,
                 ReducedProjectProjection.class, FullProjectProjection.class);

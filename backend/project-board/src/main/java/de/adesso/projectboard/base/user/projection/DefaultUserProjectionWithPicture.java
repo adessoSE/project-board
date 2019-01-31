@@ -4,15 +4,12 @@ import de.adesso.projectboard.base.projection.NamedProjection;
 import org.springframework.beans.factory.annotation.Value;
 
 @NamedProjection(
-        name = "pictureonly",
+        name = "withpicture",
         target = UserProjectionSource.class
 )
-public interface IdAndPictureProjection {
-
-    @Value("#{target.user.id}")
-    String getId();
+public interface DefaultUserProjectionWithPicture extends DefaultUserProjection {
 
     @Value("#{target.data.picture}")
-    byte[] getPicture();
+    byte[] getPhoto();
 
 }

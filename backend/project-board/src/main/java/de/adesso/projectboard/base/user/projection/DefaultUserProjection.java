@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.time.LocalDateTime;
 
 @NamedProjection(
-        name = "default",
+        name = "withoutpicture",
         target = UserProjectionSource.class,
         defaultProjection = true
 )

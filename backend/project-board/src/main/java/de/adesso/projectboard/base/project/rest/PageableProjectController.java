@@ -75,8 +75,10 @@ public class PageableProjectController extends BaseProjectController {
             return getAllForUser(pageable);
         } else {
             var authenticatedUser = userAuthService.getAuthenticatedUser();
+            var projectsPage = userProjectService.searchProjectsForUserPaginated(keyword, authenticatedUser, pageable);
 
-            var projectionsPage = userProjectService.searchProjectsForUserPaginated(keyword, authenticatedUser, pageable);
+            var projectionsPage = projectionFactory.createProjectionsForAuthenticatedUser(projectsPage,
+                    ReducedProjectProjection.class, FullProjectProjection.class);
             return ResponseEntity.ok(projectionsPage);
         }
     }

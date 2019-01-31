@@ -43,7 +43,7 @@ public class BaseProjectionFactory {
     public List<?> createProjectionsForAuthenticatedUser(@NotNull Collection<?> objects, @NotNull Class<?> normalProjectionType, @NotNull Class<?> managerProjectionType) {
         var usedProjectionType = getProjectionType(normalProjectionType, managerProjectionType);
 
-        return objects.stream()
+        return objects.parallelStream()
                 .map(obj -> projectionFactory.createProjection(usedProjectionType, obj))
                 .collect(Collectors.toList());
     }

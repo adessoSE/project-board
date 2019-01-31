@@ -1,17 +1,19 @@
 package de.adesso.projectboard.base.application.payload;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Value;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 
-@Value
+@Data
+@NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ProjectApplicationPayload {
 
     @NotEmpty
-    String projectId;
+    private String projectId;
 
-    String comment;
+    private String comment;
 
 }

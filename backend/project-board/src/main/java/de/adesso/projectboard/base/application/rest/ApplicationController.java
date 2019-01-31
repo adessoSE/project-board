@@ -39,7 +39,7 @@ public class ApplicationController {
         this.projectionFactory = projectionFactory;
     }
 
-    @PreAuthorize("(hasPermissionToAccessUser(#userId) && hasPermissionToApply()) || hasRole('admin')")
+    @PreAuthorize("(hasPermissionToAccessUser(#userId) && hasPermissionToApply()) || hasElevatedAccessToUser(#userId) || hasRole('admin')")
     @PostMapping(path = "/{userId}/applications")
     public ResponseEntity<?> createApplicationForUser(@Valid @RequestBody ProjectApplicationPayload payload, @PathVariable String userId) {
         var user = userService.getUserById(userId);
