@@ -55,14 +55,14 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *
      * @return
      *          {@code true}, iff the user is a manager or has a active
-     *          access info instance.
+     *          access interval instance.
      *
-     * @see UserAccessService#userHasActiveAccessInfo(User)
+     * @see UserAccessService#userHasActiveAccessInterval(User)
      * @see UserService#userIsManager(User)
      */
     @Override
     public boolean hasAccessToProjects(Authentication authentication, User user) {
-        return userAccessService.userHasActiveAccessInfo(user) || userService.userIsManager(user);
+        return userAccessService.userHasActiveAccessInterval(user) || userService.userIsManager(user);
     }
 
     /**

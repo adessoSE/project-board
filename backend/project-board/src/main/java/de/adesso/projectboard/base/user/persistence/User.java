@@ -1,6 +1,6 @@
 package de.adesso.projectboard.base.user.persistence;
 
-import de.adesso.projectboard.base.access.persistence.AccessInfo;
+import de.adesso.projectboard.base.access.persistence.AccessInterval;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.project.persistence.Project;
 import lombok.EqualsAndHashCode;
@@ -65,7 +65,7 @@ public class User {
     Set<Project> ownedProjects;
 
     /**
-     * The user's {@link AccessInfo} objects to evaluate
+     * The user's {@link AccessInterval} objects to evaluate
      * access.
      */
     @OneToMany(
@@ -73,7 +73,7 @@ public class User {
             orphanRemoval = true,
             mappedBy = "user"
     )
-    List<AccessInfo> accessInfoList;
+    List<AccessInterval> accessIntervals;
 
     /**
      *
@@ -89,7 +89,7 @@ public class User {
     protected User() {
         // protected no-arg constructor for JPA
 
-        this.accessInfoList = new LinkedList<>();
+        this.accessIntervals = new LinkedList<>();
         this.applications = new LinkedHashSet<>();
         this.bookmarks = new LinkedHashSet<>();
         this.ownedProjects = new LinkedHashSet<>();
@@ -122,7 +122,7 @@ public class User {
      *          The {@link ProjectApplication} to add to this user.
      *
      * @throws IllegalArgumentException
-     *          When the user the application {@link ProjectApplication#user belongs to}
+     *          When the {@link ProjectApplication#getUser() user} the application belongs to
      *          is not {@code this} user.
      *
      * @see #addBookmark(Project)
@@ -148,12 +148,12 @@ public class User {
     /**
      *
      * @return
-     *          A {@link Optional} containing the latest {@link AccessInfo}
+     *          A {@link Optional} containing the latest {@link AccessInterval}
      *          instance or an empty one if none is present.
      */
-    public Optional<AccessInfo> getLatestAccessInfo() {
-        if(accessInfoList.size() > 0) {
-            return Optional.of(accessInfoList.get(accessInfoList.size() - 1));
+    public Optional<AccessInterval> getLatestAccessInterval() {
+        if(accessIntervals.size() > 0) {
+            return Optional.of(accessIntervals.get(accessIntervals.size() - 1));
         }
 
         return Optional.empty();
@@ -181,31 +181,31 @@ public class User {
 
     /**
      *
-     * @param info
-     *          The {@link AccessInfo} to add.
+     * @param interval
+     *          The {@link AccessInterval} to add.
      *
      * @throws IllegalArgumentException
-     *          When the given {@code info}'s {@link AccessInfo#user user}
+     *          When the given {@code interval}'s {@link AccessInterval#getUser() user}
      *          is not equal to {@code this} user.
      */
-    public void addAccessInfo(AccessInfo info) throws IllegalArgumentException {
-        Objects.requireNonNull(info);
+    public void addAccessInterval(AccessInterval interval) throws IllegalArgumentException {
+        Objects.requireNonNull(interval);
 
-        if(!this.equals(info.getUser())) {
-            throw new IllegalArgumentException("Info instance belongs to a different or no user!");
+        if(!this.equals(interval.getUser())) {
+            throw new IllegalArgumentException("Interval instance belongs to a different or no user!");
         }
 
-        accessInfoList.add(info);
+        accessIntervals.add(interval);
     }
 
     /**
      *
-     * @param info
-     *          The {@link AccessInfo} to remove.
+     * @param interval
+     *          The {@link AccessInterval} to remove.
      *
      */
-    public void removeAccessInfo(AccessInfo info) {
-        accessInfoList.remove(info);
+    public void removeAccessInterval(AccessInterval interval) {
+        accessIntervals.remove(interval);
     }
 
 }

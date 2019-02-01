@@ -32,13 +32,13 @@ public interface DefaultUserProjection extends NameAndIdProjection {
 
     interface AccessSummary {
 
-        @Value("#{@repositoryUserAccessService.userHasActiveAccessInfo(target.user)}")
+        @Value("#{@repositoryUserAccessService.userHasActiveAccessInterval(target.user)}")
         boolean getHasAccess();
 
-        @Value("#{@repositoryUserAccessService.userHasActiveAccessInfo(target.user) ? target.user.getLatestAccessInfo().get().accessStart : null}")
+        @Value("#{@repositoryUserAccessService.userHasActiveAccessInterval(target.user) ? target.user.getLatestAccessInfo().get().startTime : null}")
         LocalDateTime getAccessStart();
 
-        @Value("#{@repositoryUserAccessService.userHasActiveAccessInfo(target.user) ? target.user.getLatestAccessInfo().get().accessEnd : null}")
+        @Value("#{@repositoryUserAccessService.userHasActiveAccessInterval(target.user) ? target.user.getLatestAccessInterval().get().endTime : null}")
         LocalDateTime getAccessEnd();
 
     }

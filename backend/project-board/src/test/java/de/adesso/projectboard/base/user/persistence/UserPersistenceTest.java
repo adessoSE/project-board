@@ -1,7 +1,7 @@
 package de.adesso.projectboard.base.user.persistence;
 
-import de.adesso.projectboard.base.access.persistence.AccessInfo;
-import de.adesso.projectboard.base.access.persistence.AccessInfoRepository;
+import de.adesso.projectboard.base.access.persistence.AccessInterval;
+import de.adesso.projectboard.base.access.persistence.AccessIntervalRepository;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.persistence.ProjectApplicationRepository;
 import de.adesso.projectboard.base.project.persistence.Project;
@@ -24,24 +24,24 @@ import java.time.LocalDateTime;
 public class UserPersistenceTest {
 
     @Autowired
-    ProjectApplicationRepository applicationRepo;
+    private ProjectApplicationRepository applicationRepo;
 
     @Autowired
-    AccessInfoRepository accessInfoRepo;
+    private AccessIntervalRepository accessIntervalRepo;
 
     @Autowired
-    UserRepository userRepo;
+    private UserRepository userRepo;
 
     @Autowired
-    ProjectRepository projectRepo;
+    private ProjectRepository projectRepo;
 
     @Test
     @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
     public void save() {
         // given
         LocalDateTime applicationDate = LocalDateTime.of(2018, 10, 10, 8, 0);
-        LocalDateTime infoStartDate = LocalDateTime.of(2018, 1, 10, 8, 0);
-        LocalDateTime infoEndDate = LocalDateTime.of(2018, 2, 10, 8, 0);
+        LocalDateTime intervalStartTime = LocalDateTime.of(2018, 1, 10, 8, 0);
+        LocalDateTime intervalEndTime = LocalDateTime.of(2018, 2, 10, 8, 0);
         String expectedUserId = "user";
 
         Project project = projectRepo.findById("STF-1").orElseThrow(EntityNotFoundException::new);
@@ -50,7 +50,7 @@ public class UserPersistenceTest {
         user.addBookmark(project);
 
         new ProjectApplication(project, "Comment", user, applicationDate);
-        new AccessInfo(user, infoStartDate, infoEndDate);
+        new AccessInterval(user, intervalStartTime, intervalEndTime);
 
         // when
         userRepo.save(user);
@@ -61,7 +61,7 @@ public class UserPersistenceTest {
 
         softly.assertThat(retrievedUser.id).isEqualTo(expectedUserId);
         softly.assertThat(applicationRepo.count()).isEqualTo(1);
-        softly.assertThat(accessInfoRepo.count()).isEqualTo(1);
+        softly.assertThat(accessIntervalRepo.count()).isEqualTo(1);
 
         softly.assertAll();
     }

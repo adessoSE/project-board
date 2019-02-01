@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AccessInfoTest {
+public class AccessIntervalTest {
 
     @Mock
     User userMock;
@@ -43,7 +43,7 @@ public class AccessInfoTest {
         LocalDateTime startTime = LocalDateTime.now(clock).plus(10L, ChronoUnit.DAYS);
         LocalDateTime endTime = LocalDateTime.now(clock).minus(10L, ChronoUnit.DAYS);
 
-        assertThatThrownBy(() -> new AccessInfo(userMock, startTime, endTime))
+        assertThatThrownBy(() -> new AccessInterval(userMock, startTime, endTime))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("The end time has to be after the start time!");
     }
@@ -51,15 +51,15 @@ public class AccessInfoTest {
     @Test
     public void equalsReturnsTrueForSameInstance() {
         // given
-        long accessInfoId = 1;
+        long accessIntervalId = 1;
         LocalDateTime startTime = LocalDateTime.now(clock);
         LocalDateTime endTime = LocalDateTime.now(clock).plus(1L, ChronoUnit.DAYS);
 
-        AccessInfo accessInfo = new AccessInfo(userMock, startTime, endTime);
-        accessInfo.id = accessInfoId;
+        AccessInterval accessInterval = new AccessInterval(userMock, startTime, endTime);
+        accessInterval.id = accessIntervalId;
 
         // when
-        boolean actualEquals = accessInfo.equals(accessInfo);
+        boolean actualEquals = accessInterval.equals(accessInterval);
 
         // then
         assertThat(actualEquals).isTrue();
@@ -68,42 +68,42 @@ public class AccessInfoTest {
     @Test
     public void equalsReturnsTrueForSameFieldValuesAndHashCodeEquals() {
         // given
-        long accessInfoId = 1;
+        long accessIntervalId = 1;
         String userId = "user";
         LocalDateTime startTime = LocalDateTime.now(clock);
         LocalDateTime endTime = LocalDateTime.now(clock).plus(1L, ChronoUnit.DAYS);
 
         given(userMock.getId()).willReturn(userId);
 
-        AccessInfo accessInfo = new AccessInfo(userMock, startTime, endTime);
-        accessInfo.id = accessInfoId;
+        AccessInterval accessInterval = new AccessInterval(userMock, startTime, endTime);
+        accessInterval.id = accessIntervalId;
 
-        AccessInfo otherAccessInfo = new AccessInfo(userMock, startTime, endTime);
-        otherAccessInfo.id = accessInfoId;
+        AccessInterval otherAccessInterval = new AccessInterval(userMock, startTime, endTime);
+        otherAccessInterval.id = accessIntervalId;
 
         // when & then
-        assertEqualsAndHashCodeEquals(accessInfo, otherAccessInfo);
+        assertEqualsAndHashCodeEquals(accessInterval, otherAccessInterval);
     }
 
     @Test
     public void equalsReturnsFalseForDifferentIds() {
         // given
-        long accessInfoId = 1;
-        long otherAccessInfoId = 2;
+        long accessIntervalId = 1;
+        long otherAccessIntervalId = 2;
         String userId = "user";
         LocalDateTime startTime = LocalDateTime.now(clock);
         LocalDateTime endTime = LocalDateTime.now(clock).plus(1L, ChronoUnit.DAYS);
 
         given(userMock.getId()).willReturn(userId);
 
-        AccessInfo accessInfo = new AccessInfo(userMock, startTime, endTime);
-        accessInfo.id = accessInfoId;
+        AccessInterval accessInterval = new AccessInterval(userMock, startTime, endTime);
+        accessInterval.id = accessIntervalId;
 
-        AccessInfo otherAccessInfo = new AccessInfo(userMock, startTime, endTime);
-        otherAccessInfo.id = otherAccessInfoId;
+        AccessInterval otherAccessInterval = new AccessInterval(userMock, startTime, endTime);
+        otherAccessInterval.id = otherAccessIntervalId;
 
         // when
-        boolean actualEquals = accessInfo.equals(otherAccessInfo);
+        boolean actualEquals = accessInterval.equals(otherAccessInterval);
 
         // then
         assertThat(actualEquals).isFalse();
@@ -112,7 +112,7 @@ public class AccessInfoTest {
     @Test
     public void equalsReturnsFalseForDifferentUserIds() {
         // given
-        long accessInfoId = 1;
+        long accessIntervalId = 1;
         String userId = "user";
         String otherUserId = "other-user";
         LocalDateTime startTime = LocalDateTime.now(clock);
@@ -121,14 +121,14 @@ public class AccessInfoTest {
         given(userMock.getId()).willReturn(userId);
         given(otherUserMock.getId()).willReturn(otherUserId);
 
-        AccessInfo accessInfo = new AccessInfo(userMock, startTime, endTime);
-        accessInfo.id = accessInfoId;
+        AccessInterval accessInterval = new AccessInterval(userMock, startTime, endTime);
+        accessInterval.id = accessIntervalId;
 
-        AccessInfo otherAccessInfo = new AccessInfo(otherUserMock, startTime, endTime);
-        otherAccessInfo.id = accessInfoId;
+        AccessInterval otherAccessInterval = new AccessInterval(otherUserMock, startTime, endTime);
+        otherAccessInterval.id = accessIntervalId;
 
         // when
-        boolean actualEquals = accessInfo.equals(otherAccessInfo);
+        boolean actualEquals = accessInterval.equals(otherAccessInterval);
 
         // then
         assertThat(actualEquals).isFalse();
@@ -137,7 +137,7 @@ public class AccessInfoTest {
     @Test
     public void equalsReturnsFalseForDifferentStartTimes() {
         // given
-        long accessInfoId = 1;
+        long accessIntervalId = 1;
         String userId = "user";
         LocalDateTime startTime = LocalDateTime.now(clock);
         LocalDateTime otherStartTime = LocalDateTime.now(clock).plus(10L, ChronoUnit.MINUTES);
@@ -145,14 +145,14 @@ public class AccessInfoTest {
 
         given(userMock.getId()).willReturn(userId);
 
-        AccessInfo accessInfo = new AccessInfo(userMock, startTime, endTime);
-        accessInfo.id = accessInfoId;
+        AccessInterval accessInterval = new AccessInterval(userMock, startTime, endTime);
+        accessInterval.id = accessIntervalId;
 
-        AccessInfo otherAccessInfo = new AccessInfo(userMock, otherStartTime, endTime);
-        otherAccessInfo.id = accessInfoId;
+        AccessInterval otherAccessInterval = new AccessInterval(userMock, otherStartTime, endTime);
+        otherAccessInterval.id = accessIntervalId;
 
         // when
-        boolean actualEquals = accessInfo.equals(otherAccessInfo);
+        boolean actualEquals = accessInterval.equals(otherAccessInterval);
 
         // then
         assertThat(actualEquals).isFalse();
@@ -161,7 +161,7 @@ public class AccessInfoTest {
     @Test
     public void equalsReturnsFalseForDifferentEndTimes() {
         // given
-        long accessInfoId = 1;
+        long accessIntervalId = 1;
         String userId = "user";
         LocalDateTime startTime = LocalDateTime.now(clock);
         LocalDateTime endTime = LocalDateTime.now(clock).plus(1L, ChronoUnit.DAYS);
@@ -169,14 +169,14 @@ public class AccessInfoTest {
 
         given(userMock.getId()).willReturn(userId);
 
-        AccessInfo accessInfo = new AccessInfo(userMock, startTime, endTime);
-        accessInfo.id = accessInfoId;
+        AccessInterval accessInterval = new AccessInterval(userMock, startTime, endTime);
+        accessInterval.id = accessIntervalId;
 
-        AccessInfo otherAccessInfo = new AccessInfo(userMock, startTime, otherEndTime);
-        otherAccessInfo.id = accessInfoId;
+        AccessInterval otherAccessInterval = new AccessInterval(userMock, startTime, otherEndTime);
+        otherAccessInterval.id = accessIntervalId;
 
         // when
-        boolean actualEquals = accessInfo.equals(otherAccessInfo);
+        boolean actualEquals = accessInterval.equals(otherAccessInterval);
 
         // then
         assertThat(actualEquals).isFalse();

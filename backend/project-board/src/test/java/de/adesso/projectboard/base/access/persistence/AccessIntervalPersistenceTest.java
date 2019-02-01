@@ -17,13 +17,13 @@ import java.time.LocalDateTime;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @TestPropertySource("classpath:application-persistence-test.properties")
-public class AccessInfoPersistenceTest {
+public class AccessIntervalPersistenceTest {
 
     @Autowired
-    AccessInfoRepository infoRepo;
+    private AccessIntervalRepository intervalRepo;
 
     @Autowired
-    UserRepository userRepo;
+    private UserRepository userRepo;
 
     @Test
     @Sql("classpath:de/adesso/projectboard/persistence/Users.sql")
@@ -33,18 +33,18 @@ public class AccessInfoPersistenceTest {
         LocalDateTime startTime = LocalDateTime.of(2018, 1, 1, 13, 37);
         LocalDateTime endTime = LocalDateTime.of(2018, 1, 2, 13, 37);
 
-        AccessInfo accessInfo = new AccessInfo(user, startTime, endTime);
+        AccessInterval accessInterval = new AccessInterval(user, startTime, endTime);
 
         // when
-        AccessInfo savedInfo = infoRepo.save(accessInfo);
-        AccessInfo retrievedInfo = infoRepo.findById(savedInfo.getId()).orElseThrow(EntityNotFoundException::new);
+        AccessInterval savedInterval = intervalRepo.save(accessInterval);
+        AccessInterval retrievedInterval = intervalRepo.findById(savedInterval.getId()).orElseThrow(EntityNotFoundException::new);
 
         // then
         SoftAssertions softly = new SoftAssertions();
 
-        softly.assertThat(retrievedInfo.getAccessStart()).isEqualTo(startTime);
-        softly.assertThat(retrievedInfo.getAccessEnd()).isEqualTo(endTime);
-        softly.assertThat(retrievedInfo.getUser().getId()).isEqualTo("User2");
+        softly.assertThat(retrievedInterval.getStartTime()).isEqualTo(startTime);
+        softly.assertThat(retrievedInterval.getEndTime()).isEqualTo(endTime);
+        softly.assertThat(retrievedInterval.getUser().getId()).isEqualTo("User2");
 
         softly.assertAll();
     }

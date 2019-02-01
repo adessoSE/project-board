@@ -1,6 +1,7 @@
 package de.adesso.projectboard.base.access.service;
 
 
+import de.adesso.projectboard.base.access.persistence.AccessInterval;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.service.UserService;
 
@@ -49,9 +50,9 @@ public interface UserAccessService {
      *
      * @return
      *          {@code true}, iff the given {@link User}'s latest
-     *          {@link de.adesso.projectboard.base.access.persistence.AccessInfo} instance
+     *          {@link AccessInterval} instance
      *          is currently active (the current time is in the interval {@code [start, end]}).
      */
-    boolean userHasActiveAccessInfo(User user);
+    boolean userHasActiveAccessInterval(User user);
 
 }

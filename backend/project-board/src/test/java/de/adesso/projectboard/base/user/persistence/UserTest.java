@@ -1,6 +1,6 @@
 package de.adesso.projectboard.base.user.persistence;
 
-import de.adesso.projectboard.base.access.persistence.AccessInfo;
+import de.adesso.projectboard.base.access.persistence.AccessInterval;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.project.persistence.Project;
 import org.assertj.core.api.SoftAssertions;
@@ -24,7 +24,7 @@ public class UserTest {
     ProjectApplication applicationMock;
 
     @Mock
-    AccessInfo accessInfoMock;
+    AccessInterval accessIntervalMock;
 
     @Test
     public void constructorIdSet() {
@@ -49,7 +49,7 @@ public class UserTest {
         SoftAssertions softly = new SoftAssertions();
 
         softly.assertThat(user.bookmarks).isNotNull();
-        softly.assertThat(user.accessInfoList).isNotNull();
+        softly.assertThat(user.accessIntervals).isNotNull();
         softly.assertThat(user.applications).isNotNull();
         softly.assertThat(user.ownedProjects).isNotNull();
 
@@ -127,86 +127,86 @@ public class UserTest {
     }
 
     @Test
-    public void addAccessInfoBelongsToUser() {
+    public void addAccessIntervalAddsIntervalWhenItBelongsToUser() {
         // given
         User user = new User("user");
 
-        given(accessInfoMock.getUser()).willReturn(user);
+        given(accessIntervalMock.getUser()).willReturn(user);
 
         // when
-        user.addAccessInfo(accessInfoMock);
+        user.addAccessInterval(accessIntervalMock);
 
         // then
-        assertThat(user.accessInfoList).containsExactly(accessInfoMock);
+        assertThat(user.accessIntervals).containsExactly(accessIntervalMock);
     }
 
     @Test
-    public void addAccessInfoThrowsExceptionWhenNotBelongingToUser() {
+    public void addAccessIntervalThrowsExceptionWhenNotBelongingToUser() {
         // given
         User user = new User("user");
         User otherUser = new User("other-user");
 
-        given(accessInfoMock.getUser()).willReturn(otherUser);
+        given(accessIntervalMock.getUser()).willReturn(otherUser);
 
         // when
-        assertThatThrownBy(() -> user.addAccessInfo(accessInfoMock))
+        assertThatThrownBy(() -> user.addAccessInterval(accessIntervalMock))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("Info instance belongs to a different or no user!");
+                .hasMessage("Interval instance belongs to a different or no user!");
     }
 
     @Test
-    public void removeAccessInfo() {
+    public void removeAccessInterval() {
         // given
         User user = new User("user");
-        user.accessInfoList.add(accessInfoMock);
+        user.accessIntervals.add(accessIntervalMock);
 
         // when
-        user.removeAccessInfo(accessInfoMock);
+        user.removeAccessInterval(accessIntervalMock);
 
         // then
-        assertThat(user.accessInfoList).isEmpty();
+        assertThat(user.accessIntervals).isEmpty();
     }
 
     @Test
-    public void getLatestAccessInfoReturnsElementCollectionContainsSingleElement() {
+    public void getLatestAccessIntervalReturnsElementCollectionContainsSingleElement() {
         // given
         User user = new User("user");
-        user.accessInfoList.add(accessInfoMock);
+        user.accessIntervals.add(accessIntervalMock);
 
         // when
-        AccessInfo actualAccessInfo = user.getLatestAccessInfo()
-                .orElseThrow(() -> new IllegalStateException("No info instance present!"));
+        AccessInterval actualAccessInterval = user.getLatestAccessInterval()
+                .orElseThrow(() -> new IllegalStateException("No interval instance present!"));
 
         // then
-        assertThat(actualAccessInfo).isEqualTo(accessInfoMock);
+        assertThat(actualAccessInterval).isEqualTo(accessIntervalMock);
     }
 
     @Test
-    public void getLatestAccessInfoReturnsLastAddedWhenCollectionContainsMultipleElements() {
+    public void getLatestAccessIntervalReturnsLastAddedWhenCollectionContainsMultipleElements() {
         // given
-        AccessInfo expectedAccessInfoMock = mock(AccessInfo.class);
+        AccessInterval expectedAccessIntervalMock = mock(AccessInterval.class);
 
         User user = new User("user");
-        user.accessInfoList.addAll(Arrays.asList(accessInfoMock, expectedAccessInfoMock));
+        user.accessIntervals.addAll(Arrays.asList(accessIntervalMock, expectedAccessIntervalMock));
 
         // when
-        AccessInfo actualAccessInfo = user.getLatestAccessInfo()
-                .orElseThrow(() -> new IllegalStateException("No info instance present!"));
+        AccessInterval actualAccessInterval = user.getLatestAccessInterval()
+                .orElseThrow(() -> new IllegalStateException("No interval instance present!"));
 
         // then
-        assertThat(actualAccessInfo).isEqualTo(expectedAccessInfoMock);
+        assertThat(actualAccessInterval).isEqualTo(expectedAccessIntervalMock);
     }
 
     @Test
-    public void getLatestAccessInfoReturnsNullWhenCollectionContainsNoElement() {
+    public void getLatestAccessIntervalReturnsNullWhenCollectionContainsNoElement() {
         // given
         User user = new User("user");
 
         // when
-        Optional<AccessInfo> actualAccessInfoOptional = user.getLatestAccessInfo();
+        Optional<AccessInterval> actualAccessIntervalOptional = user.getLatestAccessInterval();
 
         // then
-        assertThat(actualAccessInfoOptional).isNotPresent();
+        assertThat(actualAccessIntervalOptional).isNotPresent();
     }
 
     @Test

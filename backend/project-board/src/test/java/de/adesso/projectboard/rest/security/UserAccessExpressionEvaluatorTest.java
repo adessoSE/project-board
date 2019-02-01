@@ -67,7 +67,7 @@ public class UserAccessExpressionEvaluatorTest {
     @Test
     public void hasAccessToProjectsReturnsTrueWhenUserIsNoManagerButAccessIsActive() {
         // given
-        given(userAccessServiceMock.userHasActiveAccessInfo(userMock)).willReturn(true);
+        given(userAccessServiceMock.userHasActiveAccessInterval(userMock)).willReturn(true);
 
         // when
         boolean actualHasAccess = evaluator.hasAccessToProjects(authenticationMock, userMock);
@@ -102,7 +102,7 @@ public class UserAccessExpressionEvaluatorTest {
     @Test
     public void hasAccessToProjectReturnsTrueWhenUserIsNoManagerButAccessIsActive() {
         // given
-        given(userAccessServiceMock.userHasActiveAccessInfo(userMock)).willReturn(true);
+        given(userAccessServiceMock.userHasActiveAccessInterval(userMock)).willReturn(true);
 
         // when
         boolean actualHasAccess = evaluator.hasAccessToProject(authenticationMock, userMock, PROJECT_ID);
@@ -164,7 +164,7 @@ public class UserAccessExpressionEvaluatorTest {
     @Test
     public void hasPermissionToApplyReturnsTrueWhenAccessIsActive() {
         // given
-        given(userAccessServiceMock.userHasActiveAccessInfo(userMock)).willReturn(true);
+        given(userAccessServiceMock.userHasActiveAccessInterval(userMock)).willReturn(true);
 
         // when
         boolean actualHasPermission = evaluator.hasPermissionToApply(authenticationMock, userMock);

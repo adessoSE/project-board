@@ -19,11 +19,11 @@ import java.util.Objects;
  * @see User
  */
 @Entity
-@Table(name = "ACCESS_INFO")
+@Table(name = "ACCESS_INTERVAL")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AccessInfo {
+public class AccessInterval {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,46 +40,46 @@ public class AccessInfo {
             name = "START_TIME",
             nullable = false
     )
-    LocalDateTime accessStart;
+    LocalDateTime startTime;
 
     @Column(
             name = "END_TIME",
             nullable = false
     )
-    LocalDateTime accessEnd;
+    LocalDateTime endTime;
 
     /**
      * Constructs a new instance.
      *
      * <p>
      *     <b>Note</b>: The instance <b>is</b> added to the
-     *     {@code user}'s {@link User#getAccessInfoList() info list}.
+     *     {@code user}'s {@link User#getAccessIntervals() intervals}.
      * </p>
      *
      * @param user
      *          The {@link User} the access is given to.
      *
-     * @param accessStart
+     * @param startTime
      *          The {@link LocalDateTime} of when the access should begin.
      *
-     * @param accessEnd
+     * @param endTime
      *          The {@link LocalDateTime} of when the access should end.
      *
      * @throws IllegalArgumentException
-     *          When the {@code accessEnd} {@link LocalDateTime#isBefore(ChronoLocalDateTime) is before}
-     *          the {@code accessStart}.
+     *          When the {@code endTime} {@link LocalDateTime#isBefore(ChronoLocalDateTime) is before}
+     *          the {@code startTime}.
      *
      */
-    public AccessInfo(User user, LocalDateTime accessStart, LocalDateTime accessEnd) throws IllegalArgumentException {
-        if(accessEnd.isBefore(accessStart)) {
+    public AccessInterval(User user, LocalDateTime startTime, LocalDateTime endTime) throws IllegalArgumentException {
+        if(endTime.isBefore(startTime)) {
             throw new IllegalArgumentException("The end time has to be after the start time!");
         }
 
         this.user = user;
-        this.accessStart = accessStart;
-        this.accessEnd = accessEnd;
+        this.startTime = startTime;
+        this.endTime = endTime;
 
-        user.addAccessInfo(this);
+        user.addAccessInterval(this);
     }
 
     @Override
@@ -88,10 +88,10 @@ public class AccessInfo {
             return true;
         }
 
-        if(obj instanceof AccessInfo) {
-            AccessInfo other = (AccessInfo) obj;
+        if(obj instanceof AccessInterval) {
+            AccessInterval other = (AccessInterval) obj;
 
-            // only compare the user IDs because of the cyclic reference: User <-> AccessInfo
+            // only compare the user IDs because of the cyclic reference: User <-> AccessInterval
             boolean userEquals;
             if(Objects.nonNull(this.user) && Objects.nonNull(other.user)) {
                 userEquals = Objects.equals(this.user.getId(), other.user.getId());
@@ -101,8 +101,8 @@ public class AccessInfo {
 
             return userEquals &&
                     Objects.equals(this.id, other.id) &&
-                    Objects.equals(this.accessStart, other.accessStart) &&
-                    Objects.equals(this.accessEnd, other.accessEnd);
+                    Objects.equals(this.startTime, other.startTime) &&
+                    Objects.equals(this.endTime, other.endTime);
         }
 
         return false;
@@ -110,7 +110,7 @@ public class AccessInfo {
 
     @Override
     public int hashCode() {
-        int baseHash = Objects.hash(id, accessStart, accessEnd);
+        int baseHash = Objects.hash(id, startTime, endTime);
         int userIdHash = this.user != null ? Objects.hashCode(this.user.getId()) : 0;
 
         return baseHash + 31 * userIdHash;
