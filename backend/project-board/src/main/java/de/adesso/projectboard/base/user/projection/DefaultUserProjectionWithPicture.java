@@ -10,6 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 public interface DefaultUserProjectionWithPicture extends DefaultUserProjection {
 
     @Value("#{target.data.picture}")
-    byte[] getPhoto();
+    byte[] getPicture();
 
 }

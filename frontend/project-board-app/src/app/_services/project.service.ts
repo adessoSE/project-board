@@ -46,8 +46,8 @@ export interface Project {
   skills: string;
   status: string;
   title: string;
-  dailyRate: string;
-  travelExpenses: string;
+  dayRate: string;
+  travelCostsCompensated: string;
 
   created: Date;
   updated: Date;

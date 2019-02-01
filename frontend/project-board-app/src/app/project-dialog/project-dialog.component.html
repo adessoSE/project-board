@@ -113,13 +113,13 @@
       <div class="col-sm-3 left-side">Externe:</div>
       <div class="col-sm right-side">{{data.project.freelancer}}</div>
     </div>
-    <div class="row" *ngIf="data.project.travelExpenses && data.isUserBoss">
+    <div class="row" *ngIf="data.project.travelCostsCompensated && data.isUserBoss">
       <div class="col-sm-3 left-side">Reisekosten vergütet:</div>
-      <div class="col-sm right-side">{{data.project.travelExpenses}}</div>
+      <div class="col-sm right-side">{{data.project.travelCostsCompensated}}</div>
     </div>
-    <div class="row" *ngIf="data.project.dailyRate && data.isUserBoss">
+    <div class="row" *ngIf="data.project.dayRate && data.isUserBoss">
       <div class="col-sm-3 left-side">Tagessatz:</div>
-      <div class="col-sm right-side">{{data.project.dailyRate}}</div>
+      <div class="col-sm right-side">{{data.project.dayRate}}</div>
     </div>
   </div>
 </mat-dialog-content>

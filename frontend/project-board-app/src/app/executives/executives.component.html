@@ -75,7 +75,7 @@
       <td class="hover-change">{{employee.accessInfo.hasAccess || employee.boss ? 'Freigeschaltet' : 'Nicht freigeschaltet'}}</td>
       <td class="hover-change">{{employee.boss ? '-' : employee.accessInfo.hasAccess ? (employee.accessInfo.accessStart | date) : '-'}}</td>
       <td class="hover-change">{{employee.boss ? 'Dauerhaft (Führungskraft)' : employee.accessInfo.hasAccess ? (employee.accessInfo.accessEnd | date) : '-'}}</td>
-      <td class="hover-change">{{employee.applications.count}}</td>
+      <td class="hover-change">{{employee.applications}}</td>
     </ng-container>
   </tr>
   <ng-container *ngIf="employee.boss && showEmployees.includes(employee.id)">

@@ -335,7 +335,7 @@ export class ExecutivesComponent implements OnInit {
         } else if (a.boss !== b.boss) {
           return a.boss ? 1 : -1;
         }
-        return a.applications.count - b.applications.count;
+        return a.applications - b.applications;
       });
     } else if (this.sortValue === 1) {
       toSort.sort((a: Employee, b: Employee) => {
@@ -344,7 +344,7 @@ export class ExecutivesComponent implements OnInit {
         } else if (a.boss !== b.boss) {
           return a.boss ? 1 : -1;
         }
-        return b.applications.count - a.applications.count;
+        return b.applications - a.applications;
       });
     }
 

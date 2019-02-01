@@ -19,7 +19,7 @@ export class EmployeeService {
   }
 
   getEmployeeWithId(userId: string) {
-    return this.http.get<Employee>(`${environment.resourceServer}/users/${userId}`);
+    return this.http.get<Employee>(`${environment.resourceServer}/users/${userId}?projection=withpicture`);
   }
 
   getApplicationsForEmployeesOfUser(userId: string) {
@@ -78,14 +78,8 @@ export interface Employee {
   picture: string;
   email: string;
   boss: boolean;
-  applications: {
-    count: number;
-    path: string;
-  };
-  bookmarks: {
-    count: number;
-    path: string;
-  };
+  applications: number;
+  bookmarks: number;
   accessInfo: EmployeeAccessInfo;
 }
 

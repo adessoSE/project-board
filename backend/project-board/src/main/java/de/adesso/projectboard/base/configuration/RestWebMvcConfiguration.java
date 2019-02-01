@@ -23,7 +23,8 @@ public class RestWebMvcConfiguration implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         // allow CORS on all paths
         registry.addMapping("/**")
-                .allowedOrigins("*");
+                .allowedOrigins("*")
+                .allowedMethods("GET", "POST", "DELETE");
     }
 
     @Override
