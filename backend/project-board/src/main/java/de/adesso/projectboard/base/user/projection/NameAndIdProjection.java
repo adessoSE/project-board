@@ -3,7 +3,10 @@ package de.adesso.projectboard.base.user.projection;
 import de.adesso.projectboard.base.projection.NamedProjection;
 import org.springframework.beans.factory.annotation.Value;
 
-@NamedProjection(target = UserProjectionSource.class)
+@NamedProjection(
+        target = UserProjectionSource.class,
+        name = "nameandid"
+)
 public interface NameAndIdProjection {
 
     @Value("#{target.user.id}")

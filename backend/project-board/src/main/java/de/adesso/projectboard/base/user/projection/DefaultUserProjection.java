@@ -35,7 +35,7 @@ public interface DefaultUserProjection extends NameAndIdProjection {
         @Value("#{@repositoryUserAccessService.userHasActiveAccessInterval(target.user)}")
         boolean getHasAccess();
 
-        @Value("#{@repositoryUserAccessService.userHasActiveAccessInterval(target.user) ? target.user.getLatestAccessInfo().get().startTime : null}")
+        @Value("#{@repositoryUserAccessService.userHasActiveAccessInterval(target.user) ? target.user.getLatestAccessInterval().get().startTime : null}")
         LocalDateTime getAccessStart();
 
         @Value("#{@repositoryUserAccessService.userHasActiveAccessInterval(target.user) ? target.user.getLatestAccessInterval().get().endTime : null}")
