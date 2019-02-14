@@ -8,4 +8,6 @@ public interface FullProjectProjection extends ReducedProjectProjection {
 
     String getTravelCostsCompensated();
 
+    Boolean getAttachment();
+
 }

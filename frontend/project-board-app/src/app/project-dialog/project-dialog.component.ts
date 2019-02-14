@@ -107,4 +107,8 @@ export class ProjectDialogComponent implements OnInit {
         this.dialogRef.close();
       });
   }
+
+  goToJira() {
+    window.open(`https://jira.adesso.de/browse/${this.data.project.id}`, 'blank');
+  }
 }

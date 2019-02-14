@@ -24,6 +24,16 @@
       Anfrage erstellen
     </div>
   </span>
+
+  <!-- pdf icon -->
+  <span *ngIf="!mobile && data.project.attachment && data.isUserBoss" id="attachment-icon-wrapper" (click)="goToJira()" [title]="jiraTooltip">
+    <mat-icon id="attachment-icon">
+      attach_file
+    </mat-icon>
+    <div id="attachment-text">
+      Anhang verfügbar
+    </div>
+  </span>
 </div>
 
 <h1 mat-dialog-title>Projekt-Details</h1>

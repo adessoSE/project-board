@@ -39,15 +39,15 @@ h1 {
 }
 
 #icon-placeholder {
+  min-height: 1px;
   width: 128px;
-  display: inline;
   float: left;
   @include media-breakpoint-down(md) {
     width: 64px;
   }
 }
 
-@each $item in 'bookmark' 'request' {
+@each $item in 'bookmark' 'request' 'attachment' {
   ##{$item}-icon {
     display: block;
     margin: 0 auto;
