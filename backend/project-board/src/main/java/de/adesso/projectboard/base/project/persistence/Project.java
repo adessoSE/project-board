@@ -113,7 +113,7 @@ public class Project {
     String other;
 
     @JsonAlias("customfield_10298")
-    String dayRate;
+    String dailyRate;
 
     @JsonDeserialize(using = ObjectValueDeserializer.class)
     @JsonAlias("customfield_10291")

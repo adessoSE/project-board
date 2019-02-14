@@ -4,7 +4,7 @@ public interface FullProjectProjection extends ReducedProjectProjection {
 
     String getFreelancer();
 
-    String getDayRate();
+    String getDailyRate();
 
     String getTravelCostsCompensated();
 

@@ -1,5 +1,6 @@
 package de.adesso.projectboard.reader;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -118,6 +119,7 @@ public class JiraProjectReader implements ProjectReader {
      *          When error occurs when deserializing the response body.
      */
     private List<Project> getProjectsByQuery(String jqlQuery) throws IOException {
+        String url = properties.getRequestUrl().replace("{fieldsQuery}", getFieldsQueryString());
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(properties.getRequestUrl(), String.class, jqlQuery);
 
         // parse the json in the response body
@@ -134,6 +136,33 @@ public class JiraProjectReader implements ProjectReader {
                 .map(JiraIssue::getProjectWithId)
                 .map(this::cutStrings)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * @return The part of the JQL query that determines which fields
+     * should be included in the response from Jira.
+     */
+    private String getFieldsQueryString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("fields=");
+        for (var f : Project.class.getDeclaredFields()) {
+            // exclude the fields 'origin' and 'id' from the query
+            if (f.getName().equals("origin")
+                    || f.getName().equals("id")) {
+                continue;
+            }
+            var annotation = f.getAnnotation(JsonAlias.class);
+            if (annotation != null) {
+                var array = annotation.value();
+                if (array.length > 0) {
+                    sb.append(String.format("%s,", array[0]));
+                }
+            } else {
+                sb.append(String.format("%s,", f.getName()));
+            }
+        }
+        sb.deleteCharAt(sb.lastIndexOf(","));
+        return sb.toString();
     }
 
     /**
