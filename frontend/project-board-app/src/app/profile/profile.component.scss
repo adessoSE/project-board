@@ -4,8 +4,8 @@
 
 .left-bar {
   box-shadow: 0 0 0.25rem rgba(0, 0, 0, .25);
-  padding: 0;
-  min-height: 75vh;
+  padding: 0 0 10px 0;
+  max-height: 487px;
   background-color: #FFF;
 }
 
@@ -130,50 +130,52 @@
 .remover {
   cursor: pointer;
   float: right;
-  height: 26px;
+  height: 32px;
+}
+
+.remover mat-icon {
+  vertical-align: text-top;
 }
 
 .icon-wrapper {
   display: inline-block;
   vertical-align: middle;
-  height: 32px;
 }
 
-.icon-wrapper mat-icon {
+.linking-icon-wrapper {
+  @extend .icon-wrapper;
+  height: 32px;
+  width: 32px;
+  cursor: pointer;
+}
+
+.linking-icon-wrapper mat-icon {
   height: 32px;
   width: 32px;
 }
 
-.linking-icon {
+.headline span {
+  margin-left: 0.5rem;
+  vertical-align: middle;
   display: inline-block;
-  vertical-align: bottom;
-  margin-right: 5px;
-  height: 32px;
-  cursor: pointer;
 }
 
-.linking-icon .material-icons {
+.linking-icon-wrapper .material-icons {
   font-size: 32px !important;
   color: #016EC7;
 }
 
-.linking-icon .material-icons:hover {
+.linking-icon-wrapper .material-icons:hover {
   color: #338bd2;
 }
 
 .mail-icon-wrapper {
-  display: inline-block;
+  @extend .icon-wrapper;
+  height: 32px;
 }
 
-.mail-icon {
-  vertical-align: text-bottom;
-}
-
-.project-title {
-  display: inline-block;
-  vertical-align: middle;
-  line-height: 32px;
-  font-size: 18px;
+.mail-icon-wrapper mat-icon {
+  vertical-align: text-top;
 }
 
 .inset {
@@ -183,6 +185,10 @@
 
 .application-details {
   margin-top: 10px;
+}
+
+.comment-display {
+  overflow-wrap: break-word;
 }
 
 .requester {
@@ -196,14 +202,15 @@
   overflow: hidden;
 }
 
+@include media-breakpoint-up(xl){
+  .left-bar {
+    height: 550px;
+  }
+}
+
 @include media-breakpoint-down(md) {
   .middle {
-    padding: 0 0 0 0;
-  }
-
-  .left-bar {
-    min-height: 50vh;
-    z-index: 3;
+    padding: 0 15px 0 15px;
   }
 
   .project-title {
@@ -215,16 +222,13 @@
 }
 
 @include media-breakpoint-down(sm) {
-
   .row {
-    
     padding: 0 10px 0 10px;
   }
 
   .left-bar {
     padding: 0 0 10px;
     margin-bottom: 10px;
-    min-height: 0;
     background-color: #FFF;
   }
 
@@ -240,7 +244,7 @@
     display: inline-block;
     padding: 5px 5px 10px;
   }
-  
+
   .nav-point.active {
     background-color: #FFF;
   }
@@ -248,4 +252,11 @@
   #profile-nav-content {
     margin: 0 0 10px;
   }
+}
+
+button:focus, button:active {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  outline: none;
 }

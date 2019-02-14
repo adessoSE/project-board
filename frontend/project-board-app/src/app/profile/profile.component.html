@@ -59,19 +59,17 @@
       <!-- bookmarks tab -->
       <ng-container *ngIf="tabIndex == 0">
         <div class="bookmark" *ngFor="let b of bookmarks; index as i" [ngClass]="{'border-bottom': i<bookmarks.length-1}">
-          <div class="icon-wrapper">
-            <div class="linking-icon" title="Öffnen" (click)="openDialog(b)">
+          <div class="headline">
+            <div class="linking-icon-wrapper" title="Öffnen" (click)="openDialog(b)">
               <mat-icon>open_in_new</mat-icon>
             </div>
-          </div>
-          <div class="remover" title="entfernen" (click)="removeBookmark(b.id)">
-            <mat-icon>clear</mat-icon>
-          </div>
-          <div class="project-title">
-            <div *ngIf="!isProjectApplicable(b.id)" class="mail-icon-wrapper">
-              <mat-icon title="bereits angefragt" class="mail-icon">email</mat-icon>
+            <div class="remover" title="entfernen" (click)="removeBookmark(b.id)">
+              <mat-icon>clear</mat-icon>
             </div>
-            {{b.title}}
+            <div *ngIf="!isProjectApplicable(b.id)" class="mail-icon-wrapper">
+              <mat-icon title="Bereits angefragt">email</mat-icon>
+            </div>
+            <span>{{b.title}}</span>
           </div>
         </div>
         <div class="inset" *ngIf="!bookmarks || bookmarks.length === 0">Du hast keine Lesezeichen.</div>
@@ -80,17 +78,23 @@
       <!-- applications tab -->
       <ng-container *ngIf="tabIndex == 1">
         <div class="application" *ngFor="let a of applications; index as i" [ngClass]="{'border-bottom': i<applications.length-1}">
-          <div class="icon-wrapper">
-            <div class="linking-icon" title="Öffnen" (click)="openDialog(a.project)">
+          <div class="headline">
+            <div class="linking-icon-wrapper" title="Öffnen" (click)="openDialog(a.project)">
               <mat-icon>open_in_new</mat-icon>
             </div>
+            <span class="project-title">{{a.project.title}}</span>
           </div>
-          <span class="project-title">{{a.project.title}}</span>
           <div class="application-details">
+            <div *ngIf="a.offered" id="offered">
+              <div class="icon-wrapper">
+                <mat-icon id="info-icon">info</mat-icon>
+              </div>
+              <span>Du wurdest für dieses Projekt angeboten.</span>
+            </div>
             <div class="font-weight-bold">Datum:</div>
             <div>{{a.date | date}}</div>
             <div class="font-weight-bold">Mein Kommentar:</div>
-            <div>{{a.comment}}</div>
+            <div class="comment-display">{{a.comment}}</div>
           </div>
         </div>
         <div class="inset" *ngIf="!applications || applications.length === 0">
@@ -101,18 +105,18 @@
       <!-- employee-applications tab-->
       <ng-container *ngIf="tabIndex == 2">
         <div class="employee-application" *ngFor="let a of employeeApplications; index as i" [ngClass]="{'border-bottom': i<employeeApplications.length-1}">
-          <div class="icon-wrapper">
+          <div class="linking-icon-wrapper">
             <div class="linking-icon" title="Öffnen" (click)="openDialog(a.project)">
               <mat-icon>open_in_new</mat-icon>
             </div>
           </div>
-          <span class="project-title">{{a.project.title}}</span>
+          <span class="project-title">{{a.project.title}}</span><br>
           <div class="application-details">
             <div class="requester">{{a.user.lastName}}, {{a.user.firstName}}</div>
             <div class="font-weight-bold">Datum:</div>
             <div>{{a.date | date}}</div>
             <div class="font-weight-bold">Kommentar:</div>
-            <div>{{a.comment}}</div>
+            <div class="comment-display">{{a.comment}}</div>
           </div>
         </div>
         <div class="inset" *ngIf="!loadingEmployeeApplications && (!employeeApplications || employeeApplications.length === 0)">
