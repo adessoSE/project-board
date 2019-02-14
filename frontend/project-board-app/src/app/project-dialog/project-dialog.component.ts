@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, OnInit, Output, HostListener } from '@angular/core';
+import { Component, EventEmitter, HostListener, Inject, OnInit, Output } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { NavigationStart, Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -20,10 +20,15 @@ export interface ProjectDialogData {
   styleUrls: ['./project-dialog.component.scss']
 })
 export class ProjectDialogComponent implements OnInit {
-  appTooltip = 'Du hast dieses Projekt bereits angefragt.';
-  bmAddTooltip = 'Lesezeichen hinzufügen.';
-  bmRemoveTooltip = 'Lesezeichen entfernen.';
-  closeTooltip = 'Dialog schließen.';
+  appTooltip = 'Du hast dieses Projekt bereits angefragt';
+  bmAddTooltip = 'Lesezeichen hinzufügen';
+  bmRemoveTooltip = 'Lesezeichen entfernen';
+  closeTooltip = 'Dialog schließen';
+  jiraTooltip = 'Zum Jira-Projekt';
+  startRequestTooltip = 'Projektanfrage erstellen';
+  abortRequestTooltip = 'Projektanfrage abbrechen';
+  sendRequestTooltip = 'Projektanfrage absenden';
+
   mobile: boolean;
   @Output() bookmark = new EventEmitter();
   @Output() application = new EventEmitter<Application>();
