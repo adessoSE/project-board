@@ -12,14 +12,16 @@ h1 {
 
 #close-icon {
   float: right;
+  margin-top: -7px;
+  margin-right: -5px;
   cursor: pointer;
   color: #887D75;
 }
 
 mat-dialog-actions {
-  // 80px header + 650px content = 730px
   margin: 0 -24px -24px -24px;
   padding: 8px 24px 8px 24px;
+  height: 90px;
 }
 
 mat-dialog-content {
@@ -27,10 +29,6 @@ mat-dialog-content {
   padding-top: 5px;
   padding-bottom: 5px;
   background-color: #FFF;
-}
-
-mat-dialog-actions {
-  max-height: 90px;
 }
 
 h1 {
@@ -50,6 +48,80 @@ h4 {
 
 .greyed-out {
   color: lightgrey;
+}
+
+//
+
+#bottom-actions /deep/ .mat-form-field-wrapper {
+  padding-bottom: 0rem !important;
+}
+
+#bottom-actions /deep/ .mat-form-field-infix {
+  padding: 0.5rem 0 0.5rem 0 !important;
+}
+
+#bottom-actions /deep/ .mat-form-field-outline-gap {
+  border-bottom-color: #ced4da;
+}
+
+#bottom-actions /deep/ .mat-select-value {
+  color: #887D75 !important;
+}
+
+/deep/ .mat-input-element {
+  color: #887D75 !important;
+}
+
+/deep/ .mat-form-field-label {
+  font-size: 18px !important;
+  color:  #887D75 !important;
+}
+
+/deep/ .mat-form-field-flex:hover /deep/ .mat-form-field-outline-gap {
+  border-bottom-color: #ced4da;
+}
+
+/deep/ .mat-form-field-flex:hover /deep/ .mat-form-field-outline-thick /deep/ .mat-form-field-outline-gap {
+  border-bottom-color: #ced4da;
+}
+
+#bottom-actions /deep/ .mat-form-field-outline-start,
+#bottom-actions /deep/ .mat-form-field-outline-end {
+    border-radius: 0px !important;
+    border-color: #ced4da !important;
+}
+
+#bottom-actions /deep/ .mat-form-field-outline-start .mat-focused,
+#bottom-actions /deep/ .mat-form-field-outline-end .mat-focused {
+    border-radius: 0px !important;
+    border-color: #ced4da !important;
+}
+
+button:focus, button:active {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  outline: none;
+}
+
+img {
+  width: 80px;
+}
+
+#image-wrapper {
+  margin-top: 12px;
+  width: 160px;
+  height: 96px;
+  float: left;
+  background: white url("../../assets/profileborder.png") no-repeat center bottom;
+  background-size: contain;
+  padding: 8px 40px;
+}
+
+.details {
+  @include media-breakpoint-up(md) {
+    margin-left: 160px;
+  }
 }
 
 .details p {
@@ -89,6 +161,10 @@ h4 {
   text-decoration: underline;
 }
 
+.col {
+  padding: 0;
+}
+
 @include media-breakpoint-down(sm) {
   .sticky {
     top: 0;
@@ -97,6 +173,29 @@ h4 {
 
   .inset {
     padding-left: 0;
+  }
+
+  .large-text {
+    display: none;
+  }
+
+  .col-4::first-letter  {
+    text-transform: uppercase;
+  }
+}
+
+@include media-breakpoint-down(xs) {
+  #image-wrapper {
+    float: none;
+    display: block;
+    margin: 0 auto;
+    width: 200px;
+    height: 120px;
+    padding: 8px 48px;
+  }
+
+  #image-wrapper img {
+    width: 104px;
   }
 }
 
@@ -134,6 +233,10 @@ h4 {
   color: #016EC7;
 }
 
+.btn-group {
+  margin-bottom: 7px;
+}
+
 @include media-breakpoint-up(lg) {
   .btn-group > .btn {
     margin: 0 0 0 1rem;
@@ -149,6 +252,10 @@ h4 {
     text-overflow: ellipsis;
     white-space: nowrap;
     margin-left: 1rem;
+  }
+
+  .btn-group {
+    padding-top: 5px;
   }
 
   .width {
@@ -176,56 +283,16 @@ h4 {
     width: 100%;
   }
 
-  #test {
-    margin: 0 auto;
-  }
-
   #durationSelect {
     margin: 0 auto 1rem;
     display: block;
   }
 
   mat-dialog-content {
-    max-height: calc(100vh - 224px);
+    max-height: calc(100vh - 195px);
   }
 
   mat-dialog-actions {
-    max-height: 124px;
-  }
-}
-
-button:focus, button:active {
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-  outline: none;
-}
-
-img {
-  width: 80px;
-}
-
-#image-wrapper {
-  display: inline;
-  width: 160px;
-  height: 96px;
-  float: left;
-  background: white url("../../assets/profileborder.png") no-repeat center bottom;
-  background-size: contain;
-  padding: 8px 40px;
-}
-
-@include media-breakpoint-down(md) {
-  #image-wrapper {
-    float: none;
-    display: block;
-    margin: 0 auto;
-    width: 200px;
-    height: 120px;
-    padding: 8px 48px;
-  }
-
-  #image-wrapper img {
-    width: 104px;
+    height: 115px
   }
 }

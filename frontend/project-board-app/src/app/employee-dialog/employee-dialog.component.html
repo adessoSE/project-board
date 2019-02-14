@@ -1,49 +1,54 @@
 <span id="close-icon-wrapper">
-  <mat-icon id="close-icon" title="{{closeTooltip}}" (click)="dialogRef.close()">close</mat-icon>
+  <button mat-icon-button id="close-icon" title="{{closeTooltip}}" (click)="dialogRef.close()"><mat-icon>close</mat-icon></button>
 </span>
 
-<h1 mat-dialog-title>
-  {{data.employee.firstName + ' ' + data.employee.lastName}}</h1>
-<mat-dialog-content>
-  <div *ngIf="data.employee" class="details pb-2 border-bottom">
+<h1 mat-dialog-title style="margin-left: 20px">{{data.employee.firstName + ' ' + data.employee.lastName}}</h1>
 
-    <!--  User Info  -->
+<mat-dialog-content>
+  <div class="pb-2 border-bottom">
     <div id="image-wrapper">
       <img *ngIf="data.employee.picture" src="data:image/gif;base64,{{data.employee.picture}}">
       <img *ngIf="!data.employee.picture" src="../../assets/avatar.png">
     </div>
-    <div class="inset">
-      <div class="row">
-        <div class="col-4">Status:</div>
-        <div class="col right">{{data.employee.accessInfo.hasAccess || data.employee.boss ? 'Freigeschaltet' : 'Nicht freigeschaltet'}}</div>
-        <br>
-      </div>
-      <div [ngClass]="{'row': true, 'greyed-out': !data.employee.accessInfo.hasAccess && !data.employee.boss}" *ngIf="!data.employee.boss">
-        <div class="col-4">Freigeschaltet seit:</div>
-        <div class="col right">
-          {{data.employee.accessInfo.hasAccess ? (data.employee.accessInfo.accessStart | date) : '-'}}
-          <ng-container *ngIf="data.employee.accessInfo.hasAccess">
-            <small *ngIf="daysAlready == 0">(heute)</small>
-            <small *ngIf="daysAlready > 0">(bereits {{daysAlready}} Tag{{daysAlready > 1 ? 'e' : ''}})</small>
-          </ng-container>
+    <div *ngIf="data.employee" class="details">
+      <!--  User Info  -->
+      <div class="inset">
+        <div class="row">
+          <div class="col-4">Status:</div>
+          <div class="col right">{{data.employee.accessInfo.hasAccess || data.employee.boss ? 'Freigeschaltet' : 'Nicht freigeschaltet'}}</div>
+          <br>
         </div>
-      </div>
-      <div [ngClass]="{'row': true, 'greyed-out': !data.employee.accessInfo.hasAccess && !data.employee.boss}">
-        <div class="col-4">Freigeschaltet bis:</div>
+        <div [ngClass]="{'row': true, 'greyed-out': !data.employee.accessInfo.hasAccess && !data.employee.boss}" *ngIf="!data.employee.boss">
+          <div class="col-4"><span class="large-text">Freigeschaltet </span>seit:</div>
+          <div class="col right">
+            {{data.employee.accessInfo.hasAccess ? (data.employee.accessInfo.accessStart | date) : '-'}}
+            <ng-container *ngIf="data.employee.accessInfo.hasAccess">
+              <small *ngIf="daysAlready == 0">(heute)</small>
+              <small *ngIf="daysAlready > 0">(bereits {{daysAlready}} Tag{{daysAlready > 1 ? 'e' : ''}})</small>
+            </ng-container>
+          </div>
+        </div>
+        <div [ngClass]="{'row': true, 'greyed-out': !data.employee.accessInfo.hasAccess && !data.employee.boss}">
+          <div class="col-4"><span class="large-text">Freigeschaltet </span>bis:</div>
 
-        <!-- Differentiate between boss and normal user for readability -->
-        <div class="col right" *ngIf="data.employee.boss">Dauerhaft (Führungskraft)</div>
-        <div class="col right" *ngIf="!data.employee.boss">
-          {{data.employee.accessInfo.hasAccess ? (data.employee.accessInfo.accessEnd | date) : '-'}}
-          <ng-container *ngIf="data.employee.accessInfo.hasAccess">
-            <small *ngIf="daysLeft == 0">(heute)</small>
-            <small *ngIf="daysLeft > 0">(noch {{daysLeft}} Tag{{daysLeft > 1 ? 'e' : ''}})</small>
-          </ng-container>
+          <!-- Differentiate between boss and normal user for readability -->
+          <div class="col right" *ngIf="data.employee.boss">Dauerhaft (Führungskraft)</div>
+          <div class="col right" *ngIf="!data.employee.boss">
+            {{data.employee.accessInfo.hasAccess ? (data.employee.accessInfo.accessEnd | date) : '-'}}
+            <ng-container *ngIf="data.employee.accessInfo.hasAccess">
+              <small *ngIf="daysLeft == 0">(heute)</small>
+              <small *ngIf="daysLeft > 0">(noch {{daysLeft}} Tag{{daysLeft > 1 ? 'e' : ''}})</small>
+            </ng-container>
+          </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="col-4">Email:</div>
-        <div class="col right">{{data.employee.email}}</div>
+        <div class="row">
+          <div class="col-4">Email:</div>
+          <div class="col right">{{data.employee.email}}</div>
+        </div>
+        <div class="row">
+          <div class="col-4">Anfragen:</div>
+          <div class="col right">{{applications.length}}</div>
+        </div>
       </div>
     </div>
   </div>
@@ -57,7 +62,7 @@
       </div>
       <div>{{a.project.title}}</div>
       <div class="application-details">
-        <span class="requester">{{a.user.lastName + ', ' + a.user.firstName}}</span>
+        <!--<span class="requester">{{a.user.lastName + ', ' + a.user.firstName}}</span>-->
         <span>Datum: {{a.date | date}}</span>
         <span>Kommentar:</span>
         <span>{{a.comment}}</span>
@@ -71,8 +76,8 @@
 <mat-dialog-actions align="end">
   <div class="pt-1 full-width">
     <div *ngIf="!data.employee.boss">
-      <div class="text-center" id="test">
-        <mat-form-field style="display: inline-block;">
+      <div class="text-center" id="bottom-actions">
+        <mat-form-field style="display: inline-block;" appearance="outline">
           <mat-label>{{datepickerControl.errors ? 'Unzulässiges Datum' : 'Enddatum der Freischaltung'}}</mat-label>
           <input matInput [min]="minDate" [max]="maxDate" [matDatepicker]="datepicker" [formControl]="datepickerControl">
           <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
