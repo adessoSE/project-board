@@ -1,11 +1,10 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { from } from 'rxjs';
 
 @Injectable()
 export class AuthenticationService {
-  constructor(private http: HttpClient, private oAuthService: OAuthService) {
+  constructor(private oAuthService: OAuthService) {
   }
 
   login(username: string, password: string) {
@@ -48,14 +47,15 @@ export class AuthenticationService {
     if (this.hasUserRole('admin')) {
       return true;
     }
+  }
 
+  get isBoss() {
     // check if the "directReports" claim is present
-    // if so, the user is a admin
+    // if so, the user is a boss
     const claims: any = this.oAuthService.getIdentityClaims();
     if (!claims) {
       return false;
     }
-
     return claims.directReports != null;
   }
 }

@@ -143,7 +143,7 @@ table thead td {
 
 @include media-breakpoint-down(md) {
   tbody tr:nth-child(2n) {
-    background-color: #F3F3F3;
+    background-color: #ececec;
   }
 
   table#result-table > tbody > tr > th {

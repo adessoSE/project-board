@@ -13,6 +13,6 @@ export class EmployeeResolverService implements Resolve<Employee[]> {
               private authenticationService: AuthenticationService) { }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Employee[]> {
-    return this.employeeService.getEmployeesForSuperUser(this.authenticationService.username);
+    return this.employeeService.getEmployeesWithoutPicturesForSuperUser(this.authenticationService.username);
   }
 }

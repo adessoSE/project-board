@@ -11,7 +11,7 @@
   height: 85px;
   padding: 12px 15px;
   color: #016EC7;
-  background: linear-gradient(-45deg,transparent 18px,#F3F3F3 0) bottom right!important;
+  background: linear-gradient(-45deg, transparent 18px, #F3F3F3 0) bottom right !important;
 }
 
 .custom-navbar {
@@ -25,7 +25,7 @@
   height: 60px;
 }
 
-#navbarContent{
+#navbarContent {
   display: block;
   padding-left: 340px;
 }
@@ -70,7 +70,16 @@
   color: #887D75;
 }
 
-.navbar-icon{
+.nav-link.disabled,
+.nav-link.disabled:hover,
+.nav-link.disabled:hover mat-icon {
+  color: lightgrey !important;
+  cursor: default !important;
+  background-color: transparent !important;
+  border-bottom-color: lightgrey !important;
+}
+
+.navbar-icon {
   display: block;
   margin: 0 auto;
 }
@@ -135,6 +144,11 @@
   cursor: pointer;
 }
 
+#mini-nav-content mat-icon:last-of-type,
+#mini-nav-content mat-icon:first-of-type {
+  border-top: 1px dotted lightgrey;
+}
+
 #mini-nav-content mat-icon:hover {
   color: #016EC7;
 }
@@ -145,6 +159,12 @@
 
 #mini-nav-content mat-icon.active-mini-link:hover {
   color: #EF8200;
+}
+
+#mini-nav-content mat-icon.disabled,
+#mini-nav-content mat-icon.disabled:hover {
+  color: lightgrey !important;
+  cursor: default !important;
 }
 
 @include media-breakpoint-up(md) {
@@ -209,7 +229,7 @@
     display: none;
   }
 
-  .side-link{
+  .side-link {
     box-sizing: border-box;
     color: #887D75 !important;
     padding: 20px 10px 10px;
@@ -226,13 +246,25 @@
     outline: 0 !important;
   }
 
+  .side-link:hover {
+    border-left-color: #016EC7;
+    cursor: pointer;
+  }
+
   .side-link.active-link {
     border-left: 3px solid #EF8200;
     background-color: #FFF;
     color: #887D75;
   }
 
-  .side-field{
+  .side-link.disabled {
+    color: lightgrey !important;
+    cursor: default !important;
+    border-left-color: #bbb2ac;
+
+  }
+
+  .side-field {
     box-sizing: border-box;
     padding: 20px 10px 10px;
     min-width: 101px;
@@ -255,7 +287,7 @@
     border-bottom: 1px solid lightgrey;
   }
 
-  .nav-icon{
+  .nav-icon {
     margin-left: 20px;
     margin-right: 10px;
     float: left;

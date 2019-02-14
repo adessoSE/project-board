@@ -3,11 +3,11 @@ import { MatSidenav } from '@angular/material';
 import { faChevronUp } from '@fortawesome/free-solid-svg-icons/faChevronUp';
 import { AuthConfig, JwksValidationHandler, OAuthService } from 'angular-oauth2-oidc';
 import * as $ from 'jquery';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { environment } from '../environments/environment';
-import { AlertService } from './_services/alert.service';
 import { AuthenticationService } from './_services/authentication.service';
 import { EmployeeService } from './_services/employee.service';
-import { style } from '@angular/animations';
 
 @Component({
   selector: 'app-root',
@@ -17,31 +17,50 @@ import { style } from '@angular/animations';
 export class AppComponent implements OnInit, DoCheck {
   faChevronUp = faChevronUp;
   username = 'default';
+  boss: boolean;
+  hasAccess = false;
+  noAccessTooltip = 'Du bist nicht für das Project-Board freigeschaltet.';
+
+  destroy$ = new Subject();
   @ViewChild('snav') sidenav: MatSidenav;
 
-  constructor(private oAuthService: OAuthService,
-              private authenticationService: AuthenticationService,
+  constructor(private authenticationService: AuthenticationService,
               private employeeService: EmployeeService,
-              private alertService: AlertService) {
-    this.configureWithNewConfigApi();
-  }
+              private oAuthService: OAuthService
+  ) { this.configureWithNewConfigApi(); }
 
   private configureWithNewConfigApi() {
     this.oAuthService.configure(authConfig);
     this.oAuthService.tokenValidationHandler = new JwksValidationHandler();
     this.oAuthService.setupAutomaticSilentRefresh();
-    this.oAuthService.loadDiscoveryDocumentAndLogin();
+    this.oAuthService.loadDiscoveryDocumentAndLogin().then(loggedIn => {
+      if (loggedIn) {
+        if (this.isBoss) {
+          this.hasAccess = true;
+          return;
+        }
+        this.employeeService.hasUserAccess(this.authenticationService.username)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe(response => this.hasAccess = response.hasAccess);
+      }
+    });
+  }
+
+  ngOnInit() {
+    this.sidenav.openedStart.subscribe(() => this.onNavOpen());
+    this.sidenav.closedStart.subscribe(() => this.onNavClosed());
+    this.miniNavVisibility();
+    this.mainNavPosition();
   }
 
   /* Sidenav responsive */
 
-  NavToggle() {
-
-      if (this.sidenav.opened) {
-        this.sidenav.close();
-      } else {
-        this.sidenav.open();
-      }
+  toggleNav() {
+    if (this.sidenav.opened) {
+      this.sidenav.close();
+    } else {
+      this.sidenav.open();
+    }
   }
 
   openNav() {
@@ -78,31 +97,24 @@ export class AppComponent implements OnInit, DoCheck {
     this.mainNavPosition();
   }
 
-  miniNavVisibility(){
+  miniNavVisibility() {
     if (/Mobi/.test(navigator.userAgent) || (window.innerWidth < 992)) {
-      document.getElementById("mini-nav").style.display = "none";
+      document.getElementById('mini-nav').style.display = 'none';
     } else {
-      document.getElementById("mini-nav").style.display = "block";
+      document.getElementById('mini-nav').style.display = 'block';
     }
   }
 
   mainNavPosition() {
-    if (!(/Mobi/.test(navigator.userAgent) || (window.innerWidth < 992))){
-      document.getElementById("main-nav").style.position = "relative";
+    if (!(/Mobi/.test(navigator.userAgent) || (window.innerWidth < 992))) {
+      document.getElementById('main-nav').style.position = 'relative';
     } else {
-      document.getElementById("main-nav").style.position = "sticky";
+      document.getElementById('main-nav').style.position = 'sticky';
     }
   }
 
   getUsername() {
     return this.authenticationService.username;
-  }
-
-  ngOnInit() {
-    this.sidenav.openedStart.subscribe(() => this.onNavOpen());
-    this.sidenav.closedStart.subscribe(() => this.onNavClosed());
-    this.miniNavVisibility();
-    this.mainNavPosition(); 
   }
 
   ngDoCheck() {
@@ -119,35 +131,30 @@ export class AppComponent implements OnInit, DoCheck {
     return this.oAuthService.hasValidAccessToken();
   }
 
-  get isAdmin() {
-    return this.authenticationService.isAdmin;
-  }
-
   get isBoss() {
-    return this.employeeService.isUserBoss(this.authenticationService.username);
+    return this.authenticationService.isBoss;
   }
 
-  @HostListener('window:scroll') onScroll() {
-
-    //Toggle for the mini-menu
-
-      if (document.documentElement.scrollTop > 340) {  
-        if((document.getElementById('mini-nav').offsetLeft === -45) && !($("#mini-nav").is(':animated'))){
-        $("#mini-nav").animate({left: '0px'}, function() {
-          if(document.documentElement.scrollTop <= 340) {
-            $("#mini-nav").animate({left: '-45px'});
+  @HostListener('window:scroll')
+  onScroll() {
+    // Toggle for the mini-menu
+    if (document.documentElement.scrollTop > 340) {
+      if ((document.getElementById('mini-nav').offsetLeft === -45) && !($('#mini-nav').is(':animated'))) {
+        $('#mini-nav').animate({left: '0px'}, function () {
+          if (document.documentElement.scrollTop <= 340) {
+            $('#mini-nav').animate({left: '-45px'});
           }
         });
-        }
-      } else {
-        if((document.getElementById('mini-nav').offsetLeft === 0) && !($("#mini-nav").is(':animated'))){
-        $("#mini-nav").animate({left: '-45px'}, function() {
-          if(document.documentElement.scrollTop > 340) {
-          $("#mini-nav").animate({left: '0px'});
-          }
-        });
-        }
       }
+    } else {
+      if ((document.getElementById('mini-nav').offsetLeft === 0) && !($('#mini-nav').is(':animated'))) {
+        $('#mini-nav').animate({left: '-45px'}, function () {
+          if (document.documentElement.scrollTop > 340) {
+            $('#mini-nav').animate({left: '0px'});
+          }
+        });
+      }
+    }
 
     if (/Mobi/.test(navigator.userAgent)) {
       // mobile!
@@ -178,7 +185,7 @@ export const authConfig: AuthConfig = {
 
   // set the scope for the permissions the client should request
   // The first three are defined by OIDC. The 4th is a usecase-specific one
-  scope: 'openid profile email',
+  scope: 'openid profile email directReports',
   oidc: true
 
   // requireHttps: false,

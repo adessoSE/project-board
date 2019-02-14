@@ -5,7 +5,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import * as $ from 'jquery';
 import { combineLatest, Subject } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
+import { AuthenticationService } from '../_services/authentication.service';
 import { Employee, EmployeeService } from '../_services/employee.service';
 import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
 
@@ -31,7 +32,8 @@ export class ExecutivesComponent implements OnInit {
 
   destroy$ = new Subject<void>();
 
-  constructor(private employeeService: EmployeeService,
+  constructor(private authService: AuthenticationService,
+              private employeeService: EmployeeService,
               private matIconRegistry: MatIconRegistry,
               private domSanitizer: DomSanitizer,
               private route: ActivatedRoute,
@@ -83,16 +85,14 @@ export class ExecutivesComponent implements OnInit {
           this.openDialog(this.selectedEmployee);
         }
       });
-    for (const e of this.employees) {
-      // TODO: change the picture load process to the new projection way, when the backend is ready
-      this.employeeService.getEmployeeWithId(e.id)
-        .pipe(takeUntil(this.destroy$), map(employee => employee.picture))
-        .subscribe(pic => e.picture = pic);
-      // if the employee is a boss, preload the embedded employees
-      if (e.boss) {
-        this.loadEmbeddedEmployees(e);
-      }
-    }
+    // lazy load pictures for employees
+    this.employeeService.getEmployeePicturesForSuperUser(this.authService.username)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(pictures => {
+        for (const e of this.employees) {
+          e.picture = pictures.find(emp => emp.id === e.id).picture;
+        }
+      });
   }
 
   private setSelectedEmployee(employeeId) {
@@ -373,33 +373,35 @@ export class ExecutivesComponent implements OnInit {
   }
 
   loadEmbeddedEmployees(boss: Employee) {
-    // TODO: change the picture load process to the new projection way, when the backend is ready
     if (!this.employeeMap.has(boss.id)) {
       // load all employees
-      this.employeeService.getEmployeesForSuperUser(boss.id)
+      this.employeeService.getEmployeesWithoutPicturesForSuperUser(boss.id)
         .pipe(takeUntil(this.destroy$))
         .subscribe(employees => {
+          employees = employees.map(emp => {
+            emp.duration = this.daysUntil(new Date(emp.accessInfo.accessEnd));
+            return emp;
+          });
+          employees.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
           // initialise the map entry
-          this.employeeMap.set(boss.id, []);
+          this.employeeMap.set(boss.id, employees);
+
           // reload employees by id to get the images
-          for (const e of employees) {
-            this.employeeService.getEmployeeWithId(e.id)
-              .pipe(takeUntil(this.destroy$))
-              .subscribe(emp => {
-                // set the duration attribute to display on the badge
-                emp.duration = this.daysUntil(new Date(emp.accessInfo.accessEnd));
-                // push each employee into the list and reset the map entry
-                const list = this.employeeMap.get(boss.id);
-                list.push(emp);
-                list.sort((a, b) => a.lastName >= b.lastName ? 1 : -1);
-                this.employeeMap.set(boss.id, list);
-              });
-          }
+          this.employeeService.getEmployeePicturesForSuperUser(boss.id)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(pictures => {
+              for (const e of employees) {
+                e.picture = pictures.find(emp => emp.id === e.id).picture;
+              }
+              this.employeeMap.set(boss.id, employees);
+            });
         });
     }
   }
 
-  @HostListener('window:scroll') onScroll() {
+
+  @HostListener('window:scroll')
+  onScroll() {
     if (!this.mobile) {
       if (((document.getElementById('total-hits').offsetTop - window.scrollY + 60) === 0) && this.toggle) {
         $('#result-table > thead th').css('-webkit-box-shadow', 'inset 0 -1px 1px -1px rgba(128,128,128, 0.6)');

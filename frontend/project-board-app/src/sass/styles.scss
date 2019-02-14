@@ -2,11 +2,13 @@
 // For more information: https://material.angular.io/guide/theming
 @import '~@angular/material/theming';
 // Plus imports for other components in your app.
-
+$custom-typography: mat-typography-config(
+  $font-family: 'Klavika-regular, Helvetica Neue, Helvetica, Arial, sans-serif'
+);
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
-@include mat-core();
+@include mat-core($custom-typography);
 
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
@@ -37,7 +39,7 @@ $project-board-app-theme: mat-light-theme($project-board-app-primary, $project-b
 .container {
   max-width: 100%;
   min-height: calc(100vh - 60px); // the navbar is 60px high
-  background-image: linear-gradient(rgb(255, 255, 255) 0px, rgb(238, 238, 238) 100%);
+  background-image: linear-gradient(rgb(255, 255, 255) 0%, rgb(238, 238, 238) 100%);
 }
 
 .mat-drawer-content {

@@ -13,17 +13,26 @@ export class AccessGuard implements CanActivate {
   constructor(private authenticationService: AuthenticationService,
               private employeeService: EmployeeService,
               private alertService: AlertService,
-              private router: Router) {}
+              private router: Router
+  ) {}
 
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-    return this.employeeService.getEmployeeWithId(this.authenticationService.username).pipe(map(user => {
-      if (!user.accessInfo.hasAccess && !user.boss) { // admin has access too
-        this.alertService.info('Du bist nicht für das Project Board freigeschaltet.', true);
-        this.router.navigate(['/profile']);
-      }
+    const userId = this.authenticationService.username;
+    if (this.authenticationService.isBoss) {
       return true;
-    }));
+    }
+    return this.employeeService.hasUserAccess(userId)
+      .pipe(
+        map((hasAccess) => {
+          if (!hasAccess.hasAccess) {
+            this.alertService.info('Du bist nicht für das Project Board freigeschaltet.', true);
+            this.router.navigate(['/profile']);
+            return false;
+          }
+          return true;
+        })
+      );
   }
 }

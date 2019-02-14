@@ -1,6 +1,5 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { Project } from './project.service';
 
@@ -9,17 +8,28 @@ export class EmployeeService {
 
   constructor(private http: HttpClient) {}
 
-  isUserBoss(userId: string) {
-    return this.getEmployeeWithId(userId)
-      .pipe(map(empl => empl.boss));
+  hasUserAccess(userId: string) {
+    return this.http.get<{ id: string, hasAccess: boolean }>(`${environment.resourceServer}/users/${userId}?projection=hasAccess`);
   }
 
-  getEmployeesForSuperUser(superUserId: string) {
+  getEmployeesWithoutPicturesForSuperUser(superUserId: string) {
     return this.http.get<Employee[]>(`${environment.resourceServer}/users/${superUserId}/staff`);
   }
 
-  getEmployeeWithId(userId: string) {
+  getEmployeePicturesForSuperUser(superUserId: string) {
+    return this.http.get<Employee[]>(`${environment.resourceServer}/users/${superUserId}/staff?projection=pictureonly`);
+  }
+
+  getFullEmployeeForId(userId: string) {
     return this.http.get<Employee>(`${environment.resourceServer}/users/${userId}?projection=withpicture`);
+  }
+
+  getEmployeeWithoutPictureForId(userId: string) {
+    return this.http.get<Employee>(`${environment.resourceServer}/users/${userId}`);
+  }
+
+  getEmployeePictureForId(userId: string) {
+    return this.http.get<Employee>(`${environment.resourceServer}/users/${userId}?projection=pictureonly`);
   }
 
   getApplicationsForEmployeesOfUser(userId: string) {
@@ -58,7 +68,10 @@ export class EmployeeService {
   }
 
   addBookmark(userId: string, projectId: string) {
-    return this.http.post<Project>(`${environment.resourceServer}/users/${userId}/bookmarks`, {projectId});
+    const body = {
+      'projectId': projectId
+    };
+    return this.http.post<Project>(`${environment.resourceServer}/users/${userId}/bookmarks`, body);
   }
 
   removeBookmark(userId: string, projectId: string) {

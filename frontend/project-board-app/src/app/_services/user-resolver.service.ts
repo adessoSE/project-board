@@ -13,6 +13,6 @@ export class UserResolverService implements Resolve<Employee> {
               private authenticationService: AuthenticationService) { }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Employee> {
-    return this.employeeService.getEmployeeWithId(this.authenticationService.username);
+    return this.employeeService.getFullEmployeeForId(this.authenticationService.username);
   }
 }

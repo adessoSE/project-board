@@ -80,7 +80,7 @@ export class ProfileComponent implements OnInit {
   }
 
   getEmployees() {
-    this.employeeService.getEmployeesForSuperUser(this.user.id)
+    this.employeeService.getEmployeesWithoutPicturesForSuperUser(this.user.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe(employees => this.employees = employees);
   }
