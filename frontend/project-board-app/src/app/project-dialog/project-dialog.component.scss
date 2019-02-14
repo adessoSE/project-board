@@ -27,7 +27,7 @@ h1 {
   margin: -24px -24px 0 -24px;
   padding: 24px 152px 24px 24px;
   @include media-breakpoint-down(md) {
-    padding-right: 88px; 
+    padding-right: 88px;
   }
 }
 
@@ -38,98 +38,68 @@ h1 {
   margin-right: 0.5rem;
 }
 
-#bookmark-icon {
-  display: block;
-  margin: 0 auto;
-  font-size: 30px;
-}
-
-#bookmark-icon.mat-icon.material-icons {
-  height: 30px;
-  width: 30px;
-}
-
-#bookmark-text {
-  font-size: 12px;
-  line-height: 100%;
-}
-
-#bookmark-icon-wrapper-placeholder {
+#icon-placeholder {
+  width: 128px;
+  display: inline;
   float: left;
-  width: 64px;
-  height: 60px;
-  margin-top: -10px;
-}
-
-#bookmark-icon-wrapper {
-  float: left;
-  width: 64px;
-  height: 60px;
-  margin-top: -10px;
-  cursor: pointer;
-  text-align: center;
-
-  color: grey;
-  &.active {
-    color: #016EC7;
+  @include media-breakpoint-down(md) {
+    width: 64px;
   }
 }
 
-#bookmark-icon-wrapper:hover #bookmark-icon {
-  color: darken(grey, 10);
-}
+@each $item in 'bookmark' 'request' {
+  ##{$item}-icon {
+    display: block;
+    margin: 0 auto;
+    font-size: 30px;
+  }
 
-#bookmark-icon-wrapper.active:hover #bookmark-icon {
-  color: darken(#016EC7, 10);
-}
+  ##{$item}-icon.mat-icon.material-icons {
+    height: 30px;
+    width: 30px;
+  }
 
-#bookmark-icon-wrapper:hover #bookmark-text {
-  color: darken(grey, 10);
-}
+  ##{$item}-text {
+    font-size: 12px;
+    line-height: 100%;
+  }
 
-#bookmark-icon-wrapper.active:hover #bookmark-text {
-  color: darken(#016EC7, 10);
-}
+  ##{$item}-icon-wrapper-placeholder {
+    float: left;
+    width: 64px;
+    height: 60px;
+    margin-top: -10px;
+  }
 
-#request-icon {
-  display: block;
-  margin: 0 auto;
-  font-size: 30px;
-}
+  ##{$item}-icon-wrapper {
+    float: left;
+    width: 64px;
+    height: 60px;
+    margin-top: -10px;
+    cursor: pointer;
+    text-align: center;
 
-#request-icon.mat-icon.material-icons {
-  height: 30px;
-  width: 30px;
-}
+    color: grey;
+    &.active {
+      color: #016EC7;
+    }
+  }
 
-#request-text {
-  font-size: 12px;
-  line-height: 100%;
-}
+  ##{$item}-icon-wrapper:hover ##{$item}-icon {
+    color: darken(grey, 10);
+  }
 
-#request-icon-wrapper-placeholder {
-  float: left;
-  width: 64px;
-  height: 60px;
-  margin-top: -10px;
-}
+  ##{$item}-icon-wrapper.active:hover ##{$item}-icon {
+    color: darken(#016EC7, 10);
+  }
 
-#request-icon-wrapper {
-  float: left;
-  width: 64px;
-  height: 60px;
-  margin-top: -10px;
-  cursor: pointer;
-  text-align: center;
-  color: grey;
-}
+  ##{$item}-icon-wrapper:hover ##{$item}-text {
+    color: darken(grey, 10);
+  }
 
-#request-icon-wrapper:hover #request-icon {
-  color: darken(grey, 10);
-}
-
-#request-icon-wrapper:hover #request-text {
-  color: darken(grey, 10);
+  ##{$item}-icon-wrapper.active:hover ##{$item}-text {
+    color: darken(#016EC7, 10);
+  }
 }
 
 #close-icon-wrapper :hover, #close-icon-wrapper #close-icon :hover {
@@ -163,6 +133,17 @@ h1 {
 
 .comment-label {
   font-weight: bold;
+  padding-left: 120px;
+}
+
+#chars-left {
+  float: right;
+  font-size: 12px;
+  padding-top: 4px;
+  height: 24px;
+  width: 120px;
+  text-align: right;
+  margin-bottom: 0.5rem;
 }
 
 .comment-textarea {
@@ -201,16 +182,16 @@ a:hover {
   color: #016EC7;
 }
 
-#buttonBox mat-icon{ 
+#buttonBox mat-icon {
   float: left;
   margin-right: 5px;
 }
 
 @include media-breakpoint-down(md) {
 
- /* mat-dialog-actions {
-    min-height: calc(100vh - 730px);
-  } */
+  /* mat-dialog-actions {
+     min-height: calc(100vh - 730px);
+   } */
 
   mat-dialog-actions div {
     width: 100%;
@@ -218,7 +199,7 @@ a:hover {
   }
 
   mat-dialog-content {
-      max-height: calc((100vh - 80px) - 54px); /*100vh - Titel - Actions*/
+    max-height: calc((100vh - 80px) - 54px); /*100vh - Titel - Actions*/
   }
 
   mat-dialog-content.shorten {
@@ -236,5 +217,11 @@ a:hover {
     white-space: pre-line;
     padding-left: 20px;
     padding-bottom: 0.5rem;
+  }
+
+  .comment-label {
+    font-weight: bold;
+    padding-left: 0;
+    float: left;
   }
 }
