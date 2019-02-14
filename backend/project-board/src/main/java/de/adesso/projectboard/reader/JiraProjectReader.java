@@ -120,7 +120,7 @@ public class JiraProjectReader implements ProjectReader {
      */
     private List<Project> getProjectsByQuery(String jqlQuery) throws IOException {
         String url = properties.getRequestUrl().replace("{fieldsQuery}", getFieldsQueryString());
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(properties.getRequestUrl(), String.class, jqlQuery);
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class, jqlQuery);
 
         // parse the json in the response body
         ObjectMapper mapper = new ObjectMapper();
