@@ -141,6 +141,114 @@ table thead td {
   height: 38px;
 }
 
+#radius-search {
+  text-align: right;
+}
+
+#radius-search /deep/ .mat-form-field-wrapper {
+  padding-bottom: 0.2rem !important;
+}
+
+#radius-search /deep/ .mat-form-field-infix {
+  padding: 0.5rem 0 0.5rem 0 !important;
+}
+
+#radius-search /deep/ .mat-form-field-outline-gap {
+  border-bottom-color: #ced4da;
+}
+
+#picker {
+  margin-left: 10px;
+}
+
+#city-input {
+  margin-left: 10px;
+}
+
+#city-input /deep/ .mat-select-value {
+  color: #887D75 !important;
+}
+
+#picker /deep/ .mat-select-value {
+  color: #887D75 !important;
+}
+
+/deep/ .mat-option-text {
+  color: #887D75 !important;
+}
+
+/deep/ .mat-form-field-label {
+  font-size: 18px !important;
+  color:  #887D75 !important;
+}
+
+/deep/ .mat-form-field-flex:hover /deep/ .mat-form-field-outline-gap {
+  border-bottom-color: #ced4da;
+}
+
+/deep/ .mat-form-field-flex:hover /deep/ .mat-form-field-outline-thick /deep/ .mat-form-field-outline-gap {
+  border-bottom-color: #ced4da;
+}
+
+#picker /deep/ .mat-form-field-infix {
+  width: 80px !important;
+  border-top: 0.7rem solid transparent;
+}
+
+#city-input /deep/ .mat-form-field-infix {
+  width: 120px !important;
+  border-top: 0.7rem solid transparent;
+}
+
+#radius-search /deep/ .mat-form-field-outline-start,
+#radius-search /deep/ .mat-form-field-outline-end {
+    border-radius: 0px !important;
+    border-color: #ced4da !important;
+}
+
+#radius-search /deep/ .mat-form-field-outline-start .mat-focused,
+#radius-search /deep/ .mat-form-field-outline-end .mat-focused {
+    border-radius: 0px !important;
+    border-color: #ced4da !important;
+}
+
+#filter-label {
+  display: inline-block;
+}
+
+@include media-breakpoint-down(xs) {
+  #radius-search {
+    padding-top: 0.5rem;
+    text-align: center;
+  }
+  
+  #filter-label {
+    display: inline-block;
+    vertical-align: top;
+    width: 65px;
+    overflow-wrap: break-word;
+    text-align: left;
+  }
+  
+  #picker {
+    margin-left: 3px;
+  }
+  
+  #city-input {
+    margin-left: 3px;
+  }
+
+  #picker /deep/ .mat-form-field-infix {
+    width: 70px !important;
+    border-top: 0.7rem solid transparent;
+  }
+  
+  #city-input /deep/ .mat-form-field-infix {
+    width: 100px !important;
+    border-top: 0.7rem solid transparent;
+  }
+}
+
 @include media-breakpoint-down(md) {
   tbody tr:nth-child(2n) {
     background-color: #ececec;
@@ -217,7 +325,7 @@ table thead td {
 .search-input-inner-wrapper {
   align-content: center;
   line-height: 3.25rem;
-  margin: 0 auto 2rem;
+  margin: 0 auto;
 }
 
 @include media-breakpoint-up(sm) {

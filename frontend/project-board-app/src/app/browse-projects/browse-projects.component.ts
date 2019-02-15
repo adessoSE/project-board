@@ -1,15 +1,20 @@
 import { Location } from '@angular/common';
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit, AfterViewInit, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog, MatDialogRef, MatIconRegistry } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import * as $ from 'jquery';
-import { combineLatest, Subject } from 'rxjs';
-import { debounceTime, switchMap, takeUntil } from 'rxjs/operators';
+import { combineLatest, Subject, ReplaySubject } from 'rxjs';
+import { debounceTime, switchMap, takeUntil, take } from 'rxjs/operators';
 import { AlertService } from '../_services/alert.service';
 import { Application, EmployeeService } from '../_services/employee.service';
+import { ProjectLocation } from '../_services/project-location.service';
 import { Project, ProjectService } from '../_services/project.service';
 import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
+
+import { FormControl } from '@angular/forms';
+import { MatSelect } from '@angular/material';
+import { CITIES } from './cities'
 
 @Component({
   selector: 'app-browse-projects',
@@ -18,22 +23,43 @@ import { ProjectDialogComponent } from '../project-dialog/project-dialog.compone
 })
 export class BrowseProjectsComponent implements OnInit {
 
+  /** list of cities */
+  protected cities: string[] = CITIES;
+
+  /** control for the selected city */
+  public cityControl: FormControl = new FormControl();
+
+  /** control for the MatSelect filter keyword */
+  public cityFilterCtrl: FormControl = new FormControl();
+
+  /** list of cities filtered by search keyword */
+  public filteredCities: ReplaySubject<string[]> = new ReplaySubject<string[]>(1);
+
+  @ViewChild('singleSelect') singleSelect: MatSelect;
+
+  /** Subject that emits when the component has been destroyed. */
+  protected _onDestroy = new Subject<void>();
+
   appTooltip = 'Du hast dieses Projekt bereits angefragt.';
   bmTooltip = 'Du hast ein Lesezeichen an diesem Projekt.';
 
   projects: Project[] = [];
+  filteredProjects: Project[] = [];
   applications: Application[] = [];
   bookmarks: Project[] = [];
   selectedProject: Project;
   mobile = false;
   isUserBoss = false;
   searchText = '';
+  selectedRange = '0'
   loadingProjects = true;
   projectsFound: number;
   sortValue: number;
   sortMemory: number;
   toggle = true;
   dialogRef: MatDialogRef<ProjectDialogComponent>;
+  lonReference: number;
+  latReference: number;
 
   private divToScroll;
 
@@ -43,6 +69,7 @@ export class BrowseProjectsComponent implements OnInit {
   constructor(private employeeService: EmployeeService,
               private matIconRegistry: MatIconRegistry,
               private projectsService: ProjectService,
+              private projectLocation: ProjectLocation,
               private domSanitizer: DomSanitizer,
               private alertService: AlertService,
               private route: ActivatedRoute,
@@ -58,7 +85,7 @@ export class BrowseProjectsComponent implements OnInit {
         project: p,
         applicable: this.isProjectApplicable(p.id),
         bookmarked: this.isProjectBookmarked(p.id),
-        isUserBoss: this.isUserBoss
+        isUserBoss: this.isUserBoss,
       }
     });
     this.dialogRef.componentInstance.bookmark
@@ -84,6 +111,7 @@ export class BrowseProjectsComponent implements OnInit {
       .subscribe(data => {
         if (data[0].projects) {
           this.projects = data[0].projects;
+          this.filteredProjects = this.projects;
           this.loadingProjects = false;
         }
 
@@ -101,7 +129,70 @@ export class BrowseProjectsComponent implements OnInit {
       });
   }
 
+  protected filterCities() {
+    if (!this.cities) {
+      return;
+    }
+    // get the search keyword
+    let search = this.cityFilterCtrl.value;
+    if (!search || search.length < 2) {
+      let indexOfPick = this.cities.indexOf(this.cityControl.value);
+      this.filteredCities.next(this.cities.slice(indexOfPick, indexOfPick +1));
+      return;
+    } else {
+      search = search.toLowerCase();
+    // filter the cities
+      this.filteredCities.next(
+        //this.cities.filter(city => city.toLowerCase().indexOf(search) > -1)
+        this.cities.filter(city => city.toLowerCase().startsWith(search))
+      );
+    }
+  }
+
+  ngAfterViewInit() {
+    this.setInitialValue();
+  }
+
+  ngOnDestroy() {
+    this._onDestroy.next();
+    this._onDestroy.complete();
+  }
+
+  /**
+   * Sets the initial value after the filteredCities are loaded initially
+   */
+  protected setInitialValue() {
+    this.filteredCities
+      .pipe(take(1), takeUntil(this._onDestroy))
+      .subscribe(() => {
+        // setting the compareWith property to a comparison function
+        // triggers initializing the selection according to the initial value of
+        // the form control (i.e. _initializeSelection())
+        // this needs to be done after the filteredCities are loaded initially
+        // and after the mat-option elements are available
+        this.singleSelect.compareWith = (a: string, b: string) => a && b && a === b;
+      });
+  }
+
   ngOnInit() {
+
+    let indexDefault = this.cities.indexOf("DORTMUND");
+
+    // set initial selection
+    this.cityControl.setValue(this.cities[indexDefault]); //Standort Attribut des Users
+
+    // load the initial city list
+    this.filteredCities.next(this.cities.slice(indexDefault, indexDefault+1));
+
+    // listen for search field value changes
+    this.cityFilterCtrl.valueChanges
+      .pipe(debounceTime(500))
+      .pipe(takeUntil(this._onDestroy))
+      .subscribe(() => {
+        this.filterCities();
+        this.selectedRange = '0';
+      });
+
     this.matIconRegistry.addSvgIcon(
       'sort_ascending',
       this.domSanitizer.bypassSecurityTrustResourceUrl('../assets/long-arrow-alt-up-solid.svg')
@@ -123,6 +214,7 @@ export class BrowseProjectsComponent implements OnInit {
       .subscribe(projects => {
         this.loadingProjects = false;
         this.projects = projects;
+        this.filteredProjects = this.projects;
         this.projectsFound = projects.length;
       });
     this.loadProjects();
@@ -168,6 +260,30 @@ export class BrowseProjectsComponent implements OnInit {
       }
     }
     this.alertService.info('Das angegebene Projekt wurde nicht gefunden.');
+  }
+
+
+//TO-DO
+  filterByDistance(range: number) {
+    console.log(this.cityControl.value + " " + range);
+      if(range == 0) {
+        this.filteredProjects = this.projects;
+      } else {
+        console.log("To be implemented");
+    /* this.projectLocation.getProjectsInRange(referenceLocation, range).
+      subscribe((data) => {
+        if (data) {
+          this.filteredProjects = data;
+        } else {
+          this.filteredProjects = [];
+        }
+      }); */
+
+    }
+  }
+
+  filterDistanceGreater(limit: number) {
+    this.filteredProjects = this.projects;
   }
 
   isProjectApplicable(projectId: string) {

@@ -31,6 +31,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { ProjectDetailsComponent } from './project-details/project-details.component';
 import { ProjectDialogComponent } from './project-dialog/project-dialog.component';
 import { ProjectRequestComponent } from './project-request/project-request.component';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 
 declare var Hammer: any;
 
@@ -62,6 +63,7 @@ registerLocaleData(localeDe, 'de');
     DatepickerHeaderComponent
   ],
   imports: [
+    NgxMatSelectSearchModule,
     BrowserModule,
     AppRoutingModule,
     FontAwesomeModule,

@@ -9,20 +9,53 @@
 </div>
 
 <div class="outer">
+  <!-- <button (click)="filterByDistance('Dortmund')">Test</button> -->
+  <div id="radius-search">
+    <span title="Zeige nur Projekte in einem Radius"><div id="filter-label">Umkreis&shy;filter:</div></span>
+
+    <!-- Location Input -->
+    <span id="city-input" title="Wähle eine Stadt als Bezugspunkt">
+      <mat-form-field id="location-input-field" appearance="outline">
+          <mat-label>Stadt</mat-label>
+        <mat-select [formControl]="cityControl" placeholder="Stadt" #singleSelect> 
+          <mat-option>
+            <ngx-mat-select-search [formControl]="cityFilterCtrl" [noEntriesFoundLabel]="'Keine Stadt gefunden'"></ngx-mat-select-search>
+          </mat-option>
+            <mat-option *ngFor="let city of filteredCities | async" [value]="city">
+              {{city}}
+            </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </span>
+    
+    <!-- Radius Picker -->
+  <span id="picker"title="Wähle einen Radius">
+    <mat-form-field appearance="outline">
+        <mat-label>Radius</mat-label>
+      <mat-select [(value)]="selectedRange" (selectionChange)="filterByDistance($event.value)">
+        <mat-option value="0">-</mat-option>
+        <mat-option value="50">50 km</mat-option>
+        <mat-option value="100">100 km</mat-option>
+        <mat-option value="300">300 km</mat-option>
+      </mat-select>
+    </mat-form-field>
+</span>
+</div>
+
   <div class="inner">
     <table id="result-table">
       <thead>
       <tr style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" *ngIf="!loadingProjects">
-        <th id="total-hits">{{projects?.length || 'Keine'}} Treffer{{searchText != '' ? ' für "' + searchText + '"' : ''}}</th>
+        <th id="total-hits">{{filteredProjects?.length || 'Keine'}} Treffer{{searchText != '' ? ' für "' + searchText + '"' : ''}}</th>
         <th class="hover-change" *ngIf="!mobile" (click)="sortByLocation(1)">Standort
           <mat-icon *ngIf="sortMemory === 1 && sortValue > 0" svgIcon="sort_{{sortValue === 1 ? 'a' : 'de'}}scending"></mat-icon>
         </th>
-        <th class="hover-change" *ngIf="!mobile">Beginn</th>
-        <th class="hover-change" *ngIf="!mobile">Aufwand</th>
+        <th *ngIf="!mobile">Beginn</th>
+        <th *ngIf="!mobile">Aufwand</th>
       </tr>
       </thead>
-      <tbody *ngIf="!loadingProjects && projects.length > 0">
-      <tr *ngFor="let p of projects" (click)="openDialog(p)">
+      <tbody *ngIf="!loadingProjects && filteredProjects?.length > 0">
+      <tr *ngFor="let p of filteredProjects" (click)="openDialog(p)">
         <th>
           <table class="fixed-project-info hover-change">
             <tbody>
