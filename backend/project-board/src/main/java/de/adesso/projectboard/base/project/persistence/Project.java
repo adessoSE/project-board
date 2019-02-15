@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import de.adesso.projectboard.base.project.deserializer.date.CreatedUpdatedDateDeserializer;
+import de.adesso.projectboard.base.project.deserializer.field.ObjectAttachmentDeserializer;
 import de.adesso.projectboard.base.project.deserializer.field.ObjectNameDeserializer;
 import de.adesso.projectboard.base.project.deserializer.field.ObjectValueDeserializer;
 import lombok.*;
@@ -118,6 +119,9 @@ public class Project {
     @JsonDeserialize(using = ObjectValueDeserializer.class)
     @JsonAlias("customfield_10291")
     String travelCostsCompensated;
+
+    @JsonDeserialize(using = ObjectAttachmentDeserializer.class)
+    boolean attachment;
 
     @Column(nullable = false)
     Origin origin = Origin.JIRA;
