@@ -16,7 +16,9 @@ INSERT INTO PROJECT (ID, STATUS, ISSUE_TYPE, TITLE, JOB, SKILLS, DESCRIPTION, LO
 
 ('STF-8', 'Offen', 'Issuetype', 'Title', 'Job', 'Skills', 'Special Description', 'LOB Test', 'Customer', 'Location', 'OperationStart', 'OperationEnd', 'Effort', '2018-02-1 13:37:00', '2018-02-2 13:37:00', 'Freelancer', 'Elongation', 'Other', 'Rate 8', 'Compensated', 1),
 
-('STF-9', 'Open', 'Issuetype', 'Title', 'Job', 'Skills', 'Description', 'LOB Prod', 'Customer', 'Location', 'OperationStart', 'OperationEnd', 'Effort', '2018-02-1 13:37:00', '2018-02-2 13:37:00', 'Freelancer', 'Elongation', 'Other', 'Rate 9', 'Compensated', 1);
+('STF-9', 'Open', 'Issuetype', 'Title', 'Job', 'Skills', 'Description', 'LOB Prod', 'Customer', 'Location', 'OperationStart', 'OperationEnd', 'Effort', '2018-02-1 13:37:00', '2018-02-2 13:37:00', 'Freelancer', 'Elongation', 'Other', 'Rate 9', 'Compensated', 1),
+
+('STF-10', NULL, 'Issuetype', 'Title', 'Job', 'Skills', 'Description', 'LOB Prod', 'Customer', 'Location', 'OperationStart', 'OperationEnd', 'Effort', '2019-02-1 13:37:00', '2019-02-2 13:37:00', 'Freelancer', 'Elongation', 'Other', 'Rate 9', 'Compensated', 1);
 
 --Create some Labels for STF-1:
 INSERT INTO PROJECT_LABELS (PROJECT_ID, LABEL)

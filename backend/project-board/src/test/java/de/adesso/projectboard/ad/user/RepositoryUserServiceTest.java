@@ -4,6 +4,7 @@ import de.adesso.projectboard.ad.service.LdapService;
 import de.adesso.projectboard.base.exceptions.HierarchyNotFoundException;
 import de.adesso.projectboard.base.exceptions.UserDataNotFoundException;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
+import de.adesso.projectboard.base.search.HibernateSearchService;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
@@ -60,11 +61,15 @@ public class RepositoryUserServiceTest {
     @Mock
     private UserData userDataMock;
 
+    @Mock
+    private HibernateSearchService hibernateSearchServiceMock;
+
     private RepositoryUserService repoUserService;
 
     @Before
     public void setUp() {
-        this.repoUserService = new RepositoryUserService(userRepoMock, userDataRepoMock, ldapServiceMock, hierarchyTreeNodeRepoMock);
+        this.repoUserService = new RepositoryUserService(userRepoMock, userDataRepoMock, ldapServiceMock,
+                hierarchyTreeNodeRepoMock, hibernateSearchServiceMock);
 
         given(userMock.getId()).willReturn(USER_ID);
     }

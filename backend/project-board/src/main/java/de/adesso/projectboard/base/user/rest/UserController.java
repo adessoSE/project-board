@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "/users")
@@ -40,6 +37,15 @@ public class UserController {
     public ResponseEntity<?> getStaffMembersOfUser(@PathVariable("userId") String userId, Sort sort, @ProjectionType(UserProjectionSource.class) Class<?> projectionType) {
         var user = userService.getUserById(userId);
         var staffData = userService.getStaffMemberUserDataOfUser(user, sort);
+
+        return ResponseEntity.ok(userProjectionFactory.createProjections(staffData, projectionType));
+    }
+
+    @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
+    @GetMapping(path = "/{userId}/staff/search")
+    public ResponseEntity<?> searchStaffMembersOfUser(@PathVariable String userId, Sort sort, @RequestParam String query, @ProjectionType(UserProjectionSource.class) Class<?> projectionType) {
+        var user = userService.getUserById(userId);
+        var staffData = userService.searchStaffMemberDataOfUser(user, query, sort);
 
         return ResponseEntity.ok(userProjectionFactory.createProjections(staffData, projectionType));
     }

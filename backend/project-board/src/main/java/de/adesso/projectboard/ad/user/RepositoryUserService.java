@@ -4,6 +4,7 @@ import de.adesso.projectboard.ad.service.LdapService;
 import de.adesso.projectboard.base.exceptions.HierarchyNotFoundException;
 import de.adesso.projectboard.base.exceptions.UserDataNotFoundException;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
+import de.adesso.projectboard.base.search.HibernateSearchService;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
@@ -35,14 +36,18 @@ public class RepositoryUserService implements UserService {
 
     private final HierarchyTreeNodeRepository hierarchyTreeNodeRepo;
 
+    private final HibernateSearchService hibernateSearchService;
+
     public RepositoryUserService(UserRepository userRepo,
                                  UserDataRepository dataRepo,
                                  LdapService ldapService,
-                                 HierarchyTreeNodeRepository hierarchyTreeNodeRepo) {
+                                 HierarchyTreeNodeRepository hierarchyTreeNodeRepo,
+                                 HibernateSearchService hibernateSearchService) {
         this.userRepo = userRepo;
         this.dataRepo = dataRepo;
         this.ldapService = ldapService;
         this.hierarchyTreeNodeRepo = hierarchyTreeNodeRepo;
+        this.hibernateSearchService = hibernateSearchService;
     }
 
     @Override
@@ -103,6 +108,15 @@ public class RepositoryUserService implements UserService {
         }
 
         return initializeThumbnailPhotos(directStaffData);
+    }
+
+    @Override
+    public List<UserData> searchStaffMemberDataOfUser(User user, String query, Sort sort) {
+        var staff = getHierarchyForUser(user).getStaff().stream()
+                .map(HierarchyTreeNode::getUser)
+                .collect(Collectors.toList());
+
+        return hibernateSearchService.searchUserData(staff, query);
     }
 
     @Override
