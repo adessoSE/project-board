@@ -130,52 +130,50 @@
 .remover {
   cursor: pointer;
   float: right;
-  height: 32px;
-}
-
-.remover mat-icon {
-  vertical-align: text-top;
+  height: 26px;
 }
 
 .icon-wrapper {
   display: inline-block;
   vertical-align: middle;
+  height: 32px;
 }
 
-.linking-icon-wrapper {
-  @extend .icon-wrapper;
+.icon-wrapper mat-icon {
   height: 32px;
   width: 32px;
+}
+
+.linking-icon {
+  display: inline-block;
+  vertical-align: bottom;
+  margin-right: 5px;
+  height: 32px;
   cursor: pointer;
 }
 
-.linking-icon-wrapper mat-icon {
-  height: 32px;
-  width: 32px;
-}
-
-.headline span {
-  margin-left: 0.5rem;
-  vertical-align: middle;
-  display: inline-block;
-}
-
-.linking-icon-wrapper .material-icons {
+.linking-icon .material-icons {
   font-size: 32px !important;
   color: #016EC7;
 }
 
-.linking-icon-wrapper .material-icons:hover {
+.linking-icon .material-icons:hover {
   color: #338bd2;
 }
 
 .mail-icon-wrapper {
-  @extend .icon-wrapper;
-  height: 32px;
+  display: inline-block;
 }
 
-.mail-icon-wrapper mat-icon {
-  vertical-align: text-top;
+.mail-icon {
+  vertical-align: text-bottom;
+}
+
+.project-title {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 32px;
+  font-size: 18px;
 }
 
 .inset {
@@ -202,6 +200,10 @@
   overflow: hidden;
 }
 
+.statistics {
+  padding: 15px;
+}
+
 @include media-breakpoint-up(xl){
   .left-bar {
     height: 550px;
@@ -209,6 +211,7 @@
 }
 
 @include media-breakpoint-down(md) {
+
   .middle {
     padding: 0 15px 0 15px;
   }
@@ -222,6 +225,7 @@
 }
 
 @include media-breakpoint-down(sm) {
+
   .row {
     padding: 0 10px 0 10px;
   }
@@ -259,4 +263,11 @@ button:focus, button:active {
   -moz-box-shadow: none;
   box-shadow: none;
   outline: none;
+}
+
+@media (max-width: 470px) {
+  #tab3 {
+    height: 69px;
+    vertical-align: top;
+  }
 }

@@ -47,11 +47,18 @@
         Projektanfragen
       </div>
 
-      <div *ngIf="user.boss" (click)="selectTab(2)" id="tab2" class="nav-point col-12 active">
+      <div *ngIf="user.boss" (click)="selectTab(2)" id="tab2" class="nav-point col-6 active">
         <div class="profile-nav-icon">
           <mat-icon>email</mat-icon>
         </div>
         Projektanfragen Mitarbeiter
+      </div>
+
+      <div *ngIf="user.boss" (click)="selectTab(3)" id="tab3" class="nav-point col-6">
+        <div class="profile-nav-icon">
+          <mat-icon>bar_chart</mat-icon>
+        </div>
+        Statistiken
       </div>
     </div>
 
@@ -59,17 +66,19 @@
       <!-- bookmarks tab -->
       <ng-container *ngIf="tabIndex == 0">
         <div class="bookmark" *ngFor="let b of bookmarks; index as i" [ngClass]="{'border-bottom': i<bookmarks.length-1}">
-          <div class="headline">
-            <div class="linking-icon-wrapper" title="Öffnen" (click)="openDialog(b)">
+          <div class="icon-wrapper">
+            <div class="linking-icon" title="Öffnen" (click)="openDialog(b)">
               <mat-icon>open_in_new</mat-icon>
             </div>
-            <div class="remover" title="entfernen" (click)="removeBookmark(b.id)">
-              <mat-icon>clear</mat-icon>
-            </div>
+          </div>
+          <div class="remover" title="entfernen" (click)="removeBookmark(b.id)">
+            <mat-icon>clear</mat-icon>
+          </div>
+          <div class="project-title">
             <div *ngIf="!isProjectApplicable(b.id)" class="mail-icon-wrapper">
-              <mat-icon title="Bereits angefragt">email</mat-icon>
+              <mat-icon title="bereits angefragt" class="mail-icon">email</mat-icon>
             </div>
-            <span>{{b.title}}</span>
+            {{b.title}}
           </div>
         </div>
         <div class="inset" *ngIf="!bookmarks || bookmarks.length === 0">Du hast keine Lesezeichen.</div>
@@ -78,12 +87,12 @@
       <!-- applications tab -->
       <ng-container *ngIf="tabIndex == 1">
         <div class="application" *ngFor="let a of applications; index as i" [ngClass]="{'border-bottom': i<applications.length-1}">
-          <div class="headline">
-            <div class="linking-icon-wrapper" title="Öffnen" (click)="openDialog(a.project)">
+          <div class="icon-wrapper">
+            <div class="linking-icon" title="Öffnen" (click)="openDialog(a.project)">
               <mat-icon>open_in_new</mat-icon>
             </div>
-            <span class="project-title">{{a.project.title}}</span>
           </div>
+          <span class="project-title">{{a.project.title}}</span>
           <div class="application-details">
             <div class="font-weight-bold">Datum:</div>
             <div>{{a.date | date}}</div>
@@ -99,12 +108,12 @@
       <!-- employee-applications tab-->
       <ng-container *ngIf="tabIndex == 2">
         <div class="employee-application" *ngFor="let a of employeeApplications; index as i" [ngClass]="{'border-bottom': i<employeeApplications.length-1}">
-          <div class="linking-icon-wrapper">
+          <div class="icon-wrapper">
             <div class="linking-icon" title="Öffnen" (click)="openDialog(a.project)">
               <mat-icon>open_in_new</mat-icon>
             </div>
           </div>
-          <span class="project-title">{{a.project.title}}</span><br>
+          <span class="project-title">{{a.project.title}}</span>
           <div class="application-details">
             <div class="requester">{{a.user.lastName}}, {{a.user.firstName}}</div>
             <div class="font-weight-bold">Datum:</div>
@@ -120,6 +129,34 @@
           <div class="loading-spinner">
             <mat-spinner [diameter]="50"></mat-spinner>
           </div>
+        </div>
+      </ng-container>
+
+      <!-- employee-statistics tab-->
+      <ng-container *ngIf="tabIndex == 3">
+        <div class="statistics">
+          <span style="float: left;">
+          <div>Anfragen</div> 
+          <div> Meiner Mitarbeiter: {{employeeApplications.length}} </div>
+          <div> Insgesamt: 50</div>
+        </span>
+        <span>
+            <div style="display: block; width: 300px">
+                <canvas baseChart
+                        [data]="pieChartData"
+                        [labels]="pieChartLabels"
+                        [chartType]="pieChartType"
+                        (chartHover)="chartHovered($event)"
+                        (chartClick)="chartClicked($event)"
+                        [colors]="pieChartColors">
+                      </canvas>
+              </div>
+        </span>
+        <div> Mögliche Statistiken: </div>
+        <div> Anfragen meiner / aller Mitarbeiter </div>
+        <div> Anzahl Angebote meiner Mitarbeiter im Vergleich </div>
+        <div> Anfragen für ein Projekt durch meine Mitarbeiter / Insgesamt </div>
+        <div> ... </div>
         </div>
       </ng-container>
     </div>

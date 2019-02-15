@@ -21,6 +21,10 @@ export class ProfileComponent implements OnInit {
   @Input() projects: Project[] = [];
   employees: Employee[] = [];
   employeeApplications: Application[] = [];
+  pieChartData: number[] = [];
+  pieChartLabels: string[] = ['Meine Mitarbeiter', 'Global'];
+  pieChartType: string = 'pie';
+  pieChartColors: any[] = [{ backgroundColor: ["#EF8200", "grey"] }];
 
   user: Employee;
   tabIndex = 0;
@@ -35,6 +39,14 @@ export class ProfileComponent implements OnInit {
               private employeeService: EmployeeService,
               private authService: AuthenticationService,
               public dialog: MatDialog) {}
+
+  public chartClicked(e:any):void {
+    console.log(e);
+  }
+
+  public chartHovered(e:any):void {
+    console.log(e);
+  }
 
   ngOnInit() {
     this.mobile = document.body.clientWidth < 992;
@@ -98,6 +110,7 @@ export class ProfileComponent implements OnInit {
       .subscribe(employeeApplications => {
         this.employeeApplications = employeeApplications;
         this.loadingEmployeeApplications = false;
+        this.pieChartData = [employeeApplications.length, 50];
       });
   }
 
