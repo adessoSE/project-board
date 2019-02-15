@@ -4156,6 +4156,13 @@ ngx-infinite-scroll@^6.0.1:
   dependencies:
     opencollective "^1.0.3"
 
+ngx-mat-select-search@^1.5.2:
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/ngx-mat-select-search/-/ngx-mat-select-search-1.5.2.tgz#22484d60f14bee124a10818f046da0b0c744059f"
+  integrity sha512-fj/myOVNJLfjELTqmc0pM5JVuZv0T2cxgbansbiNp1wAPGq5Fzqa/ApsA8ynrWaSe4FeM8Ww8FdDMz05SeTG3Q==
+  dependencies:
+    tslib "^1.9.0"
+
 no-case@^2.2.0:
   version "2.3.2"
   resolved "https://registry.yarnpkg.com/no-case/-/no-case-2.3.2.tgz#60b813396be39b3f1288a4c1ed5d1e7d28b464ac"
