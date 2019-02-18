@@ -32,7 +32,7 @@ public interface UserProjectService {
      * @param user
      *          The {@link User} to get the {@link Project}s for.
      *
-     * @param keyword
+     * @param query
      *          The keyword to search for.
      *
      * @param sort
@@ -41,7 +41,7 @@ public interface UserProjectService {
      * @return
      *          A {@link List} of {@link Project}s sorted accordingly.
      */
-    List<Project> searchProjectsForUser(User user, String keyword, Sort sort);
+    List<Project> searchProjectsForUser(User user, String query, Sort sort);
 
     /**
      *

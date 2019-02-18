@@ -57,7 +57,7 @@ public class RepositoryUserProjectServiceTest {
 
         this.clock = Clock.fixed(instant, zoneId);
         this.userProjectService
-                = new RepositoryUserProjectService(userServiceMock, projectRepoMock, userRepoMock, projectServiceMock);
+                = new RepositoryUserProjectService(userServiceMock, projectRepoMock, userRepoMock, projectServiceMock, hibernateSearchService);
     }
 
     @Test

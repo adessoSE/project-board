@@ -3,6 +3,7 @@ package de.adesso.projectboard.ad.project.service;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.persistence.ProjectRepository;
 import de.adesso.projectboard.base.project.persistence.specification.StatusSpecification;
+import de.adesso.projectboard.base.search.HibernateSearchService;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
 import de.adesso.projectboard.base.user.service.PageableUserProjectService;
@@ -31,15 +32,19 @@ public class RepositoryUserProjectService implements PageableUserProjectService 
 
     private final RepositoryProjectService projectService;
 
+    private final HibernateSearchService hibernateSearchService;
+
     @Autowired
     public RepositoryUserProjectService(UserService userService,
                                         ProjectRepository projectRepo,
                                         UserRepository userRepo,
-                                        RepositoryProjectService projectService) {
+                                        RepositoryProjectService projectService,
+                                        HibernateSearchService hibernateSearchService) {
         this.userService = userService;
         this.projectRepo = projectRepo;
         this.userRepo = userRepo;
         this.projectService = projectService;
+        this.hibernateSearchService = hibernateSearchService;
     }
 
     @Override
@@ -48,9 +53,8 @@ public class RepositoryUserProjectService implements PageableUserProjectService 
     }
 
     @Override
-    public List<Project> searchProjectsForUser(User user, String keyword, Sort sort) {
-        // TODO: implement with HibernateSearchService
-        return null;
+    public List<Project> searchProjectsForUser(User user, String query, Sort sort) {
+        return hibernateSearchService.searchProjects(query, ALL_STATUS);
     }
 
     @Override
@@ -84,9 +88,8 @@ public class RepositoryUserProjectService implements PageableUserProjectService 
     }
 
     @Override
-    public Page<Project> searchProjectsForUserPaginated(String keyword, User user, Pageable pageable) {
-        // TODO: implement with HibernateSearchService
-        return null;
+    public Page<Project> searchProjectsForUserPaginated(String query, User user, Pageable pageable) {
+        return hibernateSearchService.searchProjects(query, ALL_STATUS, pageable);
     }
 
 }
