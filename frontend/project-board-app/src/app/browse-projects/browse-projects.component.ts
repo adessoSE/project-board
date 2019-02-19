@@ -170,12 +170,14 @@ export class BrowseProjectsComponent implements OnInit {
     this.alertService.info('Das angegebene Projekt wurde nicht gefunden.');
   }
 
+  /* Common Functions with Profile start */
+
   isProjectApplicable(projectId: string) {
-    return this.applications ? !this.applications.some(a => a && a.project.id === projectId) : true;
+    return this.employeeService.isApplicable(this.applications, projectId);
   }
 
   isProjectBookmarked(projectId: string) {
-    return this.bookmarks ? this.bookmarks.some(p => p && p.id === projectId) : false;
+    return this.projectsService.isBookmarked(this.bookmarks, projectId);
   }
 
   handleBookmark(project: Project) {
@@ -190,6 +192,8 @@ export class BrowseProjectsComponent implements OnInit {
   handleApplication(application: Application) {
     this.applications.push(application);
   }
+
+  /* Common Functions with Profile end */
 
   onDialogClosed() {
     this.selectedProject = null;

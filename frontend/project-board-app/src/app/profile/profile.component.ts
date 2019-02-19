@@ -6,7 +6,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Application, Employee, EmployeeService } from '../_services/employee.service';
-import { Project } from '../_services/project.service';
+import { Project, ProjectService } from '../_services/project.service';
 import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
 
 @Component({
@@ -33,6 +33,7 @@ export class ProfileComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
               private employeeService: EmployeeService,
+              private projectService: ProjectService,
               private authService: AuthenticationService,
               public dialog: MatDialog) {}
 
@@ -53,6 +54,35 @@ export class ProfileComponent implements OnInit {
       this.getEmployeeApplications();
     }
   }
+
+  /* Common Functions with Browse-Projects start */
+
+  /* Tested Methods Start */
+
+  isProjectApplicable(projectId: string) {
+    return this.employeeService.isApplicable(this.applications, projectId);
+  }
+
+  isProjectBookmarked(projectId: string) {
+    return this.projectService.isBookmarked(this.bookmarks, projectId);
+  }
+
+  /* Tested Methods End */
+
+  handleBookmark(project: Project) {
+    const index = this.bookmarks.findIndex(p => p.id === project.id);
+    if (index > -1) {
+      this.bookmarks.splice(index, 1);
+    } else {
+      this.bookmarks.push(project);
+    }
+  }
+
+  handleApplication(application: Application) {
+    this.applications.push(application);
+  }
+
+  /* Common Functions with Browse-Projects end */
 
   openDialog(p: Project) {
     this.dialogRef = this.dialog.open(ProjectDialogComponent, {
@@ -99,27 +129,5 @@ export class ProfileComponent implements OnInit {
         this.employeeApplications = employeeApplications;
         this.loadingEmployeeApplications = false;
       });
-  }
-
-
-  isProjectApplicable(projectId: string) {
-    return this.applications ? !this.applications.some(a => a && a.project.id === projectId) : true;
-  }
-
-  isProjectBookmarked(projectId: string) {
-    return this.bookmarks ? this.bookmarks.some(p => p && p.id === projectId) : false;
-  }
-
-  handleBookmark(project: Project) {
-    const index = this.bookmarks.findIndex(p => p.id === project.id);
-    if (index > -1) {
-      this.bookmarks.splice(index, 1);
-    } else {
-      this.bookmarks.push(project);
-    }
-  }
-
-  handleApplication(application: Application) {
-    this.applications.push(application);
   }
 }

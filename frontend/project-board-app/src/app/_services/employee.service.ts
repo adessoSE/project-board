@@ -81,6 +81,10 @@ export class EmployeeService {
   getProjects(userId: string) {
     return this.http.get<Project[]>(`${environment.resourceServer}/users/${userId}/projects`);
   }
+
+  isApplicable(applications: Application[], projectId: string): boolean {
+    return applications ? !applications.some(a => a && a.project.id === projectId) : true;
+  }
 }
 
 export interface Employee {

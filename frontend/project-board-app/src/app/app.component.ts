@@ -53,6 +53,22 @@ export class AppComponent implements OnInit, DoCheck {
     this.mainNavPosition();
   }
 
+  /* Tested Methods Start */
+
+  isUserAuthenticated() {
+    return this.oAuthService.hasValidAccessToken();
+  }
+
+  get isBoss() {
+    return this.authenticationService.isBoss;
+  }
+
+  getUsername(): string {
+    return this.authenticationService.username;
+  }
+
+  /* Tested Methods End */
+
   /* Sidenav responsive */
 
   toggleNav() {
@@ -113,10 +129,6 @@ export class AppComponent implements OnInit, DoCheck {
     }
   }
 
-  getUsername() {
-    return this.authenticationService.username;
-  }
-
   ngDoCheck() {
     this.username = this.getUsername();
   }
@@ -125,14 +137,6 @@ export class AppComponent implements OnInit, DoCheck {
     this.oAuthService.logOut();
     sessionStorage.clear();
     /* this.alertService.success('Du wurdest erfolgreich ausgeloggt.'); */
-  }
-
-  isUserAuthenticated() {
-    return this.oAuthService.hasValidAccessToken();
-  }
-
-  get isBoss() {
-    return this.authenticationService.isBoss;
   }
 
   @HostListener('window:scroll')

@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class ProjectService {
@@ -22,14 +23,17 @@ export class ProjectService {
     return this.http.get<Project[]>(`${environment.resourceServer}/projects/search?keyword=${keyword}`);
   }
 
-  searchPaginated(keyword: string, page: number, size: number) {
+  /*searchPaginated(keyword: string, page: number, size: number) {
     return this.http.get<Page<Project>>(`${environment.resourceServer}/projects/search?keyword=${keyword}&page=${page}&size=${size}`);
+  }*/
+
+  isBookmarked(bookmarks: Project[], projectId: string): boolean {
+    return bookmarks ? bookmarks.some(p => p && p.id === projectId) : false;
   }
 }
 
 export interface Project {
   labels: string[];
-
   customer: string;
   description: string;
   effort: string;
@@ -48,11 +52,10 @@ export interface Project {
   title: string;
   dailyRate: string;
   travelCostsCompensated: string;
-
   created: Date;
   updated: Date;
 }
-
+/*
 export interface Page<T> {
   content: T[];
   pageable: {
@@ -77,4 +80,4 @@ export interface Page<T> {
   };
   first: boolean;
   numberOfElements: number;
-}
+}*/
