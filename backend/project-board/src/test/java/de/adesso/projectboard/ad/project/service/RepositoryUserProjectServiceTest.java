@@ -21,12 +21,12 @@ import java.util.Arrays;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
-// TODO: Fix test
+// TODO fix test
 
 @RunWith(MockitoJUnitRunner.class)
 public class RepositoryUserProjectServiceTest {
 
-    private final String USER_ID = "user";
+    private static final String USER_ID = "user";
 
     @Mock
     private UserService userServiceMock;
@@ -57,7 +57,7 @@ public class RepositoryUserProjectServiceTest {
 
         this.clock = Clock.fixed(instant, zoneId);
         this.userProjectService
-                = new RepositoryUserProjectService(userServiceMock, projectRepoMock, userRepoMock, projectServiceMock, hibernateSearchService);
+                = new RepositoryUserProjectService(userServiceMock, projectRepoMock, userRepoMock, projectServiceMock, null);
     }
 
     @Test

@@ -360,6 +360,28 @@ public class RepositoryUserServiceTest {
     }
 
     @Test
+    public void searchStaffMemberDataOfUserSearchesAndIntitializesThumbnailPhotos() {
+        // given
+        var givenSimpleQuery = "query";
+
+        given(hierarchyTreeNodeRepoMock.findByUser(userMock)).willReturn(Optional.of(hierarchyTreeNodeMock));
+        given(hierarchyTreeNodeMock.getStaff()).willReturn(List.of(otherHierarchyTreeNodeMock));
+        given(otherHierarchyTreeNodeMock.getUser()).willReturn(userMock);
+
+        given(userDataMock.getUser()).willReturn(userMock);
+        given(userDataMock.isPictureInitialized()).willReturn(true);
+
+        given(hibernateSearchServiceMock.searchUserData(List.of(userMock), givenSimpleQuery)).willReturn(List.of(userDataMock));
+        given(ldapServiceMock.getThumbnailPhotos(List.of())).willReturn(Map.of());
+
+        // when
+        var actualUserData = repoUserService.searchStaffMemberDataOfUser(userMock, givenSimpleQuery, Sort.unsorted());
+
+        // then
+        assertThat(actualUserData).containsExactly(userDataMock);
+    }
+
+    @Test
     public void getStaffMembersOfUserReturnsDirectStaffMembersOfUser() {
         // given
         given(hierarchyTreeNodeRepoMock.findByUser(userMock)).willReturn(Optional.of(hierarchyTreeNodeMock));

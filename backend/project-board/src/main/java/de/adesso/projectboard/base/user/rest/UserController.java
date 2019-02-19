@@ -42,12 +42,12 @@ public class UserController {
     }
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
-    @GetMapping(path = "/{userId}/staff/search")
+    @GetMapping(path = "/{userId}/staff/search", params = "query")
     public ResponseEntity<?> searchStaffMembersOfUser(@PathVariable String userId, Sort sort, @RequestParam String query, @ProjectionType(UserProjectionSource.class) Class<?> projectionType) {
         var user = userService.getUserById(userId);
-        var staffData = userService.searchStaffMemberDataOfUser(user, query, sort);
+        var staffMatchingQuery = userService.searchStaffMemberDataOfUser(user, query, sort);
 
-        return ResponseEntity.ok(userProjectionFactory.createProjections(staffData, projectionType));
+        return ResponseEntity.ok(userProjectionFactory.createProjections(staffMatchingQuery, projectionType));
     }
 
 }

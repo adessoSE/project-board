@@ -5,7 +5,9 @@ import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
+import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
 import org.hibernate.search.jpa.FullTextEntityManager;
 import org.hibernate.search.jpa.Search;
@@ -18,13 +20,14 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Transactional(readOnly = true)
 @Slf4j
 public class HibernateSearchService {
+
+    private static final int MAX_CLAUSE_COUNT = 4096;
 
     /*
      * A transactional entity manager to use when searching. Required because an extended
@@ -35,6 +38,11 @@ public class HibernateSearchService {
     @PersistenceContext
     EntityManager entityManager;
 
+    public HibernateSearchService() {
+        // increase the max clause count to allow searching for
+        // staff members of users with more than 1024 staff members
+        BooleanQuery.setMaxClauseCount(MAX_CLAUSE_COUNT);
+    }
 
     Query getProjectBaseQuery(@NonNull String simpleQueryString, @NonNull Set<String> status) {
         var baseQuery = getQuerySearchingForAllIndexedFields(Project.class, simpleQueryString);
@@ -58,7 +66,7 @@ public class HibernateSearchService {
     public List<Project> searchProjects(@NonNull String simpleQueryString, @NonNull Set<String> status) {
         var query = getProjectBaseQuery(simpleQueryString, status);
 
-        return getFullTextEntityManager().createFullTextQuery(query, UserData.class)
+        return getFullTextEntityManager().createFullTextQuery(query, Project.class)
                 .getResultList();
     }
 
@@ -68,7 +76,7 @@ public class HibernateSearchService {
 
         var firstIndex = pageable.getPageNumber() * pageable.getPageSize();
 
-        var jpaQuery = getFullTextEntityManager().createFullTextQuery(query, UserData.class)
+        var jpaQuery = getFullTextEntityManager().createFullTextQuery(query, Project.class)
                 .setFirstResult(firstIndex)
                 .setMaxResults(pageable.getPageSize());
         var resultSize = jpaQuery.getResultSize();
@@ -89,7 +97,7 @@ public class HibernateSearchService {
         var userIds = users.stream()
                 .map(User::getId)
                 .collect(Collectors.toSet());
-        var idDisjunctionQuery = queryBuilder.keyword()
+        var idDisjunctionQuery = queryBuilder.simpleQueryString()
                 .onField("user_id")
                 .matching(createLuceneDisjunction(userIds))
                 .createQuery();
@@ -127,11 +135,7 @@ public class HibernateSearchService {
             throw new IllegalArgumentException("No field of type String annotated with @Field!");
         }
 
-        var queryBuilder = getFullTextEntityManager().getSearchFactory()
-                .buildQueryBuilder()
-                .forEntity(entityType)
-                .get();
-
+        var queryBuilder = getQueryBuilder(entityType);
         return queryBuilder.simpleQueryString()
                 .onFields(annotatedStringFields.get(0), annotatedStringFields.subList(1, annotatedStringFields.size()).toArray(String[]::new))
                 .withAndAsDefaultOperator()
@@ -146,12 +150,21 @@ public class HibernateSearchService {
      *
      * @return
      *          The names of all String type fields annotated with
-     *          {@link org.hibernate.search.annotations.Field}.
+     *          {@link Field} or the value of {@link Field#name()} in case
+     *          it is not empty.
      */
     List<String> getNamesOfAnnotatedStringFields(Class<?> entityType) {
         return Arrays.stream(entityType.getDeclaredFields())
-                .filter(field -> String.class.equals(field.getType()) && Objects.nonNull(field.getAnnotation(org.hibernate.search.annotations.Field.class)))
-                .map(Field::getName)
+                .filter(field -> String.class.equals(field.getType()) && Objects.nonNull(field.getAnnotation(Field.class)))
+                .map(field -> {
+                    var fieldAnnotation = field.getAnnotation(Field.class);
+
+                    if(!fieldAnnotation.name().isEmpty()) {
+                        return fieldAnnotation.name();
+                    }
+
+                    return field.getName();
+                })
                 .collect(Collectors.toList());
     }
 
@@ -227,7 +240,7 @@ public class HibernateSearchService {
 
         for(var valueIndex = 1; valueIndex < valueArr.length; valueIndex++) {
             fieldMatchStringBuilder
-                    .append(" || ")
+                    .append(" | ")
                     .append(valueArr[valueIndex]);
         }
 

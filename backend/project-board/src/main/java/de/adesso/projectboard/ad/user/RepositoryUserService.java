@@ -116,7 +116,8 @@ public class RepositoryUserService implements UserService {
                 .map(HierarchyTreeNode::getUser)
                 .collect(Collectors.toList());
 
-        return hibernateSearchService.searchUserData(staff, query);
+        var dataMatchingQuery = hibernateSearchService.searchUserData(staff, query);
+        return initializeThumbnailPhotos(dataMatchingQuery);
     }
 
     @Override
