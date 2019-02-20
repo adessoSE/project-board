@@ -1,11 +1,11 @@
-package de.adesso.projectboard.base.search;
+package helper.search;
 
 import org.hibernate.search.annotations.Indexed;
 
 import javax.persistence.Entity;
 
-@Entity
 @Indexed
+@Entity
 public class IndexedEntityWithoutFields {
 
 }

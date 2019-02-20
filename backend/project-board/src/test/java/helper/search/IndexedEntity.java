@@ -1,4 +1,4 @@
-package de.adesso.projectboard.base.search;
+package helper.search;
 
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
@@ -10,12 +10,12 @@ import javax.persistence.Entity;
 public class IndexedEntity {
 
     @Field(name = "renamed_field")
-    private String firstField;
+    String firstField;
 
     @Field
-    private String secondField;
+    String secondField;
 
     @Field
-    private Integer thirdField;
+    Integer thirdField;
 
 }

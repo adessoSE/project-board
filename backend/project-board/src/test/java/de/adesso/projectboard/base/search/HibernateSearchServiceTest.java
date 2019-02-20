@@ -1,16 +1,24 @@
 package de.adesso.projectboard.base.search;
 
 import de.adesso.projectboard.base.project.persistence.Project;
+import de.adesso.projectboard.base.user.persistence.User;
+import de.adesso.projectboard.base.user.persistence.data.UserData;
+import helper.search.IndexedEntity;
+import helper.search.IndexedEntityWithoutFields;
+import helper.search.NonIndexedEntity;
 import org.apache.lucene.search.Query;
 import org.hibernate.search.MassIndexer;
 import org.hibernate.search.SearchFactory;
 import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.jpa.FullTextQuery;
 import org.hibernate.search.query.dsl.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -27,6 +35,9 @@ public class HibernateSearchServiceTest {
 
     @Mock
     private FullTextEntityManager fullTextEntityManagerMock;
+
+    @Mock
+    private FullTextQuery fullTextQueryMock;
 
     @Mock
     private QueryBuilder queryBuilderMock;
@@ -102,10 +113,131 @@ public class HibernateSearchServiceTest {
     }
 
     @Test
+    public void searchProjectsNonPageableReturnsExpectedResult() {
+        // given
+        var expectedSimpleQueryStringQuery = mock(Query.class);
+        var expectedStatusQuery = mock(Query.class);
+        var expectedResultQuery = mock(Query.class);
+        var expectedResult = List.of(mock(Project.class));
+
+        var givenSimpleQuery = "java";
+        var givenStatusSet = Set.of("open");
+        var expectedSimpleStatusQuery = "open";
+        var expectedFirstField = "status";
+        var expectedOtherFields = new String[] { "title", "job", "skills", "description", "lob",
+                "customer", "location", "operationStart", "operationEnd", "effort", "other" };
+
+        var givenQueryMatchingContext = createSimpleQueryStringMatchingContext(givenSimpleQuery, expectedSimpleQueryStringQuery);
+        var statusQueryMatchingContext = createSimpleQueryStringMatchingContext(expectedSimpleStatusQuery, expectedStatusQuery);
+        configureQueryBuilderSimpleQueryString(expectedFirstField, expectedOtherFields, givenQueryMatchingContext);
+        configureQueryBuilderSimpleQueryString("status", statusQueryMatchingContext);
+        configureGetQueryBuilderToReturnBuilderForType(Project.class);
+
+        given(queryBuilderMock.bool()).willReturn(booleanJunctionMock);
+        given(booleanJunctionMock.must(expectedStatusQuery)).willReturn(mustJunctionMock);
+        given(mustJunctionMock.must(expectedSimpleQueryStringQuery)).willReturn(mustJunctionMock);
+        given(mustJunctionMock.createQuery()).willReturn(expectedResultQuery);
+
+        given(fullTextEntityManagerMock.createFullTextQuery(expectedResultQuery, Project.class)).willReturn(fullTextQueryMock);
+        given(fullTextQueryMock.getResultList()).willReturn(expectedResult);
+
+        // when
+        var actualResult = hibernateSearchService.searchProjects(givenSimpleQuery, givenStatusSet);
+
+        // then
+        assertThat(actualResult).isEqualTo(expectedResult);
+    }
+
+    @Test
+    public void searchProjectsPageableReturnsExpectedResult() {
+        var totalResults = 1;
+        var pageSize = 20;
+        var pageCount = 1;
+        var givenPageable = PageRequest.of(pageCount, pageSize);
+        var givenSimpleQuery = "java";
+        var givenStatusSet = Set.of("open");
+        var expectedSimpleStatusQuery = "open";
+        var expectedFirstField = "status";
+        var expectedOtherFields = new String[] { "title", "job", "skills", "description", "lob",
+                "customer", "location", "operationStart", "operationEnd", "effort", "other" };
+
+        var expectedSimpleQueryStringQuery = mock(Query.class);
+        var expectedStatusQuery = mock(Query.class);
+        var expectedResultQuery = mock(Query.class);
+        var expectedProjects = List.of(mock(Project.class));
+        var expectedResultPage = new PageImpl<>(expectedProjects, givenPageable, totalResults);
+
+        var givenQueryMatchingContext = createSimpleQueryStringMatchingContext(givenSimpleQuery, expectedSimpleQueryStringQuery);
+        var statusQueryMatchingContext = createSimpleQueryStringMatchingContext(expectedSimpleStatusQuery, expectedStatusQuery);
+        configureQueryBuilderSimpleQueryString(expectedFirstField, expectedOtherFields, givenQueryMatchingContext);
+        configureQueryBuilderSimpleQueryString("status", statusQueryMatchingContext);
+        configureGetQueryBuilderToReturnBuilderForType(Project.class);
+
+        given(queryBuilderMock.bool()).willReturn(booleanJunctionMock);
+        given(booleanJunctionMock.must(expectedStatusQuery)).willReturn(mustJunctionMock);
+        given(mustJunctionMock.must(expectedSimpleQueryStringQuery)).willReturn(mustJunctionMock);
+        given(mustJunctionMock.createQuery()).willReturn(expectedResultQuery);
+
+        given(fullTextEntityManagerMock.createFullTextQuery(expectedResultQuery, Project.class)).willReturn(fullTextQueryMock);
+        given(fullTextQueryMock.setFirstResult(pageCount * pageSize)).willReturn(fullTextQueryMock);
+        given(fullTextQueryMock.setMaxResults(pageSize)).willReturn(fullTextQueryMock);
+        given(fullTextQueryMock.getResultSize()).willReturn(totalResults);
+        given(fullTextQueryMock.getResultList()).willReturn(expectedProjects);
+
+        // when
+        var actualResultPage = hibernateSearchService.searchProjects(givenSimpleQuery, givenStatusSet, givenPageable);
+
+        // then
+        assertThat(actualResultPage).isEqualTo(expectedResultPage);
+    }
+
+    @Test
     public void searchUserDataReturnsEmptyListWhenNoUsersGiven() {
         // given / when / then
         assertThat(hibernateSearchService.searchUserData(List.of(), ""))
                 .isEmpty();
+    }
+
+    @Test
+    public void searchUserDataReturnsExpectedResult() {
+        // given
+        var simpleQuery = "Jane | Doe";
+
+        var expectedUserIdQuery = mock(Query.class);
+        var expectedFieldQuery = mock(Query.class);
+        var expectedCompleteQuery = mock(Query.class);
+
+        var expectedSearchResult = List.of(mock(UserData.class));
+        var firstUserId = "jane";
+        var secondUserId = "peter";
+        var userIdSimpleQuery = secondUserId + " | " + firstUserId;
+        var firstUser = mock(User.class);
+        var secondUser = mock(User.class);
+        given(firstUser.getId()).willReturn(firstUserId);
+        given(secondUser.getId()).willReturn(secondUserId);
+
+        var firstField = "firstName";
+        var otherFields = new String[] { "lastName" };
+
+        var userIdMatchingContext = createSimpleQueryStringMatchingContext(userIdSimpleQuery, expectedUserIdQuery);
+        var fieldMatchingContext = createSimpleQueryStringMatchingContext(simpleQuery, expectedFieldQuery);
+        configureGetQueryBuilderToReturnBuilderForType(UserData.class);
+        configureQueryBuilderSimpleQueryString("user_id", userIdMatchingContext);
+        configureQueryBuilderSimpleQueryString(firstField, otherFields, fieldMatchingContext);
+
+        given(queryBuilderMock.bool()).willReturn(booleanJunctionMock);
+        given(booleanJunctionMock.must(expectedUserIdQuery)).willReturn(mustJunctionMock);
+        given(mustJunctionMock.must(expectedFieldQuery)).willReturn(mustJunctionMock);
+        given(mustJunctionMock.createQuery()).willReturn(expectedCompleteQuery);
+
+        given(fullTextEntityManagerMock.createFullTextQuery(expectedCompleteQuery, UserData.class)).willReturn(fullTextQueryMock);
+        given(fullTextQueryMock.getResultList()).willReturn(expectedSearchResult);
+
+        // when
+        var actualSearchResult = hibernateSearchService.searchUserData(List.of(firstUser, secondUser), simpleQuery);
+
+        // then
+        assertThat(actualSearchResult).isEqualTo(expectedSearchResult);
     }
 
     @Test

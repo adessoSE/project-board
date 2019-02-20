@@ -5,16 +5,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-
-// TODO: implement
+import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StatusSpecificationTest {
@@ -25,15 +26,24 @@ public class StatusSpecificationTest {
     @Mock
     private CriteriaBuilder criteriaBuilderMock;
 
-    private StatusSpecification statusSpecification;
+    @Mock
+    private Path<String> pathMock;
+
+    @Mock
+    private Predicate completePredicate;
+
+    @Mock
+    private Predicate firstPredicateMock;
+
+    @Mock
+    private Predicate secondPredicateMock;
 
     @Test
     public void allToLowerCase() {
         // given
+        var statusSpecification = new StatusSpecification(Set.of());
         var givenStatus = List.of("OffEn", "offen", "OPEN");
         var expectedStatus = Set.of("offen", "open");
-
-        setUp(givenStatus);
 
         // when
         var actualStatus = statusSpecification.allToLowerCase(givenStatus);
@@ -45,30 +55,39 @@ public class StatusSpecificationTest {
     @Test
     public void toPredicateReturnsPredicateContainingAllExpectedExpressions() {
         // given
-        var givenStatus = Set.of("offen", "eskaliert");
+        var firstStatus  = "status1";
+        var secondStatus = "status2";
+        var givenStatus = Set.of(firstStatus, secondStatus);
+        var statusSpecification = new StatusSpecification(givenStatus);
+        var expectedPredicates = new Predicate[] {firstPredicateMock, secondPredicateMock};
 
-        setUp(givenStatus);
+        given(rootMock.get("status")).willAnswer((Answer<Path<String>>) invocation -> pathMock);
+        given(criteriaBuilderMock.lower(pathMock)).willReturn(pathMock);
+        given(criteriaBuilderMock.equal(pathMock, firstStatus)).willReturn(firstPredicateMock);
+        given(criteriaBuilderMock.equal(pathMock, secondStatus)).willReturn(secondPredicateMock);
+        given(criteriaBuilderMock.or(expectedPredicates)).willReturn(completePredicate);
 
         // when
         var actualPredicate = statusSpecification.toPredicate(rootMock, null, criteriaBuilderMock);
 
         // then
+        assertThat(actualPredicate).isEqualTo(completePredicate);
     }
 
     @Test
-    public void toPredicateReturnsEmptyPredicateWhenNoStatusGiven() {
+    public void toPredicateReturnsEmptyAndPredicateWhenNoStatusGiven() {
         // given
-        setUp(List.of());
+        var statusSpecification = new StatusSpecification(Set.of());
+
+        given(rootMock.get("status")).willAnswer((Answer<Path<String>>) invocation -> pathMock);
+        given(criteriaBuilderMock.lower(pathMock)).willReturn(pathMock);
+        given(criteriaBuilderMock.and()).willReturn(completePredicate);
 
         // when
         var actualPredicate = statusSpecification.toPredicate(rootMock, null, criteriaBuilderMock);
 
         // then
-
-    }
-
-    private void setUp(Collection<String> status) {
-        this.statusSpecification = new StatusSpecification(status);
+        assertThat(actualPredicate).isEqualTo(completePredicate);
     }
 
 }
