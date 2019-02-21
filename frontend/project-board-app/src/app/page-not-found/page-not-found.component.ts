@@ -12,7 +12,7 @@ export class PageNotFoundComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.message = 'Die angeforderte Ressource ist nicht verfügbar.';
   }
 }

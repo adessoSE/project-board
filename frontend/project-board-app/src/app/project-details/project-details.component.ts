@@ -30,7 +30,7 @@ export class ProjectDetailsComponent implements OnInit {
               private employeeService: EmployeeService,
               private authService: AuthenticationService) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     combineLatest(this.route.data, this.route.params)
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
@@ -47,13 +47,13 @@ export class ProjectDetailsComponent implements OnInit {
       });
   }
 
-  swipebugplaceholder() {}
+  swipebugplaceholder(): void {}
 
-  requestProject() {
+  requestProject(): void {
     this.router.navigate([`/projects/${this.selectedProject.id}/request`]);
   }
 
-  addBookmark() {
+  addBookmark(): void {
     this.employeeService.addBookmark(this.authService.username, this.selectedProject.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.bookmarked = true,
@@ -61,7 +61,7 @@ export class ProjectDetailsComponent implements OnInit {
       );
   }
 
-  removeBookmark() {
+  removeBookmark(): void {
     this.employeeService.removeBookmark(this.authService.username, this.selectedProject.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.bookmarked = false,

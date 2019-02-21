@@ -16,7 +16,7 @@ h4 {
   text-align: center;
 }
 
-@include media-breakpoint-down(md){
+@include media-breakpoint-down(md) {
 
   h4 {
     padding-top: 1rem;

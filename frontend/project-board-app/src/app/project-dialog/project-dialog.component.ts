@@ -51,7 +51,7 @@ export class ProjectDialogComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.mobile = document.body.clientWidth < 992;
     this.data.project.skills = this.cleanUpString(this.data.project.skills);
     this.data.project.description = this.cleanUpString(this.data.project.description);
@@ -61,7 +61,8 @@ export class ProjectDialogComponent implements OnInit {
     this.data.project.operationEnd = this.cleanUpString(this.data.project.operationEnd);
   }
 
-  @HostListener('window:resize') onResize() {
+  @HostListener('window:resize')
+  onResize(): void {
     this.mobile = document.body.clientWidth < 992;
   }
 

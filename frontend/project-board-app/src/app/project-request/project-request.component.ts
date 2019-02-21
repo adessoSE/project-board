@@ -24,7 +24,7 @@ export class ProjectRequestComponent implements OnInit {
               private authService: AuthenticationService,
               private alertService: AlertService) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.route.data
       .pipe(takeUntil(this.destroy$))
       .subscribe((data: { project: Project }) => {
@@ -32,7 +32,7 @@ export class ProjectRequestComponent implements OnInit {
       });
   }
 
-  requestProject() {
+  requestProject(): void {
     this.employeeService.applyForProject(this.authService.username, this.project.id, this.comment)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {

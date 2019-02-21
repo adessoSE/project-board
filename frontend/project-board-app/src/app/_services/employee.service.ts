@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Project } from './project.service';
 
@@ -8,54 +9,54 @@ export class EmployeeService {
 
   constructor(private http: HttpClient) {}
 
-  hasUserAccess(userId: string) {
+  hasUserAccess(userId: string): Observable<{id: string, hasAccess: boolean}> {
     return this.http.get<{ id: string, hasAccess: boolean }>(`${environment.resourceServer}/users/${userId}?projection=hasAccess`);
   }
 
-  getEmployeesWithoutPicturesForSuperUser(superUserId: string) {
+  getEmployeesWithoutPicturesForSuperUser(superUserId: string): Observable<Employee[]> {
     return this.http.get<Employee[]>(`${environment.resourceServer}/users/${superUserId}/staff`);
   }
 
-  getEmployeePicturesForSuperUser(superUserId: string) {
+  getEmployeePicturesForSuperUser(superUserId: string): Observable<Employee[]> {
     return this.http.get<Employee[]>(`${environment.resourceServer}/users/${superUserId}/staff?projection=pictureonly`);
   }
 
-  getFullEmployeeForId(userId: string) {
+  getFullEmployeeForId(userId: string): Observable<Employee> {
     return this.http.get<Employee>(`${environment.resourceServer}/users/${userId}?projection=withpicture`);
   }
 
-  getEmployeeWithoutPictureForId(userId: string) {
+  getEmployeeWithoutPictureForId(userId: string): Observable<Employee> {
     return this.http.get<Employee>(`${environment.resourceServer}/users/${userId}`);
   }
 
-  getEmployeePictureForId(userId: string) {
+  getEmployeePictureForId(userId: string): Observable<Employee> {
     return this.http.get<Employee>(`${environment.resourceServer}/users/${userId}?projection=pictureonly`);
   }
 
-  getApplicationsForEmployeesOfUser(userId: string) {
+  getApplicationsForEmployeesOfUser(userId: string): Observable<Application[]> {
     return this.http.get<Application[]>(`${environment.resourceServer}/users/${userId}/staff/applications`);
   }
 
-  setEmployeeAccessInfo(userId: string, accessEnd) {
+  setEmployeeAccessInfo(userId: string, accessEnd): Observable<Employee> {
     const body = {
       'accessEnd': accessEnd
     };
     return this.http.post<Employee>(`${environment.resourceServer}/users/${userId}/access`, body);
   }
 
-  deleteEmployeeAccessInfo(userId: string) {
-    return this.http.delete<Employee>(`${environment.resourceServer}/users/${userId}/access`);
+  deleteEmployeeAccessInfo(userId: string): Observable<any> {
+    return this.http.delete(`${environment.resourceServer}/users/${userId}/access`);
   }
 
-  getApplications(userId: string) {
+  getApplications(userId: string): Observable<Application[]> {
     return this.http.get<Application[]>(`${environment.resourceServer}/users/${userId}/applications`);
   }
 
-  revokeApplication(userId, appId) {
-    return this.http.delete(`${environment.resourceServer}/users/${userId}/applications/${appId}`);
+  revokeApplication(userId, appId): Observable<Application> {
+    return this.http.delete<Application>(`${environment.resourceServer}/users/${userId}/applications/${appId}`);
   }
 
-  applyForProject(userId: string, projectId: string, comment: string) {
+  applyForProject(userId: string, projectId: string, comment: string): Observable<Application> {
     const body = {
       'projectId': projectId,
       'comment': comment
@@ -63,22 +64,22 @@ export class EmployeeService {
     return this.http.post<Application>(`${environment.resourceServer}/users/${userId}/applications`, body);
   }
 
-  getBookmarks(userId: string) {
+  getBookmarks(userId: string): Observable<Project[]> {
     return this.http.get<Project[]>(`${environment.resourceServer}/users/${userId}/bookmarks`);
   }
 
-  addBookmark(userId: string, projectId: string) {
+  addBookmark(userId: string, projectId: string): Observable<Project> {
     const body = {
       'projectId': projectId
     };
     return this.http.post<Project>(`${environment.resourceServer}/users/${userId}/bookmarks`, body);
   }
 
-  removeBookmark(userId: string, projectId: string) {
+  removeBookmark(userId: string, projectId: string): Observable<any> {
     return this.http.delete(`${environment.resourceServer}/users/${userId}/bookmarks/${projectId}`);
   }
 
-  getProjects(userId: string) {
+  getProjects(userId: string): Observable<Project[]> {
     return this.http.get<Project[]>(`${environment.resourceServer}/users/${userId}/projects`);
   }
 

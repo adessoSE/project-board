@@ -18,7 +18,7 @@ export class AlertComponent implements OnInit {
   constructor(private alertService: AlertService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.alertService.getMessage()
       .pipe(takeUntil(this.destroy$))
       .subscribe(message => {
@@ -26,7 +26,7 @@ export class AlertComponent implements OnInit {
       });
   }
 
-  clearAlert() {
+  clearAlert(): void {
     this.alertService.clearAlert();
   }
 }

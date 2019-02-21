@@ -7,23 +7,23 @@ import { Observable } from 'rxjs';
 export class ProjectService {
   constructor(private http: HttpClient) { }
 
-  getAllProjects() {
+  getAllProjects(): Observable<Project[]> {
     return this.http.get<Project[]>(`${environment.resourceServer}/projects`);
   }
 
-  /*getAllProjectsPaginated(page: number, size: number) {
+  /*getAllProjectsPaginated(page: number, size: number): Observable<Page<Project>> {
     return this.http.get<Page<Project>>(`${environment.resourceServer}/projects?page=${page}&size=${size}`);
   }*/
 
-  getProjectWithID(projectId) {
+  getProjectWithID(projectId): Observable<Project> {
     return this.http.get<Project>(`${environment.resourceServer}/projects/${projectId}`);
   }
 
-  search(keyword) {
+  search(keyword): Observable<Project[]> {
     return this.http.get<Project[]>(`${environment.resourceServer}/projects/search?keyword=${keyword}`);
   }
 
-  /*searchPaginated(keyword: string, page: number, size: number) {
+  /*searchPaginated(keyword: string, page: number, size: number): Observable<Page<Project>> {
     return this.http.get<Page<Project>>(`${environment.resourceServer}/projects/search?keyword=${keyword}&page=${page}&size=${size}`);
   }*/
 

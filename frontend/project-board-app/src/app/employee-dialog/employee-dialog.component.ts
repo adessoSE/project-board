@@ -69,7 +69,8 @@ export class EmployeeDialogComponent implements OnInit {
     });
   }
 
-  @HostListener('window:resize') onResize() {
+  @HostListener('window:resize')
+  onResize() {
     this.mobile = document.body.clientWidth < 992;
   }
 

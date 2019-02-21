@@ -11,7 +11,6 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { AlertComponent } from './_directives/alert/alert.component';
 import { AuthGuard } from './_guards/auth.guard';
 import { TokenInterceptor } from './_helpers/token.interceptor';
-import { YesOrNoPipe } from './_pipes/yes-or-no.pipe';
 import { AlertService } from './_services/alert.service';
 import { AuthenticationService } from './_services/authentication.service';
 import { EmployeeService } from './_services/employee.service';
@@ -35,7 +34,7 @@ import { ProjectRequestComponent } from './project-request/project-request.compo
 declare var Hammer: any;
 
 export class MyHammerConfig extends HammerGestureConfig {
-  buildHammer(element: HTMLElement) {
+  buildHammer(element: HTMLElement): Hammer {
     return new Hammer(element, {
       touchAction: 'pan-y'
     });
@@ -52,7 +51,6 @@ registerLocaleData(localeDe, 'de');
     BrowseProjectsComponent,
     LoginComponent,
     AlertComponent,
-    YesOrNoPipe,
     ProjectDetailsComponent,
     ProjectDialogComponent,
     EmployeeDialogComponent,

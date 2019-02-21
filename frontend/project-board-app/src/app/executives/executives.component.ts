@@ -40,13 +40,14 @@ export class ExecutivesComponent implements OnInit {
               private location: Location,
               public dialog: MatDialog) { }
 
-  @HostListener('window:resize') onResize() {
+  @HostListener('window:resize')
+  onResize(): void {
     this.mobile = document.body.clientWidth < 992;
   }
 
-  swipebugplaceholder() {}
+  swipebugplaceholder(): void {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.matIconRegistry.addSvgIcon(
       'sort_alpha_ascending',
       this.domSanitizer.bypassSecurityTrustResourceUrl('../assets/sort-alpha-down-solid.svg')
@@ -95,7 +96,7 @@ export class ExecutivesComponent implements OnInit {
       });
   }
 
-  private setSelectedEmployee(employeeId) {
+  private setSelectedEmployee(employeeId): void {
     for (const e of this.employees) {
       if (e.id === employeeId) {
         this.selectedEmployee = e;
@@ -111,7 +112,7 @@ export class ExecutivesComponent implements OnInit {
     return diff;
   }
 
-  badgeTooltip(employee) {
+  badgeTooltip(employee): string {
     const fullName = `${employee.firstName} ${employee.lastName}`;
     if (employee.boss) {
       return `${fullName} hat als Führungskraft dauerhaften Zugang zum Project Board.`;
@@ -139,7 +140,7 @@ export class ExecutivesComponent implements OnInit {
     }
   }
 
-  openDialog(e: Employee) {
+  openDialog(e: Employee): void {
     this.dialogRef = this.dialog.open(
       EmployeeDialogComponent,
       {
@@ -156,7 +157,7 @@ export class ExecutivesComponent implements OnInit {
       .subscribe(() => this.location.replaceState('/employees'));
   }
 
-  sort(memory: number, sortValue?: number) {
+  sort(memory: number, sortValue?: number): void {
     if (this.sortMemory !== memory) {
       this.sortValue = sortValue || 0;
       this.sortMemory = memory;
