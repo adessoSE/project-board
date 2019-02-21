@@ -5,10 +5,11 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import * as $ from 'jquery';
 import { combineLatest, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { debounceTime, switchMap, takeUntil } from 'rxjs/operators';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Employee, EmployeeService } from '../_services/employee.service';
 import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
+import { SEARCH_INFO_TOOLTIP } from '../tooltips';
 
 @Component({
   selector: 'app-executives',
@@ -24,12 +25,14 @@ export class ExecutivesComponent implements OnInit {
   showEmployees: string[] = [];
   employeeMap: Map<string, Employee[]> = new Map<string, Employee[]>();
 
+  infoTooltip = SEARCH_INFO_TOOLTIP;
   searchText = '';
   loading = true;
   dialogRef: MatDialogRef<EmployeeDialogComponent>;
   sortValue = 0; // 0: alphabetically ascending, 1: column ascending, 2: alphabetically/column descending
   sortMemory = 0; // memorizes the last column that was sorted
 
+  private searchText$ = new Subject<string>();
   destroy$ = new Subject<void>();
 
   constructor(private authService: AuthenticationService,
@@ -85,6 +88,19 @@ export class ExecutivesComponent implements OnInit {
         if (this.selectedEmployee) {
           this.openDialog(this.selectedEmployee);
         }
+
+      });
+    this.searchText$
+      .pipe(
+        takeUntil(this.destroy$),
+        debounceTime(500),
+        switchMap(searchText => {
+          return this.employeeService.search(searchText, this.authService.username);
+        }))
+      .subscribe(employees => {
+        this.loading = false;
+        this.employees = employees;
+        this.filteredEmployees = this.employees;
       });
     // lazy load pictures for employees
     this.employeeService.getEmployeePicturesForSuperUser(this.authService.username)
@@ -94,6 +110,12 @@ export class ExecutivesComponent implements OnInit {
           e.picture = pictures.find(emp => emp.id === e.id).picture;
         }
       });
+  }
+
+  searchEmployees(): void {
+    this.loading = true;
+    this.employees = [];
+    this.searchText$.next(this.searchText);
   }
 
   private setSelectedEmployee(employeeId): void {
@@ -128,17 +150,17 @@ export class ExecutivesComponent implements OnInit {
     return `${employee.firstName} ${employee.lastName} hat keinen Zugang zum Project Board.`;
   }
 
-  searchEmployees(): void {
-    // TODO: outsource to the backend
-    this.filteredEmployees = this.employees.filter(e => {
-      return (e.firstName + ' ' + e.lastName)
-        .toLowerCase()
-        .includes(this.searchText.toLowerCase());
-    });
-    if (this.searchText === '') {
-      this.filteredEmployees = this.employees;
-    }
-  }
+  // searchEmployees(): void {
+  //   // TODO: outsource to the backend
+  //   this.filteredEmployees = this.employees.filter(e => {
+  //     return (e.firstName + ' ' + e.lastName)
+  //       .toLowerCase()
+  //       .includes(this.searchText.toLowerCase());
+  //   });
+  //   if (this.searchText === '') {
+  //     this.filteredEmployees = this.employees;
+  //   }
+  // }
 
   openDialog(e: Employee): void {
     this.dialogRef = this.dialog.open(

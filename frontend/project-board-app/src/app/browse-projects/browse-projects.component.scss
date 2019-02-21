@@ -238,7 +238,7 @@ table thead td {
 
   #search {
     height: 4rem;
-    width: calc(100% - 6rem);
+    width: calc(100% - 6.5rem);
     flex: 1 1 auto;
     margin: 0 auto;
   }
@@ -253,8 +253,8 @@ table#result-table > thead th{
 }
 
 .input-group-addon {
-  background-color: #ececec;
-  width: 2rem;
+  background-color: #f4f4f4;
+  width: 2.5rem;
   height: 4rem;
   text-align: center;
   border: 1px solid #ced4da;
