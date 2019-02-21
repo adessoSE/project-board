@@ -34,7 +34,7 @@ import { ProjectRequestComponent } from './project-request/project-request.compo
 declare var Hammer: any;
 
 export class MyHammerConfig extends HammerGestureConfig {
-  buildHammer(element: HTMLElement): Hammer {
+  buildHammer(element: HTMLElement): any {
     return new Hammer(element, {
       touchAction: 'pan-y'
     });
