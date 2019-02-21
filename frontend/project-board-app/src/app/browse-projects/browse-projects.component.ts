@@ -10,6 +10,7 @@ import { AlertService } from '../_services/alert.service';
 import { Application, EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
 import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
+import { APPLICATION_TOOLTIP, BOOKMARK_TOOLTIP, SEARCH_INFO_TOOLTIP } from '../tooltips';
 
 @Component({
   selector: 'app-browse-projects',
@@ -18,8 +19,9 @@ import { ProjectDialogComponent } from '../project-dialog/project-dialog.compone
 })
 export class BrowseProjectsComponent implements OnInit {
 
-  appTooltip = 'Du hast dieses Projekt bereits angefragt.';
-  bmTooltip = 'Du hast ein Lesezeichen an diesem Projekt.';
+  appTooltip = APPLICATION_TOOLTIP;
+  bmTooltip = BOOKMARK_TOOLTIP;
+  infoTooltip = SEARCH_INFO_TOOLTIP;
 
   projects: Project[] = [];
   applications: Application[] = [];

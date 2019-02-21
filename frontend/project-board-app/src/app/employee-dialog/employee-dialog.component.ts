@@ -11,6 +11,7 @@ import { Application, Employee, EmployeeService } from '../_services/employee.se
 import { Project } from '../_services/project.service';
 import { DatepickerHeaderComponent } from '../datepicker-header/datepicker-header.component';
 import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
+import { CLOSE_DIALOG_TOOLTIP } from '../tooltips';
 
 export interface EmployeeDialogData {
   employee: Employee;
@@ -52,7 +53,7 @@ export class EmployeeDialogComponent implements OnInit {
   mobile: boolean;
   customHeaderClass = DatepickerHeaderComponent;
 
-  closeTooltip = 'Dialog schließen.';
+  closeTooltip = CLOSE_DIALOG_TOOLTIP;
   projectDialogRef: MatDialogRef<ProjectDialogComponent>;
 
   constructor(

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
 import { Observable } from 'rxjs';
-import { AuthenticationService } from './authentication.service';
-import { Employee, EmployeeService } from './employee.service';
+import { AuthenticationService } from '../_services/authentication.service';
+import { Employee, EmployeeService } from '../_services/employee.service';
 
 @Injectable({
   providedIn: 'root'

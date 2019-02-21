@@ -9,7 +9,7 @@ export class EmployeeService {
 
   constructor(private http: HttpClient) {}
 
-  hasUserAccess(userId: string): Observable<{id: string, hasAccess: boolean}> {
+  hasUserAccess(userId: string): Observable<{ id: string, hasAccess: boolean }> {
     return this.http.get<{ id: string, hasAccess: boolean }>(`${environment.resourceServer}/users/${userId}?projection=hasAccess`);
   }
 
@@ -27,6 +27,11 @@ export class EmployeeService {
 
   getApplications(userId: string): Observable<Application[]> {
     return this.http.get<Application[]>(`${environment.resourceServer}/users/${userId}/applications`);
+  }
+
+  search(query: string, userId: string): Observable<Employee[]> {
+    query = encodeURI(query.replace('&', ' '));
+    return this.http.get<Employee[]>(`${environment.resourceServer}/users/${userId}/staff/search?query=${query}&projection=withpicture`);
   }
 
   revokeApplication(userId, appId): Observable<Application> {
