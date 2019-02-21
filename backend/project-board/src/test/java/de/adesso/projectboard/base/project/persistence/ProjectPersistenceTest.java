@@ -55,7 +55,7 @@ public class ProjectPersistenceTest {
                 .setFreelancer("Freelancer")
                 .setElongation("Elongation")
                 .setOther("Other")
-                .setDayRate("Day Rate")
+                .setDailyRate("Daily Rate")
                 .setTravelCostsCompensated("Travel Costs Compensated")
                 .setOrigin(Project.Origin.CUSTOM);
 
