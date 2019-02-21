@@ -1,5 +1,5 @@
 --Create Projects, some with other statuses, LoBs and no LoB (null)
-INSERT INTO PROJECT (ID, STATUS, ISSUE_TYPE, TITLE, JOB, SKILLS, DESCRIPTION, LOB, CUSTOMER, LOCATION, OPERATION_START, OPERATION_END, EFFORT, CREATED, UPDATED, FREELANCER, ELONGATION, OTHER, DAY_RATE, TRAVEL_COSTS_COMPENSATED, ORIGIN) VALUES
+INSERT INTO PROJECT (ID, STATUS, ISSUE_TYPE, TITLE, JOB, SKILLS, DESCRIPTION, LOB, CUSTOMER, LOCATION, OPERATION_START, OPERATION_END, EFFORT, CREATED, UPDATED, FREELANCER, ELONGATION, OTHER, DAILY_RATE, TRAVEL_COSTS_COMPENSATED, ORIGIN) VALUES
 ('STF-1', 'eskaliert', 'Issuetype', 'Special Title', 'Job', 'Skills', 'Description', 'LOB Test', 'Customer', 'Location', 'OperationStart', 'OperationEnd', 'Effort', '2018-02-1 13:37:00', '2018-02-2 13:37:00', 'Freelancer', 'Elongation', 'Other', 'Rate 1', 'Compensated', 1),
 
 ('STF-2', 'Abgeschlossen', 'Issuetype', 'Special Title', 'Job', 'Skills', 'Description', 'LOB Test', 'Customer', 'Location', 'OperationStart', 'OperationEnd', 'Effort', '2018-02-1 13:37:00', '2018-02-2 13:37:00', 'Freelancer', 'Elongation', 'Other', 'Rate 2', 'Compensated', 1),
