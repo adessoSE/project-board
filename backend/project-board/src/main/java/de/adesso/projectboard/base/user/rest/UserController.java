@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Objects;
+
 @RestController
 @RequestMapping(path = "/users")
 public class UserController {
@@ -45,9 +47,14 @@ public class UserController {
     @GetMapping(path = "/{userId}/staff/search", params = "query")
     public ResponseEntity<?> searchStaffMembersOfUser(@PathVariable String userId, Sort sort, @RequestParam String query, @ProjectionType(UserProjectionSource.class) Class<?> projectionType) {
         var user = userService.getUserById(userId);
-        var staffMatchingQuery = userService.searchStaffMemberDataOfUser(user, query, sort);
 
-        return ResponseEntity.ok(userProjectionFactory.createProjections(staffMatchingQuery, projectionType));
+        if(Objects.isNull(query) || query.isEmpty()) {
+            return getStaffMembersOfUser(userId, sort, projectionType);
+        } else {
+            var staffMatchingQuery = userService.searchStaffMemberDataOfUser(user, query, sort);
+
+            return ResponseEntity.ok(userProjectionFactory.createProjections(staffMatchingQuery, projectionType));
+        }
     }
 
 }
