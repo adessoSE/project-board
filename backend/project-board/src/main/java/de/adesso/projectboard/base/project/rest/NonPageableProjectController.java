@@ -69,13 +69,13 @@ public class NonPageableProjectController extends BaseProjectController {
     }
 
     @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
-    @GetMapping(path = "/search", params = "keyword")
-    public ResponseEntity<?> searchByKeyword(@RequestParam String keyword, @SortDefault(direction = Sort.Direction.DESC, sort = "updated") Sort sort) {
-        if(keyword == null || keyword.isEmpty()) {
+    @GetMapping(path = "/search", params = "query")
+    public ResponseEntity<?> searchByKeyword(@RequestParam String query, @SortDefault(direction = Sort.Direction.DESC, sort = "updated") Sort sort) {
+        if(query == null || query.isEmpty()) {
             return getAllForUser(sort);
         } else {
             var user = userAuthService.getAuthenticatedUser();
-            var projectsMatchingKeyword = userProjectService.searchProjectsForUser(user, keyword, sort);
+            var projectsMatchingKeyword = userProjectService.searchProjectsForUser(user, query, sort);
 
             var projections = projectionFactory.createProjectionsForAuthenticatedUser(projectsMatchingKeyword,
                     ReducedProjectProjection.class, FullProjectProjection.class);
