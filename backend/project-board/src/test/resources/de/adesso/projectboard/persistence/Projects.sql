@@ -4,7 +4,7 @@ INSERT INTO PROJECT (ID, STATUS, ISSUE_TYPE, TITLE, JOB, SKILLS, DESCRIPTION, LO
 
 ('STF-2', 'Abgeschlossen', 'Issuetype', 'Special Title', 'Job', 'Skills', 'Description', 'LOB Test', 'Customer', 'Location', 'OperationStart', 'OperationEnd', 'Effort', '2018-02-1 13:37:00', '2018-02-2 13:37:00', 'Freelancer', 'Elongation', 'Other', 'Rate 2', 'Compensated', 1),
 
-('STF-3', 'eskaliert', 'Issuetype', 'Title', 'Job', 'Skills', 'Description', 'LOB Prod', 'Customer', 'Location', 'OperationStart', 'OperationEnd', 'Effort', '2018-02-1 13:37:00', '2018-02-2 13:37:00', 'Freelancer', 'Elongation', 'Other', 'Rate 3', 'Compensated', 1),
+('STF-3', 'eskaliert', 'Issuetype', 'Title', 'Job', 'Skills', 'Spring', 'LOB Prod', 'Customer', 'Location', 'OperationStart', 'OperationEnd', 'Effort', '2018-02-1 13:37:00', '2018-02-2 13:37:00', 'Freelancer', 'Elongation', 'Other', 'Rate 3', 'Compensated', 1),
 
 ('STF-4', 'offen', 'Issuetype', 'Title', 'Special Job', 'Skills', 'Description', NULL, 'Customer', 'Location', 'OperationStart', 'OperationEnd', 'Effort', '2018-02-1 13:37:00', '2018-02-2 13:37:00', 'Freelancer', 'Elongation', 'Other', 'Rate 4', 'Compensated', 1),
 
@@ -14,9 +14,9 @@ INSERT INTO PROJECT (ID, STATUS, ISSUE_TYPE, TITLE, JOB, SKILLS, DESCRIPTION, LO
 
 ('STF-7', 'open', 'Issuetype', 'Title', 'Job', 'Skills', 'Description', NULL, 'Customer', 'Location', 'OperationStart', 'OperationEnd', 'Effort', '2018-02-1 13:37:00', '2018-02-2 13:37:00', 'Freelancer', 'Elongation', 'Other', 'Rate 7', 'Compensated', 1),
 
-('STF-8', 'Offen', 'Issuetype', 'Title', 'Job', 'Skills', 'Special Description', 'LOB Test', 'Customer', 'Location', 'OperationStart', 'OperationEnd', 'Effort', '2018-02-1 13:37:00', '2018-02-2 13:37:00', 'Freelancer', 'Elongation', 'Other', 'Rate 8', 'Compensated', 1),
+('STF-8', 'Offen', 'Issuetype', 'Title', 'Job', 'Skills', 'Extraordinary Description', 'LOB Test', 'Customer', 'Location', 'OperationStart', 'OperationEnd', 'Effort', '2018-02-1 13:37:00', '2018-02-2 13:37:00', 'Freelancer', 'Elongation', 'Other', 'Rate 8', 'Compensated', 1),
 
-('STF-9', 'Open', 'Issuetype', 'Title', 'Job', 'Skills', 'Description', 'LOB Prod', 'Customer', 'Location', 'OperationStart', 'OperationEnd', 'Effort', '2018-02-1 13:37:00', '2018-02-2 13:37:00', 'Freelancer', 'Elongation', 'Other', 'Rate 9', 'Compensated', 1),
+('STF-9', 'Open', 'Issuetype', 'Title', 'Job', 'Skills', 'Description', 'LOB Prod', 'Mockito', 'Location', 'OperationStart', 'OperationEnd', 'Effort', '2018-02-1 13:37:00', '2018-02-2 13:37:00', 'Freelancer', 'Elongation', 'Other', 'Rate 9', 'Compensated', 1),
 
 ('STF-10', NULL, 'Issuetype', 'Title', 'Job', 'Skills', 'Description', 'LOB Prod', 'Customer', 'Location', 'OperationStart', 'OperationEnd', 'Effort', '2019-02-1 13:37:00', '2019-02-2 13:37:00', 'Freelancer', 'Elongation', 'Other', 'Rate 9', 'Compensated', 1);
 
