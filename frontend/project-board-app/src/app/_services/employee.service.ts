@@ -25,12 +25,20 @@ export class EmployeeService {
     return this.http.get<Employee>(`${environment.resourceServer}/users/${userId}?projection=withpicture`);
   }
 
-  getEmployeeWithoutPictureForId(userId: string): Observable<Employee> {
-    return this.http.get<Employee>(`${environment.resourceServer}/users/${userId}`);
+  getApplications(userId: string): Observable<Application[]> {
+    return this.http.get<Application[]>(`${environment.resourceServer}/users/${userId}/applications`);
   }
 
-  getEmployeePictureForId(userId: string): Observable<Employee> {
-    return this.http.get<Employee>(`${environment.resourceServer}/users/${userId}?projection=pictureonly`);
+  revokeApplication(userId, appId): Observable<Application> {
+    return this.http.delete<Application>(`${environment.resourceServer}/users/${userId}/applications/${appId}`);
+  }
+
+  applyForProject(userId: string, projectId: string, comment: string): Observable<Application> {
+    const body = {
+      'projectId': projectId,
+      'comment': comment
+    };
+    return this.http.post<Application>(`${environment.resourceServer}/users/${userId}/applications`, body);
   }
 
   getApplicationsForEmployeesOfUser(userId: string): Observable<Application[]> {
@@ -48,22 +56,6 @@ export class EmployeeService {
     return this.http.delete(`${environment.resourceServer}/users/${userId}/access`);
   }
 
-  getApplications(userId: string): Observable<Application[]> {
-    return this.http.get<Application[]>(`${environment.resourceServer}/users/${userId}/applications`);
-  }
-
-  revokeApplication(userId, appId): Observable<Application> {
-    return this.http.delete<Application>(`${environment.resourceServer}/users/${userId}/applications/${appId}`);
-  }
-
-  applyForProject(userId: string, projectId: string, comment: string): Observable<Application> {
-    const body = {
-      'projectId': projectId,
-      'comment': comment
-    };
-    return this.http.post<Application>(`${environment.resourceServer}/users/${userId}/applications`, body);
-  }
-
   getBookmarks(userId: string): Observable<Project[]> {
     return this.http.get<Project[]>(`${environment.resourceServer}/users/${userId}/bookmarks`);
   }
@@ -77,10 +69,6 @@ export class EmployeeService {
 
   removeBookmark(userId: string, projectId: string): Observable<any> {
     return this.http.delete(`${environment.resourceServer}/users/${userId}/bookmarks/${projectId}`);
-  }
-
-  getProjects(userId: string): Observable<Project[]> {
-    return this.http.get<Project[]>(`${environment.resourceServer}/users/${userId}/projects`);
   }
 
   isApplicable(applications: Application[], projectId: string): boolean {

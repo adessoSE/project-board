@@ -5,7 +5,6 @@ import { AuthGuard } from './_guards/auth.guard';
 import { IsBossGuard } from './_guards/is-boss.guard';
 import { ApplicationsResolverService } from './_services/applications-resolver.service';
 import { BookmarksResolverService } from './_services/bookmarks-resolver.service';
-import { CreatedProjectsResolverService } from './_services/created-projects-resolver.service';
 import { EmployeeResolverService } from './_services/employee-resolver.service';
 import { IsBossResolverService } from './_services/is-boss-resolver.service';
 import { ProjectsResolverService } from './_services/projects-resolver.service';

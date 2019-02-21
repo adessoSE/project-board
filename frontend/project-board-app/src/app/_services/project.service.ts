@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable()
 export class ProjectService {
@@ -11,10 +11,6 @@ export class ProjectService {
     return this.http.get<Project[]>(`${environment.resourceServer}/projects`);
   }
 
-  /*getAllProjectsPaginated(page: number, size: number): Observable<Page<Project>> {
-    return this.http.get<Page<Project>>(`${environment.resourceServer}/projects?page=${page}&size=${size}`);
-  }*/
-
   getProjectWithID(projectId): Observable<Project> {
     return this.http.get<Project>(`${environment.resourceServer}/projects/${projectId}`);
   }
@@ -22,10 +18,6 @@ export class ProjectService {
   search(keyword): Observable<Project[]> {
     return this.http.get<Project[]>(`${environment.resourceServer}/projects/search?keyword=${keyword}`);
   }
-
-  /*searchPaginated(keyword: string, page: number, size: number): Observable<Page<Project>> {
-    return this.http.get<Page<Project>>(`${environment.resourceServer}/projects/search?keyword=${keyword}&page=${page}&size=${size}`);
-  }*/
 
   isBookmarked(bookmarks: Project[], projectId: string): boolean {
     return bookmarks ? bookmarks.some(p => p && p.id === projectId) : false;
@@ -55,29 +47,3 @@ export interface Project {
   created: Date;
   updated: Date;
 }
-/*
-export interface Page<T> {
-  content: T[];
-  pageable: {
-    sort: {
-      sorted: boolean,
-      unsorted: boolean
-    }
-    offset: number,
-    pageSize: number,
-    pageNumber: number,
-    paged: boolean,
-    unpaged: boolean
-  };
-  totalPages: number;
-  totalElements: number;
-  last: boolean;
-  size: number;
-  number: number;
-  sort: {
-    sorted: boolean,
-    unsorted: boolean
-  };
-  first: boolean;
-  numberOfElements: number;
-}*/
