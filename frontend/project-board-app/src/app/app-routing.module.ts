@@ -10,6 +10,7 @@ import { IsBossResolverService } from './_services/is-boss-resolver.service';
 import { ProjectsResolverService } from './_services/projects-resolver.service';
 import { UserResolverService } from './_services/user-resolver.service';
 import { BrowseProjectsComponent } from './browse-projects/browse-projects.component';
+import { ErrorComponent } from './error/error.component';
 import { ExecutivesComponent } from './executives/executives.component';
 import { LogoutComponent } from './logout/logout.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
@@ -85,6 +86,10 @@ const routes: Routes = [
   {
     path: 'notFound',
     component: PageNotFoundComponent
+  },
+  {
+    path: 'error',
+    component: ErrorComponent
   },
   {
     path: '',
