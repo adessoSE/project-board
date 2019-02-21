@@ -69,13 +69,13 @@ public class PageableProjectController extends BaseProjectController {
     }
 
     @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
-    @GetMapping(path = "/search", params = "keyword")
-    public ResponseEntity<?> searchByKeyword(@RequestParam String keyword, @SortDefault(direction = Sort.Direction.DESC, sort = "updated") Pageable pageable) {
-        if(keyword == null || keyword.isEmpty()) {
+    @GetMapping(path = "/search", params = "query")
+    public ResponseEntity<?> searchByKeyword(@RequestParam String query, @SortDefault(direction = Sort.Direction.DESC, sort = "updated") Pageable pageable) {
+        if(query == null || query.isEmpty()) {
             return getAllForUser(pageable);
         } else {
             var authenticatedUser = userAuthService.getAuthenticatedUser();
-            var projectsPage = userProjectService.searchProjectsForUserPaginated(keyword, authenticatedUser, pageable);
+            var projectsPage = userProjectService.searchProjectsForUserPaginated(query, authenticatedUser, pageable);
 
             var projectionsPage = projectionFactory.createProjectionsForAuthenticatedUser(projectsPage,
                     ReducedProjectProjection.class, FullProjectProjection.class);

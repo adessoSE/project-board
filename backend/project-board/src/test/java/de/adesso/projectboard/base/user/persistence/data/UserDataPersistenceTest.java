@@ -66,7 +66,7 @@ public class UserDataPersistenceTest {
     public void findByUser() {
         // given
         var firstUserId = "User1";
-        var thirdUserId = "User3";
+        var thirdUserId = "User4";
 
         var firstUser = userRepo.findById(firstUserId).orElseThrow();
         var thirdUser = userRepo.findById(thirdUserId).orElseThrow();
@@ -93,7 +93,7 @@ public class UserDataPersistenceTest {
         // given
         var firstUserId = "User1";
         var secondUserId = "User2";
-        var thirdUserId = "User3";
+        var thirdUserId = "User4";
 
         var firstUser = userRepo.findById(firstUserId).orElseThrow();
         var secondUser = userRepo.findById(secondUserId).orElseThrow();
@@ -116,7 +116,7 @@ public class UserDataPersistenceTest {
     public void existsByUser() {
         // given
         var firstUserId = "User1";
-        var thirdUserId = "User3";
+        var thirdUserId = "User4";
 
         var firstUser = userRepo.findById(firstUserId).orElseThrow();
         var thirdUser = userRepo.findById(thirdUserId).orElseThrow();

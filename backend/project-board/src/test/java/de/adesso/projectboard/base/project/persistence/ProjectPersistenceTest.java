@@ -1,5 +1,6 @@
 package de.adesso.projectboard.base.project.persistence;
 
+import de.adesso.projectboard.base.project.persistence.specification.StatusSpecification;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -154,108 +156,52 @@ public class ProjectPersistenceTest {
 
     @Test
     @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void findAllByStatusEscalatedOrOpenPageable() {
-        // given
-        var pageable = PageRequest.of(0, 10);
-
-        // when
-        var projects = projectRepository.findAllByStatusEscalatedOrOpenPageable(pageable)
-                .getContent();
-
-        // then
-        testProjects(projects);
+    public void findAllReturnsAllProjectsWhenSpecificationEmptyNonPaginated() {
+        // given / when / then
+        allMatchingAndSizeEquals(Set.of(), 10, false);
     }
 
     @Test
     @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void findAllByStatusEscalatedOrOpen() {
-        // given
-        var sort = Sort.unsorted();
-
-        // when
-        var projects = projectRepository.findAllByStatusEscalatedOrOpen(sort);
-
-        // then
-        testProjects(projects);
+    public void findAllReturnsAllProjectsWhenSpecificationEmptyPaginated() {
+        // given / when / then
+        allMatchingAndSizeEquals(Set.of(), 10, true);
     }
 
     @Test
     @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void findAllByStatusEscalatedOrOpenAndKeywordPageable() {
-        // given
-        var keyword = "Special";
-        var pageable = PageRequest.of(0, 10);
-
-        // when
-        var projects = projectRepository.findAllByStatusEscalatedOrOpenAndKeywordPageable(keyword, pageable)
-                .getContent();
-
-        // then
-        testProjectsByKeyword(projects, keyword);
+    public void findAllReturnsProjectsExpectedStatusNonPaginated() {
+        // given / when / then
+        allMatchingAndSizeEquals(Set.of("offen", "open"), 4, false);
     }
 
     @Test
     @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void findAllByStatusEscalatedOrOpenAndKeyword() {
-        // given
-        var keyword = "Special";
-        var sort = Sort.unsorted();
-
-        // when
-        var projects = projectRepository.findAllByStatusEscalatedOrOpenAndKeyword(keyword, sort);
-
-        // then
-        testProjectsByKeyword(projects, keyword);
+    public void findAllReturnsProjectsExpectedStatusPaginated() {
+        // given / when / then
+        allMatchingAndSizeEquals(Set.of("offen", "open"), 4, true);
     }
 
-    void testProjects(List<Project> projects) {
-        boolean allEscalatedOrOpen = allEscalatedOrOpen(projects);
+    void allMatchingAndSizeEquals(Set<String> status, int expectedSize, boolean paginated) {
+        // when
+        List<Project> projects;
+        if(paginated) {
+            projects = projectRepository.findAll(new StatusSpecification(status), PageRequest.of(0, 1000))
+                            .getContent();
+        } else {
+            projects = projectRepository.findAll(new StatusSpecification(status), Sort.unsorted());
+        }
 
-        SoftAssertions softly = new SoftAssertions();
+        // then
+        var allMatchingStatus = status.isEmpty() || projects.stream()
+                .allMatch(project -> status.contains(project.status.toLowerCase()));
 
-        softly.assertThat(allEscalatedOrOpen).isTrue();
-        softly.assertThat(projects).hasSize(7);
+        var softly = new SoftAssertions();
+
+        softly.assertThat(projects).hasSize(expectedSize);
+        softly.assertThat(allMatchingStatus).isTrue();
 
         softly.assertAll();
-    }
-
-    void testProjectsByKeyword(List<Project> projects, String keyword) {
-        boolean allEscalatedOrOpen = allEscalatedOrOpen(projects);
-        boolean allContainingKeywordInAnyField = allContainingKeywordInField(projects, keyword);
-
-        SoftAssertions softly = new SoftAssertions();
-
-        softly.assertThat(allEscalatedOrOpen).isTrue();
-        softly.assertThat(allContainingKeywordInAnyField).isTrue();
-
-        softly.assertThat(projects).hasSize(4);
-
-        softly.assertAll();
-    }
-
-    boolean allEscalatedOrOpen(List<Project> projects) {
-        return projects.stream()
-                .allMatch(project -> {
-                    boolean isOpen = "open".equalsIgnoreCase(project.getStatus()) ||
-                            "offen".equalsIgnoreCase(project.getStatus());
-
-                    boolean isEscalated = "eskaliert".equalsIgnoreCase(project.getStatus()) ||
-                            "escalated".equalsIgnoreCase(project.getStatus());
-
-                    return isOpen || isEscalated;
-                });
-    }
-
-    boolean allContainingKeywordInField(List<Project> projects, String keyword) {
-        return projects.stream()
-                .allMatch(project -> {
-                    boolean titleMatches = project.getTitle().matches(".*" + keyword + ".*");
-                    boolean jobMatches = project.getJob().matches(".*" + keyword + ".*");
-                    boolean skillsMatches = project.getSkills().matches(".*" + keyword + ".*");
-                    boolean descriptionMatches = project.getDescription().matches(".*" + keyword + ".*");
-
-                    return titleMatches || jobMatches || skillsMatches || descriptionMatches;
-                });
     }
 
 }
