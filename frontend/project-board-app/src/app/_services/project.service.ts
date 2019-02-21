@@ -16,6 +16,7 @@ export class ProjectService {
   }
 
   search(query: string): Observable<Project[]> {
+    query = encodeURI(query.replace('&', ' '));
     return this.http.get<Project[]>(`${environment.resourceServer}/projects/search?query=${query}`);
   }
 

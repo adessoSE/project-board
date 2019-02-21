@@ -150,18 +150,6 @@ export class ExecutivesComponent implements OnInit {
     return `${employee.firstName} ${employee.lastName} hat keinen Zugang zum Project Board.`;
   }
 
-  // searchEmployees(): void {
-  //   // TODO: outsource to the backend
-  //   this.filteredEmployees = this.employees.filter(e => {
-  //     return (e.firstName + ' ' + e.lastName)
-  //       .toLowerCase()
-  //       .includes(this.searchText.toLowerCase());
-  //   });
-  //   if (this.searchText === '') {
-  //     this.filteredEmployees = this.employees;
-  //   }
-  // }
-
   openDialog(e: Employee): void {
     this.dialogRef = this.dialog.open(
       EmployeeDialogComponent,

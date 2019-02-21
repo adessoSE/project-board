@@ -30,6 +30,7 @@ export class EmployeeService {
   }
 
   search(query: string, userId: string): Observable<Employee[]> {
+    query = encodeURI(query.replace('&', ' '));
     return this.http.get<Employee[]>(`${environment.resourceServer}/users/${userId}/staff/search?query=${query}&projection=withpicture`);
   }
 
