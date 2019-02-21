@@ -6,6 +6,7 @@ import { AlertService } from '../_services/alert.service';
 import { AuthenticationService } from '../_services/authentication.service';
 import { EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
+import { BOOKMARK_TOOLTIP, STUDENT_TOOLTIP } from '../tooltips';
 
 @Component({
   selector: 'app-project-details',
@@ -18,8 +19,8 @@ export class ProjectDetailsComponent implements OnInit {
   bookmarked: boolean;
   isUserBoss = false;
   @Output() bookmarkChanged = new EventEmitter();
-  bmTooltip = 'Du hast ein Lesezeichen an diesem Projekt.';
-  studTooltip = 'Studentisches Projekt';
+  bmTooltip = BOOKMARK_TOOLTIP;
+  studTooltip = STUDENT_TOOLTIP;
 
   destroy$ = new Subject<void>();
 

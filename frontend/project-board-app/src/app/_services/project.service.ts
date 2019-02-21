@@ -15,8 +15,8 @@ export class ProjectService {
     return this.http.get<Project>(`${environment.resourceServer}/projects/${projectId}`);
   }
 
-  search(keyword): Observable<Project[]> {
-    return this.http.get<Project[]>(`${environment.resourceServer}/projects/search?keyword=${keyword}`);
+  search(query: string): Observable<Project[]> {
+    return this.http.get<Project[]>(`${environment.resourceServer}/projects/search?query=${query}`);
   }
 
   isBookmarked(bookmarks: Project[], projectId: string): boolean {

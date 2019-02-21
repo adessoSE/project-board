@@ -4,6 +4,14 @@
       <label for="search" class="sr-only">Suche</label>
       <span class="square"><mat-icon>search</mat-icon></span>
       <input #search [(ngModel)]="searchText" (ngModelChange)="searchProjects()" class="search form-control" type="text" name="search" id="search" placeholder="Projekte suchen...">
+      <span class="input-group-addon">
+        <mat-icon class="search-info-icon">info</mat-icon>
+        <div class="search-info-tooltip">
+          <div class="arrow"></div>
+          <div class="search-info-tooltip-header">Suche</div>
+          <div [innerHTML]="infoTooltip"></div>
+        </div>
+      </span>
     </div>
   </div>
 </div>
