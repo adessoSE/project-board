@@ -3,6 +3,9 @@ FROM openjdk:11
 # Volume for JBoss files
 VOLUME /tmp
 
+# Volume for Apache Lucene Indexes
+VOLUME /var/lucene
+
 # Token is replaced by gradle
 EXPOSE 8080
 

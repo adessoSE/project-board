@@ -10,7 +10,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -62,7 +62,7 @@ public class StatusSpecification implements Specification<Project> {
     @Override
     public Predicate toPredicate(Root<Project> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         var lowerCaseStatusExpression = criteriaBuilder.lower(root.get(STATUS_FIELD_NAME));
-        var predicates = new HashSet<Predicate>();
+        var predicates = new LinkedHashSet<Predicate>();
 
         if(status.isEmpty()) {
             return criteriaBuilder.and();
