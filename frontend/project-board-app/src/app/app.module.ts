@@ -21,6 +21,7 @@ import { AppComponent } from './app.component';
 import { BrowseProjectsComponent } from './browse-projects/browse-projects.component';
 import { DatepickerHeaderComponent } from './datepicker-header/datepicker-header.component';
 import { EmployeeDialogComponent } from './employee-dialog/employee-dialog.component';
+import { ErrorComponent } from './error/error.component';
 import { ExecutivesComponent } from './executives/executives.component';
 import { LoginComponent } from './login/login.component';
 import { LogoutComponent } from './logout/logout.component';
@@ -48,6 +49,7 @@ registerLocaleData(localeDe, 'de');
     AppComponent,
     ExecutivesComponent,
     PageNotFoundComponent,
+    ErrorComponent,
     BrowseProjectsComponent,
     LoginComponent,
     AlertComponent,
