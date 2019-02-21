@@ -8,6 +8,7 @@ import { takeUntil } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 import { AuthenticationService } from './_services/authentication.service';
 import { EmployeeService } from './_services/employee.service';
+import { NO_ACCESS_TOOLTIP } from './tooltips';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,7 @@ export class AppComponent implements OnInit, DoCheck {
   username = 'default';
   boss: boolean;
   hasAccess = false;
-  noAccessTooltip = 'Du bist nicht für das Project-Board freigeschaltet.';
+  noAccessTooltip = NO_ACCESS_TOOLTIP;
 
   destroy$ = new Subject();
   @ViewChild('snav') sidenav: MatSidenav;
