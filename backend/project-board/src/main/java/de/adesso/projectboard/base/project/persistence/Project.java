@@ -7,8 +7,12 @@ import de.adesso.projectboard.base.project.deserializer.date.CreatedUpdatedDateD
 import de.adesso.projectboard.base.project.deserializer.field.ObjectAttachmentDeserializer;
 import de.adesso.projectboard.base.project.deserializer.field.ObjectNameDeserializer;
 import de.adesso.projectboard.base.project.deserializer.field.ObjectValueDeserializer;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -19,14 +23,13 @@ import java.util.List;
  *
  * @see ProjectRepository
  */
+@Indexed
 @Entity
 @Table(name = "PROJECT")
-@Getter
-@Setter
-@EqualsAndHashCode
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class Project {
 
     @Id
@@ -40,6 +43,7 @@ public class Project {
     )
     String id;
 
+    @Field
     @JsonDeserialize(using = ObjectNameDeserializer.class)
     String status;
 
@@ -47,6 +51,7 @@ public class Project {
     @JsonDeserialize(using = ObjectNameDeserializer.class)
     String issuetype;
 
+    @Field
     @JsonAlias("summary")
     String title;
 
@@ -58,39 +63,48 @@ public class Project {
     @Column(name = "LABEL")
     List<String> labels;
 
+    @Field
     @Lob
     @Column(length = 8192)
     @JsonAlias("customfield_10288")
     String job;
 
+    @Field
     @Lob
     @Column(length = 8192)
     @JsonAlias("customfield_10296")
     String skills;
 
+    @Field
     @Lob
     @Column(length = 8192)
     String description;
 
+    @Field
     @Column(name = "LOB")
     @JsonDeserialize(using = ObjectValueDeserializer.class)
     @JsonAlias("customfield_10292")
     String lob;
 
+    @Field
     @JsonAlias("customfield_10279")
     String customer;
 
+    @Field
     @JsonAlias("customfield_10297")
     String location;
 
+    @Field
     @Column(name = "OPERATION_START")
     @JsonAlias("customfield_10293")
     String operationStart;
 
+    @Field
     @Column(name = "OPERATION_END")
     @JsonAlias("customfield_10294")
     String operationEnd;
 
+    @Field
     @JsonAlias("customfield_10284")
     String effort;
 
@@ -108,6 +122,7 @@ public class Project {
     @JsonAlias("customfield_10306")
     String elongation;
 
+    @Field
     @Lob
     @Column(length = 8192)
     @JsonAlias("customfield_10304")

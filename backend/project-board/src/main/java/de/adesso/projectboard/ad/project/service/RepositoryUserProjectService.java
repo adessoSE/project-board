@@ -2,6 +2,8 @@ package de.adesso.projectboard.ad.project.service;
 
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.persistence.ProjectRepository;
+import de.adesso.projectboard.base.project.persistence.specification.StatusSpecification;
+import de.adesso.projectboard.base.search.HibernateSearchService;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
 import de.adesso.projectboard.base.user.service.PageableUserProjectService;
@@ -14,10 +16,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
 public class RepositoryUserProjectService implements PageableUserProjectService {
+
+    private static final Set<String> ALL_STATUS = Set.of("open", "offen", "eskaliert", "escalated");
 
     private final UserService userService;
 
@@ -27,25 +32,29 @@ public class RepositoryUserProjectService implements PageableUserProjectService 
 
     private final RepositoryProjectService projectService;
 
+    private final HibernateSearchService hibernateSearchService;
+
     @Autowired
     public RepositoryUserProjectService(UserService userService,
                                         ProjectRepository projectRepo,
                                         UserRepository userRepo,
-                                        RepositoryProjectService projectService) {
+                                        RepositoryProjectService projectService,
+                                        HibernateSearchService hibernateSearchService) {
         this.userService = userService;
         this.projectRepo = projectRepo;
         this.userRepo = userRepo;
         this.projectService = projectService;
+        this.hibernateSearchService = hibernateSearchService;
     }
 
     @Override
     public List<Project> getProjectsForUser(User user, Sort sort) {
-        return projectRepo.findAllByStatusEscalatedOrOpen(sort);
+        return projectRepo.findAll(new StatusSpecification(ALL_STATUS), sort);
     }
 
     @Override
-    public List<Project> searchProjectsForUser(User user, String keyword, Sort sort) {
-        return projectRepo.findAllByStatusEscalatedOrOpenAndKeyword(keyword, sort);
+    public List<Project> searchProjectsForUser(User user, String query, Sort sort) {
+        return hibernateSearchService.searchProjects(query, ALL_STATUS);
     }
 
     @Override
@@ -75,12 +84,12 @@ public class RepositoryUserProjectService implements PageableUserProjectService 
 
     @Override
     public Page<Project> getProjectsForUserPaginated(User user, Pageable pageable) {
-        return projectRepo.findAllByStatusEscalatedOrOpenPageable(pageable);
+        return projectRepo.findAll(new StatusSpecification(ALL_STATUS), pageable);
     }
 
     @Override
-    public Page<Project> searchProjectsForUserPaginated(String keyword, User user, Pageable pageable) {
-        return projectRepo.findAllByStatusEscalatedOrOpenAndKeywordPageable(keyword, pageable);
+    public Page<Project> searchProjectsForUserPaginated(String query, User user, Pageable pageable) {
+        return hibernateSearchService.searchProjects(query, ALL_STATUS, pageable);
     }
 
 }

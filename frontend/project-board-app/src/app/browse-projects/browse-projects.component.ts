@@ -10,6 +10,7 @@ import { AlertService } from '../_services/alert.service';
 import { Application, EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
 import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
+import { APPLICATION_TOOLTIP, BOOKMARK_TOOLTIP, SEARCH_INFO_TOOLTIP } from '../tooltips';
 
 @Component({
   selector: 'app-browse-projects',
@@ -18,8 +19,9 @@ import { ProjectDialogComponent } from '../project-dialog/project-dialog.compone
 })
 export class BrowseProjectsComponent implements OnInit {
 
-  appTooltip = 'Du hast dieses Projekt bereits angefragt.';
-  bmTooltip = 'Du hast ein Lesezeichen an diesem Projekt.';
+  appTooltip = APPLICATION_TOOLTIP;
+  bmTooltip = BOOKMARK_TOOLTIP;
+  infoTooltip = SEARCH_INFO_TOOLTIP;
 
   projects: Project[] = [];
   applications: Application[] = [];
@@ -50,7 +52,7 @@ export class BrowseProjectsComponent implements OnInit {
               public dialog: MatDialog
   ) {}
 
-  openDialog(p: Project) {
+  openDialog(p: Project): void {
     this.dialogRef = this.dialog.open(ProjectDialogComponent, {
       autoFocus: false,
       panelClass: 'custom-dialog-container',
@@ -72,13 +74,12 @@ export class BrowseProjectsComponent implements OnInit {
     this.location.replaceState(`/browse/${p.id}`);
   }
 
-  @HostListener('window:resize') onResize() {
+  @HostListener('window:resize')
+  onResize(): void {
     this.mobile = document.body.clientWidth < 992;
   }
 
-  swipebugplaceholder() {}
-
-  loadProjects() {
+  loadProjects(): void {
     combineLatest(this.route.data, this.route.params)
       .pipe(takeUntil(this.destroy$))
       .subscribe(data => {
@@ -101,7 +102,7 @@ export class BrowseProjectsComponent implements OnInit {
       });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.matIconRegistry.addSvgIcon(
       'sort_ascending',
       this.domSanitizer.bypassSecurityTrustResourceUrl('../assets/long-arrow-alt-up-solid.svg')
@@ -130,13 +131,13 @@ export class BrowseProjectsComponent implements OnInit {
     this.divToScroll = document.getElementById('divToScroll');
   }
 
-  searchProjects() {
+  searchProjects(): void {
     this.loadingProjects = true;
     this.projects = [];
     this.searchText$.next(this.searchText);
   }
 
-  sortByLocation(memory: number) {
+  sortByLocation(memory: number): void {
     if (this.sortMemory !== memory) {
       this.sortValue = 0;
       this.sortMemory = memory;
@@ -156,7 +157,7 @@ export class BrowseProjectsComponent implements OnInit {
     }
   }
 
-  private setSelectedProject(projectId: string) {
+  private setSelectedProject(projectId: string): void {
     if (!projectId) {
       this.selectedProject = null;
       return;
@@ -170,15 +171,17 @@ export class BrowseProjectsComponent implements OnInit {
     this.alertService.info('Das angegebene Projekt wurde nicht gefunden.');
   }
 
-  isProjectApplicable(projectId: string) {
-    return this.applications ? !this.applications.some(a => a && a.project.id === projectId) : true;
+  /* Common Functions with Profile - start */
+
+  isProjectApplicable(projectId: string): boolean {
+    return this.employeeService.isApplicable(this.applications, projectId);
   }
 
-  isProjectBookmarked(projectId: string) {
-    return this.bookmarks ? this.bookmarks.some(p => p && p.id === projectId) : false;
+  isProjectBookmarked(projectId: string): boolean {
+    return this.projectsService.isBookmarked(this.bookmarks, projectId);
   }
 
-  handleBookmark(project: Project) {
+  handleBookmark(project: Project): void {
     const index = this.bookmarks.findIndex(p => p.id === project.id);
     if (index > -1) {
       this.bookmarks.splice(index, 1);
@@ -187,16 +190,19 @@ export class BrowseProjectsComponent implements OnInit {
     }
   }
 
-  handleApplication(application: Application) {
+  handleApplication(application: Application): void {
     this.applications.push(application);
   }
 
-  onDialogClosed() {
+  /* Common Functions with Profile - end */
+
+  onDialogClosed(): void {
     this.selectedProject = null;
     this.location.replaceState('/browse');
   }
 
-  @HostListener('window:scroll') onScroll() {
+  @HostListener('window:scroll')
+  onScroll(): void {
     if (!this.mobile) {
       if (((document.getElementById('total-hits').offsetTop - window.scrollY + 60) === 0) && this.toggle) {
         $('#result-table > thead th').css('-webkit-box-shadow', 'inset 0 -1px 1px -1px rgba(128,128,128, 0.6)');
@@ -211,5 +217,4 @@ export class BrowseProjectsComponent implements OnInit {
       }
     }
   }
-
 }

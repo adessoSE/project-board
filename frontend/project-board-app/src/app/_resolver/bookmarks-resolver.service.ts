@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Resolve } from '@angular/router';
-import { AuthenticationService } from './authentication.service';
-import { EmployeeService } from './employee.service';
-import { Project } from './project.service';
+import { AuthenticationService } from '../_services/authentication.service';
+import { EmployeeService } from '../_services/employee.service';
+import { Project } from '../_services/project.service';
 
 @Injectable({
   providedIn: 'root'
