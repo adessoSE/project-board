@@ -1,20 +1,4 @@
-<div class="search-input-wrapper">
-  <div class="imageWrapper">
-    <div class="input-group search-input-inner-wrapper">
-      <label for="search" class="sr-only">Mitarbeiter suchen</label>
-      <span class="square"><mat-icon>search</mat-icon></span>
-      <input #search [(ngModel)]="searchText" (ngModelChange)="searchEmployees()" class="search form-control" type="text" name="search" id="search" placeholder="Mitarbeiter suchen...">
-      <span class="input-group-addon">
-        <mat-icon class="search-info-icon">info</mat-icon>
-        <div class="search-info-tooltip">
-          <div class="arrow"></div>
-          <div class="search-info-tooltip-header">Mitarbeiter suchen</div>
-          <div [innerHTML]="infoTooltip"></div>
-        </div>
-      </span>
-    </div>
-  </div>
-</div>
+<app-search placeholder="Mitarbeiter suchen..." [infoTooltip]="infoTooltip" (search)="searchEmployees($event)"></app-search>
 
 <div class="outer">
   <div class="inner">
