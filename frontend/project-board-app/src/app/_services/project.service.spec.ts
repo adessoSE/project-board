@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { Project, ProjectService } from './project.service';
 
-describe('ProjectService', () => {        // suite for the tests
+describe('Service: ProjectService', () => {        // suite for the tests
   let projectService: ProjectService;
 
   beforeEach(() => {

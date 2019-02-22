@@ -55,7 +55,7 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  /* Common Functions with Browse-Projects start */
+  /* Common Functions with Browse-Projects - start */
 
   /* Tested Methods Start */
 
@@ -82,7 +82,7 @@ export class ProfileComponent implements OnInit {
     this.applications.push(application);
   }
 
-  /* Common Functions with Browse-Projects end */
+  /* Common Functions with Browse-Projects - end */
 
   openDialog(p: Project): void {
     this.dialogRef = this.dialog.open(ProjectDialogComponent, {

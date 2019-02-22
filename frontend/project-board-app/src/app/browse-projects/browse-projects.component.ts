@@ -171,7 +171,7 @@ export class BrowseProjectsComponent implements OnInit {
     this.alertService.info('Das angegebene Projekt wurde nicht gefunden.');
   }
 
-  /* Common Functions with Profile start */
+  /* Common Functions with Profile - start */
 
   isProjectApplicable(projectId: string): boolean {
     return this.employeeService.isApplicable(this.applications, projectId);
@@ -194,7 +194,7 @@ export class BrowseProjectsComponent implements OnInit {
     this.applications.push(application);
   }
 
-  /* Common Functions with Profile end */
+  /* Common Functions with Profile - end */
 
   onDialogClosed(): void {
     this.selectedProject = null;

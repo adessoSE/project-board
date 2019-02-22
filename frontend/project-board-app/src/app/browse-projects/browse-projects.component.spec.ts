@@ -1,34 +1,38 @@
-import { OverlayModule } from '@angular/cdk/overlay';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed, ComponentFixture } from '@angular/core/testing';
+import { BrowseProjectsComponent } from './browse-projects.component';
+import { AuthenticationService } from "../_services/authentication.service";
+import { Application, Employee, EmployeeService, EmployeeAccessInfo } from '../_services/employee.service';
+import { ProjectService } from '../_services/project.service';
+import { MatDialog } from '@angular/material';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog, MatDialogModule } from '@angular/material';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { Project } from '../_services/project.service';
 import { RouterTestingModule } from '@angular/router/testing';
 import { JwksValidationHandler, OAuthService, UrlHelperService } from 'angular-oauth2-oidc';
-import { AuthenticationService } from '../_services/authentication.service';
-import { Application, Employee, EmployeeAccessInfo, EmployeeService } from '../_services/employee.service';
-import { Project, ProjectService } from '../_services/project.service';
 import { authConfig } from '../app.component';
-import { ProfileComponent } from './profile.component';
+import { OverlayModule } from '@angular/cdk/overlay';
+import {MatDialogModule} from '@angular/material';
+import { FormsModule } from '@angular/forms';
+import { AlertService } from '../_services/alert.service';
 
-describe('Component: Profile', () => {
+describe('Component: BrowseProjects', () => {
 
-  let component: ProfileComponent;
-  let fixture: ComponentFixture<ProfileComponent>;
+  let component: BrowseProjectsComponent;
+  let fixture: ComponentFixture<BrowseProjectsComponent>;
   let employeeService: EmployeeService;
   let oAuthService: OAuthService;
 
   beforeEach(() => {
 
       TestBed.configureTestingModule({
-          declarations: [ProfileComponent],
-          imports: [HttpClientTestingModule, RouterTestingModule, OverlayModule, MatDialogModule], //For Http in EmplyeeService
-          providers: [AuthenticationService, EmployeeService, MatDialog, OAuthService, UrlHelperService, ProjectService],
+          declarations: [BrowseProjectsComponent],
+          imports: [HttpClientTestingModule, RouterTestingModule, OverlayModule, MatDialogModule, FormsModule], //For Http in EmplyeeService
+          providers: [AuthenticationService, EmployeeService, MatDialog, OAuthService, UrlHelperService, ProjectService, AlertService],
           schemas: [CUSTOM_ELEMENTS_SCHEMA] //For Material Elements
       });
 
       //create component and test fixture
-      fixture = TestBed.createComponent(ProfileComponent);
+      fixture = TestBed.createComponent(BrowseProjectsComponent);
 
       //get test component from the fixture
       component = fixture.componentInstance;
@@ -47,7 +51,7 @@ describe('Component: Profile', () => {
             hasAccess: true,
             accessStart: new Date,
             accessEnd: new Date
-        };
+        }
 
         const employeeMock: Employee = {
             id: "TestEmployeeId",
@@ -60,7 +64,7 @@ describe('Component: Profile', () => {
             applications: 2,
             bookmarks: 2,
             accessInfo: employeeAccesInfoMock
-        };
+        }
 
         const projectMock: Project[] = [{
             labels: ["Label 1", "Label 2"],
@@ -84,7 +88,7 @@ describe('Component: Profile', () => {
             travelCostsCompensated: "TestTravelCostsCompensated 1",
             created: new Date(),
             updated: new Date(),
-        }];
+        }]
 
 
         const applicationsMock: Application[] = [
@@ -95,7 +99,7 @@ describe('Component: Profile', () => {
                 comment:  "string",
                 date: new Date
             }
-        ];
+        ]
 
         //Test cases
 
