@@ -48,8 +48,6 @@ export class ExecutivesComponent implements OnInit {
     this.mobile = document.body.clientWidth < 992;
   }
 
-  swipebugplaceholder(): void {}
-
   ngOnInit(): void {
     this.matIconRegistry.addSvgIcon(
       'sort_alpha_ascending',
