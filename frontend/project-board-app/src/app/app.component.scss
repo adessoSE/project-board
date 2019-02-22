@@ -28,6 +28,7 @@
 #navbarContent {
   display: block;
   padding-left: 340px;
+  width: 100%;
 }
 
 .nav-link {
@@ -105,9 +106,22 @@
   outline: none;
 }
 
+#mail-support {
+  border-bottom: 0;
+  min-width: 70px;
+  margin-right: 5px;
+  float: right;
+}
+
+#mail-support:hover {
+  border-bottom: 0;
+  background-color: transparent;
+  color: #887D75;
+  cursor: pointer;
+}
+
 #logout {
-  position: absolute;
-  right: 10px;
+  margin-right: 0;
 }
 
 #innerContent {
@@ -240,6 +254,7 @@
     text-decoration: none;
     font-size: smaller;
     height: 60px;
+    cursor: pointer;
   }
 
   .side-link:focus {
@@ -261,7 +276,6 @@
     color: lightgrey !important;
     cursor: default !important;
     border-left-color: #bbb2ac;
-
   }
 
   .side-field {
@@ -296,6 +310,29 @@
 
   #side-logout {
     border-bottom: 1px solid lightgrey;
+  }
+
+  #support {
+    box-sizing: border-box;
+    color: #887D75 !important;
+    padding: 20px 10px 13px;
+    min-width: 101px;
+    line-height: 20px;
+    background-color: #fff;
+    text-decoration: none;
+    font-size: smaller;
+    height: 60px;
+    cursor: pointer;
+    border: 0;
+  }
+
+  .side-link:focus {
+    outline: 0 !important;
+  }
+
+  .side-link:hover {
+    border-left-color: #016EC7;
+    cursor: pointer;
   }
 
   #innerContent {
