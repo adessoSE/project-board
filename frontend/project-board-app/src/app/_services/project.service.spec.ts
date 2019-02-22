@@ -3,7 +3,7 @@ import { ProjectService, Project } from './project.service';
 import { of } from 'rxjs';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-describe('ProjectService', () => {        // suite for the tests
+describe('Service: ProjectService', () => {        // suite for the tests
   let projectService: ProjectService; 
 
   beforeEach(() => {

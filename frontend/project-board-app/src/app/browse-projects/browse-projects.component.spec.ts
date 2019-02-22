@@ -1,5 +1,5 @@
 import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { ProfileComponent } from './profile.component';
+import { BrowseProjectsComponent } from './browse-projects.component';
 import { AuthenticationService } from "../_services/authentication.service";
 import { Application, Employee, EmployeeService, EmployeeAccessInfo } from '../_services/employee.service';
 import { ProjectService } from '../_services/project.service';
@@ -12,25 +12,27 @@ import { JwksValidationHandler, OAuthService, UrlHelperService } from 'angular-o
 import { authConfig } from '../app.component';
 import { OverlayModule } from '@angular/cdk/overlay';
 import {MatDialogModule} from '@angular/material';
+import { FormsModule } from '@angular/forms';
+import { AlertService } from '../_services/alert.service';
 
-describe('Component: Profile', () => {
+describe('Component: BrowseProjects', () => {
 
-  let component: ProfileComponent;
-  let fixture: ComponentFixture<ProfileComponent>;
+  let component: BrowseProjectsComponent;
+  let fixture: ComponentFixture<BrowseProjectsComponent>;
   let employeeService: EmployeeService;
   let oAuthService: OAuthService;
 
   beforeEach(() => {
 
       TestBed.configureTestingModule({
-          declarations: [ProfileComponent],
-          imports: [HttpClientTestingModule, RouterTestingModule, OverlayModule, MatDialogModule], //For Http in EmplyeeService
-          providers: [AuthenticationService, EmployeeService, MatDialog, OAuthService, UrlHelperService, ProjectService],
+          declarations: [BrowseProjectsComponent],
+          imports: [HttpClientTestingModule, RouterTestingModule, OverlayModule, MatDialogModule, FormsModule], //For Http in EmplyeeService
+          providers: [AuthenticationService, EmployeeService, MatDialog, OAuthService, UrlHelperService, ProjectService, AlertService],
           schemas: [CUSTOM_ELEMENTS_SCHEMA] //For Material Elements
       });
 
       //create component and test fixture
-      fixture = TestBed.createComponent(ProfileComponent);
+      fixture = TestBed.createComponent(BrowseProjectsComponent);
 
       //get test component from the fixture
       component = fixture.componentInstance;
