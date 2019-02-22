@@ -1,35 +1,32 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
 @Injectable()
 export class ProjectService {
   constructor(private http: HttpClient) { }
 
-  getAllProjects() {
+  getAllProjects(): Observable<Project[]> {
     return this.http.get<Project[]>(`${environment.resourceServer}/projects`);
   }
 
-  /*getAllProjectsPaginated(page: number, size: number) {
-    return this.http.get<Page<Project>>(`${environment.resourceServer}/projects?page=${page}&size=${size}`);
-  }*/
-
-  getProjectWithID(projectId) {
+  getProjectWithID(projectId): Observable<Project> {
     return this.http.get<Project>(`${environment.resourceServer}/projects/${projectId}`);
   }
 
-  search(keyword) {
-    return this.http.get<Project[]>(`${environment.resourceServer}/projects/search?keyword=${keyword}`);
+  search(query: string): Observable<Project[]> {
+    query = encodeURI(query.replace('&', ' '));
+    return this.http.get<Project[]>(`${environment.resourceServer}/projects/search?query=${query}`);
   }
 
-  searchPaginated(keyword: string, page: number, size: number) {
-    return this.http.get<Page<Project>>(`${environment.resourceServer}/projects/search?keyword=${keyword}&page=${page}&size=${size}`);
+  isBookmarked(bookmarks: Project[], projectId: string): boolean {
+    return bookmarks ? bookmarks.some(p => p && p.id === projectId) : false;
   }
 }
 
 export interface Project {
   labels: string[];
-
   customer: string;
   description: string;
   effort: string;
@@ -48,33 +45,6 @@ export interface Project {
   title: string;
   dailyRate: string;
   travelCostsCompensated: string;
-
   created: Date;
   updated: Date;
-}
-
-export interface Page<T> {
-  content: T[];
-  pageable: {
-    sort: {
-      sorted: boolean,
-      unsorted: boolean
-    }
-    offset: number,
-    pageSize: number,
-    pageNumber: number,
-    paged: boolean,
-    unpaged: boolean
-  };
-  totalPages: number;
-  totalElements: number;
-  last: boolean;
-  size: number;
-  number: number;
-  sort: {
-    sorted: boolean,
-    unsorted: boolean
-  };
-  first: boolean;
-  numberOfElements: number;
 }

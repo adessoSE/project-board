@@ -6,6 +6,16 @@ import { takeUntil } from 'rxjs/operators';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Application, EmployeeService } from '../_services/employee.service';
 import { Project } from '../_services/project.service';
+import {
+  ABORT_REQUEST_TOOLTIP,
+  ADD_BOOKMARK_TOOLTIP,
+  APPLICATION_TOOLTIP,
+  CLOSE_DIALOG_TOOLTIP,
+  GO_TO_JIRA_TOOLTIP,
+  REMOVE_BOOKMARK_TOOLTIP,
+  SEND_REQUEST_TOOLTIP,
+  START_REQUEST_TOOLTIP
+} from '../tooltips';
 
 export interface ProjectDialogData {
   project: Project;
@@ -20,14 +30,14 @@ export interface ProjectDialogData {
   styleUrls: ['./project-dialog.component.scss']
 })
 export class ProjectDialogComponent implements OnInit {
-  appTooltip = 'Du hast dieses Projekt bereits angefragt';
-  bmAddTooltip = 'Lesezeichen hinzufügen';
-  bmRemoveTooltip = 'Lesezeichen entfernen';
-  closeTooltip = 'Dialog schließen';
-  jiraTooltip = 'Zum Jira-Projekt';
-  startRequestTooltip = 'Projektanfrage erstellen';
-  abortRequestTooltip = 'Projektanfrage abbrechen';
-  sendRequestTooltip = 'Projektanfrage absenden';
+  appTooltip = APPLICATION_TOOLTIP;
+  bmAddTooltip = ADD_BOOKMARK_TOOLTIP;
+  bmRemoveTooltip = REMOVE_BOOKMARK_TOOLTIP;
+  closeTooltip = CLOSE_DIALOG_TOOLTIP;
+  jiraTooltip = GO_TO_JIRA_TOOLTIP;
+  startRequestTooltip = START_REQUEST_TOOLTIP;
+  abortRequestTooltip = ABORT_REQUEST_TOOLTIP;
+  sendRequestTooltip = SEND_REQUEST_TOOLTIP;
 
   mobile: boolean;
   @Output() bookmark = new EventEmitter();
@@ -51,7 +61,7 @@ export class ProjectDialogComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.mobile = document.body.clientWidth < 992;
     this.data.project.skills = this.cleanUpString(this.data.project.skills);
     this.data.project.description = this.cleanUpString(this.data.project.description);
@@ -61,7 +71,8 @@ export class ProjectDialogComponent implements OnInit {
     this.data.project.operationEnd = this.cleanUpString(this.data.project.operationEnd);
   }
 
-  @HostListener('window:resize') onResize() {
+  @HostListener('window:resize')
+  onResize(): void {
     this.mobile = document.body.clientWidth < 992;
   }
 

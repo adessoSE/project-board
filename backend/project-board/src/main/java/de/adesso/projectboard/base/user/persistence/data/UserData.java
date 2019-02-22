@@ -2,10 +2,14 @@ package de.adesso.projectboard.base.user.persistence.data;
 
 import de.adesso.projectboard.base.user.persistence.User;
 import lombok.*;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.IndexedEmbedded;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 
+@Indexed
 @Entity
 @Table(name = "PB_USER_DATA")
 @Getter
@@ -18,6 +22,10 @@ public class UserData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    @IndexedEmbedded(
+            includeEmbeddedObjectId = true,
+            prefix = "user_"
+    )
     @OneToOne
     @JoinColumn(
             name = "USER_ID",
@@ -25,10 +33,12 @@ public class UserData {
     )
     User user;
 
+    @Field
     @Column(name = "FIRST_NAME")
     @NotEmpty
     String firstName;
 
+    @Field
     @Column(name = "LAST_NAME")
     @NotEmpty
     String lastName;
@@ -54,7 +64,6 @@ public class UserData {
         this.lastName = lastName;
         this.email = email;
         this.lob = lob;
-        this.picture = picture;
     }
 
     public UserData(User user, String firstName, String lastName, String email, String lob, byte[] picture) {

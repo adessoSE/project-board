@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { Subject } from 'rxjs';
@@ -30,7 +30,7 @@ export class LoginComponent implements OnInit {
     private alertService: AlertService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
@@ -40,7 +40,7 @@ export class LoginComponent implements OnInit {
       this.router.navigate(['/browse']);
       this.alertService.info('Du bist bereits eingeloggt! Wenn du den Benutzer wechseln möchtest, logge dich erst aus.');
     }
-    // else if (this.authenticationService.token && !this.oAuthService.hasValidAccessToken()){
+    // else if (this.authenticationService.token && !this.oAuthService.hasValidAccessToken()) {
     //   this.alertService.error('Deine Sitzung ist abgelaufen.');
     // }
 
@@ -49,11 +49,11 @@ export class LoginComponent implements OnInit {
   }
 
   // convenience getter for easy access to form fields
-  get f() {
+  get f(): {[p: string]: AbstractControl} {
     return this.loginForm.controls;
   }
 
-  onSubmit() {
+  onSubmit(): void {
     this.submitted = true;
 
     // stop here if form is invalid

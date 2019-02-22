@@ -51,7 +51,8 @@
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
-                "node_modules/bootstrap/scss"
+                "node_modules/bootstrap/scss",
+                "src/sass"
               ]
             },
             "scripts": [
@@ -107,6 +108,12 @@
             "styles": [
               "src/styles.css"
             ],
+            "stylePreprocessorOptions": {
+              "includePaths": [
+                "node_modules/bootstrap/scss",
+                "src/sass"
+              ]
+            },
             "scripts": [],
             "assets": [
               "src/favicon.ico",

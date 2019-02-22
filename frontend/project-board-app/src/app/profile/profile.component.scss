@@ -202,7 +202,7 @@
   overflow: hidden;
 }
 
-@include media-breakpoint-up(xl){
+@include media-breakpoint-up(xl) {
   .left-bar {
     height: 550px;
   }
