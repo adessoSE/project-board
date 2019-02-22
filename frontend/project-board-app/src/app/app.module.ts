@@ -31,6 +31,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { ProjectDetailsComponent } from './project-details/project-details.component';
 import { ProjectDialogComponent } from './project-dialog/project-dialog.component';
 import { ProjectRequestComponent } from './project-request/project-request.component';
+import { SearchComponent } from './search/search.component';
 
 declare var Hammer: any;
 
@@ -59,7 +60,8 @@ registerLocaleData(localeDe, 'de');
     ProjectRequestComponent,
     ProfileComponent,
     LogoutComponent,
-    DatepickerHeaderComponent
+    DatepickerHeaderComponent,
+    SearchComponent
   ],
   imports: [
     BrowserModule,
