@@ -31,7 +31,7 @@ public interface PageableUserProjectService extends UserProjectService {
 
     /**
      *
-     * @param keyword
+     * @param query
      *          The keyword to search for.
      *
      * @param user
@@ -43,6 +43,6 @@ public interface PageableUserProjectService extends UserProjectService {
      * @return
      *          A {@link Page} of {@link Project}s.
      */
-    Page<Project> searchProjectsForUserPaginated(String keyword, User user, Pageable pageable);
+    Page<Project> searchProjectsForUserPaginated(String query, User user, Pageable pageable);
 
 }

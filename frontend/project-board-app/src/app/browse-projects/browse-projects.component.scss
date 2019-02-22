@@ -185,8 +185,9 @@ table thead td {
   display: inline-block;
   margin: 0;
   flex: none;
-  width: calc(100% - (2.25rem + 2px));
+  width: calc(100% - (4.5rem + 4px));
   border-left: none;
+  border-right: none;
   -webkit-border-radius: 0;
   -moz-border-radius: 0;
   border-radius: 0;
@@ -195,6 +196,7 @@ table thead td {
 #search:focus {
   border: 1px solid #016EC7;
   border-left: none;
+  border-right: none;
   box-shadow: none;
 }
 
@@ -220,6 +222,82 @@ table thead td {
   margin: 0 auto 2rem;
 }
 
+.input-group-addon {
+  background-color: #f4f4f4;
+  width: calc(2.25rem + 2px);
+  height: calc(2.25rem + 2px);
+  text-align: center;
+  border: 1px solid #ced4da;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+#search:focus + .input-group-addon {
+  border: 1px solid #016EC7;
+  border-left: 1px solid #ced4da;
+  //transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.search-info-icon {
+  color: #887D75;
+  cursor: default;
+}
+
+.search-info-icon:hover {
+  color: #016EC7;
+}
+
+.search-info-tooltip {
+  visibility: hidden;
+  text-align: left;
+  width: 250px;
+  background-color: white;
+  color: #887D75;
+  padding: 8px;
+  font-size: 0.8rem;
+  line-height: 1rem;
+  /* Position the tooltip */
+  position: absolute;
+  right: calc(2.25rem + 4px);
+  top: -25%;
+  z-index: 1050;
+  box-shadow: 0 0 0.75rem rgba(0, 0, 0, .25);
+}
+
+/* tooltip arrow */
+.arrow {
+  content: " ";
+  position: absolute;
+  top: 5%;
+  left: 100%; /* To the right of the tooltip */
+  border: 12px solid transparent;
+  border-left-color: #887D75;
+  border-right-width: 0;
+}
+
+.search-info-tooltip .arrow::after {
+  content: " ";
+  position: absolute;
+  top: 50%;
+  right: 1px;
+  margin-top: -11px;
+  border: 11px solid transparent;
+  border-left-color: #fff;
+  border-right-width: 0;
+}
+
+.search-info-tooltip-header {
+  background-color: #F3F3F3;
+  margin: -7px -7px 7px -7px;
+  display: block;
+  padding: 7px;
+  font-size: 1.2rem;
+  font-variant: small-caps;
+}
+
+.search-info-icon:hover + .search-info-tooltip {
+  visibility: visible;
+}
+
 @include media-breakpoint-up(sm) {
   .search-input-inner-wrapper {
     min-width: 500px;
@@ -236,9 +314,24 @@ table thead td {
 
   #search {
     height: 4rem;
-    width: calc(100% - 4rem);
+    width: calc(100% - 6.5rem);
     flex: 1 1 auto;
     margin: 0 auto;
+  }
+
+  .input-group-addon {
+    width: 2.5rem;
+    height: 4rem;
+  }
+
+  .search-info-tooltip {
+    top: 15%;
+    right: 7rem;
+  }
+
+  .arrow {
+    top: 16.5%;
+    left: 100%;
   }
 }
 

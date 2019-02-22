@@ -48,9 +48,9 @@ public class UserProjectionFactory {
         return userData.stream()
                 .map(data -> {
                     var user = data.getUser();
-                    var manager = userManagerMap.get(user);
+                    var isManager = userManagerMap.get(user);
 
-                    return new UserProjectionSource(user, data, manager);
+                    return new UserProjectionSource(user, data, isManager);
                 })
                 .map(projectionSource -> projectionFactory.createProjection(projectionType, projectionSource))
                 .collect(Collectors.toList());

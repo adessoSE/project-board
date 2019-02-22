@@ -6,7 +6,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Application, Employee, EmployeeService } from '../_services/employee.service';
-import { Project } from '../_services/project.service';
+import { Project, ProjectService } from '../_services/project.service';
 import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
 
 @Component({
@@ -37,6 +37,7 @@ export class ProfileComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
               private employeeService: EmployeeService,
+              private projectService: ProjectService,
               private authService: AuthenticationService,
               public dialog: MatDialog) {}
 
@@ -48,7 +49,7 @@ export class ProfileComponent implements OnInit {
     console.log(e);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.mobile = document.body.clientWidth < 992;
 
     this.route.data
@@ -66,7 +67,36 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  openDialog(p: Project) {
+  /* Common Functions with Browse-Projects - start */
+
+  /* Tested Methods Start */
+
+  isProjectApplicable(projectId: string): boolean {
+    return this.employeeService.isApplicable(this.applications, projectId);
+  }
+
+  isProjectBookmarked(projectId: string): boolean {
+    return this.projectService.isBookmarked(this.bookmarks, projectId);
+  }
+
+  /* Tested Methods End */
+
+  handleBookmark(project: Project): void {
+    const index = this.bookmarks.findIndex(p => p.id === project.id);
+    if (index > -1) {
+      this.bookmarks.splice(index, 1);
+    } else {
+      this.bookmarks.push(project);
+    }
+  }
+
+  handleApplication(application: Application): void {
+    this.applications.push(application);
+  }
+
+  /* Common Functions with Browse-Projects - end */
+
+  openDialog(p: Project): void {
     this.dialogRef = this.dialog.open(ProjectDialogComponent, {
       autoFocus: false,
       panelClass: 'custom-dialog-container',
@@ -85,25 +115,25 @@ export class ProfileComponent implements OnInit {
       .subscribe(application => this.handleApplication(application));
   }
 
-  selectTab(tab) {
+  selectTab(tab): void {
     this.tabIndex = tab;
     $('.active').removeClass('active');
     document.getElementById('tab' + tab).classList.add('active');
   }
 
-  getEmployees() {
+  getEmployees(): void {
     this.employeeService.getEmployeesWithoutPicturesForSuperUser(this.user.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe(employees => this.employees = employees);
   }
 
-  removeBookmark(projectId) {
+  removeBookmark(projectId): void {
     this.employeeService.removeBookmark(this.authService.username, projectId)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.bookmarks = this.bookmarks.filter(p => p.id !== projectId));
   }
 
-  getEmployeeApplications() {
+  getEmployeeApplications(): void {
     this.loadingEmployeeApplications = true;
     this.employeeService.getApplicationsForEmployeesOfUser(this.user.id)
       .pipe(takeUntil(this.destroy$))
@@ -112,27 +142,5 @@ export class ProfileComponent implements OnInit {
         this.loadingEmployeeApplications = false;
         this.pieChartData = [employeeApplications.length, 50];
       });
-  }
-
-
-  isProjectApplicable(projectId: string) {
-    return this.applications ? !this.applications.some(a => a && a.project.id === projectId) : true;
-  }
-
-  isProjectBookmarked(projectId: string) {
-    return this.bookmarks ? this.bookmarks.some(p => p && p.id === projectId) : false;
-  }
-
-  handleBookmark(project: Project) {
-    const index = this.bookmarks.findIndex(p => p.id === project.id);
-    if (index > -1) {
-      this.bookmarks.splice(index, 1);
-    } else {
-      this.bookmarks.push(project);
-    }
-  }
-
-  handleApplication(application: Application) {
-    this.applications.push(application);
   }
 }

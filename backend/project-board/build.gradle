@@ -5,6 +5,7 @@ buildscript {
 		springBootVersion = '2.1.1.RELEASE'
 		keycloakVersion = '4.8.1.Final'
 		unboundIDVersion = '3.1.1'
+		hibernateSearchVersion = '5.10.5.Final'
 	}
 	repositories {
 		mavenCentral()
@@ -63,6 +64,7 @@ dependencies {
 	compile(group: 'org.keycloak', name: 'keycloak-spring-boot-starter')
 	compile(group: 'org.springframework.ldap', name: 'spring-ldap-core')
 	compile(group: 'mysql', name: 'mysql-connector-java')
+	compile(group: 'org.hibernate', name: 'hibernate-search-orm', version: "${hibernateSearchVersion}")
 
 	compileOnly(group: 'org.springframework.boot', name: 'spring-boot-configuration-processor')
 	compileOnly(group: 'org.projectlombok', name: 'lombok')
