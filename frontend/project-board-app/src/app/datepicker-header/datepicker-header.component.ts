@@ -22,22 +22,22 @@ export class DatepickerHeaderComponent<D> implements OnDestroy {
       .subscribe(() => cdr.markForCheck());
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroyed.next();
     this.destroyed.complete();
   }
 
-  get periodLabel() {
+  get periodLabel(): string {
     return this.dateAdapter
       .format(this.calendar.activeDate, this.dateFormats.display.monthYearLabel)
       .toLocaleUpperCase();
   }
 
-  previousMonthClicked() {
+  previousMonthClicked(): void {
     this.calendar.activeDate = this.dateAdapter.addCalendarMonths(this.calendar.activeDate, -1);
   }
 
-  nextMonthClicked() {
+  nextMonthClicked(): void {
     this.calendar.activeDate = this.dateAdapter.addCalendarMonths(this.calendar.activeDate, 1);
   }
 }

@@ -3,14 +3,14 @@ import { RouterModule, Routes } from '@angular/router';
 import { AccessGuard } from './_guards/access.guard';
 import { AuthGuard } from './_guards/auth.guard';
 import { IsBossGuard } from './_guards/is-boss.guard';
-import { ApplicationsResolverService } from './_services/applications-resolver.service';
-import { BookmarksResolverService } from './_services/bookmarks-resolver.service';
-import { CreatedProjectsResolverService } from './_services/created-projects-resolver.service';
-import { EmployeeResolverService } from './_services/employee-resolver.service';
-import { IsBossResolverService } from './_services/is-boss-resolver.service';
-import { ProjectsResolverService } from './_services/projects-resolver.service';
-import { UserResolverService } from './_services/user-resolver.service';
+import { ApplicationsResolverService } from './_resolver/applications-resolver.service';
+import { BookmarksResolverService } from './_resolver/bookmarks-resolver.service';
+import { EmployeeResolverService } from './_resolver/employee-resolver.service';
+import { IsBossResolverService } from './_resolver/is-boss-resolver.service';
+import { ProjectsResolverService } from './_resolver/projects-resolver.service';
+import { UserResolverService } from './_resolver/user-resolver.service';
 import { BrowseProjectsComponent } from './browse-projects/browse-projects.component';
+import { ErrorComponent } from './error/error.component';
 import { ExecutivesComponent } from './executives/executives.component';
 import { LogoutComponent } from './logout/logout.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
@@ -86,6 +86,10 @@ const routes: Routes = [
   {
     path: 'notFound',
     component: PageNotFoundComponent
+  },
+  {
+    path: 'error',
+    component: ErrorComponent
   },
   {
     path: '',

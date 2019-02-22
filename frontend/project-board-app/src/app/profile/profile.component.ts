@@ -37,7 +37,7 @@ export class ProfileComponent implements OnInit {
               private authService: AuthenticationService,
               public dialog: MatDialog) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.mobile = document.body.clientWidth < 992;
 
     this.route.data
@@ -59,17 +59,17 @@ export class ProfileComponent implements OnInit {
 
   /* Tested Methods Start */
 
-  isProjectApplicable(projectId: string) {
+  isProjectApplicable(projectId: string): boolean {
     return this.employeeService.isApplicable(this.applications, projectId);
   }
 
-  isProjectBookmarked(projectId: string) {
+  isProjectBookmarked(projectId: string): boolean {
     return this.projectService.isBookmarked(this.bookmarks, projectId);
   }
 
   /* Tested Methods End */
 
-  handleBookmark(project: Project) {
+  handleBookmark(project: Project): void {
     const index = this.bookmarks.findIndex(p => p.id === project.id);
     if (index > -1) {
       this.bookmarks.splice(index, 1);
@@ -78,13 +78,13 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  handleApplication(application: Application) {
+  handleApplication(application: Application): void {
     this.applications.push(application);
   }
 
   /* Common Functions with Browse-Projects - end */
 
-  openDialog(p: Project) {
+  openDialog(p: Project): void {
     this.dialogRef = this.dialog.open(ProjectDialogComponent, {
       autoFocus: false,
       panelClass: 'custom-dialog-container',
@@ -103,25 +103,25 @@ export class ProfileComponent implements OnInit {
       .subscribe(application => this.handleApplication(application));
   }
 
-  selectTab(tab) {
+  selectTab(tab): void {
     this.tabIndex = tab;
     $('.active').removeClass('active');
     document.getElementById('tab' + tab).classList.add('active');
   }
 
-  getEmployees() {
+  getEmployees(): void {
     this.employeeService.getEmployeesWithoutPicturesForSuperUser(this.user.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe(employees => this.employees = employees);
   }
 
-  removeBookmark(projectId) {
+  removeBookmark(projectId): void {
     this.employeeService.removeBookmark(this.authService.username, projectId)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.bookmarks = this.bookmarks.filter(p => p.id !== projectId));
   }
 
-  getEmployeeApplications() {
+  getEmployeeApplications(): void {
     this.loadingEmployeeApplications = true;
     this.employeeService.getApplicationsForEmployeesOfUser(this.user.id)
       .pipe(takeUntil(this.destroy$))

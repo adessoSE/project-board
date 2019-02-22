@@ -27,26 +27,26 @@ export class AlertService {
       });
   }
 
-  clearAlert() {
+  clearAlert(): void {
     this.subject.next();
   }
 
-  success(message: string, keepAfterNavigationChange = false) {
+  success(message: string, keepAfterNavigationChange = false): void {
     this.keepAfterNavigationChange = keepAfterNavigationChange;
     this.subject.next({type: 'success', text: message});
   }
 
-  error(message: string, keepAfterNavigationChange = false) {
+  error(message: string, keepAfterNavigationChange = false): void {
     this.keepAfterNavigationChange = keepAfterNavigationChange;
     this.subject.next({type: 'error', text: message});
   }
 
-  info(message: string, keepAfterNavigationChange = false) {
+  info(message: string, keepAfterNavigationChange = false): void {
     this.keepAfterNavigationChange = keepAfterNavigationChange;
     this.subject.next({type: 'info', text: message});
   }
 
-  warning(message: string, keepAfterNavigationChange = false) {
+  warning(message: string, keepAfterNavigationChange = false): void {
     this.keepAfterNavigationChange = keepAfterNavigationChange;
     this.subject.next({type: 'warning', text: message});
   }

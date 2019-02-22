@@ -1,17 +1,15 @@
-import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { ProfileComponent } from './profile.component';
-import { AuthenticationService } from "../_services/authentication.service";
-import { Application, Employee, EmployeeService, EmployeeAccessInfo } from '../_services/employee.service';
-import { ProjectService } from '../_services/project.service';
-import { MatDialog } from '@angular/material';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { OverlayModule } from '@angular/cdk/overlay';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { Project } from '../_services/project.service';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatDialog, MatDialogModule } from '@angular/material';
 import { RouterTestingModule } from '@angular/router/testing';
 import { JwksValidationHandler, OAuthService, UrlHelperService } from 'angular-oauth2-oidc';
+import { AuthenticationService } from '../_services/authentication.service';
+import { Application, Employee, EmployeeAccessInfo, EmployeeService } from '../_services/employee.service';
+import { Project, ProjectService } from '../_services/project.service';
 import { authConfig } from '../app.component';
-import { OverlayModule } from '@angular/cdk/overlay';
-import {MatDialogModule} from '@angular/material';
+import { ProfileComponent } from './profile.component';
 
 describe('Component: Profile', () => {
 
@@ -49,7 +47,7 @@ describe('Component: Profile', () => {
             hasAccess: true,
             accessStart: new Date,
             accessEnd: new Date
-        }
+        };
 
         const employeeMock: Employee = {
             id: "TestEmployeeId",
@@ -62,7 +60,7 @@ describe('Component: Profile', () => {
             applications: 2,
             bookmarks: 2,
             accessInfo: employeeAccesInfoMock
-        }
+        };
 
         const projectMock: Project[] = [{
             labels: ["Label 1", "Label 2"],
@@ -86,7 +84,7 @@ describe('Component: Profile', () => {
             travelCostsCompensated: "TestTravelCostsCompensated 1",
             created: new Date(),
             updated: new Date(),
-        }]
+        }];
 
 
         const applicationsMock: Application[] = [
@@ -97,7 +95,7 @@ describe('Component: Profile', () => {
                 comment:  "string",
                 date: new Date
             }
-        ]
+        ];
 
         //Test cases
 

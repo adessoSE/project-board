@@ -10,6 +10,9 @@
 ### Docker Directory ###
 /docker/temp/
 
+### Lucene Index ###
+/lucene_index/
+
 ### STS ###
 .apt_generated
 .classpath

@@ -8,6 +8,7 @@ import { takeUntil } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 import { AuthenticationService } from './_services/authentication.service';
 import { EmployeeService } from './_services/employee.service';
+import { NO_ACCESS_TOOLTIP } from './tooltips';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,7 @@ export class AppComponent implements OnInit, DoCheck {
   username = 'default';
   boss: boolean;
   hasAccess = false;
-  noAccessTooltip = 'Du bist nicht für das Project-Board freigeschaltet.';
+  noAccessTooltip = NO_ACCESS_TOOLTIP;
 
   destroy$ = new Subject();
   @ViewChild('snav') sidenav: MatSidenav;
@@ -29,7 +30,7 @@ export class AppComponent implements OnInit, DoCheck {
               private oAuthService: OAuthService
   ) { this.configureWithNewConfigApi(); }
 
-  private configureWithNewConfigApi() {
+  private configureWithNewConfigApi(): void {
     this.oAuthService.configure(authConfig);
     this.oAuthService.tokenValidationHandler = new JwksValidationHandler();
     this.oAuthService.setupAutomaticSilentRefresh();
@@ -46,7 +47,7 @@ export class AppComponent implements OnInit, DoCheck {
     });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.sidenav.openedStart.subscribe(() => this.onNavOpen());
     this.sidenav.closedStart.subscribe(() => this.onNavClosed());
     this.miniNavVisibility();
@@ -55,11 +56,11 @@ export class AppComponent implements OnInit, DoCheck {
 
   /* Tested Methods Start */
 
-  isUserAuthenticated() {
+  isUserAuthenticated(): boolean {
     return this.oAuthService.hasValidAccessToken();
   }
 
-  get isBoss() {
+  get isBoss(): boolean {
     return this.authenticationService.isBoss;
   }
 
@@ -71,7 +72,7 @@ export class AppComponent implements OnInit, DoCheck {
 
   /* Sidenav responsive */
 
-  toggleNav() {
+  toggleNav(): void {
     if (this.sidenav.opened) {
       this.sidenav.close();
     } else {
@@ -79,33 +80,33 @@ export class AppComponent implements OnInit, DoCheck {
     }
   }
 
-  openNav() {
+  openNav(): void {
     if (window.innerWidth < 992) {
       this.sidenav.open();
     }
   }
 
-  closeNav() {
+  closeNav(): void {
     if (window.innerWidth < 992) {
       this.sidenav.close();
     }
   }
 
-  onNavOpen() {
+  onNavOpen(): void {
     if (/Mobi/.test(navigator.userAgent)) {
       $('body').css('overflow', 'hidden');
       document.getElementById('top-badge').style.visibility = 'hidden';
     }
   }
 
-  onNavClosed() {
+  onNavClosed(): void {
     if (/Mobi/.test(navigator.userAgent)) {
       $('body').css('overflow', 'auto');
       document.getElementById('top-badge').style.visibility = 'visible';
     }
   }
 
-  onResize() {
+  onResize(): void {
     this.sidenav.close();
     $('body').css('overflow', 'auto');
     document.getElementById('top-badge').style.visibility = 'visible';
@@ -113,7 +114,7 @@ export class AppComponent implements OnInit, DoCheck {
     this.mainNavPosition();
   }
 
-  miniNavVisibility() {
+  miniNavVisibility(): void {
     if (/Mobi/.test(navigator.userAgent) || (window.innerWidth < 992)) {
       document.getElementById('mini-nav').style.display = 'none';
     } else {
@@ -121,7 +122,7 @@ export class AppComponent implements OnInit, DoCheck {
     }
   }
 
-  mainNavPosition() {
+  mainNavPosition(): void {
     if (!(/Mobi/.test(navigator.userAgent) || (window.innerWidth < 992))) {
       document.getElementById('main-nav').style.position = 'relative';
     } else {
@@ -129,22 +130,22 @@ export class AppComponent implements OnInit, DoCheck {
     }
   }
 
-  ngDoCheck() {
+  ngDoCheck(): void {
     this.username = this.getUsername();
   }
 
-  logout() {
+  logout(): void {
     this.oAuthService.logOut();
     sessionStorage.clear();
     /* this.alertService.success('Du wurdest erfolgreich ausgeloggt.'); */
   }
 
   @HostListener('window:scroll')
-  onScroll() {
+  onScroll(): void {
     // Toggle for the mini-menu
     if (document.documentElement.scrollTop > 340) {
       if ((document.getElementById('mini-nav').offsetLeft === -45) && !($('#mini-nav').is(':animated'))) {
-        $('#mini-nav').animate({left: '0px'}, function () {
+        $('#mini-nav').animate({left: '0px'}, function (): void {
           if (document.documentElement.scrollTop <= 340) {
             $('#mini-nav').animate({left: '-45px'});
           }
@@ -152,7 +153,7 @@ export class AppComponent implements OnInit, DoCheck {
       }
     } else {
       if ((document.getElementById('mini-nav').offsetLeft === 0) && !($('#mini-nav').is(':animated'))) {
-        $('#mini-nav').animate({left: '-45px'}, function () {
+        $('#mini-nav').animate({left: '-45px'}, function (): void {
           if (document.documentElement.scrollTop > 340) {
             $('#mini-nav').animate({left: '0px'});
           }
@@ -170,7 +171,7 @@ export class AppComponent implements OnInit, DoCheck {
     }
   }
 
-  scrollTop() {
+  scrollTop(): void {
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
   }

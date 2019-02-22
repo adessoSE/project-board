@@ -117,6 +117,24 @@ public interface UserService {
     /**
      *
      * @param user
+     *          The {@link User} to search the staff members'
+     *          {@link UserData} for.
+     *
+     * @param query
+     *          The query to search by.
+     *
+     * @param sort
+     *          The {@link Sort} instance to sort by.
+     *
+     * @return
+     *          The staff members' {@link UserData} of the given {@code user}
+     *          matching the given {@code query}, sorted accordingly.
+     */
+    List<UserData> searchStaffMemberDataOfUser(User user, String query, Sort sort);
+
+    /**
+     *
+     * @param user
      *          The {@link User} to get the staff members of.
      *
      * @return
