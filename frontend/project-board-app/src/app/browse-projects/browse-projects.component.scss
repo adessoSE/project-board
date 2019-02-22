@@ -293,7 +293,7 @@ table thead td {
   display: inline-block;
   margin: 0;
   flex: none;
-  width: calc(100% - (2.25rem + 2px));
+  width: calc(100% - (4.5rem + 4px));
   border-left: none;
   border-right: none;
   -webkit-border-radius: 0;
@@ -330,40 +330,10 @@ table thead td {
   margin: 0 auto;
 }
 
-@include media-breakpoint-up(sm) {
-  .search-input-inner-wrapper {
-    min-width: 500px;
-    max-width: 60%;
-    line-height: 5rem;
-    padding: 4rem calc(4rem + 6px) 4rem;
-    background: transparent url("../../assets/searchbackground.png") no-repeat;
-  }
-
-  .square {
-    height: 4rem;
-    width: 4rem;
-  }
-
-  #search {
-    height: 4rem;
-    width: calc(100% - 6.5rem);
-    flex: 1 1 auto;
-    margin: 0 auto;
-  }
-}
-
-table#result-table > thead th{
-  background: white;
-  position: -webkit-sticky;
-  position: sticky;
-  top: 0;
-  z-index: 1020;
-}
-
 .input-group-addon {
   background-color: #f4f4f4;
-  width: 2.5rem;
-  height: 4rem;
+  width: calc(2.25rem + 2px);
+  height: calc(2.25rem + 2px);
   text-align: center;
   border: 1px solid #ced4da;
   transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
@@ -395,9 +365,9 @@ table#result-table > thead th{
   line-height: 1rem;
   /* Position the tooltip */
   position: absolute;
-  right: 7rem;
-  top: -20%;
-  z-index: 9999;
+  right: calc(2.25rem + 4px);
+  top: -25%;
+  z-index: 1050;
   box-shadow: 0 0 0.75rem rgba(0, 0, 0, .25);
 }
 
@@ -405,9 +375,8 @@ table#result-table > thead th{
 .arrow {
   content: " ";
   position: absolute;
-  top: 50%;
+  top: 5%;
   left: 100%; /* To the right of the tooltip */
-  margin-top: -50px;
   border: 12px solid transparent;
   border-left-color: #887D75;
   border-right-width: 0;
@@ -435,4 +404,49 @@ table#result-table > thead th{
 
 .search-info-icon:hover + .search-info-tooltip {
   visibility: visible;
+}
+
+@include media-breakpoint-up(sm) {
+  .search-input-inner-wrapper {
+    min-width: 500px;
+    max-width: 60%;
+    line-height: 5rem;
+    padding: 4rem calc(4rem + 6px) 4rem;
+    background: transparent url("../../assets/searchbackground.png") no-repeat;
+  }
+
+  .square {
+    height: 4rem;
+    width: 4rem;
+  }
+
+  #search {
+    height: 4rem;
+    width: calc(100% - 6.5rem);
+    flex: 1 1 auto;
+    margin: 0 auto;
+  }
+
+  .input-group-addon {
+    width: 2.5rem;
+    height: 4rem;
+  }
+
+  .search-info-tooltip {
+    top: 15%;
+    right: 7rem;
+  }
+
+  .arrow {
+    top: 16.5%;
+    left: 100%;
+  }
+}
+
+table#result-table > thead th{
+  background: white;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 1020;
 }

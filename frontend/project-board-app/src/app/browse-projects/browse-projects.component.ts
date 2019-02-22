@@ -106,8 +106,6 @@ export class BrowseProjectsComponent implements OnInit {
     this.mobile = document.body.clientWidth < 992;
   }
 
-  swipebugplaceholder(): void {}
-
   loadProjects(): void {
     combineLatest(this.route.data, this.route.params)
       .pipe(takeUntil(this.destroy$))

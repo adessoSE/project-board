@@ -48,8 +48,6 @@ export class ProjectDetailsComponent implements OnInit {
       });
   }
 
-  swipebugplaceholder(): void {}
-
   requestProject(): void {
     this.router.navigate([`/projects/${this.selectedProject.id}/request`]);
   }
