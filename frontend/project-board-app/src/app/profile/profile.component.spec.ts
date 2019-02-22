@@ -10,6 +10,7 @@ import { Application, Employee, EmployeeAccessInfo, EmployeeService } from '../_
 import { Project, ProjectService } from '../_services/project.service';
 import { authConfig } from '../app.component';
 import { ProfileComponent } from './profile.component';
+import { ChartsModule } from 'ng2-charts/ng2-charts';
 
 describe('Component: Profile', () => {
 
@@ -22,7 +23,7 @@ describe('Component: Profile', () => {
 
       TestBed.configureTestingModule({
           declarations: [ProfileComponent],
-          imports: [HttpClientTestingModule, RouterTestingModule, OverlayModule, MatDialogModule], //For Http in EmplyeeService
+          imports: [HttpClientTestingModule, RouterTestingModule, OverlayModule, MatDialogModule, ChartsModule], //For Http in EmplyeeService
           providers: [AuthenticationService, EmployeeService, MatDialog, OAuthService, UrlHelperService, ProjectService],
           schemas: [CUSTOM_ELEMENTS_SCHEMA] //For Material Elements
       });
