@@ -88,6 +88,7 @@ describe('Component: BrowseProjects', () => {
             travelCostsCompensated: "TestTravelCostsCompensated 1",
             created: new Date(),
             updated: new Date(),
+            attachment: false,
         }]
 
 

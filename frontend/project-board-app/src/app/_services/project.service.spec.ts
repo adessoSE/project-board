@@ -45,7 +45,8 @@ describe('Service: ProjectService', () => {        // suite for the tests
           dailyRate: 'TestDailyRate 1',
           travelCostsCompensated: 'TestTravelCostsCompensated 1',
           created: new Date(),
-          updated: new Date()
+          updated: new Date(),
+          attachment: false
         },
         {
           labels: ['Label 3', 'Label 4'],
@@ -68,7 +69,8 @@ describe('Service: ProjectService', () => {        // suite for the tests
           dailyRate: 'TestDailyRate 2',
           travelCostsCompensated: 'TestTravelCostsCompensated 2',
           created: new Date(),
-          updated: new Date()
+          updated: new Date(),
+          attachment: false
         }
       ];
 
@@ -107,7 +109,8 @@ describe('Service: ProjectService', () => {        // suite for the tests
         dailyRate: 'TestDailyRate 1',
         travelCostsCompensated: 'TestTravelCostsCompensated 1',
         created: new Date(),
-        updated: new Date()
+        updated: new Date(),
+        attachment: false
       };
 
       let response;
@@ -124,7 +127,7 @@ describe('Service: ProjectService', () => {        // suite for the tests
   // testing search
   describe('search', () => {
     it('should return an array of filtered projects', () => {
-      const projectFilteredArrayResponse = [
+      const projectFilteredArrayResponse: Project[] = [
         {
           labels: ['Label 1', 'Label 2'],
           customer: 'TestCustomer 1',
@@ -146,7 +149,8 @@ describe('Service: ProjectService', () => {        // suite for the tests
           dailyRate: 'TestDailyRate 1',
           travelCostsCompensated: 'TestTravelCostsCompensated 1',
           created: new Date(),
-          updated: new Date()
+          updated: new Date(),
+          attachment: false
         },
         {
           labels: ['Label 3', 'Label 4'],
@@ -169,7 +173,8 @@ describe('Service: ProjectService', () => {        // suite for the tests
           dailyRate: 'TestDailyRate 2',
           travelCostsCompensated: 'TestTravelCostsCompensated 2',
           created: new Date(),
-          updated: new Date()
+          updated: new Date(),
+          attachment: false
         }
       ];
 

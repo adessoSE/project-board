@@ -62,7 +62,8 @@ describe('Component: Profile', () => {
             accessInfo: employeeAccesInfoMock
         };
 
-        const projectMock: Project[] = [{
+        const projectMock: Project[] = [
+            {
             labels: ["Label 1", "Label 2"],
             customer: "TestCustomer 1",
             description: "TestDescription 1",
@@ -84,7 +85,9 @@ describe('Component: Profile', () => {
             travelCostsCompensated: "TestTravelCostsCompensated 1",
             created: new Date(),
             updated: new Date(),
-        }];
+            attachment: false
+        }
+    ];
 
 
         const applicationsMock: Application[] = [
