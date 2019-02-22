@@ -32,6 +32,7 @@ import { ProjectDetailsComponent } from './project-details/project-details.compo
 import { ProjectDialogComponent } from './project-dialog/project-dialog.component';
 import { ProjectRequestComponent } from './project-request/project-request.component';
 import { ChartsModule } from 'ng2-charts';
+import { SearchComponent } from './search/search.component';
 
 declare var Hammer: any;
 
@@ -60,7 +61,8 @@ registerLocaleData(localeDe, 'de');
     ProjectRequestComponent,
     ProfileComponent,
     LogoutComponent,
-    DatepickerHeaderComponent
+    DatepickerHeaderComponent,
+    SearchComponent
   ],
   imports: [
     ChartsModule,
