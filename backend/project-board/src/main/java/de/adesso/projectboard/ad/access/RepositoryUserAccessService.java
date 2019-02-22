@@ -1,6 +1,7 @@
 package de.adesso.projectboard.ad.access;
 
 import de.adesso.projectboard.ad.user.RepositoryUserService;
+import de.adesso.projectboard.base.access.handler.UserAccessEventHandler;
 import de.adesso.projectboard.base.access.persistence.AccessInterval;
 import de.adesso.projectboard.base.access.persistence.AccessIntervalRepository;
 import de.adesso.projectboard.base.access.service.UserAccessService;
@@ -21,12 +22,18 @@ public class RepositoryUserAccessService implements UserAccessService {
 
     private final AccessIntervalRepository intervalRepo;
 
+    private final UserAccessEventHandler userAccessEventHandler;
+
     private final Clock clock;
 
     @Autowired
-    public RepositoryUserAccessService(RepositoryUserService userService, AccessIntervalRepository intervalRepo, Clock clock) {
+    public RepositoryUserAccessService(RepositoryUserService userService,
+                                       AccessIntervalRepository intervalRepo,
+                                       UserAccessEventHandler userAccessEventHandler,
+                                       Clock clock) {
         this.userService = userService;
         this.intervalRepo = intervalRepo;
+        this.userAccessEventHandler = userAccessEventHandler;
         this.clock = clock;
     }
 
@@ -42,13 +49,15 @@ public class RepositoryUserAccessService implements UserAccessService {
             AccessInterval interval = new AccessInterval(user, LocalDateTime.now(clock), until);
             user.addAccessInterval(interval);
 
+            userAccessEventHandler.onAccessCreated(user, interval);
+
             return userService.save(user);
         } else {
             AccessInterval latestInterval = latestIntervalOptional.get();
-
             latestInterval.setEndTime(until);
-
             intervalRepo.save(latestInterval);
+
+            userAccessEventHandler.onAccessChanged(user, latestInterval);
         }
 
         return user;
@@ -61,8 +70,9 @@ public class RepositoryUserAccessService implements UserAccessService {
                     .orElseThrow(() -> new IllegalStateException("No interval instance present!"));
 
             latestInterval.setEndTime(LocalDateTime.now(clock));
-
             intervalRepo.save(latestInterval);
+
+            userAccessEventHandler.onAccessRevoked(user);
         }
 
         return user;

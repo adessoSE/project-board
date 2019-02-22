@@ -7,10 +7,10 @@ import de.adesso.projectboard.base.application.rest.ApplicationController;
  * Interface used by {@link ApplicationController} to handle
  * incoming project applications in a customizable manner.
  *
- * @see de.adesso.projectboard.rest.handler.application.ProjectBoardApplicationHandler
+ * @see de.adesso.projectboard.rest.handler.application.ProjectBoardApplicationEventHandler
  */
 @FunctionalInterface
-public interface ProjectApplicationHandler {
+public interface ProjectApplicationEventHandler {
 
     /**
      *

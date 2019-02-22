@@ -1,6 +1,7 @@
 package de.adesso.projectboard.ad.access;
 
 import de.adesso.projectboard.ad.user.RepositoryUserService;
+import de.adesso.projectboard.base.access.handler.UserAccessEventHandler;
 import de.adesso.projectboard.base.access.persistence.AccessInterval;
 import de.adesso.projectboard.base.access.persistence.AccessIntervalRepository;
 import de.adesso.projectboard.base.user.persistence.User;
@@ -34,6 +35,9 @@ public class RepositoryUserAccessServiceTest {
     private AccessIntervalRepository intervalRepo;
 
     @Mock
+    private UserAccessEventHandler userAccessEventHandlerMock;
+
+    @Mock
     private User userMock;
 
     @Mock
@@ -41,7 +45,7 @@ public class RepositoryUserAccessServiceTest {
 
     private Clock clock;
 
-    RepositoryUserAccessService accessService;
+    private RepositoryUserAccessService accessService;
 
     @Before
     public void setUp() {
@@ -49,7 +53,7 @@ public class RepositoryUserAccessServiceTest {
         ZoneId zoneId = ZoneId.systemDefault();
 
         this.clock = Clock.fixed(instant, zoneId);
-        this.accessService = new RepositoryUserAccessService(userService, intervalRepo, clock);
+        this.accessService = new RepositoryUserAccessService(userService, intervalRepo, userAccessEventHandlerMock, clock);
     }
 
     @Test
@@ -81,6 +85,7 @@ public class RepositoryUserAccessServiceTest {
         // then
         verify(accessIntervalMock).setEndTime(expectedEndTime);
         verify(intervalRepo).save(accessIntervalMock);
+        verify(userAccessEventHandlerMock).onAccessChanged(userMock, accessIntervalMock);
     }
 
     @Test
@@ -114,6 +119,7 @@ public class RepositoryUserAccessServiceTest {
         softly.assertAll();
 
         verify(userService).save(userMock);
+        verify(userAccessEventHandlerMock).onAccessCreated(userMock, createdAccessInterval);
     }
 
     @Test
@@ -142,6 +148,7 @@ public class RepositoryUserAccessServiceTest {
         softly.assertAll();
 
         verify(userService).save(userMock);
+        verify(userAccessEventHandlerMock).onAccessCreated(userMock, createdAccessInterval);
     }
 
     @Test
@@ -159,6 +166,7 @@ public class RepositoryUserAccessServiceTest {
 
         // then
         verify(accessIntervalMock, never()).setEndTime(any());
+        verify(userAccessEventHandlerMock, never()).onAccessCreated(any(), any());
     }
 
     @Test
@@ -178,6 +186,7 @@ public class RepositoryUserAccessServiceTest {
         // then
         verify(accessIntervalMock).setEndTime(expectedEndTime);
         verify(intervalRepo).save(accessIntervalMock);
+        verify(userAccessEventHandlerMock).onAccessRevoked(userMock);
     }
 
 }

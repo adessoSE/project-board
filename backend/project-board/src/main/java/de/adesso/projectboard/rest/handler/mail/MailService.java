@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-
 @Profile("mail")
 @Service
 public class MailService {
@@ -25,7 +24,7 @@ public class MailService {
     /**
      * Scheduled method to send pending messages.
      */
-    @Scheduled(fixedDelay = 30000L)
+    @Scheduled(fixedDelay = 10000L)
     protected void sendMessage() {
         mailSenderService.sendMessages();
     }

@@ -5,12 +5,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link ProjectApplicationHandler} implementation that performs no action.
+ * {@link ProjectApplicationEventHandler} implementation that performs no action.
  *
- * @see ProjectApplicationHandler
- * @see de.adesso.projectboard.rest.handler.application.ProjectBoardApplicationHandler
+ * @see ProjectApplicationEventHandler
+ * @see de.adesso.projectboard.rest.handler.application.ProjectBoardApplicationEventHandler
  */
-public class NoActionApplicationHandler implements ProjectApplicationHandler {
+public class NoActionApplicationEventHandler implements ProjectApplicationEventHandler {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

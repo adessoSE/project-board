@@ -43,23 +43,26 @@ public class MailSenderService {
 
     @Transactional
     public void sendMessages() {
-        messageRepository.findAll().forEach(message -> {
+        messageRepository.findAll().forEach(templateMessage -> {
             try {
-                if(message.isStillRelevant()) {
+                if(templateMessage.isStillRelevant()) {
+                    var addressee = templateMessage.getAddressee();
+                    var addresseeMail = userService.getUserData(addressee).getEmail();
+
                     // create a new mail message, set the subject, text, addressee and send it
-                    SimpleMailMessage mailMessage = new SimpleMailMessage();
-                    mailMessage.setSubject(message.getSubject());
-                    mailMessage.setText(message.getText());
-                    mailMessage.setTo(message.getAddresseeData().getEmail());
+                    var mailMessage = new SimpleMailMessage();
+                    mailMessage.setSubject(templateMessage.getSubject());
+                    mailMessage.setText(templateMessage.getText());
+                    mailMessage.setTo("daniel.meier@adesso.de");
 
                     mailSender.send(mailMessage);
 
-                    logger.debug(String.format("Mail sent to %s!", message.getAddresseeData().getEmail()));
+                    logger.info(String.format("Mail sent to %s!", addresseeMail));
                 }
 
                 // delete the message when it was sent
                 // successfully or is not relevant anymore
-                messageRepository.delete(message);
+                messageRepository.delete(templateMessage);
             } catch (Exception err) {
                 logger.error("Error sending mail!", err);
             }

@@ -1,6 +1,6 @@
 package de.adesso.projectboard.rest.handler.application;
 
-import de.adesso.projectboard.base.application.handler.ProjectApplicationHandler;
+import de.adesso.projectboard.base.application.handler.ProjectApplicationEventHandler;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
@@ -10,10 +10,10 @@ import de.adesso.projectboard.rest.handler.mail.persistence.ApplicationTemplateM
 import de.adesso.projectboard.rest.handler.mail.persistence.TemplateMessage;
 import de.adesso.projectboard.rest.security.KeycloakAuthenticationInfoRetriever;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 /**
- * A {@link ProjectApplicationHandler} implementation that sends out a mail to the
+ * A {@link ProjectApplicationEventHandler} implementation that sends out a mail to the
  * supervisor of the applicant.
  *
  * <p>
@@ -25,14 +25,14 @@ import org.springframework.stereotype.Service;
  * @see KeycloakAuthenticationInfoRetriever
  */
 @Profile("mail")
-@Service
-public class ProjectBoardApplicationHandler implements ProjectApplicationHandler {
+@Component
+public class ProjectBoardApplicationEventHandler implements ProjectApplicationEventHandler {
 
     private final MailService mailService;
 
     private final UserService userService;
 
-    public ProjectBoardApplicationHandler(MailService mailService, UserService userService) {
+    public ProjectBoardApplicationEventHandler(MailService mailService, UserService userService) {
         this.mailService = mailService;
         this.userService = userService;
     }
@@ -45,7 +45,7 @@ public class ProjectBoardApplicationHandler implements ProjectApplicationHandler
         UserData userData = userService.getUserData(user);
         UserData managerData = userService.getUserData(manager);
 
-        TemplateMessage message = new ApplicationTemplateMessage(application, userData, managerData);
+        TemplateMessage message = new ApplicationTemplateMessage(application, managerData, userData);
 
         mailService.queueMessage(message);
     }
