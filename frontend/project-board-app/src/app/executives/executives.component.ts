@@ -110,10 +110,11 @@ export class ExecutivesComponent implements OnInit {
       });
   }
 
-  searchEmployees(): void {
+  searchEmployees(searchText: string): void {
     this.loading = true;
     this.employees = [];
-    this.searchText$.next(this.searchText);
+    this.searchText = searchText;
+    this.searchText$.next(searchText);
   }
 
   private setSelectedEmployee(employeeId): void {

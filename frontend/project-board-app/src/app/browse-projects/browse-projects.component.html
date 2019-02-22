@@ -1,20 +1,4 @@
-<div class="search-input-wrapper">
-  <div class="imageWrapper">
-    <div class="input-group search-input-inner-wrapper">
-      <label for="search" class="sr-only">Projekte suchen</label>
-      <span class="square"><mat-icon>search</mat-icon></span>
-      <input #search [(ngModel)]="searchText" (ngModelChange)="searchProjects()" class="search form-control" type="text" name="search" id="search" placeholder="Projekte suchen...">
-      <span class="input-group-addon">
-        <mat-icon class="search-info-icon">info</mat-icon>
-        <div class="search-info-tooltip">
-          <div class="arrow"></div>
-          <div class="search-info-tooltip-header">Projekte suchen</div>
-          <div [innerHTML]="infoTooltip"></div>
-        </div>
-      </span>
-    </div>
-  </div>
-</div>
+<app-search [infoTooltip]="infoTooltip" [placeholder]="'Projekte suchen...'" (search)="searchProjects($event)"></app-search>
 
 <div class="outer">
   <!-- <button (click)="filterByDistance('Dortmund')">Test</button> -->

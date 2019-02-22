@@ -223,10 +223,12 @@ export class BrowseProjectsComponent implements OnInit {
     this.divToScroll = document.getElementById('divToScroll');
   }
 
-  searchProjects(): void {
+  searchProjects(searchText: string): void {
+    console.log(searchText);
     this.loadingProjects = true;
     this.projects = [];
-    this.searchText$.next(this.searchText);
+    this.searchText = searchText;
+    this.searchText$.next(searchText);
   }
 
   sortByLocation(memory: number): void {
