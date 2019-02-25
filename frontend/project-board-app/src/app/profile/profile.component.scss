@@ -202,6 +202,13 @@
   overflow: hidden;
 }
 
+.tab-info {
+  font-size: 10pt;
+  display: inline-block;
+  vertical-align: bottom;
+  color: lightgrey;
+  }
+
 @include media-breakpoint-up(xl) {
   .left-bar {
     height: 550px;

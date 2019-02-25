@@ -1,4 +1,4 @@
-export const NO_ACCESS_TOOLTIP = 'Du bist nicht für das Project-Board freigeschaltet';
+export const NO_ACCESS_TOOLTIP = 'Du bist nicht für das Project Board freigeschaltet';
 export const STUDENT_TOOLTIP = 'Studentisches Projekt';
 export const APPLICATION_TOOLTIP = 'Du hast dieses Projekt bereits angefragt';
 export const BOOKMARK_TOOLTIP = 'Du hast ein Lesezeichen an diesem Projekt';
