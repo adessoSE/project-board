@@ -1,0 +1,71 @@
+<div class="outer">
+    <div class="inner">
+
+      <div *ngIf="user.boss">
+        <div class="question">
+          Können meine Mitarbeiter dieses FAQ sehen?
+        </div>
+        <div class="answer">
+            Nein. Sie haben ein eigenes FAQ.
+        </div>
+
+        <div class="question">
+          Was passiert mit den Projektanfragen meiner Mitarbeiter, wenn sie keinen Zugang mehr haben?
+        </div>
+        <div class="answer">
+          Die Anfragen werden 4 Wochen nachdem der Zugang deaktiviert wurde gelöscht.
+        </div>
+
+        <div class="question">
+          An wen werden die Projektanfragen meiner Mitarbeiter versendet?
+        </div>
+        <div class="answer">
+          Nur du wirst über die Projektanfragen deiner Mitarbeiter benachrichtigt. Dein Vorgesetzter kann diese jedoch einsehen.
+        </div>
+
+        <div class="question">
+          An wen werden die Projektanfragen meiner Mitarbeiter versendet?
+        </div>
+        <div class="answer">
+          Nur du wirst über die Projektanfragen deiner Mitarbeiter benachrichtigt. Dein Vorgesetzter kann diese jedoch einsehen.
+        </div> 
+      </div>
+
+      <div *ngIf="!user.boss">
+        <div class="question">
+          Was passiert, wenn ich eine Projektanfrage absende?
+        </div>
+        <div class="answer">
+          Dein Vorgesetzter bekommt eine Benachrichtigung über dein Interesse an diesem Projekt.
+        </div>
+
+        <div class="question">
+          Was hat es mit den Lesezeichen auf sich?
+        </div>
+        <div class="answer">
+          Du kannst Projekte als Lesezeichen markieren, an denen du Interesse hast. Deine Lesezeichen kannst nur du sehen.
+        </div>
+
+        <div class="question">
+          Sind das alles aktuelle Projekte bei adesso?
+        </div>
+        <div class="answer">
+          Aufgelistet sind alle Projekte aus dem Jira. Es handelt sich um Akquisen, um Mitarbeiter für ein Projekt zu finden. Die Projekte befinden sich teilweise noch in der Planung.
+        </div>
+
+        <div class="question">
+          Wie lange kann ich das Project Board nutzen?
+        </div>
+        <div class="answer">
+          Die Dauer der Freischaltung hängt von deinem Vorgesetzten ab. Dieser kann deine Freischaltung jederzeit verlängern oder deaktivieren.
+        </div>
+      </div>
+
+      <div style="padding-top: 20px; padding-bottom: 10px;">
+      Keine Antwort auf deine Frage gefunden? Kontaktiere den 
+      <a href="mailto:projectboard-support@adesso.de" title="Kontaktiere den Project Board Support">
+        Project Board Support</a>.
+    </div>
+    </div>
+</div>
+    
