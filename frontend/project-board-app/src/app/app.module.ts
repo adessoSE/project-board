@@ -33,6 +33,7 @@ import { ProjectDialogComponent } from './project-dialog/project-dialog.componen
 import { ProjectRequestComponent } from './project-request/project-request.component';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { SearchComponent } from './search/search.component';
+import { FaqComponent } from './faq/faq.component';
 
 declare var Hammer: any;
 
@@ -62,7 +63,8 @@ registerLocaleData(localeDe, 'de');
     ProfileComponent,
     LogoutComponent,
     DatepickerHeaderComponent,
-    SearchComponent
+    SearchComponent,
+    FaqComponent
   ],
   imports: [
     NgxMatSelectSearchModule,
