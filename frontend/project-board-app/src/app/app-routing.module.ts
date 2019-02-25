@@ -15,6 +15,7 @@ import { ExecutivesComponent } from './executives/executives.component';
 import { LogoutComponent } from './logout/logout.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ProfileComponent } from './profile/profile.component';
+import { FaqComponent } from './faq/faq.component';
 
 const routes: Routes = [
   {
@@ -70,6 +71,13 @@ const routes: Routes = [
       AuthGuard,
       AccessGuard
     ]
+  },
+  {
+    path: 'faq',
+    component: FaqComponent,
+    resolve: {
+      user: UserResolverService
+    }
   },
   {
     path: 'profile',

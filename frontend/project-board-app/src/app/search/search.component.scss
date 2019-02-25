@@ -81,7 +81,9 @@
   right: calc(2.25rem + 4px);
   top: -25%;
   z-index: 1050;
-  box-shadow: 0 0 0.75rem rgba(0, 0, 0, .25);
+  //box-shadow: 0 0 0.75rem rgba(0, 0, 0, .25);
+  border-color: #887D75;
+  border: 1px solid;
 }
 
 /* tooltip arrow */
@@ -92,17 +94,6 @@
   left: 100%; /* To the right of the tooltip */
   border: 12px solid transparent;
   border-left-color: #887D75;
-  border-right-width: 0;
-}
-
-.search-info-tooltip .arrow::after {
-  content: " ";
-  position: absolute;
-  top: 50%;
-  right: 1px;
-  margin-top: -11px;
-  border: 11px solid transparent;
-  border-left-color: #fff;
   border-right-width: 0;
 }
 
