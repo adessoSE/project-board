@@ -16,3 +16,10 @@ export const SEARCH_INFO_TOOLTIP = 'OR-Verknüfungen mit `|` (z.B. Dortmund | Es
   'Gruppierung mit runden Klammern (z.B. Java & (JUnit | Mockito) )<br><br>' +
   'NOT-Verknüpfungen mit `-` (Scrum -Java findet z.B. nur Projekte, in denen das Wort ' +
   'Scrum enthalten, aber das Wort Java nicht enthalten ist)';
+export const EMPLOYEE_SEARCH_INFO_TOOLTIP = 'Placeholder';
+export const CONTACT_SUPPORT_TOOLTIP = 'Kontaktiere den Projectboard Support';
+export const PROFILE_TOOLTIP = 'Mein Profil';
+export const PROJECTS_TOOLTIP = 'Projekte';
+export const EMPLOYEES_TOOLTIP = 'Mitarbeiter';
+export const FAQ_TOOLTIP = 'FAQ';
+export const LOGOUT_TOOLTIP = 'Abmelden';

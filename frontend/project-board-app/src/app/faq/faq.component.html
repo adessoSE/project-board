@@ -3,13 +3,6 @@
 
       <div *ngIf="user.boss">
         <div class="question">
-          Können meine Mitarbeiter dieses FAQ sehen?
-        </div>
-        <div class="answer">
-            Nein. Sie haben ein eigenes FAQ.
-        </div>
-
-        <div class="question">
           Was passiert mit den Projektanfragen meiner Mitarbeiter, wenn sie keinen Zugang mehr haben?
         </div>
         <div class="answer">
@@ -17,18 +10,18 @@
         </div>
 
         <div class="question">
-          An wen werden die Projektanfragen meiner Mitarbeiter versendet?
+          Wer wird über die Anfragen meiner Mitarbeiter benachrichtigt?
         </div>
         <div class="answer">
-          Nur du wirst über die Projektanfragen deiner Mitarbeiter benachrichtigt. Dein Vorgesetzter kann diese jedoch einsehen.
+          Nur Du wirst über die Projektanfragen Deiner direkten Mitarbeiter per Email benachrichtigt. Dein Vorgesetzter kann die Anfragen jedoch ebenfalls im Project Board einsehen.
         </div>
 
         <div class="question">
-          An wen werden die Projektanfragen meiner Mitarbeiter versendet?
+          Haben meine Mitarbeiter ein anderes FAQ?
         </div>
         <div class="answer">
-          Nur du wirst über die Projektanfragen deiner Mitarbeiter benachrichtigt. Dein Vorgesetzter kann diese jedoch einsehen.
-        </div> 
+          Ja, Deine Mitarbeiter sehen auf dieser Seite andere Fragen und Antworten.
+        </div>
       </div>
 
       <div *ngIf="!user.boss">
@@ -36,14 +29,14 @@
           Was passiert, wenn ich eine Projektanfrage absende?
         </div>
         <div class="answer">
-          Dein Vorgesetzter bekommt eine Benachrichtigung über dein Interesse an diesem Projekt.
+          Dein Vorgesetzter bekommt eine Benachrichtigung über Dein Interesse an diesem Projekt.
         </div>
 
         <div class="question">
           Was hat es mit den Lesezeichen auf sich?
         </div>
         <div class="answer">
-          Du kannst Projekte als Lesezeichen markieren, an denen du Interesse hast. Deine Lesezeichen kannst nur du sehen.
+          Du kannst Projekte, an denen Du Interesse hast, mit einem Lesezeichen markieren. Deine Lesezeichen kannst nur Du sehen.
         </div>
 
         <div class="question">
@@ -57,15 +50,14 @@
           Wie lange kann ich das Project Board nutzen?
         </div>
         <div class="answer">
-          Die Dauer der Freischaltung hängt von deinem Vorgesetzten ab. Dieser kann deine Freischaltung jederzeit verlängern oder deaktivieren.
+          Die Dauer der Freischaltung kann Dein Vorgesetzter festlegen. Dieser kann Deine Freischaltung jederzeit verlängern oder deaktivieren.
         </div>
       </div>
 
       <div style="padding-top: 20px; padding-bottom: 10px;">
-      Keine Antwort auf deine Frage gefunden? Kontaktiere den 
-      <a href="mailto:projectboard-support@adesso.de" title="Kontaktiere den Project Board Support">
+        Keine Antwort auf Deine Frage gefunden? Kontaktiere den
+        <a href="mailto:{{supportEmail}}" title="Kontaktiere den Project Board Support">
         Project Board Support</a>.
     </div>
     </div>
 </div>
-    

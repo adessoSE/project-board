@@ -9,7 +9,7 @@ import { debounceTime, switchMap, takeUntil } from 'rxjs/operators';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Employee, EmployeeService } from '../_services/employee.service';
 import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
-import { SEARCH_INFO_TOOLTIP } from '../tooltips';
+import { EMPLOYEE_SEARCH_INFO_TOOLTIP } from '../tooltips';
 
 @Component({
   selector: 'app-executives',
@@ -25,7 +25,7 @@ export class ExecutivesComponent implements OnInit {
   showEmployees: string[] = [];
   employeeMap: Map<string, Employee[]> = new Map<string, Employee[]>();
 
-  infoTooltip = SEARCH_INFO_TOOLTIP;
+  infoTooltip = EMPLOYEE_SEARCH_INFO_TOOLTIP;
   searchText = '';
   loading = true;
   dialogRef: MatDialogRef<EmployeeDialogComponent>;
