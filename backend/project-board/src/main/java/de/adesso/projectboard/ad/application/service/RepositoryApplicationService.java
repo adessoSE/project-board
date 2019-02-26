@@ -1,5 +1,6 @@
 package de.adesso.projectboard.ad.application.service;
 
+import de.adesso.projectboard.base.application.handler.ProjectApplicationEventHandler;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.persistence.ProjectApplicationRepository;
 import de.adesso.projectboard.base.application.service.ApplicationService;
@@ -30,14 +31,18 @@ public class RepositoryApplicationService implements ApplicationService {
 
     private final ProjectApplicationRepository applicationRepo;
 
+    private final ProjectApplicationEventHandler applicationEventHandler;
+
     private final Clock clock;
 
     @Autowired
     public RepositoryApplicationService(ProjectService projectService,
                                         ProjectApplicationRepository applicationRepo,
+                                        ProjectApplicationEventHandler applicationEventHandler,
                                         Clock clock) {
         this.projectService = projectService;
         this.applicationRepo = applicationRepo;
+        this.applicationEventHandler = applicationEventHandler;
         this.clock = clock;
     }
 
@@ -58,6 +63,8 @@ public class RepositoryApplicationService implements ApplicationService {
         // use a clock for testing
         LocalDateTime applicationDate = LocalDateTime.now(clock);
         ProjectApplication application = new ProjectApplication(project, comment, user, applicationDate);
+
+        applicationEventHandler.onApplicationReceived(application);
 
         return applicationRepo.save(application);
     }

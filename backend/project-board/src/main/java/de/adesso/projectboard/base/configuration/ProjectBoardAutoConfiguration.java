@@ -1,8 +1,8 @@
 package de.adesso.projectboard.base.configuration;
 
-import de.adesso.projectboard.base.access.handler.NoActionAccessEventHandler;
+import de.adesso.projectboard.base.access.handler.LogUserAccessEventHandler;
 import de.adesso.projectboard.base.access.handler.UserAccessEventHandler;
-import de.adesso.projectboard.base.application.handler.NoActionApplicationEventHandler;
+import de.adesso.projectboard.base.application.handler.LogProjectApplicationEventHandler;
 import de.adesso.projectboard.base.application.handler.ProjectApplicationEventHandler;
 import de.adesso.projectboard.base.reader.NoActionProjectReader;
 import de.adesso.projectboard.base.reader.ProjectReader;
@@ -29,14 +29,14 @@ public class ProjectBoardAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ProjectApplicationEventHandler.class)
-    public ProjectApplicationEventHandler noActionApplicationHandler() {
-        return new NoActionApplicationEventHandler();
+    public ProjectApplicationEventHandler logProjectApplicationEventHandler() {
+        return new LogProjectApplicationEventHandler();
     }
 
     @Bean
     @ConditionalOnMissingBean(UserAccessEventHandler.class)
-    public UserAccessEventHandler noActionAccessHandler() {
-        return new NoActionAccessEventHandler();
+    public UserAccessEventHandler logUserAccessEventHandler() {
+        return new LogUserAccessEventHandler();
     }
 
     @Bean

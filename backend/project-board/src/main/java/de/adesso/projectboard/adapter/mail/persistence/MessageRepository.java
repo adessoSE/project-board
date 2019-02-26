@@ -1,4 +1,4 @@
-package de.adesso.projectboard.rest.handler.mail.persistence;
+package de.adesso.projectboard.adapter.mail.persistence;
 
 import org.springframework.data.repository.CrudRepository;
 

@@ -1,18 +1,17 @@
 package de.adesso.projectboard.ad.application.service;
 
+import de.adesso.projectboard.base.application.handler.ProjectApplicationEventHandler;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.persistence.ProjectApplicationRepository;
 import de.adesso.projectboard.base.exceptions.AlreadyAppliedException;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.user.persistence.User;
-import org.assertj.core.api.SoftAssertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 import org.springframework.data.domain.Sort;
 
 import java.time.Clock;
@@ -24,7 +23,6 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -39,6 +37,9 @@ public class RepositoryApplicationServiceTest {
 
     @Mock
     private ProjectApplicationRepository applicationRepoMock;
+
+    @Mock
+    private ProjectApplicationEventHandler applicationEventHandlerMock;
 
     @Mock
     private User userMock;
@@ -56,7 +57,8 @@ public class RepositoryApplicationServiceTest {
         var zoneId = ZoneId.systemDefault();
 
         this.clock = Clock.fixed(instant, zoneId);
-        this.applicationService = new RepositoryApplicationService(projectServiceMock, applicationRepoMock, clock);
+        this.applicationService = new RepositoryApplicationService(projectServiceMock, applicationRepoMock,
+                applicationEventHandlerMock, clock);
     }
 
     @Test
@@ -86,33 +88,24 @@ public class RepositoryApplicationServiceTest {
     @Test
     public void createApplicationForUser() {
         // given
-        var expectedComment = "Comment!";
+        var expectedComment = "A nice Comment!";
         var expectedDate = LocalDateTime.now(clock);
+        var expectedApplication = new ProjectApplication(projectMock, expectedComment, userMock, expectedDate);
 
         given(applicationRepoMock.existsByUserAndProject(userMock, projectMock)).willReturn(false);
         given(projectServiceMock.getProjectById(PROJECT_ID)).willReturn(projectMock);
         given(applicationRepoMock.existsByUserAndProject(userMock, projectMock)).willReturn(false);
 
-        given(applicationRepoMock.save(any(ProjectApplication.class))).willAnswer((Answer<ProjectApplication>) invocation -> {
-            Object[] args = invocation.getArguments();
-
-            return (ProjectApplication) args[0];
-        });
+        given(applicationRepoMock.save(expectedApplication)).willReturn(expectedApplication);
 
         // when
-        var createdApplication = applicationService.createApplicationForUser(userMock, PROJECT_ID, expectedComment);
+        var actualApplication = applicationService.createApplicationForUser(userMock, PROJECT_ID, expectedComment);
 
         // then
-        var softly = new SoftAssertions();
+        assertThat(actualApplication).isEqualTo(expectedApplication);
 
-        softly.assertThat(createdApplication.getComment()).isEqualTo(expectedComment);
-        softly.assertThat(createdApplication.getApplicationDate()).isEqualTo(expectedDate);
-        softly.assertThat(createdApplication.getUser()).isEqualTo(userMock);
-        softly.assertThat(createdApplication.getProject()).isEqualTo(projectMock);
-
-        softly.assertAll();
-
-        verify(applicationRepoMock).save(createdApplication);
+        verify(applicationRepoMock).save(actualApplication);
+        verify(applicationEventHandlerMock).onApplicationReceived(expectedApplication);
     }
 
     @Test

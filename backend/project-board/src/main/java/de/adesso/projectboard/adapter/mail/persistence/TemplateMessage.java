@@ -1,22 +1,15 @@
-package de.adesso.projectboard.rest.handler.mail.persistence;
+package de.adesso.projectboard.adapter.mail.persistence;
 
 import de.adesso.projectboard.base.user.persistence.User;
-import de.adesso.projectboard.rest.handler.mail.MailService;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.mail.SimpleMailMessage;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.time.LocalDateTime;
 
-/**
- * Entity used to persist template mail message contents. The {@link MailService} persists them in
- * a database and tries to send a {@link SimpleMailMessage} with the content periodically.
- *
- * @see MailService
- */
 @Entity
 @Table(name = "TEMPLATE_MESSAGE")
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -44,7 +37,7 @@ public abstract class TemplateMessage {
     protected User addressee;
 
     @Lob
-    @Column(length = 512)
+    @Column(length = 4600)
     @NotEmpty
     protected String text;
 
@@ -72,12 +65,39 @@ public abstract class TemplateMessage {
     }
 
     /**
+     * Constructs a new instance.
+     *
+     * @param referencedUser
+     *          The user this message refers to, not null.
+     *
+     * @param addressee
+     *          The user this message is sent to, not null.
+     *
+     * @param subject
+     *          The subject of the message, neither null nor empty.
+     *
+     * @param text
+     *          The message text, neither null or empty.
+     *
+     * @see #TemplateMessage(User, User)
+     */
+    protected TemplateMessage(User referencedUser, User addressee, String subject, String text) {
+        this(referencedUser, addressee);
+
+        this.text = text;
+        this.subject = subject;
+    }
+
+    /**
+     *
+     * @param localDateTime
+     *          The date and time to check, not null.
      *
      * @return
-     *          {@code true}, iff the message is still relevant and
-     *          will needs to be sent.
+     *          {@code true}, iff the message is still relevant at the given
+     *          {@code localDateTime} and needs to be sent.
      */
-    public abstract boolean isStillRelevant();
+    public abstract boolean isStillRelevant(LocalDateTime localDateTime);
 
 }
 

@@ -7,12 +7,16 @@ import lombok.extern.slf4j.Slf4j;
 import java.time.format.DateTimeFormatter;
 
 /**
- * {@link UserAccessEventHandler} implementation that performs no action.
+ * {@link UserAccessEventHandler} implementation that performs simple
+ * logging.
  *
- * @see UserAccessEventHandler
+ * <p>
+ *      Auto-configured implementation in case no other {@link UserAccessEventHandler} bean
+ *      is present.
+ * </p>
  */
 @Slf4j
-public class NoActionAccessEventHandler implements UserAccessEventHandler {
+public class LogUserAccessEventHandler implements UserAccessEventHandler {
 
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyy HH:mm");
 
@@ -25,14 +29,14 @@ public class NoActionAccessEventHandler implements UserAccessEventHandler {
 
     @Override
     public void onAccessChanged(User user, AccessInterval accessInterval) {
-        log.info(String.format("Activated changed for user %s to end on %s!",
+        log.info(String.format("Access changed for user %s to end on %s!",
                 user.getId(),
                 accessInterval.getEndTime().format(dateTimeFormatter)));
     }
 
     @Override
     public void onAccessRevoked(User user) {
-        log.info(String.format("Activated revoked for user %s!",
+        log.info(String.format("Access revoked for user %s!",
                 user.getId()));
     }
 

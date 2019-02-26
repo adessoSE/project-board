@@ -1,5 +1,6 @@
 package de.adesso.projectboard.base.application.handler;
 
+import de.adesso.projectboard.adapter.mail.handler.MailProjectApplicationEventHandler;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.rest.ApplicationController;
 
@@ -7,7 +8,7 @@ import de.adesso.projectboard.base.application.rest.ApplicationController;
  * Interface used by {@link ApplicationController} to handle
  * incoming project applications in a customizable manner.
  *
- * @see de.adesso.projectboard.rest.handler.application.ProjectBoardApplicationEventHandler
+ * @see MailProjectApplicationEventHandler
  */
 @FunctionalInterface
 public interface ProjectApplicationEventHandler {
