@@ -67,15 +67,19 @@
 <div id="mini-nav">
   <div id="mini-nav-content">
     <a routerLink="/"><img src="/assets/adesso-logo-s.png"></a>
-    <mat-icon [title]="profileTooltip" routerLink="/profile" routerLinkActive="active-mini-link">person</mat-icon>
-    <ng-template #disabledProjectsMini>
-      <mat-icon class="disabled" [title]="noAccessTooltip"></mat-icon>
-    </ng-template>
-    <mat-icon [title]="projectsTooltip" *ngIf="hasAccess; else disabledProjectsMini" routerLink="/browse" routerLinkActive="active-mini-link">folder_open</mat-icon>
-    <mat-icon [title]="employeesTooltip" *ngIf="isBoss" routerLink="/employees" routerLinkActive="active-mini-link">people</mat-icon>
-    <mat-icon [title]="faqTooltip" routerLink="/faq" routerLinkActive="active-mini-link">question_answer</mat-icon>
-    <mat-icon [title]="contactSupportTooltip" (click)="mailToSupport()">contact_support</mat-icon>
-    <mat-icon [title]="logoutTooltip" routerLink="/logout" (click)="logout()">logout</mat-icon>
+    <div>
+      <mat-icon [title]="profileTooltip" routerLink="/profile" routerLinkActive="active-mini-link">person</mat-icon>
+      <ng-template #disabledProjectsMini>
+        <mat-icon class="disabled" [title]="noAccessTooltip"></mat-icon>
+      </ng-template>
+      <mat-icon [title]="projectsTooltip" *ngIf="hasAccess; else disabledProjectsMini" routerLink="/browse" routerLinkActive="active-mini-link">folder_open</mat-icon>
+      <mat-icon [title]="employeesTooltip" *ngIf="isBoss" routerLink="/employees" routerLinkActive="active-mini-link">people</mat-icon>
+      <mat-icon [title]="faqTooltip" routerLink="/faq" routerLinkActive="active-mini-link">question_answer</mat-icon>
+    </div>
+    <div>
+      <mat-icon [title]="contactSupportTooltip" (click)="mailToSupport()">contact_support</mat-icon>
+      <mat-icon [title]="logoutTooltip" routerLink="/logout" (click)="logout()">logout</mat-icon>
+    </div>
   </div>
 </div>
 
