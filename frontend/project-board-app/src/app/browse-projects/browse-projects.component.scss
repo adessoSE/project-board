@@ -29,6 +29,27 @@ button span {
   margin-bottom: -6px;
 }
 
+.projects-info-wrapper {
+  margin: 0 auto;
+  p {
+    display: inline-block;
+    width: calc(100% - 50px);
+  }
+  @include media-breakpoint-up(sm) {
+    min-width: 500px;
+    max-width: 60%;
+  }
+}
+
+.projects-info-icon-wrapper {
+  display: inline-block;
+  vertical-align: top;
+  width: 50px;
+  mat-icon {
+    font-size: 35px;
+  }
+}
+
 #projectContainer {
   max-height: calc(100vh - 270px);
   overflow-y: auto;
