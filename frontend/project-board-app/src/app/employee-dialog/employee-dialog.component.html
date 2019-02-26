@@ -84,7 +84,7 @@
           <mat-datepicker #datepicker [touchUi]="mobile" [calendarHeaderComponent]="customHeaderClass"></mat-datepicker>
         </mat-form-field>
         <div class="btn-group">
-          <button (click)="activate()" disabled="{{datepickerControl.errors}}" [ngClass]="{'btn btn-primary btn-activate': true, 'width': !data.employee.accessInfo.hasAccess, 'disabled': datepickerControl.errors}">{{!data.employee.accessInfo.hasAccess ? 'Zugang aktivieren' : 'Zugang aktualisieren'}}</button>
+          <button (click)="activate()" title="{{data.employee.firstName}} bis zum {{datepickerControl.value | date}} freischalten." disabled="{{datepickerControl.errors}}" [ngClass]="{'btn btn-primary btn-activate': true, 'width': !data.employee.accessInfo.hasAccess, 'disabled': datepickerControl.errors}">{{!data.employee.accessInfo.hasAccess ? 'Zugang aktivieren' : 'Zugang aktualisieren'}}</button>
           <button *ngIf="data.employee.accessInfo.hasAccess" (click)="deactivate()" class="btn btn-danger btn-deactivate">Zugang deaktivieren</button>
         </div>
       </div>
