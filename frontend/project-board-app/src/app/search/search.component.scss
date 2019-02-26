@@ -55,7 +55,6 @@
 #search:focus + .input-group-addon {
   border: 1px solid #016EC7;
   border-left: 1px solid #ced4da;
-  //transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
 .search-info-icon {
@@ -76,14 +75,12 @@
   padding: 8px;
   font-size: 0.8rem;
   line-height: 1rem;
-  /* Position the tooltip */
   position: absolute;
   right: calc(2.25rem + 4px);
   top: -25%;
   z-index: 1050;
   //box-shadow: 0 0 0.75rem rgba(0, 0, 0, .25);
-  border-color: #887D75;
-  border: 1px solid;
+  border: 1px solid #887D75;
 }
 
 /* tooltip arrow */
