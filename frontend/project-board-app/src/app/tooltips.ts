@@ -1,4 +1,4 @@
-export const NO_ACCESS_TOOLTIP = 'Du bist nicht für das Project Board freigeschaltet';
+export const NO_ACCESS_TOOLTIP = 'Du bist nicht für das project board freigeschaltet';
 export const STUDENT_TOOLTIP = 'Studentisches Projekt';
 export const APPLICATION_TOOLTIP = 'Du hast dieses Projekt bereits angefragt';
 export const BOOKMARK_TOOLTIP = 'Du hast ein Lesezeichen an diesem Projekt';
@@ -17,7 +17,7 @@ export const SEARCH_INFO_TOOLTIP = 'OR-Verknüfungen mit `|` (z.B. Dortmund | Es
   'NOT-Verknüpfungen mit `-` (Scrum -Java findet z.B. nur Projekte, in denen das Wort ' +
   'Scrum enthalten, aber das Wort Java nicht enthalten ist)';
 export const EMPLOYEE_SEARCH_INFO_TOOLTIP = 'Placeholder';
-export const CONTACT_SUPPORT_TOOLTIP = 'Kontaktiere den Projectboard Support';
+export const CONTACT_SUPPORT_TOOLTIP = 'Kontaktiere den project board Support';
 export const PROFILE_TOOLTIP = 'Mein Profil';
 export const PROJECTS_TOOLTIP = 'Projekte';
 export const EMPLOYEES_TOOLTIP = 'Mitarbeiter';

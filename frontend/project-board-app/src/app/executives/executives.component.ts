@@ -136,17 +136,17 @@ export class ExecutivesComponent implements OnInit {
   badgeTooltip(employee): string {
     const fullName = `${employee.firstName} ${employee.lastName}`;
     if (employee.boss) {
-      return `${fullName} hat als Führungskraft dauerhaften Zugang zum Project Board.`;
+      return `${fullName} hat als Führungskraft dauerhaften Zugang zum project board.`;
     }
 
     const days = employee.duration;
     if (employee.accessInfo.hasAccess) {
       if (days === 0) {
-        return `${fullName} hat nur noch heute Zugang zum Project Board.`;
+        return `${fullName} hat nur noch heute Zugang zum project board.`;
       }
-      return `${fullName} hat noch ${days} ${days > 1 ? 'Tage' : 'Tag'} Zugang zum Project Board.`;
+      return `${fullName} hat noch ${days} ${days > 1 ? 'Tage' : 'Tag'} Zugang zum project board.`;
     }
-    return `${employee.firstName} ${employee.lastName} hat keinen Zugang zum Project Board.`;
+    return `${employee.firstName} ${employee.lastName} hat keinen Zugang zum project board.`;
   }
 
   openDialog(e: Employee): void {
