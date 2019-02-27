@@ -64,9 +64,10 @@ public class RepositoryApplicationService implements ApplicationService {
         LocalDateTime applicationDate = LocalDateTime.now(clock);
         ProjectApplication application = new ProjectApplication(project, comment, user, applicationDate);
 
-        applicationEventHandler.onApplicationReceived(application);
+        var savedApplication = applicationRepo.save(application);
+        applicationEventHandler.onApplicationReceived(savedApplication);
 
-        return applicationRepo.save(application);
+        return savedApplication;
     }
 
     @Override

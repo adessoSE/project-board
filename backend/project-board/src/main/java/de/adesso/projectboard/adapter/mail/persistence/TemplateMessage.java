@@ -1,10 +1,7 @@
 package de.adesso.projectboard.adapter.mail.persistence;
 
 import de.adesso.projectboard.base.user.persistence.User;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -13,9 +10,10 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "TEMPLATE_MESSAGE")
 @Inheritance(strategy = InheritanceType.JOINED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode
 public abstract class TemplateMessage {
 
     @Id

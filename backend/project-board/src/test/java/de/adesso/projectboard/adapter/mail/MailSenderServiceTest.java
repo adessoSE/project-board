@@ -20,6 +20,7 @@ import java.time.ZoneId;
 import java.util.List;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -72,7 +73,7 @@ public class MailSenderServiceTest {
         given(messageRepositoryMock.findAll()).willReturn(List.of(templateMessageMock, templateMessageMock));
 
         given(templateMessageMock.isStillRelevant(LocalDateTime.now(clock)))
-                .willReturn(true, false);
+                .willReturn(false, true);
         given(templateMessageMock.getSubject()).willReturn(expectedSubject);
         given(templateMessageMock.getText()).willReturn(expectedText);
         given(templateMessageMock.getAddressee()).willReturn(userMock);
@@ -84,7 +85,7 @@ public class MailSenderServiceTest {
         mailSenderService.sendPendingMessages();
 
         // then
-        verify(messageRepositoryMock).delete(templateMessageMock);
+        verify(messageRepositoryMock, times(2)).delete(templateMessageMock);
         verify(javaMailSenderMock).send(expectedSimpleMessage);
     }
 

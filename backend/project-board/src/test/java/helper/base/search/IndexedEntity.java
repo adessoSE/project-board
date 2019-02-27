@@ -1,4 +1,4 @@
-package helper.search;
+package helper.base.search;
 
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;

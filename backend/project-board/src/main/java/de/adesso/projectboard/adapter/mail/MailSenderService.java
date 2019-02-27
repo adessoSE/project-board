@@ -37,6 +37,10 @@ public class MailSenderService {
         this.clock = clock;
     }
 
+    /**
+     * Tries to send all pending messages whose {@link TemplateMessage#isStillRelevant(LocalDateTime)}
+     * method return {@code true}.
+     */
     @Scheduled(fixedDelay = 10000L)
     @Transactional
     public void sendPendingMessages() {
@@ -55,6 +59,16 @@ public class MailSenderService {
         });
     }
 
+    /**
+     *
+     * @param message
+     *          The message to queue, not null.
+     * @param <T>
+     *          The type of the message.
+     *
+     * @return
+     *          The queued message.
+     */
     @Transactional
     public <T extends TemplateMessage> T queueMessage(T message) {
         return messageRepository.save(message);
@@ -68,9 +82,7 @@ public class MailSenderService {
         var mailMessage = new SimpleMailMessage();
         mailMessage.setSubject(message.getSubject());
         mailMessage.setText(message.getText());
-        mailMessage.setTo("daniel.meier@adesso.de");
-
-        // TODO: user actual mail
+        mailMessage.setTo(addresseeMail);
 
         mailSender.send(mailMessage);
 

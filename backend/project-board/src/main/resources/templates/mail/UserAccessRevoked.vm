@@ -1,0 +1,17 @@
+#* @vtlvariable name="userData" type="de.adesso.projectboard.base.user.persistence.data.UserData" *#
+#* @vtlvariable name="dateAndTime" type="java.lang.String" *#
+##
+#set( $firstName = $userData.getFirstName() )
+
+
+--!--SUBJECT--!--
+Deine Freischaltung für das project board wurde aufgehoben!
+
+
+--!--TEXT--!--
+Hallo $firstName,
+
+deine zuvor bestehende Freischaltung wurde aufgehoben.
+
+
+#include("/templates/mail/MailFooter.vm")

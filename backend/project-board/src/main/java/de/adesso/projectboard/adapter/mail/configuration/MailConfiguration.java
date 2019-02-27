@@ -1,5 +1,7 @@
-package de.adesso.projectboard.adapter.mail;
+package de.adesso.projectboard.adapter.mail.configuration;
 
+import de.adesso.projectboard.adapter.mail.MailSenderService;
+import de.adesso.projectboard.adapter.mail.VelocityMailTemplateService;
 import de.adesso.projectboard.adapter.mail.handler.MailProjectApplicationEventHandler;
 import de.adesso.projectboard.adapter.mail.handler.MailUserAccessEventHandler;
 import de.adesso.projectboard.adapter.mail.persistence.MessageRepository;
@@ -42,10 +44,10 @@ public class MailConfiguration {
     }
 
     @Autowired
-    @Bean("velocityTemplateService")
+    @Bean("velocityMailTemplateService")
     @DependsOn("velocityEngine")
-    public VelocityTemplateService velocityTemplateService(VelocityEngine velocityEngine) {
-        return new VelocityTemplateService(velocityEngine);
+    public VelocityMailTemplateService velocityTemplateService(VelocityEngine velocityEngine) {
+        return new VelocityMailTemplateService(velocityEngine);
     }
 
     @Autowired
@@ -57,16 +59,16 @@ public class MailConfiguration {
 
     @Autowired
     @Bean
-    @DependsOn("mailSenderService")
-    public ProjectApplicationEventHandler mailProjectApplicationHandler(MailSenderService mailSenderService, UserService userService) {
-        return new MailProjectApplicationEventHandler(mailSenderService, userService);
+    @DependsOn({"mailSenderService", "velocityMailTemplateService"})
+    public ProjectApplicationEventHandler mailProjectApplicationHandler(MailSenderService mailSenderService, UserService userService, VelocityMailTemplateService velocityMailTemplateService) {
+        return new MailProjectApplicationEventHandler(mailSenderService, userService, velocityMailTemplateService);
     }
 
     @Autowired
     @Bean
-    @DependsOn({"mailSenderService", "velocityTemplateService"})
-    public UserAccessEventHandler mailUserAccessEventHandler(MailSenderService mailSenderService, VelocityTemplateService velocityTemplateService) {
-        return new MailUserAccessEventHandler(mailSenderService, velocityTemplateService);
+    @DependsOn({"mailSenderService", "velocityMailTemplateService"})
+    public UserAccessEventHandler mailUserAccessEventHandler(MailSenderService mailSenderService, UserService userService, VelocityMailTemplateService velocityMailTemplateService) {
+        return new MailUserAccessEventHandler(mailSenderService, userService, velocityMailTemplateService);
     }
 
 }

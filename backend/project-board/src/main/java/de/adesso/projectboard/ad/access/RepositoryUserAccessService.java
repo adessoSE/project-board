@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Profile("adesso-ad")
 @Service
@@ -43,21 +42,22 @@ public class RepositoryUserAccessService implements UserAccessService {
             throw new IllegalArgumentException("End date must lie in the future!");
         }
 
-        Optional<AccessInterval> latestIntervalOptional = user.getLatestAccessInterval();
+        var latestIntervalOptional = user.getLatestAccessInterval();
 
         if(!latestIntervalOptional.isPresent() || !userHasActiveAccessInterval(user)) {
-            AccessInterval interval = new AccessInterval(user, LocalDateTime.now(clock), until);
+            var interval = new AccessInterval(user, LocalDateTime.now(clock), until);
             user.addAccessInterval(interval);
 
             userAccessEventHandler.onAccessCreated(user, interval);
 
             return userService.save(user);
         } else {
-            AccessInterval latestInterval = latestIntervalOptional.get();
+            var latestInterval = latestIntervalOptional.get();
+            var oldEndTime = latestInterval.getEndTime();
             latestInterval.setEndTime(until);
             intervalRepo.save(latestInterval);
 
-            userAccessEventHandler.onAccessChanged(user, latestInterval);
+            userAccessEventHandler.onAccessChanged(user, latestInterval, oldEndTime);
         }
 
         return user;
@@ -66,13 +66,13 @@ public class RepositoryUserAccessService implements UserAccessService {
     @Override
     public User removeAccessFromUser(User user) {
         if(userHasActiveAccessInterval(user)) {
-            AccessInterval latestInterval = user.getLatestAccessInterval()
+            var latestInterval = user.getLatestAccessInterval()
                     .orElseThrow(() -> new IllegalStateException("No interval instance present!"));
-
+            var previousEndTime = latestInterval.getEndTime();
             latestInterval.setEndTime(LocalDateTime.now(clock));
             intervalRepo.save(latestInterval);
 
-            userAccessEventHandler.onAccessRevoked(user);
+            userAccessEventHandler.onAccessRevoked(user, previousEndTime);
         }
 
         return user;
@@ -80,14 +80,14 @@ public class RepositoryUserAccessService implements UserAccessService {
 
     @Override
     public boolean userHasActiveAccessInterval(User user) {
-        Optional<AccessInterval> latestIntervalOptional = user.getLatestAccessInterval();
+        var latestIntervalOptional = user.getLatestAccessInterval();
 
         if(latestIntervalOptional.isPresent()) {
-            AccessInterval latestInterval = latestIntervalOptional.get();
+            var latestInterval = latestIntervalOptional.get();
 
-            LocalDateTime startTime = latestInterval.getStartTime();
-            LocalDateTime endTime = latestInterval.getEndTime();
-            LocalDateTime now = LocalDateTime.now(clock);
+            var startTime = latestInterval.getStartTime();
+            var endTime = latestInterval.getEndTime();
+            var now = LocalDateTime.now(clock);
 
             return ((startTime.isEqual(now) || startTime.isBefore(now)) && endTime.isAfter(now));
         }

@@ -1,4 +1,4 @@
-package helper.search;
+package helper.base.search;
 
 import javax.persistence.Entity;
 

@@ -4,6 +4,8 @@ import de.adesso.projectboard.base.access.persistence.AccessInterval;
 import de.adesso.projectboard.base.access.rest.UserAccessController;
 import de.adesso.projectboard.base.user.persistence.User;
 
+import java.time.LocalDateTime;
+
 /**
  * Interface used by {@link UserAccessController} to handle user access
  * grants.
@@ -23,18 +25,24 @@ public interface UserAccessEventHandler {
     /**
      *
      * @param user
-     *          The {@link User} the access was changed of.
+     *          The {@link User} the access duration has changed of.
      *
      * @param accessInterval
-     *          The updated {@link AccessInterval} of the user.
+     *          The changed access interval.
+     *
+     * @param previousEndTime
+     *          The previous access end time.
      */
-    void onAccessChanged(User user, AccessInterval accessInterval);
+    void onAccessChanged(User user, AccessInterval accessInterval, LocalDateTime previousEndTime);
 
     /**
      *
      * @param user
      *          The {@link User} the access got revoked of.
+     *
+     * @param previousEndTime
+     *          The previous access end time.
      */
-    void onAccessRevoked(User user);
+    void onAccessRevoked(User user, LocalDateTime previousEndTime);
 
 }
