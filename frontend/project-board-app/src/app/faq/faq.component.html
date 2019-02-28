@@ -1,80 +1,14 @@
 <div class="outer">
-    <div class="inner">
-
-      <div *ngIf="user.boss">
-        <div class="question">
-          Was passiert mit den Projektanfragen meiner Mitarbeiter, wenn sie keinen Zugang mehr haben?
-        </div>
-        <div class="answer">
-          Die Anfragen werden 4 Wochen nachdem der Zugang deaktiviert wurde gelöscht.
-        </div>
-
-        <div class="question">
-          Wer wird über die Anfragen meiner Mitarbeiter benachrichtigt?
-        </div>
-        <div class="answer">
-          Nur Du wirst über die Projektanfragen Deiner direkten Mitarbeiter per Email benachrichtigt. Dein Vorgesetzter kann die Anfragen jedoch ebenfalls im project board einsehen.
-        </div>
-
-        <div class="question">
-          Was genau passiert, wenn ich einen Mitarbeiter anbiete?
-        </div>
-        <div class="answer">
-          Das project board erstellt im entsprechenden Issue des Staffing Projekts im Jira einen Kommentar der Form:<br><br>
-          Angeboten: [Nachname des Mitarbeiters], [Vorname des Mitarbeiters]<br>
-          Verantwortlich: [Dein Nachname], [Dein Vorname]<br><br>
-          Der angebotene Mitarbeiter und der Ersteller des Jira-Issues werden per Mail benachrichtigt.
-        </div>
-
-        <div class="question">
-          Haben meine Mitarbeiter ein anderes FAQ?
-        </div>
-        <div class="answer">
-          Ja, Deine Mitarbeiter sehen auf dieser Seite andere Fragen und Antworten.
-        </div>
-      </div>
-
-      <div *ngIf="!user.boss">
-        <div class="question">
-          Was passiert, wenn ich eine Projektanfrage absende?
-        </div>
-        <div class="answer">
-          Dein Vorgesetzter bekommt eine Benachrichtigung über Dein Interesse an diesem Projekt.
-        </div>
-
-        <div class="question">
-          Was bedeutet es, wenn ich für ein Projekt angeboten wurde?
-        </div>
-        <div class="answer">
-          Das bedeutet, dass Dein Vorgesetzter Dich beim Verantwortlichen für das Projekt ins Gespräch gebracht hat.
-        </div>
-
-        <div class="question">
-          Was hat es mit den Lesezeichen auf sich?
-        </div>
-        <div class="answer">
-          Du kannst Projekte, an denen Du Interesse hast, mit einem Lesezeichen markieren. Deine Lesezeichen kannst nur Du sehen.
-        </div>
-
-        <div class="question">
-          Sind das alles aktuelle Projekte bei adesso?
-        </div>
-        <div class="answer">
-          Aufgelistet sind alle Projekte aus dem Jira. Es handelt sich um Akquisen, um Mitarbeiter für ein Projekt zu finden. Die Projekte befinden sich teilweise noch in der Planung.
-        </div>
-
-        <div class="question">
-          Wie lange kann ich das project board nutzen?
-        </div>
-        <div class="answer">
-          Die Dauer der Freischaltung kann Dein Vorgesetzter festlegen. Dieser kann Deine Freischaltung jederzeit verlängern oder deaktivieren.
-        </div>
-      </div>
-
-      <div style="padding-top: 20px; padding-bottom: 10px;">
-        Keine Antwort auf Deine Frage gefunden? Kontaktiere den
-        <a href="mailto:{{supportEmail}}" title="Kontaktiere den project board Support">
-          project board Support</a>.
+  <div class="inner">
+    <div *ngFor="let qa of questionsAndAnswers">
+      <div class="question">{{qa.question}}</div>
+      <div class="answer">{{qa.answer}}</div>
     </div>
+
+    <div style="padding-top: 20px; padding-bottom: 10px;">
+      Keine Antwort auf Deine Frage gefunden? Kontaktiere den
+      <a href="mailto:{{supportEmail}}" title="Kontaktiere den project board Support">
+        project board Support</a>.
     </div>
+  </div>
 </div>
