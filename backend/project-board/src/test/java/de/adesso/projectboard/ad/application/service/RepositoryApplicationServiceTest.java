@@ -90,7 +90,7 @@ public class RepositoryApplicationServiceTest {
         // given
         var expectedComment = "A nice Comment!";
         var expectedDate = LocalDateTime.now(clock);
-        var expectedApplication = new ProjectApplication(projectMock, expectedComment, userMock, expectedDate);
+        var expectedApplication = new ProjectApplication(projectMock, expectedComment, userMock, expectedDate, false);
 
         given(applicationRepoMock.existsByUserAndProject(userMock, projectMock)).willReturn(false);
         given(projectServiceMock.getProjectById(PROJECT_ID)).willReturn(projectMock);
@@ -140,7 +140,7 @@ public class RepositoryApplicationServiceTest {
         // given
         var sort = Sort.unsorted();
         var users = Set.of(userMock);
-        var expectedApplication = new ProjectApplication(projectMock, "Comment", userMock, LocalDateTime.now(clock));
+        var expectedApplication = new ProjectApplication(projectMock, "Comment", userMock, LocalDateTime.now(clock), false);
 
         given(applicationRepoMock.findAllByUserIn(users, sort)).willReturn(Collections.singletonList(expectedApplication));
 
