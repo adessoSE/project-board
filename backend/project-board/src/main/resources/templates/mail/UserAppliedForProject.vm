@@ -1,0 +1,28 @@
+#* @vtlvariable name="applicantData" type="de.adesso.projectboard.base.user.persistence.data.UserData" *#
+#* @vtlvariable name="projectApplication" type="de.adesso.projectboard.base.application.persistence.ProjectApplication" *#
+##
+#set( $comment = $projectApplication.getComment() )
+#set( $project = $projectApplication.getProject())
+#set( $projectId = $project.getId() )
+#set( $projectTitle = $project.getTitle() )
+#set( $applicantName = $applicantData.getFirstName() + " " + $applicantData.getLastName() )
+
+
+--!--SUBJECT--!--
+$applicantName hat eine Anfrage für das Projekt $projectId gestellt
+
+
+
+--!--TEXT--!--
+$applicantName hat eine Anfrage für das Projekt '$projectTitle' mit dem JIRA Schlüßel $projectId gestellt ##
+#if( $comment )
+und hat folgenden Kommentar angegeben:
+
+$comment
+#else
+.
+#end
+
+
+
+#include("/templates/mail/MailFooter.vm")

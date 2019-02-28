@@ -1,6 +1,5 @@
 package de.adesso.projectboard.base.access.rest;
 
-import de.adesso.projectboard.base.access.handler.UserAccessHandler;
 import de.adesso.projectboard.base.access.payload.UserAccessPayload;
 import de.adesso.projectboard.base.access.service.UserAccessService;
 import de.adesso.projectboard.base.user.projection.DefaultUserProjection;
@@ -21,18 +20,14 @@ public class UserAccessController {
 
     private final UserAccessService userAccessService;
 
-    private final UserAccessHandler userAccessHandler;
-
     private final UserProjectionFactory projectionFactory;
 
     @Autowired
     public UserAccessController(UserService userService,
                                 UserAccessService userAccessService,
-                                UserAccessHandler userAccessHandler,
                                 UserProjectionFactory projectionFactory) {
         this.userService = userService;
         this.userAccessService = userAccessService;
-        this.userAccessHandler = userAccessHandler;
         this.projectionFactory = projectionFactory;
     }
 
@@ -41,9 +36,6 @@ public class UserAccessController {
     public ResponseEntity<?> createAccessForUser(@Valid @RequestBody UserAccessPayload payload, @PathVariable String userId) {
         var user = userService.getUserById(userId);
         var updatedUser = userAccessService.giveUserAccessUntil(user, payload.getAccessEnd());
-
-        // call handler method
-        userAccessHandler.onAccessGranted(updatedUser);
 
         return ResponseEntity.ok(projectionFactory.createProjection(updatedUser, DefaultUserProjection.class));
     }
