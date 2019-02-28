@@ -31,23 +31,24 @@ button span {
 
 .projects-info-wrapper {
   margin: 0 auto;
-  p {
-    display: inline-block;
-    width: calc(100% - 50px);
-  }
-  @include media-breakpoint-up(sm) {
-    min-width: 500px;
-    max-width: 60%;
-  }
+}
+
+.projects-info-wrapper p {
+  display: inline-block;
+  width: calc(100% - 53px);
 }
 
 .projects-info-icon-wrapper {
   display: inline-block;
+  cursor: default;
   vertical-align: top;
-  width: 50px;
-  mat-icon {
-    font-size: 35px;
-  }
+  padding-right: 15px;
+}
+
+.projects-info-icon-wrapper mat-icon {
+  font-size: 38px;
+  width: 38px;
+  height: 38px;
 }
 
 #projectContainer {
@@ -196,10 +197,27 @@ table thead td {
   }
 }
 
-table#result-table > thead th{
+table#result-table > thead th {
   background: white;
   position: -webkit-sticky;
   position: sticky;
   top: 0;
   z-index: 1020;
+}
+
+@include media-breakpoint-up(sm) {
+  .projects-info-wrapper {
+    min-width: 500px;
+    max-width: 60%;
+  }
+
+  .projects-info-wrapper p {
+    width: calc(100% - 79px);
+  }
+
+  .projects-info-icon-wrapper mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+  }
 }
