@@ -31,6 +31,10 @@ export class FaqComponent implements OnInit {
     {
       question: 'Haben meine Mitarbeiter ein anderes FAQ?',
       answer: 'Ja, Deine Mitarbeiter sehen auf dieser Seite andere Fragen und Antworten.'
+    },
+    {
+      question: 'Haben meine Mitarbeiter die gleichen Informationen über die Projekte wie ich?',
+      answer: 'Nein. Sie können die Felder "Externe", "Reisekosten vergütet" und "Tagessatz" nicht sehen.'
     }
   ];
 
