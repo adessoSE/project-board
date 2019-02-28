@@ -12,10 +12,10 @@ import { UserResolverService } from './_resolver/user-resolver.service';
 import { BrowseProjectsComponent } from './browse-projects/browse-projects.component';
 import { ErrorComponent } from './error/error.component';
 import { ExecutivesComponent } from './executives/executives.component';
+import { FaqComponent } from './faq/faq.component';
 import { LogoutComponent } from './logout/logout.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ProfileComponent } from './profile/profile.component';
-import { FaqComponent } from './faq/faq.component';
 
 const routes: Routes = [
   {
@@ -74,10 +74,7 @@ const routes: Routes = [
   },
   {
     path: 'faq',
-    component: FaqComponent,
-    resolve: {
-      user: UserResolverService
-    }
+    component: FaqComponent
   },
   {
     path: 'profile',
