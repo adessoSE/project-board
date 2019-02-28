@@ -193,6 +193,11 @@
 
 .requester {
   color: #016EC7;
+  cursor: pointer;
+  display: inline-block;
+  &:hover {
+    color: darken(#016EC7, 10);
+  }
 }
 
 .loading-spinner {
