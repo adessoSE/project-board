@@ -43,18 +43,31 @@ export class EmployeeService {
       'projectId': projectId,
       'comment': comment
     };
-    return this.http.post<Application>(`${environment.resourceServer}/users/${userId}/applications`, body);
+    return this.http.post<Application>(
+      `${environment.resourceServer}/users/${userId}/applications`,
+      body
+    );
   }
 
   getApplicationsForEmployeesOfUser(userId: string): Observable<Application[]> {
     return this.http.get<Application[]>(`${environment.resourceServer}/users/${userId}/staff/applications`);
   }
 
+  markApplicationAsRead(userId: string, applicationId: number): Observable<Application> {
+    return this.http.post<Application>(
+      `${environment.resourceServer}/users/${userId}/staff/applications/${applicationId}`,
+      null
+    );
+  }
+
   setEmployeeAccessInfo(userId: string, accessEnd): Observable<Employee> {
     const body = {
       'accessEnd': accessEnd
     };
-    return this.http.post<Employee>(`${environment.resourceServer}/users/${userId}/access`, body);
+    return this.http.post<Employee>(
+      `${environment.resourceServer}/users/${userId}/access`,
+      body
+    );
   }
 
   deleteEmployeeAccessInfo(userId: string): Observable<any> {
@@ -69,7 +82,10 @@ export class EmployeeService {
     const body = {
       'projectId': projectId
     };
-    return this.http.post<Project>(`${environment.resourceServer}/users/${userId}/bookmarks`, body);
+    return this.http.post<Project>(
+      `${environment.resourceServer}/users/${userId}/bookmarks`,
+      body
+    );
   }
 
   removeBookmark(userId: string, projectId: string): Observable<any> {
@@ -106,4 +122,5 @@ export interface Application {
   project: Project;
   comment: string;
   date: Date;
+  readByBoss: boolean;
 }

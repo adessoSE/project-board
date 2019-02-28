@@ -1,6 +1,7 @@
 package de.adesso.projectboard.base.application.rest;
 
 import de.adesso.projectboard.base.application.payload.ProjectApplicationPayload;
+import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.projection.FullApplicationProjection;
 import de.adesso.projectboard.base.application.projection.ReducedApplicationProjection;
 import de.adesso.projectboard.base.application.service.ApplicationService;
@@ -54,6 +55,14 @@ public class ApplicationController {
         var projections = projectionFactory.createProjectionsForAuthenticatedUser(staffApplications,
                 ReducedApplicationProjection.class, FullApplicationProjection.class);
         return ResponseEntity.ok(projections);
+    }
+
+    @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
+    @PostMapping(path = "/{userId}/staff/applications/{applicationId}")
+    public ResponseEntity<?> markApplicationAsRead(@PathVariable String userId, @PathVariable Long applicationId) {
+        var application = this.applicationService.markApplicationAsRead(applicationId);
+        var projection = projectionFactory.createProjection(application, FullApplicationProjection.class);
+        return ResponseEntity.ok(projection);
     }
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")

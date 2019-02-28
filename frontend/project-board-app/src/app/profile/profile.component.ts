@@ -21,6 +21,8 @@ export class ProfileComponent implements OnInit {
   @Input() projects: Project[] = [];
   employees: Employee[] = [];
   employeeApplications: Application[] = [];
+  filteredEmployeeApplications: Application[] = [];
+  unreadApplications: string[];
 
   user: Employee;
   tabIndex = 0;
@@ -127,7 +129,25 @@ export class ProfileComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe(employeeApplications => {
         this.employeeApplications = employeeApplications;
+        this.filteredEmployeeApplications = employeeApplications;
         this.loadingEmployeeApplications = false;
       });
+  }
+
+  markAsRead(application: Application) {
+    if (!application.readByBoss) {
+      this.employeeService.markApplicationAsRead(this.user.id, application.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(() => application.readByBoss = true);
+    }
+  }
+
+  toggleFilter() {
+    console.log('called');
+    if (this.filteredEmployeeApplications.length === this.employeeApplications.length) {
+      this.filteredEmployeeApplications = this.employeeApplications.filter(app => app.readByBoss === false);
+    } else {
+      this.filteredEmployeeApplications = this.employeeApplications;
+    }
   }
 }

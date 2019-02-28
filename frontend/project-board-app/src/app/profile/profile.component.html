@@ -48,6 +48,16 @@
       </div>
 
       <div *ngIf="user.boss" (click)="selectTab(2)" id="tab2" class="nav-point col-12 active">
+        <button *ngIf="filteredEmployeeApplications.length === employeeApplications.length"
+                class="btn btn-primary toggle-filter-btn"
+                (click)="toggleFilter()">
+          Nur neue zeigen
+        </button>
+        <button *ngIf="filteredEmployeeApplications.length !== employeeApplications.length"
+                class="btn btn-primary toggle-filter-btn"
+                (click)="toggleFilter()">
+          Alle zeigen
+        </button>
         <div class="profile-nav-icon">
           <mat-icon>email</mat-icon>
         </div>
@@ -98,9 +108,10 @@
 
       <!-- employee-applications tab-->
       <ng-container *ngIf="tabIndex == 2">
-        <div class="employee-application" *ngFor="let a of employeeApplications; index as i" [ngClass]="{'border-bottom': i<employeeApplications.length-1}">
+        <div class="employee-application" *ngFor="let a of filteredEmployeeApplications" [ngClass]="{'unread': !a.readByBoss}">
+          <div *ngIf="!a.readByBoss" class="new-info">[NEU]</div>
           <div class="linking-icon-wrapper">
-            <div class="linking-icon" title="Öffnen" (click)="openDialog(a.project)">
+            <div class="linking-icon" title="Öffnen" (click)="openDialog(a.project); markAsRead(a);">
               <mat-icon>open_in_new</mat-icon>
             </div>
           </div>
@@ -113,7 +124,7 @@
             <div class="comment-display">{{a.comment}}</div>
           </div>
         </div>
-        <div class="inset" *ngIf="!loadingEmployeeApplications && (!employeeApplications || employeeApplications.length === 0)">
+        <div class="inset" *ngIf="!loadingEmployeeApplications && (!filteredEmployeeApplications || filteredEmployeeApplications.length === 0)">
           Keine Projektanfragen deiner Mitarbeiter.
         </div>
         <div *ngIf="loadingEmployeeApplications" class="inset">

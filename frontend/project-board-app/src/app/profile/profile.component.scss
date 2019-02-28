@@ -202,6 +202,30 @@
   overflow: hidden;
 }
 
+button:focus, button:active {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.unread {
+  background-color: aliceblue;
+}
+
+.toggle-filter-btn {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  width: 135px;
+  padding-top: calc((33px - 1.5rem) / 2);
+  padding-bottom: calc((33px - 1.5rem) / 2);
+}
+
+.new-info {
+  color: orange;
+}
+
 @include media-breakpoint-up(xl) {
   .left-bar {
     height: 550px;
@@ -252,11 +276,4 @@
   #profile-nav-content {
     margin: 0;
   }
-}
-
-button:focus, button:active {
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-  outline: none;
 }

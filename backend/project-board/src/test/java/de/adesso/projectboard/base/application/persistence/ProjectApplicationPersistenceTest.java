@@ -43,7 +43,7 @@ public class ProjectApplicationPersistenceTest {
         var expectedUser = userRepo.findById("User1").orElseThrow();
         var expectedComment = "Original Comment";
 
-        var application = new ProjectApplication(expectedProject, expectedComment, expectedUser, expectedDate);
+        var application = new ProjectApplication(expectedProject, expectedComment, expectedUser, expectedDate, false);
         application.setApplicationDate(expectedDate);
 
         // when

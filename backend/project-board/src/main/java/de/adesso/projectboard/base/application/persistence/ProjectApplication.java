@@ -64,33 +64,36 @@ public class ProjectApplication {
     LocalDateTime applicationDate;
 
     /**
+     * A flag that shows if this application has been read by the boss.
+     */
+    @Column(
+            name = "APPLICATION_READ_BY_BOSS"
+    )
+    boolean readByBoss;
+
+    /**
      * Constructs a new instance. Adds the application to the user's
      * {@link User#applications}.
      *
      * <p>
-     *      <b>Note:</b> The {@link #applicationDate} is set to the
-     *      current {@link LocalDateTime} when persisting the entity.
+     * <b>Note:</b> The {@link #applicationDate} is set to the
+     * current {@link LocalDateTime} when persisting the entity.
      * </p>
      *
-     * @param project
-     *          The {@link Project} the user applied for.
-     *
-     * @param comment
-     *          The comment of the application.
-     *
-     * @param user
-     *          The {@link User} this project belongs to.
-     *
-     * @param applicationDate
-     *          The {@link LocalDateTime date} of the application.
+     * @param project         The {@link Project} the user applied for.
+     * @param comment         The comment of the application.
+     * @param user            The {@link User} this project belongs to.
+     * @param applicationDate The {@link LocalDateTime date} of the application.
+     * @param readByBoss      A flag that shows if this application has been read by the boss.
      */
-    public ProjectApplication(Project project, String comment, User user, LocalDateTime applicationDate) {
+    public ProjectApplication(Project project, String comment, User user, LocalDateTime applicationDate, boolean readByBoss) {
         Objects.requireNonNull(user);
 
         this.project = project;
         this.comment = comment;
         this.user = user;
         this.applicationDate = applicationDate;
+        this.readByBoss = readByBoss;
 
         user.addApplication(this);
     }
@@ -100,21 +103,18 @@ public class ProjectApplication {
      * {@link #applicationDate application date} with {@link Objects#equals(Object, Object)}
      * and the {@link User#id ID}s of the {@link User}s of both instances.
      *
-     * @param obj
-     *          The instance to compare {@code this} instance
-     *          with.
-     *
-     * @return
-     *         {@code true}, iff all of the comparisons mentioned above
-     *         evaluate to {@code true}.
+     * @param obj The instance to compare {@code this} instance
+     *            with.
+     * @return {@code true}, iff all of the comparisons mentioned above
+     * evaluate to {@code true}.
      */
     @Override
     public boolean equals(Object obj) {
-        if(this == obj) {
+        if (this == obj) {
             return true;
         }
 
-        if(obj instanceof ProjectApplication) {
+        if (obj instanceof ProjectApplication) {
             ProjectApplication other = (ProjectApplication) obj;
 
             // only compare the user IDs because of the cyclic reference: User <-> Application
