@@ -64,4 +64,10 @@ public class RepositoryBookmarkService implements BookmarkService {
         return userRepo.existsByIdAndBookmarksContaining(user.getId(), project);
     }
 
+    @Override
+    public void removeAllBookmarksOfUser(User user) {
+        // remove all bookmarks and update the entity
+        user.getBookmarks().clear();
+        userRepo.save(user);
+    }
 }

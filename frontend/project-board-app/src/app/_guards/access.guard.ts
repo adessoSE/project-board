@@ -27,7 +27,7 @@ export class AccessGuard implements CanActivate {
       .pipe(
         map((hasAccess) => {
           if (!hasAccess.hasAccess) {
-            this.alertService.info('Du bist von deiner Führungskraft nicht für das Project Board freigeschaltet worden. Bitte wende dich an sie und nicht an den IT-Support.', true);
+            this.alertService.info('Du bist von Deiner Führungskraft nicht für das project board freigeschaltet worden. Bitte wende dich an sie und nicht an den IT-Support.', true);
             this.router.navigate(['/profile']);
             return false;
           }

@@ -35,13 +35,17 @@ describe('Component: Executives', () => {
 
     //Testing the sort methods for employee listing
 
-        //general mock-array of employees
+        //mock data for different testing
+
+        //has acces today
 
         const employeeAccesInfoMockToday: EmployeeAccessInfo = {
             hasAccess: true,
             accessStart: new Date,
             accessEnd: new Date
         }
+
+        //has no acces
     
         const employeeAccesInfoMockNot: EmployeeAccessInfo = {
             hasAccess: false,
@@ -52,6 +56,8 @@ describe('Component: Executives', () => {
         var d = new Date();
         d.setDate(d.getDate()-1);
 
+        //gained access 1 day before
+
         const employeeAccesInfoMockEarlier: EmployeeAccessInfo = {
             hasAccess: true,
             accessStart: d,
@@ -61,11 +67,15 @@ describe('Component: Executives', () => {
         var e = new Date();
         e.setDate(e.getDate()+1);
 
+        //has acces 1 day longer
+
         const employeeAccesInfoMockLonger: EmployeeAccessInfo = {
             hasAccess: true,
             accessStart: new Date,
             accessEnd: e
         }
+
+        //general mock-array of employees
     
         const employeeMock: Employee[] = [
             {

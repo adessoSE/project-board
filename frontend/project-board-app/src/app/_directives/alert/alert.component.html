@@ -1,9 +1,11 @@
-<div *ngIf="message" class="alert" [ngClass]="{ 'mt-1': false,
+<div id="alert" *ngIf="message" [ngClass]="{ 'mt-1': false,
                                   'alert': message,
                                   'alert-success' : message.type === 'success',
                                   'alert-danger': message.type === 'error',
                                   'alert-info': message.type === 'info',
                                   'alert-warning': message.type === 'warning' }">
-  <mat-icon (click)="clearAlert()" data-dismiss="alert" class="close-icon">close</mat-icon>
+  <ng-container *ngIf="message.type !== 'success'">
+    <mat-icon (click)="clearAlert()" data-dismiss="alert" class="close-icon">close</mat-icon>
+  </ng-container>
     {{message.text}}
 </div>

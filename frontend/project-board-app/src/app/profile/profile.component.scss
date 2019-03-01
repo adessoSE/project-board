@@ -106,7 +106,7 @@
 
 #profile-nav-content {
   z-index: 2;
-  margin-bottom: 50px;
+  margin-bottom: 15px;
   box-shadow: 0 0 0.25rem rgba(0, 0, 0, .25);
   padding: 0;
   background-color: #FFF;
@@ -193,6 +193,11 @@
 
 .requester {
   color: #016EC7;
+  cursor: pointer;
+  display: inline-block;
+  &:hover {
+    color: darken(#016EC7, 10);
+  }
 }
 
 .loading-spinner {
@@ -223,7 +228,7 @@
 
 @include media-breakpoint-down(sm) {
   .row {
-    padding: 0 10px 0 10px;
+    padding: 0 15px 0 15px;
   }
 
   .left-bar {
@@ -237,7 +242,7 @@
   }
 
   .middle {
-    padding: 0 0 10px;
+    padding: 0 0 15px;
   }
 
   .nav-point {
@@ -250,7 +255,7 @@
   }
 
   #profile-nav-content {
-    margin: 0 0 10px;
+    margin: 0;
   }
 }
 

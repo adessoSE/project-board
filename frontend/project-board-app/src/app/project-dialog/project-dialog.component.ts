@@ -6,6 +6,7 @@ import { takeUntil } from 'rxjs/operators';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Application, EmployeeService } from '../_services/employee.service';
 import { Project } from '../_services/project.service';
+import { AlertService } from '../_services/alert.service';
 import {
   ABORT_REQUEST_TOOLTIP,
   ADD_BOOKMARK_TOOLTIP,
@@ -16,6 +17,7 @@ import {
   SEND_REQUEST_TOOLTIP,
   START_REQUEST_TOOLTIP
 } from '../tooltips';
+import { timeout } from 'q';
 
 export interface ProjectDialogData {
   project: Project;
@@ -53,7 +55,8 @@ export class ProjectDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: ProjectDialogData,
     private authService: AuthenticationService,
     private employeeService: EmployeeService,
-    private router: Router) {
+    private router: Router,
+    private alertService: AlertService) {
     router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
         this.dialogRef.close();
@@ -116,6 +119,7 @@ export class ProjectDialogComponent implements OnInit {
       .subscribe(application => {
         this.application.emit(application);
         this.dialogRef.close();
+        this.alertService.success('Deine Anfrage wurde versendet.');
       });
   }
 }

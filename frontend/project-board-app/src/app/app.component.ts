@@ -8,7 +8,15 @@ import { takeUntil } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 import { AuthenticationService } from './_services/authentication.service';
 import { EmployeeService } from './_services/employee.service';
-import { NO_ACCESS_TOOLTIP } from './tooltips';
+import {
+  CONTACT_SUPPORT_TOOLTIP,
+  EMPLOYEES_TOOLTIP,
+  FAQ_TOOLTIP,
+  LOGOUT_TOOLTIP,
+  NO_ACCESS_TOOLTIP,
+  PROFILE_TOOLTIP,
+  PROJECTS_TOOLTIP
+} from './tooltips';
 
 @Component({
   selector: 'app-root',
@@ -21,6 +29,13 @@ export class AppComponent implements OnInit, DoCheck {
   boss: boolean;
   hasAccess = false;
   noAccessTooltip = NO_ACCESS_TOOLTIP;
+  contactSupportTooltip = CONTACT_SUPPORT_TOOLTIP;
+  profileTooltip = PROFILE_TOOLTIP;
+  projectsTooltip = PROJECTS_TOOLTIP;
+  employeesTooltip = EMPLOYEES_TOOLTIP;
+  faqTooltip = FAQ_TOOLTIP;
+  logoutTooltip = LOGOUT_TOOLTIP;
+  supportEmail: string;
 
   destroy$ = new Subject();
   @ViewChild('snav') sidenav: MatSidenav;
@@ -52,6 +67,7 @@ export class AppComponent implements OnInit, DoCheck {
     this.sidenav.closedStart.subscribe(() => this.onNavClosed());
     this.miniNavVisibility();
     this.mainNavPosition();
+    this.supportEmail = environment.supportEmail;
   }
 
   /* Tested Methods Start */
@@ -174,6 +190,10 @@ export class AppComponent implements OnInit, DoCheck {
   scrollTop(): void {
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
+  }
+
+  mailToSupport() {
+    window.location.href = `mailTo:${this.supportEmail}`;
   }
 }
 

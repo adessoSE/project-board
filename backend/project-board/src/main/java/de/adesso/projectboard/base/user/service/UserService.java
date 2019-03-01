@@ -216,4 +216,9 @@ public interface UserService {
         return returnMap;
     }
 
+    /**
+     * Removes all applications of a given {@link User}.
+     * @param user The {@link User}.
+     */
+    void removeAllApplicationsOfUser(User user);
 }

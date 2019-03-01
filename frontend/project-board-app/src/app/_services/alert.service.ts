@@ -34,6 +34,7 @@ export class AlertService {
   success(message: string, keepAfterNavigationChange = false): void {
     this.keepAfterNavigationChange = keepAfterNavigationChange;
     this.subject.next({type: 'success', text: message});
+    setTimeout(() => {this.clearAlert();}, 3000);
   }
 
   error(message: string, keepAfterNavigationChange = false): void {
