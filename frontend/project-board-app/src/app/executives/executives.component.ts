@@ -118,13 +118,20 @@ export class ExecutivesComponent implements OnInit {
   }
 
   private setSelectedEmployee(employeeId): void {
-    for (const e of this.employees) {
-      if (e.id === employeeId) {
-        this.selectedEmployee = e;
-        return;
+    if (employeeId) {
+      for (const e of this.employees) {
+        if (e.id === employeeId) {
+          this.selectedEmployee = e;
+          return;
+        }
       }
+      this.employeeService.getFullEmployeeForId(employeeId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(employee => {
+          this.selectedEmployee = employee;
+          this.openDialog(employee);
+        });
     }
-    this.selectedEmployee = null;
   }
 
   private daysUntil(date: Date): number {
