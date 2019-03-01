@@ -81,7 +81,7 @@
             {{b.title}}
           </div>
         </div>
-        <div class="inset" *ngIf="!bookmarks || bookmarks.length === 0">Du hast keine Lesezeichen.</div>
+        <div class="inset" *ngIf="!bookmarks || bookmarks.length === 0">Du hast keine Lesezeichen hinzugefügt.</div>
       </ng-container>
 
       <!-- applications tab -->
@@ -97,7 +97,7 @@
             <div class="font-weight-bold">Datum:</div>
             <div>{{a.date | date}}</div>
             <div class="font-weight-bold">Mein Kommentar:</div>
-            <div class="comment-display">{{a.comment}}</div>
+            <div class="comment-display">{{a.comment.length > 0 ? a.comment : '-'}}</div>
           </div>
         </div>
         <div class="inset" *ngIf="!applications || applications.length === 0">
@@ -115,11 +115,11 @@
           </div>
           <span class="project-title">{{a.project.title}}</span>
           <div class="application-details">
-            <div class="requester">{{a.user.lastName}}, {{a.user.firstName}}</div>
+            <div (click)="openEmployeeDialog(a.user)" class="requester">{{a.user.lastName}}, {{a.user.firstName}}</div>
             <div class="font-weight-bold">Datum:</div>
             <div>{{a.date | date}}</div>
             <div class="font-weight-bold">Kommentar:</div>
-            <div class="comment-display">{{a.comment}}</div>
+            <div class="comment-display">{{a.comment.length > 0 ? a.comment : '-'}}</div>
           </div>
         </div>
         <div class="inset" *ngIf="!loadingEmployeeApplications && (!employeeApplications || employeeApplications.length === 0)">

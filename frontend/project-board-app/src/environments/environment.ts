@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   authHost: 'http://localhost:8080',
-  resourceServer: 'http://localhost:8081'
+  resourceServer: 'http://localhost:8081',
+  supportEmail: 'projectboard-support@adesso.de'
 };
 
 /*

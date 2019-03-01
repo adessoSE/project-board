@@ -1,3 +1,6 @@
+@import 'functions';
+@import '../../../node_modules/bootstrap/scss/variables';
+@import '../../../node_modules/bootstrap/scss/mixins';
 @supports ((position: -webkit-sticky) or (position: sticky)) {
 
 .alert {
@@ -13,6 +16,45 @@
     animation: slideTop 1s;
 }
 
+.alert-danger {
+  background-color: #cc0000;
+  color: #ffffff;
+  position: absolute !important;
+  width: 250px;
+  text-align: center;
+  left: calc(50vw - 125px);
+  z-index: 50;
+  top: 2%;
+  -webkit-animation: slideTop 1s; /* Safari 4.0 - 8.0 */
+  animation: slideTop 1s;
+}
+
+.alert-warning {
+  background-color: #cc0000;
+  color: #ffffff;
+  position: absolute !important;
+  width: 250px;
+  text-align: center;
+  left: calc(50vw - 125px);
+  z-index: 50;
+  top: 2%;
+  -webkit-animation: slideTop 1s; /* Safari 4.0 - 8.0 */
+  animation: slideTop 1s;
+}
+
+.alert-info {
+  background-color: #016EC7;
+  color: #ffffff;
+  position: absolute !important;
+  width: 250px;
+  text-align: center;
+  left: calc(50vw - 125px);
+  z-index: 50;
+  top: 2%;
+  -webkit-animation: slideTop 1s; /* Safari 4.0 - 8.0 */
+  animation: slideTop 1s;
+}
+
 /* Safari 4.0 - 8.0 */
 @-webkit-keyframes slideTop {
   0%   {top: -50px;}
@@ -25,10 +67,73 @@
   100% {top:2%;}
 }
 
+.alert-success {
+  background-color: #00ae00;
+  color: #ffffff;
+  position: fixed !important;
+  width: 250px;
+  text-align: center;
+  left: calc(50vw - 125px);
+  z-index: 1050;
+  opacity: 1;
+  top: 10%;
+  -webkit-animation: slideMore 3s; /* Safari 4.0 - 8.0 */
+  animation: slideMore 3s;
+}
+
+/* Safari 4.0 - 8.0 */
+@-webkit-keyframes slideMore {
+  0%  {top: -50px; opacity: 1;}
+  30% {top: 10%;}
+  60% {opacity: 1;}
+  100%{opacity: 0;}
+}
+
+/* Standard syntax */
+@keyframes slideMore {
+  0%  {top: -50px; opacity: 1;}
+  30% {top: 10%;}
+  60% {opacity: 1;}
+  100%{opacity: 0;}
+}
+
 .close-icon {
   color: white;
   float: right;
   margin-right: -10px;
   cursor: pointer;
 }
+
+@include media-breakpoint-down (md) {
+  .alert-success {
+    background-color: #00ae00;
+    color: #ffffff;
+    position: fixed !important;
+    width: 250px;
+    text-align: center;
+    left: calc(50vw - 125px);
+    z-index: 1050;
+    opacity: 0;
+    top: 20%;
+    -webkit-animation: slideMore 3s; /* Safari 4.0 - 8.0 */
+    animation: slideMore 3s;
+  }
+  
+  /* Safari 4.0 - 8.0 */
+  @-webkit-keyframes slideMore {
+    0%  {opacity: 0;}
+    30% {opacity: 1;}
+    60% {opacity: 1;}
+    100%{opacity: 0;}
+  }
+  
+  /* Standard syntax */
+  @keyframes slideMore {
+    0%  {opacity: 0;}
+    30% {opacity: 1;}
+    60% {opacity: 1;}
+    100%{opacity: 0;}
+  }
+}
+
 }

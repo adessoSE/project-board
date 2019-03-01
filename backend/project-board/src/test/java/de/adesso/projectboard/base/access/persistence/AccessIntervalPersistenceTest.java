@@ -9,10 +9,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -49,4 +53,19 @@ public class AccessIntervalPersistenceTest {
         softly.assertAll();
     }
 
+    @Test
+    @SqlGroup({
+            @Sql("classpath:de/adesso/projectboard/persistence/Users.sql"),
+            @Sql("classpath:de/adesso/projectboard/persistence/AccessIntervals.sql")
+    })
+    public void findAllLatestIntervals() {
+        // given
+        var expectedResult = intervalRepo.findAllById(List.of(1L, 3L));
+
+        // when
+        var actualResult = intervalRepo.findAllLatestIntervals();
+
+        // then
+        assertThat(actualResult).isEqualTo(expectedResult);
+    }
 }

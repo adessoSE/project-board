@@ -12,10 +12,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -116,4 +118,18 @@ public class RepositoryBookmarkServiceTest {
         assertThat(actualHasBookmarked).isFalse();
     }
 
+    @Test
+    @SuppressWarnings("unchecked")
+    public void removeAllBookmarksOfUser() {
+        // given
+        Set<Project> bookmarksMock = mock(Set.class);
+        given(userMock.getBookmarks()).willReturn(bookmarksMock);
+
+        // when
+        bookmarkService.removeAllBookmarksOfUser(userMock);
+
+        // then
+        verify(bookmarksMock).clear();
+        verify(userRepository).save(userMock);
+    }
 }

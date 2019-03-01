@@ -9,7 +9,7 @@ import { debounceTime, switchMap, takeUntil } from 'rxjs/operators';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Employee, EmployeeService } from '../_services/employee.service';
 import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
-import { SEARCH_INFO_TOOLTIP } from '../tooltips';
+import { EMPLOYEE_SEARCH_INFO_TOOLTIP } from '../tooltips';
 
 @Component({
   selector: 'app-executives',
@@ -25,7 +25,7 @@ export class ExecutivesComponent implements OnInit {
   showEmployees: string[] = [];
   employeeMap: Map<string, Employee[]> = new Map<string, Employee[]>();
 
-  infoTooltip = SEARCH_INFO_TOOLTIP;
+  infoTooltip = EMPLOYEE_SEARCH_INFO_TOOLTIP;
   searchText = '';
   loading = true;
   dialogRef: MatDialogRef<EmployeeDialogComponent>;
@@ -118,13 +118,20 @@ export class ExecutivesComponent implements OnInit {
   }
 
   private setSelectedEmployee(employeeId): void {
-    for (const e of this.employees) {
-      if (e.id === employeeId) {
-        this.selectedEmployee = e;
-        return;
+    if (employeeId) {
+      for (const e of this.employees) {
+        if (e.id === employeeId) {
+          this.selectedEmployee = e;
+          return;
+        }
       }
+      this.employeeService.getFullEmployeeForId(employeeId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(employee => {
+          this.selectedEmployee = employee;
+          this.openDialog(employee);
+        });
     }
-    this.selectedEmployee = null;
   }
 
   private daysUntil(date: Date): number {
@@ -136,17 +143,17 @@ export class ExecutivesComponent implements OnInit {
   badgeTooltip(employee): string {
     const fullName = `${employee.firstName} ${employee.lastName}`;
     if (employee.boss) {
-      return `${fullName} hat als Führungskraft dauerhaften Zugang zum Project Board.`;
+      return `${fullName} hat als Führungskraft dauerhaften Zugang zum project board.`;
     }
 
     const days = employee.duration;
     if (employee.accessInfo.hasAccess) {
       if (days === 0) {
-        return `${fullName} hat nur noch heute Zugang zum Project Board.`;
+        return `${fullName} hat nur noch heute Zugang zum project board.`;
       }
-      return `${fullName} hat noch ${days} ${days > 1 ? 'Tage' : 'Tag'} Zugang zum Project Board.`;
+      return `${fullName} hat noch ${days} ${days > 1 ? 'Tage' : 'Tag'} Zugang zum project board.`;
     }
-    return `${employee.firstName} ${employee.lastName} hat keinen Zugang zum Project Board.`;
+    return `${employee.firstName} ${employee.lastName} hat keinen Zugang zum project board.`;
   }
 
   openDialog(e: Employee): void {

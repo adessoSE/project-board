@@ -17,54 +17,39 @@ import java.util.List;
 public interface BookmarkService {
 
     /**
-     *
-     * @param user
-     *          The {@link User}.
-     *
-     * @param project
-     *          The {@link Project} to add a bookmark for.
-     *
-     * @return
-     *          The bookmarked {@link Project}.
+     * @param user    The {@link User}.
+     * @param project The {@link Project} to add a bookmark for.
+     * @return The bookmarked {@link Project}.
      */
     Project addBookmarkToUser(User user, Project project);
 
     /**
-     *  @param user
-     *          The {@link User}.
-     *
-     * @param project
-     *          The {@link Project} to remove the bookmark of.
-     *
-     * @throws BookmarkNotFoundException
-     *          When the given {@code user} has not bookmarked the given
-     *          {@code project}.
+     * @param user    The {@link User}.
+     * @param project The {@link Project} to remove the bookmark of.
+     * @throws BookmarkNotFoundException When the given {@code user} has not bookmarked the given
+     *                                   {@code project}.
      */
     void removeBookmarkOfUser(User user, Project project) throws BookmarkNotFoundException;
 
     /**
-     *
-     * @param user
-     *          The {@link User}.
-     *
-     * @return
-     *          A {@link List} of the bookmarked {@link Project}s
-     *          of the given {@code user}.
+     * @param user The {@link User}.
+     * @return A {@link List} of the bookmarked {@link Project}s
+     * of the given {@code user}.
      */
     List<Project> getBookmarksOfUser(User user);
 
     /**
-     *
-     * @param user
-     *          The {@link User}.
-     *
-     * @param project
-     *          The {@link Project}.
-     *
-     * @return
-     *          {@code true}, iff the user has bookmarked the given
-     *          {@code project}.
+     * @param user    The {@link User}.
+     * @param project The {@link Project}.
+     * @return {@code true}, iff the user has bookmarked the given
+     * {@code project}.
      */
     boolean userHasBookmark(User user, Project project);
 
+    /**
+     * Removes all bookmarks from a given {@link User}.
+     *
+     * @param user The {@link User}.
+     */
+    void removeAllBookmarksOfUser(User user);
 }

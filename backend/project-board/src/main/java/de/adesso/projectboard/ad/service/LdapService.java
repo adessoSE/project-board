@@ -70,7 +70,10 @@ public class LdapService {
                 .where("accountExpires").gte(adTimestamp)
                 .and("employeeId").isPresent()
                 .and("manager").isPresent()
-                .and("mail").isPresent();
+                .and("mail").isPresent()
+                .and("givenName").isPresent()
+                .and("sn").isPresent()
+                .and(idAttribute).isPresent();
 
         return ldapTemplate.search(query, new LdapUserNodeMapper(idAttribute));
     }

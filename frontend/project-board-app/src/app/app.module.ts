@@ -15,7 +15,6 @@ import { AlertService } from './_services/alert.service';
 import { AuthenticationService } from './_services/authentication.service';
 import { EmployeeService } from './_services/employee.service';
 import { ProjectService } from './_services/project.service';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowseProjectsComponent } from './browse-projects/browse-projects.component';
@@ -24,13 +23,10 @@ import { EmployeeDialogComponent } from './employee-dialog/employee-dialog.compo
 import { ErrorComponent } from './error/error.component';
 import { ExecutivesComponent } from './executives/executives.component';
 import { LoginComponent } from './login/login.component';
-import { LogoutComponent } from './logout/logout.component';
 import { MaterialModule } from './material.module';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { ProfileComponent } from './profile/profile.component';
-import { ProjectDetailsComponent } from './project-details/project-details.component';
 import { ProjectDialogComponent } from './project-dialog/project-dialog.component';
-import { ProjectRequestComponent } from './project-request/project-request.component';
 import { ChartsModule } from 'ng2-charts';
 import { SearchComponent } from './search/search.component';
 import { FaqComponent } from './faq/faq.component';
@@ -56,12 +52,9 @@ registerLocaleData(localeDe, 'de');
     BrowseProjectsComponent,
     LoginComponent,
     AlertComponent,
-    ProjectDetailsComponent,
     ProjectDialogComponent,
     EmployeeDialogComponent,
-    ProjectRequestComponent,
     ProfileComponent,
-    LogoutComponent,
     DatepickerHeaderComponent,
     SearchComponent,
     FaqComponent
