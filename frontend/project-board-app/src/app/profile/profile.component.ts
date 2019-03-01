@@ -162,7 +162,6 @@ export class ProfileComponent implements OnInit {
   }
 
   toggleFilter() {
-    console.log('called');
     if (this.filteredEmployeeApplications.length === this.employeeApplications.length) {
       this.filteredEmployeeApplications = this.employeeApplications.filter(app => app.readByBoss === false);
     } else {

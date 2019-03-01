@@ -55,9 +55,24 @@
 
   <!--  Applications  -->
   <ng-container *ngIf="data.employee && !data.employee.boss">
-    <h4>Projektanfragen von {{data.employee.firstName}}</h4>
-    <div class="employee-application" *ngFor="let a of applications; index as i" [ngClass]="{'border-bottom': i < applications.length-1}">
-      <div class="linking-icon" (click)="openProjectDialog(a.project)">
+    <h4 class="d-inline-block">Projektanfragen von {{data.employee.firstName}}</h4>
+    <button *ngIf="filteredApplications.length === applications.length
+                    && applications.length > 0
+                    && isDirectEmployee"
+            class="btn btn-primary toggle-filter-btn"
+            (click)="toggleFilter()">
+      Nur neue zeigen
+    </button>
+    <button *ngIf="filteredApplications.length !== applications.length
+                    && applications.length > 0
+                    && isDirectEmployee"
+            class="btn btn-primary toggle-filter-btn"
+            (click)="toggleFilter()">
+      Alle zeigen
+    </button>
+    <div class="employee-application" *ngFor="let a of filteredApplications" [ngClass]="{'unread': !a.readByBoss && isDirectEmployee}">
+      <div *ngIf="!a.readByBoss && isDirectEmployee" class="new-info">[NEU]</div>
+      <div class="linking-icon" (click)="openProjectDialog(a.project); markAsRead(a)">
         <mat-icon>open_in_new</mat-icon>
       </div>
       <div>{{a.project.title}}</div>
@@ -68,8 +83,12 @@
         <span>{{a.comment}}</span>
       </div>
     </div>
-    <div class="inset" *ngIf="(!applications || applications.length === 0)">
-      {{data.employee.firstName}} hat keine Projekte angefragt.
+    <div class="inset" *ngIf="(!filteredApplications || filteredApplications.length === 0)">
+      {{
+      filteredApplications.length !== applications.length ?
+      'Keine neuen Anfragen.' :
+      data.employee.firstName + ' hat keine Projekte angefragt.'
+      }}
     </div>
   </ng-container>
 </mat-dialog-content>

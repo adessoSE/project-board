@@ -123,8 +123,10 @@
 }
 
 .employee-application {
-  border-bottom: 1px solid #e6e6e6;
   padding: 15px;
+  &:not(:last-child) {
+    border-bottom: 1px solid #e6e6e6;
+  }
 }
 
 .remover {

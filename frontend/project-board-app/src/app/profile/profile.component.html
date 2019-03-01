@@ -48,12 +48,12 @@
       </div>
 
       <div *ngIf="user.boss" (click)="selectTab(2)" id="tab2" class="nav-point col-12 active">
-        <button *ngIf="filteredEmployeeApplications.length === employeeApplications.length"
+        <button *ngIf="filteredEmployeeApplications.length === employeeApplications.length && employeeApplications.length > 0"
                 class="btn btn-primary toggle-filter-btn"
                 (click)="toggleFilter()">
           Nur neue zeigen
         </button>
-        <button *ngIf="filteredEmployeeApplications.length !== employeeApplications.length"
+        <button *ngIf="filteredEmployeeApplications.length !== employeeApplications.length && employeeApplications.length > 0"
                 class="btn btn-primary toggle-filter-btn"
                 (click)="toggleFilter()">
           Alle zeigen
@@ -125,7 +125,11 @@
           </div>
         </div>
         <div class="inset" *ngIf="!loadingEmployeeApplications && (!filteredEmployeeApplications || filteredEmployeeApplications.length === 0)">
-          Keine Projektanfragen deiner Mitarbeiter.
+          {{
+          filteredEmployeeApplications.length !== employeeApplications.length ?
+          'Keine neuen Projektanfragen.' :
+          'Keine Projektanfragen deiner Mitarbeiter.'
+          }}
         </div>
         <div *ngIf="loadingEmployeeApplications" class="inset">
           <div class="loading-spinner">

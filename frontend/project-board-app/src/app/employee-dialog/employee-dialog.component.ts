@@ -5,8 +5,9 @@ import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MAT_DIALOG_DATA, MatDia
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { NavigationStart, Router } from '@angular/router';
 import { Moment } from 'moment';
-import { Subject } from 'rxjs';
+import { combineLatest, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { AuthenticationService } from '../_services/authentication.service';
 import { Application, Employee, EmployeeService } from '../_services/employee.service';
 import { Project } from '../_services/project.service';
 import { DatepickerHeaderComponent } from '../datepicker-header/datepicker-header.component';
@@ -52,6 +53,8 @@ export class EmployeeDialogComponent implements OnInit {
   maxDate: Date;
   mobile: boolean;
   customHeaderClass = DatepickerHeaderComponent;
+  filteredApplications: Application[] = [];
+  isDirectEmployee = false;
 
   closeTooltip = CLOSE_DIALOG_TOOLTIP;
   projectDialogRef: MatDialogRef<ProjectDialogComponent>;
@@ -61,6 +64,7 @@ export class EmployeeDialogComponent implements OnInit {
     public projectDialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: EmployeeDialogData,
     private employeeService: EmployeeService,
+    private authService: AuthenticationService,
     private router: Router
   ) {
     router.events.subscribe(event => {
@@ -133,9 +137,16 @@ export class EmployeeDialogComponent implements OnInit {
   }
 
   getApplications() {
-    this.employeeService.getApplications(this.data.employee.id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(applications => this.applications = applications);
+    combineLatest(
+      this.employeeService.getEmployeesWithoutPicturesForSuperUser(this.authService.username)
+        .pipe(takeUntil(this.destroy$)),
+      this.employeeService.getApplications(this.data.employee.id)
+        .pipe(takeUntil(this.destroy$))
+    ).subscribe(([staff, applications]) => {
+      this.isDirectEmployee = staff.some(employee => this.data.employee.id === employee.id);
+      this.applications = applications;
+      this.filteredApplications = applications;
+    });
   }
 
   openProjectDialog(p: Project) {
@@ -149,5 +160,21 @@ export class EmployeeDialogComponent implements OnInit {
         isUserBoss: true
       }
     });
+  }
+
+  markAsRead(application: Application) {
+    if (!application.readByBoss) {
+      this.employeeService.markApplicationAsRead(this.data.employee.id, application.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(() => application.readByBoss = true);
+    }
+  }
+
+  toggleFilter() {
+    if (this.filteredApplications.length === this.applications.length) {
+      this.filteredApplications = this.applications.filter(app => app.readByBoss === false);
+    } else {
+      this.filteredApplications = this.applications;
+    }
   }
 }
