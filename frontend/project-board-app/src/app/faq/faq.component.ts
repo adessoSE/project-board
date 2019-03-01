@@ -31,6 +31,16 @@ export class FaqComponent implements OnInit {
     {
       question: 'Haben meine Mitarbeiter ein anderes FAQ?',
       answer: 'Ja, Deine Mitarbeiter sehen auf dieser Seite andere Fragen und Antworten.'
+    },
+    {
+      question: 'Haben meine Mitarbeiter die gleichen Informationen über die Projekte wie ich?',
+      answer: 'Nein. Sie können die Felder "Externe", "Reisekosten vergütet" und "Tagessatz" nicht sehen.'
+    },
+    {
+      question: 'Sind das alles aktuelle Projekte bei adesso?',
+      answer: 'Aufgelistet sind alle Projekte aus dem Jira. ' +
+        'Es handelt sich um Akquisen, um Mitarbeiter für ein Projekt zu finden. ' +
+        'Die Projekte befinden sich eventuell noch in der Planung.'
     }
   ];
 
@@ -52,7 +62,7 @@ export class FaqComponent implements OnInit {
       question: 'Sind das alles aktuelle Projekte bei adesso?',
       answer: 'Aufgelistet sind alle Projekte aus dem Jira. ' +
         'Es handelt sich um Akquisen, um Mitarbeiter für ein Projekt zu finden. ' +
-        'Die Projekte befinden sich teilweise noch in der Planung.'
+        'Die Projekte befinden sich eventuell noch in der Planung.'
     },
     {
       question: 'Wie lange kann ich das project board nutzen?',
