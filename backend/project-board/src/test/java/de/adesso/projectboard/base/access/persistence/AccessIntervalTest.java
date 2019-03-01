@@ -22,17 +22,17 @@ import static org.mockito.BDDMockito.given;
 public class AccessIntervalTest {
 
     @Mock
-    User userMock;
+    private User userMock;
 
     @Mock
-    User otherUserMock;
+    private User otherUserMock;
 
-    Clock clock;
+    private Clock clock;
 
     @Before
     public void setUp() {
-        Instant instant = Instant.parse("2017-10-10T12:00:00.00Z");
-        ZoneId zoneId = ZoneId.systemDefault();
+        var instant = Instant.parse("2017-10-10T12:00:00.00Z");
+        var zoneId = ZoneId.systemDefault();
 
         this.clock = Clock.fixed(instant, zoneId);
     }
@@ -40,8 +40,8 @@ public class AccessIntervalTest {
     @Test
     public void constructorThrowsExceptionWhenStartTimeAfterEndTime() {
         // given
-        LocalDateTime startTime = LocalDateTime.now(clock).plus(10L, ChronoUnit.DAYS);
-        LocalDateTime endTime = LocalDateTime.now(clock).minus(10L, ChronoUnit.DAYS);
+        var startTime = LocalDateTime.now(clock).plus(10L, ChronoUnit.DAYS);
+        var endTime = LocalDateTime.now(clock).minus(10L, ChronoUnit.DAYS);
 
         assertThatThrownBy(() -> new AccessInterval(userMock, startTime, endTime))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -51,11 +51,11 @@ public class AccessIntervalTest {
     @Test
     public void equalsReturnsTrueForSameInstance() {
         // given
-        long accessIntervalId = 1;
-        LocalDateTime startTime = LocalDateTime.now(clock);
-        LocalDateTime endTime = LocalDateTime.now(clock).plus(1L, ChronoUnit.DAYS);
+        var accessIntervalId = 1L;
+        var startTime = LocalDateTime.now(clock);
+        var endTime = LocalDateTime.now(clock).plus(1L, ChronoUnit.DAYS);
 
-        AccessInterval accessInterval = new AccessInterval(userMock, startTime, endTime);
+        var accessInterval = new AccessInterval(userMock, startTime, endTime);
         accessInterval.id = accessIntervalId;
 
         // when
@@ -68,17 +68,17 @@ public class AccessIntervalTest {
     @Test
     public void equalsReturnsTrueForSameFieldValuesAndHashCodeEquals() {
         // given
-        long accessIntervalId = 1;
-        String userId = "user";
-        LocalDateTime startTime = LocalDateTime.now(clock);
-        LocalDateTime endTime = LocalDateTime.now(clock).plus(1L, ChronoUnit.DAYS);
+        var accessIntervalId = 1L;
+        var userId = "user";
+        var startTime = LocalDateTime.now(clock);
+        var endTime = LocalDateTime.now(clock).plus(1L, ChronoUnit.DAYS);
 
         given(userMock.getId()).willReturn(userId);
 
-        AccessInterval accessInterval = new AccessInterval(userMock, startTime, endTime);
+        var accessInterval = new AccessInterval(userMock, startTime, endTime);
         accessInterval.id = accessIntervalId;
 
-        AccessInterval otherAccessInterval = new AccessInterval(userMock, startTime, endTime);
+        var otherAccessInterval = new AccessInterval(userMock, startTime, endTime);
         otherAccessInterval.id = accessIntervalId;
 
         // when & then
@@ -88,18 +88,18 @@ public class AccessIntervalTest {
     @Test
     public void equalsReturnsFalseForDifferentIds() {
         // given
-        long accessIntervalId = 1;
-        long otherAccessIntervalId = 2;
-        String userId = "user";
-        LocalDateTime startTime = LocalDateTime.now(clock);
-        LocalDateTime endTime = LocalDateTime.now(clock).plus(1L, ChronoUnit.DAYS);
+        var accessIntervalId = 1L;
+        var otherAccessIntervalId = 2L;
+        var userId = "user";
+        var startTime = LocalDateTime.now(clock);
+        var endTime = LocalDateTime.now(clock).plus(1L, ChronoUnit.DAYS);
 
         given(userMock.getId()).willReturn(userId);
 
-        AccessInterval accessInterval = new AccessInterval(userMock, startTime, endTime);
+        var accessInterval = new AccessInterval(userMock, startTime, endTime);
         accessInterval.id = accessIntervalId;
 
-        AccessInterval otherAccessInterval = new AccessInterval(userMock, startTime, endTime);
+        var otherAccessInterval = new AccessInterval(userMock, startTime, endTime);
         otherAccessInterval.id = otherAccessIntervalId;
 
         // when
@@ -112,19 +112,19 @@ public class AccessIntervalTest {
     @Test
     public void equalsReturnsFalseForDifferentUserIds() {
         // given
-        long accessIntervalId = 1;
-        String userId = "user";
-        String otherUserId = "other-user";
-        LocalDateTime startTime = LocalDateTime.now(clock);
-        LocalDateTime endTime = LocalDateTime.now(clock).plus(1L, ChronoUnit.DAYS);
+        var accessIntervalId = 1L;
+        var userId = "user";
+        var otherUserId = "other-user";
+        var startTime = LocalDateTime.now(clock);
+        var endTime = LocalDateTime.now(clock).plus(1L, ChronoUnit.DAYS);
 
         given(userMock.getId()).willReturn(userId);
         given(otherUserMock.getId()).willReturn(otherUserId);
 
-        AccessInterval accessInterval = new AccessInterval(userMock, startTime, endTime);
+        var accessInterval = new AccessInterval(userMock, startTime, endTime);
         accessInterval.id = accessIntervalId;
 
-        AccessInterval otherAccessInterval = new AccessInterval(otherUserMock, startTime, endTime);
+        var otherAccessInterval = new AccessInterval(otherUserMock, startTime, endTime);
         otherAccessInterval.id = accessIntervalId;
 
         // when
@@ -137,18 +137,18 @@ public class AccessIntervalTest {
     @Test
     public void equalsReturnsFalseForDifferentStartTimes() {
         // given
-        long accessIntervalId = 1;
-        String userId = "user";
-        LocalDateTime startTime = LocalDateTime.now(clock);
-        LocalDateTime otherStartTime = LocalDateTime.now(clock).plus(10L, ChronoUnit.MINUTES);
-        LocalDateTime endTime = LocalDateTime.now(clock).plus(1L, ChronoUnit.DAYS);
+        var accessIntervalId = 1L;
+        var userId = "user";
+        var startTime = LocalDateTime.now(clock);
+        var otherStartTime = LocalDateTime.now(clock).plus(10L, ChronoUnit.MINUTES);
+        var endTime = LocalDateTime.now(clock).plus(1L, ChronoUnit.DAYS);
 
         given(userMock.getId()).willReturn(userId);
 
-        AccessInterval accessInterval = new AccessInterval(userMock, startTime, endTime);
+        var accessInterval = new AccessInterval(userMock, startTime, endTime);
         accessInterval.id = accessIntervalId;
 
-        AccessInterval otherAccessInterval = new AccessInterval(userMock, otherStartTime, endTime);
+        var otherAccessInterval = new AccessInterval(userMock, otherStartTime, endTime);
         otherAccessInterval.id = accessIntervalId;
 
         // when
@@ -161,18 +161,18 @@ public class AccessIntervalTest {
     @Test
     public void equalsReturnsFalseForDifferentEndTimes() {
         // given
-        long accessIntervalId = 1;
-        String userId = "user";
-        LocalDateTime startTime = LocalDateTime.now(clock);
-        LocalDateTime endTime = LocalDateTime.now(clock).plus(1L, ChronoUnit.DAYS);
-        LocalDateTime otherEndTime = LocalDateTime.now(clock).plus(2L, ChronoUnit.DAYS);
+        var accessIntervalId = 1L;
+        var userId = "user";
+        var startTime = LocalDateTime.now(clock);
+        var endTime = LocalDateTime.now(clock).plus(1L, ChronoUnit.DAYS);
+        var otherEndTime = LocalDateTime.now(clock).plus(2L, ChronoUnit.DAYS);
 
         given(userMock.getId()).willReturn(userId);
 
-        AccessInterval accessInterval = new AccessInterval(userMock, startTime, endTime);
+        var accessInterval = new AccessInterval(userMock, startTime, endTime);
         accessInterval.id = accessIntervalId;
 
-        AccessInterval otherAccessInterval = new AccessInterval(userMock, startTime, otherEndTime);
+        var otherAccessInterval = new AccessInterval(userMock, startTime, otherEndTime);
         otherAccessInterval.id = accessIntervalId;
 
         // when

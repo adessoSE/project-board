@@ -1,6 +1,5 @@
 package de.adesso.projectboard.base.application.rest;
 
-import de.adesso.projectboard.base.application.handler.ProjectApplicationHandler;
 import de.adesso.projectboard.base.application.payload.ProjectApplicationPayload;
 import de.adesso.projectboard.base.application.projection.FullApplicationProjection;
 import de.adesso.projectboard.base.application.projection.ReducedApplicationProjection;
@@ -24,18 +23,14 @@ public class ApplicationController {
 
     private final ApplicationService applicationService;
 
-    private final ProjectApplicationHandler applicationHandler;
-
     private final BaseProjectionFactory projectionFactory;
 
     @Autowired
     public ApplicationController(UserService userService,
                                  ApplicationService applicationService,
-                                 ProjectApplicationHandler applicationHandler,
                                  BaseProjectionFactory projectionFactory) {
         this.userService = userService;
         this.applicationService = applicationService;
-        this.applicationHandler = applicationHandler;
         this.projectionFactory = projectionFactory;
     }
 
@@ -43,11 +38,7 @@ public class ApplicationController {
     @PostMapping(path = "/{userId}/applications")
     public ResponseEntity<?> createApplicationForUser(@Valid @RequestBody ProjectApplicationPayload payload, @PathVariable String userId) {
         var user = userService.getUserById(userId);
-
         var application = applicationService.createApplicationForUser(user, payload.getProjectId(), payload.getComment());
-
-        // call the handler method
-        applicationHandler.onApplicationReceived(application);
 
         var projection = projectionFactory.createProjectionForAuthenticatedUser(application,
                 ReducedApplicationProjection.class, FullApplicationProjection.class);

@@ -1,6 +1,7 @@
 package de.adesso.projectboard.ad.access;
 
 import de.adesso.projectboard.ad.user.RepositoryUserService;
+import de.adesso.projectboard.base.access.handler.UserAccessEventHandler;
 import de.adesso.projectboard.base.access.persistence.AccessInterval;
 import de.adesso.projectboard.base.access.persistence.AccessIntervalRepository;
 import de.adesso.projectboard.base.user.persistence.User;
@@ -34,6 +35,9 @@ public class RepositoryUserAccessServiceTest {
     private AccessIntervalRepository intervalRepo;
 
     @Mock
+    private UserAccessEventHandler userAccessEventHandlerMock;
+
+    @Mock
     private User userMock;
 
     @Mock
@@ -41,21 +45,21 @@ public class RepositoryUserAccessServiceTest {
 
     private Clock clock;
 
-    RepositoryUserAccessService accessService;
+    private RepositoryUserAccessService accessService;
 
     @Before
     public void setUp() {
-        Instant instant = Instant.parse("2018-01-01T13:00:00.00Z");
-        ZoneId zoneId = ZoneId.systemDefault();
+        var instant = Instant.parse("2018-01-01T13:00:00.00Z");
+        var zoneId = ZoneId.systemDefault();
 
         this.clock = Clock.fixed(instant, zoneId);
-        this.accessService = new RepositoryUserAccessService(userService, intervalRepo, clock);
+        this.accessService = new RepositoryUserAccessService(userService, intervalRepo, userAccessEventHandlerMock, clock);
     }
 
     @Test
     public void giveUserAccessUntilThrowsExceptionWhenTimeIsInThePast() {
         // given
-        LocalDateTime endTime = LocalDateTime.now(clock).minus(1L, ChronoUnit.MINUTES);
+        var endTime = LocalDateTime.now(clock).minus(1L, ChronoUnit.MINUTES);
 
         // when
         assertThatThrownBy(() -> accessService.giveUserAccessUntil(userMock, endTime))
@@ -66,9 +70,9 @@ public class RepositoryUserAccessServiceTest {
     @Test
     public void giveUserAccessUntilUserHasActiveAccess() {
         // given
-        LocalDateTime expectedStartTime = LocalDateTime.now(clock).minus(1L, ChronoUnit.DAYS);
-        LocalDateTime initialEndTime = LocalDateTime.now(clock).plus(10L, ChronoUnit.MINUTES);
-        LocalDateTime expectedEndTime = LocalDateTime.now(clock).plus(20L, ChronoUnit.MINUTES);
+        var expectedStartTime = LocalDateTime.now(clock).minus(1L, ChronoUnit.DAYS);
+        var initialEndTime = LocalDateTime.now(clock).plus(10L, ChronoUnit.MINUTES);
+        var expectedEndTime = LocalDateTime.now(clock).plus(20L, ChronoUnit.MINUTES);
 
         given(userMock.getLatestAccessInterval()).willReturn(Optional.of(accessIntervalMock));
 
@@ -81,16 +85,17 @@ public class RepositoryUserAccessServiceTest {
         // then
         verify(accessIntervalMock).setEndTime(expectedEndTime);
         verify(intervalRepo).save(accessIntervalMock);
+        verify(userAccessEventHandlerMock).onAccessChanged(userMock, accessIntervalMock, initialEndTime);
     }
 
     @Test
     public void giveUserAccessUntilUserHasNoActiveAccess() {
         // given
-        LocalDateTime inactiveStartTime = LocalDateTime.now(clock).minus(10L, ChronoUnit.DAYS);
-        LocalDateTime inactiveEndTime = LocalDateTime.now(clock).minus(1L, ChronoUnit.DAYS);
+        var inactiveStartTime = LocalDateTime.now(clock).minus(10L, ChronoUnit.DAYS);
+        var inactiveEndTime = LocalDateTime.now(clock).minus(1L, ChronoUnit.DAYS);
 
-        LocalDateTime expectedStartTime = LocalDateTime.now(clock);
-        LocalDateTime expectedEndTime = LocalDateTime.now(clock).plus(10L , ChronoUnit.DAYS);
+        var expectedStartTime = LocalDateTime.now(clock);
+        var expectedEndTime = LocalDateTime.now(clock).plus(10L , ChronoUnit.DAYS);
 
         given(userMock.getLatestAccessInterval()).willReturn(Optional.of(accessIntervalMock));
         given(accessIntervalMock.getStartTime()).willReturn(inactiveStartTime);
@@ -100,12 +105,12 @@ public class RepositoryUserAccessServiceTest {
         accessService.giveUserAccessUntil(userMock, expectedEndTime);
 
         // then
-        ArgumentCaptor<AccessInterval> argument = ArgumentCaptor.forClass(AccessInterval.class);
-        verify(userMock, times(2)).addAccessInterval(argument.capture());
+        var captor = ArgumentCaptor.forClass(AccessInterval.class);
+        verify(userMock, times(2)).addAccessInterval(captor.capture());
 
-        AccessInterval createdAccessInterval = argument.getValue();
+        var createdAccessInterval = captor.getValue();
 
-        SoftAssertions softly = new SoftAssertions();
+        var softly = new SoftAssertions();
 
         softly.assertThat(createdAccessInterval.getUser()).isEqualTo(userMock);
         softly.assertThat(createdAccessInterval.getStartTime()).isEqualTo(expectedStartTime);
@@ -114,13 +119,14 @@ public class RepositoryUserAccessServiceTest {
         softly.assertAll();
 
         verify(userService).save(userMock);
+        verify(userAccessEventHandlerMock).onAccessCreated(userMock, createdAccessInterval);
     }
 
     @Test
     public void giveUserAccessUntilUserHasNoAccessInstance() {
         // given
-        LocalDateTime expectedStartTime = LocalDateTime.now(clock);
-        LocalDateTime expectedEndTime = LocalDateTime.now(clock).plus(10L , ChronoUnit.DAYS);
+        var expectedStartTime = LocalDateTime.now(clock);
+        var expectedEndTime = LocalDateTime.now(clock).plus(10L , ChronoUnit.DAYS);
 
         given(userMock.getLatestAccessInterval()).willReturn(Optional.empty());
 
@@ -128,12 +134,12 @@ public class RepositoryUserAccessServiceTest {
         accessService.giveUserAccessUntil(userMock, expectedEndTime);
 
         // then
-        ArgumentCaptor<AccessInterval> accessInfoArgumentCaptor = ArgumentCaptor.forClass(AccessInterval.class);
+        var accessInfoArgumentCaptor = ArgumentCaptor.forClass(AccessInterval.class);
         verify(userMock, times(2)).addAccessInterval(accessInfoArgumentCaptor.capture());
 
-        AccessInterval createdAccessInterval = accessInfoArgumentCaptor.getValue();
+        var createdAccessInterval = accessInfoArgumentCaptor.getValue();
 
-        SoftAssertions softly = new SoftAssertions();
+        var softly = new SoftAssertions();
 
         softly.assertThat(createdAccessInterval.getUser()).isEqualTo(userMock);
         softly.assertThat(createdAccessInterval.getStartTime()).isEqualTo(expectedStartTime);
@@ -142,13 +148,14 @@ public class RepositoryUserAccessServiceTest {
         softly.assertAll();
 
         verify(userService).save(userMock);
+        verify(userAccessEventHandlerMock).onAccessCreated(userMock, createdAccessInterval);
     }
 
     @Test
     public void removeAccessFromUserNoActiveAccessIntervalPresent() {
         // given
-        LocalDateTime inactiveStartTime = LocalDateTime.now(clock).minus(10L, ChronoUnit.DAYS);
-        LocalDateTime inactiveEndTime = LocalDateTime.now(clock).minus(1L, ChronoUnit.DAYS);
+        var inactiveStartTime = LocalDateTime.now(clock).minus(10L, ChronoUnit.DAYS);
+        var inactiveEndTime = LocalDateTime.now(clock).minus(1L, ChronoUnit.DAYS);
 
         given(userMock.getLatestAccessInterval()).willReturn(Optional.of(accessIntervalMock));
         given(accessIntervalMock.getStartTime()).willReturn(inactiveStartTime);
@@ -159,14 +166,15 @@ public class RepositoryUserAccessServiceTest {
 
         // then
         verify(accessIntervalMock, never()).setEndTime(any());
+        verify(userAccessEventHandlerMock, never()).onAccessCreated(any(), any());
     }
 
     @Test
     public void removeAccessFromUserActiveAccessIntervalPresent() {
         // given
-        LocalDateTime activeStartTime = LocalDateTime.now(clock).minus(10L, ChronoUnit.DAYS);
-        LocalDateTime activeEndTime = LocalDateTime.now(clock).plus(1L, ChronoUnit.WEEKS);
-        LocalDateTime expectedEndTime = LocalDateTime.now(clock);
+        var activeStartTime = LocalDateTime.now(clock).minus(10L, ChronoUnit.DAYS);
+        var activeEndTime = LocalDateTime.now(clock).plus(1L, ChronoUnit.WEEKS);
+        var expectedEndTime = LocalDateTime.now(clock);
 
         given(userMock.getLatestAccessInterval()).willReturn(Optional.of(accessIntervalMock));
         given(accessIntervalMock.getStartTime()).willReturn(activeStartTime);
@@ -178,6 +186,7 @@ public class RepositoryUserAccessServiceTest {
         // then
         verify(accessIntervalMock).setEndTime(expectedEndTime);
         verify(intervalRepo).save(accessIntervalMock);
+        verify(userAccessEventHandlerMock).onAccessRevoked(userMock, activeEndTime);
     }
 
 }

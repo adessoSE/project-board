@@ -7,6 +7,7 @@ import { takeUntil } from 'rxjs/operators';
 import { AuthenticationService } from '../_services/authentication.service';
 import { Application, Employee, EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
+import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
 import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
 
 @Component({
@@ -85,22 +86,40 @@ export class ProfileComponent implements OnInit {
   /* Common Functions with Browse-Projects - end */
 
   openDialog(p: Project): void {
-    this.dialogRef = this.dialog.open(ProjectDialogComponent, {
-      autoFocus: false,
-      panelClass: 'custom-dialog-container',
-      data: {
-        project: p,
-        applicable: this.isProjectApplicable(p.id),
-        bookmarked: this.isProjectBookmarked(p.id),
-        isUserBoss: this.user.boss
-      }
-    });
+    this.dialogRef = this.dialog.open(
+      ProjectDialogComponent,
+      {
+        autoFocus: false,
+        panelClass: 'custom-dialog-container',
+        data: {
+          project: p,
+          applicable: this.isProjectApplicable(p.id),
+          bookmarked: this.isProjectBookmarked(p.id),
+          isUserBoss: this.user.boss
+        }
+      });
     this.dialogRef.componentInstance.bookmark
       .pipe(takeUntil(this.dialogRef.afterClosed()))
       .subscribe(() => this.handleBookmark(p));
     this.dialogRef.componentInstance.application
       .pipe(takeUntil(this.dialogRef.afterClosed()))
       .subscribe(application => this.handleApplication(application));
+  }
+
+  openEmployeeDialog(employee: Employee): void {
+    this.employeeService.getFullEmployeeForId(employee.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(fullEmployee => {
+        this.dialog.open(
+          EmployeeDialogComponent,
+          {
+            autoFocus: false,
+            panelClass: 'custom-dialog-container',
+            data: {
+              employee: fullEmployee
+            }
+          });
+      });
   }
 
   selectTab(tab): void {

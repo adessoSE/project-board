@@ -55,7 +55,6 @@
 #search:focus + .input-group-addon {
   border: 1px solid #016EC7;
   border-left: 1px solid #ced4da;
-  //transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
 .search-info-icon {
@@ -76,12 +75,12 @@
   padding: 8px;
   font-size: 0.8rem;
   line-height: 1rem;
-  /* Position the tooltip */
   position: absolute;
   right: calc(2.25rem + 4px);
   top: -25%;
   z-index: 1050;
-  box-shadow: 0 0 0.75rem rgba(0, 0, 0, .25);
+  //box-shadow: 0 0 0.75rem rgba(0, 0, 0, .25);
+  border: 1px solid #887D75;
 }
 
 /* tooltip arrow */
@@ -92,17 +91,6 @@
   left: 100%; /* To the right of the tooltip */
   border: 12px solid transparent;
   border-left-color: #887D75;
-  border-right-width: 0;
-}
-
-.search-info-tooltip .arrow::after {
-  content: " ";
-  position: absolute;
-  top: 50%;
-  right: 1px;
-  margin-top: -11px;
-  border: 11px solid transparent;
-  border-left-color: #fff;
   border-right-width: 0;
 }
 

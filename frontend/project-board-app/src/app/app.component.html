@@ -19,7 +19,8 @@
       <li class="nav-item">
         <a class="nav-link" routerLink="/profile" routerLinkActive="active-link">
           <mat-icon class="navbar-icon">person</mat-icon>
-          <span>Mein Profil</span></a>
+          <span>Mein Profil</span>
+        </a>
       </li>
       <li class="nav-item">
         <ng-template #disabledProjectsMain>
@@ -30,17 +31,34 @@
         </ng-template>
         <a class="nav-link" *ngIf="hasAccess; else disabledProjectsMain" routerLink="/browse" routerLinkActive="active-link">
           <mat-icon class="navbar-icon">folder_open</mat-icon>
-          <span>Projekte</span></a>
+          <span>Projekte</span>
+        </a>
       </li>
       <li *ngIf="isBoss" class="nav-item">
         <a class="nav-link" routerLink="/employees" routerLinkActive="active-link">
           <mat-icon class="navbar-icon">people</mat-icon>
-          <span>Mitarbeiter</span></a>
+          <span>Mitarbeiter</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/faq" routerLinkActive="active-link">
+          <mat-icon class="navbar-icon">question_answer</mat-icon>
+          <span>FAQ</span>
+        </a>
+      </li>
+    </ul>
+    <ul class="navbar-nav mr-auto" style="position: absolute; right: 10px; top: 0;">
+      <li class="nav-item">
+        <a class="nav-link" id="mail-support" href="mailto:{{supportEmail}}" [title]="contactSupportTooltip">
+          <mat-icon class="navbar-icon">contact_support</mat-icon>
+          <span>Support</span>
+        </a>
       </li>
       <li class="nav-item">
         <a class="nav-link" id="logout" routerLink="/logout" (click)="logout()">
           <mat-icon class="navbar-icon">logout</mat-icon>
-          <span><span style="text-transform: capitalize;">{{username}}</span> abmelden</span></a>
+          <span><span style="text-transform: capitalize;">{{username}}</span> abmelden</span>
+        </a>
       </li>
     </ul>
   </div>
@@ -49,13 +67,19 @@
 <div id="mini-nav">
   <div id="mini-nav-content">
     <a routerLink="/"><img src="/assets/adesso-logo-s.png"></a>
-    <mat-icon routerLink="/profile" routerLinkActive="active-mini-link">person</mat-icon>
-    <ng-template #disabledProjectsMini>
-      <mat-icon class="disabled" [title]="noAccessTooltip"></mat-icon>
-    </ng-template>
-    <mat-icon *ngIf="hasAccess; else disabledProjectsMini" routerLink="/browse" routerLinkActive="active-mini-link">folder_open</mat-icon>
-    <mat-icon *ngIf="isBoss" routerLink="/employees" routerLinkActive="active-mini-link">people</mat-icon>
-    <mat-icon routerLink="/logout" (click)="logout()">logout</mat-icon>
+    <div>
+      <mat-icon [title]="profileTooltip" routerLink="/profile" routerLinkActive="active-mini-link">person</mat-icon>
+      <ng-template #disabledProjectsMini>
+        <mat-icon class="disabled" [title]="noAccessTooltip"></mat-icon>
+      </ng-template>
+      <mat-icon [title]="projectsTooltip" *ngIf="hasAccess; else disabledProjectsMini" routerLink="/browse" routerLinkActive="active-mini-link">folder_open</mat-icon>
+      <mat-icon [title]="employeesTooltip" *ngIf="isBoss" routerLink="/employees" routerLinkActive="active-mini-link">people</mat-icon>
+      <mat-icon [title]="faqTooltip" routerLink="/faq" routerLinkActive="active-mini-link">question_answer</mat-icon>
+    </div>
+    <div>
+      <mat-icon [title]="contactSupportTooltip" (click)="mailToSupport()">contact_support</mat-icon>
+      <mat-icon [title]="logoutTooltip" routerLink="/logout" (click)="logout()">logout</mat-icon>
+    </div>
   </div>
 </div>
 
@@ -93,9 +117,22 @@
         <mat-divider></mat-divider>
       </a>
       <a (click)="snav.toggle()">
+        <div routerLink="/faq" routerLinkActive="active-link" class="side-link">
+          <mat-icon class="nav-icon">question_answer</mat-icon>
+          FAQ
+        </div>
+        <mat-divider></mat-divider>
+      </a>
+      <a (click)="snav.toggle()">
         <div routerLink="/logout" (click)="logout()" class="side-link" id="side-logout">
           <mat-icon class="nav-icon">logout</mat-icon>
           abmelden
+        </div>
+      </a>
+      <a (click)="snav.toggle()" href="mailto:{{supportEmail}}" title="Kontaktiere den project board Support">
+        <div id="support">
+          <mat-icon class="nav-icon">contact_support</mat-icon>
+          Support
         </div>
       </a>
     </mat-nav-list>

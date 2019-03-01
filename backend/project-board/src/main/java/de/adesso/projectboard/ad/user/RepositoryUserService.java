@@ -208,4 +208,9 @@ public class RepositoryUserService implements UserService {
                 .setId(id);
     }
 
+    @Override
+    public void removeAllApplicationsOfUser(User user) {
+        user.getApplications().clear();
+        userRepo.save(user);
+    }
 }

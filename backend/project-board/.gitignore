@@ -5,7 +5,7 @@
 ### Spring Properties ###
 /src/main/resources/application-adesso-jira.properties
 /src/main/resources/application-adesso-ad.properties
-/src/main/resources/application-mail.properties
+/src/main/resources/mail.properties
 
 ### Docker Directory ###
 /docker/temp/

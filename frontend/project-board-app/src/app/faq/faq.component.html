@@ -1,0 +1,14 @@
+<div class="outer">
+  <div class="inner">
+    <div *ngFor="let qa of questionsAndAnswers">
+      <div class="question">{{qa.question}}</div>
+      <div class="answer">{{qa.answer}}</div>
+    </div>
+
+    <div style="padding-top: 20px; padding-bottom: 10px;">
+      Keine Antwort auf Deine Frage gefunden? Kontaktiere den
+      <a href="mailto:{{supportEmail}}" title="Kontaktiere den project board Support">
+        project board Support</a>.
+    </div>
+  </div>
+</div>

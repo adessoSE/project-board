@@ -1,20 +1,26 @@
 package de.adesso.projectboard.base.search;
 
 import de.adesso.projectboard.base.project.persistence.Project;
+import de.adesso.projectboard.base.project.persistence.ProjectRepository;
 import de.adesso.projectboard.base.user.persistence.User;
+import de.adesso.projectboard.base.user.persistence.UserRepository;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
+import de.adesso.projectboard.base.user.persistence.data.UserDataRepository;
 import org.assertj.core.api.SoftAssertions;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -24,14 +30,23 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
 @SqlConfig(transactionMode = SqlConfig.TransactionMode.ISOLATED)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @TestPropertySource("classpath:application-persistence-test.properties")
 @DataJpaTest
 public class HibernateSearchServiceIntegrationTest {
 
     @PersistenceContext(type = PersistenceContextType.EXTENDED)
     private EntityManager entityManager;
+
+    @Autowired
+    private ProjectRepository projectRepository;
+
+    @Autowired
+    private UserDataRepository userDataRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     private HibernateSearchService hibernateSearchService;
 
@@ -42,6 +57,13 @@ public class HibernateSearchServiceIntegrationTest {
         hibernateSearchService.initialize(entityManager);
 
         this.hibernateSearchService = hibernateSearchService;
+    }
+
+    @After
+    public void tearDown() {
+        this.projectRepository.deleteAll();
+        this.userDataRepository.deleteAll();
+        this.userRepository.deleteAll();
     }
 
     @Test

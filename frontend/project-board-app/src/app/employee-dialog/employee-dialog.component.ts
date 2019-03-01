@@ -87,6 +87,8 @@ export class EmployeeDialogComponent implements OnInit {
     // set the value of the datepicker to the date of the employees access end
     if (this.data.employee.accessInfo.hasAccess) {
       this.datepickerControl.setValue(new Date(this.data.employee.accessInfo.accessEnd));
+    } else {
+      this.datepickerControl.setValue(this.maxDate);
     }
 
     if (this.data.employee) {
@@ -117,6 +119,7 @@ export class EmployeeDialogComponent implements OnInit {
       .subscribe(user => {
         this.data.employee.accessInfo = user.accessInfo;
         this.data.employee.duration = 0;
+        this.datepickerControl.setValue(this.maxDate);
       });
   }
 

@@ -1,6 +1,7 @@
 package de.adesso.projectboard.ad.user;
 
 import de.adesso.projectboard.ad.service.LdapService;
+import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.exceptions.HierarchyNotFoundException;
 import de.adesso.projectboard.base.exceptions.UserDataNotFoundException;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
@@ -27,6 +28,7 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -566,4 +568,18 @@ public class RepositoryUserServiceTest {
         assertThat(actualHasStaffMember).isEqualTo(expected);
     }
 
+    @Test
+    @SuppressWarnings("unchecked")
+    public void removeAllApplicationsOfUser() {
+        // given
+        Set<ProjectApplication> applicationsMock = mock(Set.class);
+        given(userMock.getApplications()).willReturn(applicationsMock);
+
+        // when
+        repoUserService.removeAllApplicationsOfUser(userMock);
+
+        // then
+        verify(applicationsMock).clear();
+        verify(userRepoMock).save(userMock);
+    }
 }
