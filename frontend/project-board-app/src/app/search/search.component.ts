@@ -10,6 +10,8 @@ export class SearchComponent implements OnInit {
   infoTooltip = '';
   @Input()
   placeholder = '';
+  @Input()
+  infoTooltipHeader = '';
 
   @Output()
   search = new EventEmitter<string>();
