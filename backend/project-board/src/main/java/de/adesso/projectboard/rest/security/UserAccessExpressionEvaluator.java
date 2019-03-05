@@ -158,10 +158,8 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
     }
 
     /**
-     * A {@link User} has the permission to edit a {@link Project} when it is
-     * present in the {@link User#ownedProjects owned projects} of the user.
      *
-     * @param authentication
+     *  @param authentication
      *          The {@link Authentication} object.
      *
      * @param user

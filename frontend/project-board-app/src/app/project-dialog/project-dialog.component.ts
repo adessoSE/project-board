@@ -17,13 +17,13 @@ import {
   SEND_REQUEST_TOOLTIP,
   START_REQUEST_TOOLTIP
 } from '../tooltips';
-import { timeout } from 'q';
 
 export interface ProjectDialogData {
   project: Project;
   isUserBoss: boolean;
   bookmarked: boolean;
   applicable: boolean;
+  hasAccess: boolean;
 }
 
 @Component({

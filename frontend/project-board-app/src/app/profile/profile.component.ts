@@ -95,7 +95,8 @@ export class ProfileComponent implements OnInit {
           project: p,
           applicable: this.isProjectApplicable(p.id),
           bookmarked: this.isProjectBookmarked(p.id),
-          isUserBoss: this.user.boss
+          isUserBoss: this.user.boss,
+          hasAccess:  this.user.accessInfo.hasAccess
         }
       });
     this.dialogRef.componentInstance.bookmark

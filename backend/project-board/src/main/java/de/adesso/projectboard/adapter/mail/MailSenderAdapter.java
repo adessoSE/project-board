@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
  */
 @Slf4j
 @Transactional(readOnly = true)
-public class MailSenderService {
+public class MailSenderAdapter {
 
     private final MessageRepository messageRepository;
 
@@ -27,7 +27,7 @@ public class MailSenderService {
 
     private final Clock clock;
 
-    public MailSenderService(MessageRepository messageRepository,
+    public MailSenderAdapter(MessageRepository messageRepository,
                              JavaMailSenderImpl mailSender,
                              UserService userService,
                              Clock clock) {

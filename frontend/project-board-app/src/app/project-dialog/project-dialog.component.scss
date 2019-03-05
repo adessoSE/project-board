@@ -205,7 +205,7 @@ a:hover {
   }
 
   mat-dialog-content {
-    max-height: calc((100vh - 80px) - 102px); /*100vh - Titel - Actions*/
+    max-height: calc((100vh - 80px) - 126px); /*100vh - Titel - Actions*/
   }
 
   mat-dialog-content.shorten {

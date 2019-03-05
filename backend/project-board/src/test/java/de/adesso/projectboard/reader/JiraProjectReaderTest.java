@@ -19,7 +19,7 @@ import static org.mockito.BDDMockito.given;
 public class JiraProjectReaderTest {
 
     @Mock
-    private JiraProjectReaderConfigurationProperties propertiesMock;
+    private JiraConfigurationProperties propertiesMock;
 
     @Mock
     private RestTemplateBuilder builderMock;

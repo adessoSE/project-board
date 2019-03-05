@@ -16,7 +16,7 @@
   </span>
 
   <!-- request icon -->
-  <span *ngIf="!mobile && !data.isUserBoss && !showBox && data.applicable" id="request-icon-wrapper" (click)="toggleRequestArea()" [title]="startRequestTooltip">
+  <span *ngIf="!mobile && !data.isUserBoss && !showBox && data.applicable && data.hasAccess" id="request-icon-wrapper" (click)="toggleRequestArea()" [title]="startRequestTooltip">
     <mat-icon id="request-icon">
       create
     </mat-icon>
@@ -124,12 +124,15 @@
   </div>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
-  <div style="margin: 0 auto" *ngIf="!data.isUserBoss && !data.applicable">
+  <div style="margin: 0 auto" *ngIf="!data.isUserBoss && !data.applicable && data.hasAccess">
     <mat-icon id="applied-icon" *ngIf="!data.applicable" title="{{appTooltip}}">email</mat-icon>
     <small>Du hast dieses Projekt bereits angefragt</small>
   </div>
   <div style="margin: 0 auto;" *ngIf="data.isUserBoss">
     <small>Führungskräfte können Projekte nicht anfragen.</small>
+  </div>
+  <div style="margin: 0 auto;" *ngIf="!data.hasAccess && !data.isUserBoss">
+    <small>Du bist nicht freigeschaltet.</small>
   </div>
   <div style="width: 100%; text-align: left" *ngIf="showBox" id="requestArea">
     <div class="comment">
@@ -140,13 +143,13 @@
 
     <p>Dein Vorgesetzter wird per Email über deine Anfrage benachrichtigt.</p>
   </div>
-  <span *ngIf="!showBox && data.applicable && !data.isUserBoss" id="ask-project">Du bist an diesem Projekt interessiert? Erstelle eine Anfrage!</span>
+  <span *ngIf="!showBox && data.applicable && !data.isUserBoss && data.hasAccess" id="ask-project">Du bist an diesem Projekt interessiert? Dann benachrichtige deine Führungskraft darüber, indem du hier eine Anfrage erstellst.</span>
   <div id="buttonBox" *ngIf="!data.isUserBoss">
     <button *ngIf="showBox" class="btn btn-primary" (click)="sendApplication()" [title]="sendRequestTooltip">
       <mat-icon>send</mat-icon>
       Absenden
     </button>
-    <button *ngIf="!showBox && data.applicable" class="btn btn-primary" (click)="toggleRequestArea()" [title]="startRequestTooltip">
+    <button *ngIf="!showBox && data.applicable && data.hasAccess" class="btn btn-primary" (click)="toggleRequestArea()" [title]="startRequestTooltip">
       <mat-icon>create</mat-icon>
       Anfrage erstellen
     </button>
