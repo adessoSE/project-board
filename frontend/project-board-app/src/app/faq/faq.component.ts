@@ -22,13 +22,6 @@ export class FaqComponent implements OnInit {
         'Dein Vorgesetzter kann die Anfragen jedoch ebenfalls im project board einsehen.'
     },
     {
-      question: 'Was genau passiert, wenn ich einen Mitarbeiter anbiete?',
-      answer: 'Das project board erstellt im entsprechenden Issue des Staffing Projekts im Jira einen Kommentar der Form:<br><br>\n' +
-        '          Angeboten: [Nachname des Mitarbeiters], [Vorname des Mitarbeiters]<br>\n' +
-        '          Verantwortlich: [Dein Nachname], [Dein Vorname]<br><br>\n' +
-        '          Der angebotene Mitarbeiter und der Ersteller des Jira-Issues werden per Mail benachrichtigt.'
-    },
-    {
       question: 'Haben meine Mitarbeiter ein anderes FAQ?',
       answer: 'Ja, Deine Mitarbeiter sehen auf dieser Seite andere Fragen und Antworten.'
     },
@@ -48,10 +41,6 @@ export class FaqComponent implements OnInit {
     {
       question: 'Was passiert, wenn ich eine Projektanfrage absende?',
       answer: 'Dein Vorgesetzter bekommt eine Benachrichtigung über Dein Interesse an diesem Projekt.'
-    },
-    {
-      question: 'Was bedeutet es, wenn ich für ein Projekt angeboten wurde?',
-      answer: 'Das bedeutet, dass Dein Vorgesetzter Dich beim Verantwortlichen für das Projekt ins Gespräch gebracht hat.'
     },
     {
       question: 'Was hat es mit den Lesezeichen auf sich?',

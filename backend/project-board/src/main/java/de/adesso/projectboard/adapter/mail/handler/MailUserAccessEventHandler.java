@@ -5,10 +5,14 @@ import de.adesso.projectboard.adapter.mail.VelocityMailTemplateService;
 import de.adesso.projectboard.adapter.mail.persistence.TimeAwareMessage;
 import de.adesso.projectboard.base.access.handler.UserAccessEventHandler;
 import de.adesso.projectboard.base.access.persistence.AccessInterval;
+import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.service.UserService;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.velocity.util.Pair;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -28,23 +32,22 @@ public class MailUserAccessEventHandler implements UserAccessEventHandler {
 
     private final VelocityMailTemplateService velocityMailTemplateService;
 
+    private final String projectBoardUrl;
+
     public MailUserAccessEventHandler(MailSenderService mailSenderService,
                                       UserService userService,
-                                      VelocityMailTemplateService velocityMailTemplateService) {
+                                      VelocityMailTemplateService velocityMailTemplateService,
+                                      ProjectBoardConfigurationProperties configurationProperties) {
         this.mailSenderService = mailSenderService;
         this.userService = userService;
         this.velocityMailTemplateService = velocityMailTemplateService;
+
+        this.projectBoardUrl = configurationProperties.getUrl();
     }
 
     @Override
     public void onAccessCreated(User user, AccessInterval accessInterval) {
-        var dateAndTime = accessInterval.getEndTime().format(DATE_TIME_FORMATTER);
-        var userData = userService.getUserData(user);
-
-        var contextMap = Map.of(
-                "userData", userData,
-                "dateAndTime", dateAndTime
-        );
+        var contextMap = getContextMap(user, accessInterval.getEndTime());
         var subjectTextPair =
                 velocityMailTemplateService.getSubjectAndText("/templates/mail/UserAccessCreated.vm", contextMap);
         var message = new TimeAwareMessage(user, user, subjectTextPair.getFirst(),
@@ -54,35 +57,40 @@ public class MailUserAccessEventHandler implements UserAccessEventHandler {
 
     @Override
     public void onAccessChanged(User user, AccessInterval accessInterval, LocalDateTime previousEndTime) {
-        var newDateAndTime = accessInterval.getEndTime().format(DATE_TIME_FORMATTER);
-        var oldDateAndTime = previousEndTime.format(DATE_TIME_FORMATTER);
-        var userData = userService.getUserData(user);
+        if(!accessInterval.getEndTime().equals(previousEndTime)) {
+            var contextMap = getContextMap(user, accessInterval.getEndTime());
+            var templatePath = getTemplatePathAccessChanged(accessInterval.getEndTime(), previousEndTime);
 
-        var contextMap = Map.of(
-                "userData", userData,
-                "newDateAndTime", newDateAndTime,
-                "oldDateAndTime", oldDateAndTime
-        );
-        var subjectTextPair =
-                velocityMailTemplateService.getSubjectAndText("/templates/mail/UserAccessChanged.vm", contextMap);
-        var message = new TimeAwareMessage(user, user, subjectTextPair.getFirst(),
-                subjectTextPair.getSecond(), accessInterval.getEndTime());
-        mailSenderService.queueMessage(message);
+            var subjectTextPair = velocityMailTemplateService.getSubjectAndText(templatePath, contextMap);
+            var message = new TimeAwareMessage(user, user, subjectTextPair.getFirst(),
+                    subjectTextPair.getSecond(), accessInterval.getEndTime());
+            mailSenderService.queueMessage(message);
+        }
     }
 
     @Override
     public void onAccessRevoked(User user, LocalDateTime previousEndTime) {
+        // do not send a message at this point of time
+        log.info(String.format("Access for user %s revoked!", user.getId()));
+    }
+
+    Map<String, Object> getContextMap(User user, LocalDateTime newEndTime) {
+        var newDateAndTime = newEndTime.format(DATE_TIME_FORMATTER);
         var userData = userService.getUserData(user);
 
-        var contextMap = Map.<String, Object>of(
-                "userData", userData
+        return Map.of(
+                "userData", userData,
+                "newDateTime", newDateAndTime,
+                "projectBoardUrl", projectBoardUrl
         );
+    }
 
-        var subjectTextPair =
-                velocityMailTemplateService.getSubjectAndText("/templates/mail/UserAccessRevoked.vm", contextMap);
-        var message = new TimeAwareMessage(user, user, subjectTextPair.getFirst(),
-                subjectTextPair.getSecond(), previousEndTime);
-        mailSenderService.queueMessage(message);
+    String getTemplatePathAccessChanged(LocalDateTime newEndTime, LocalDateTime previousEndTime) {
+        if(previousEndTime.isAfter(newEndTime)) {
+            return "/templates/mail/UserAccessShortened.vm";
+        } else {
+            return "/templates/mail/UserAccessExtended.vm";
+        }
     }
 
 }

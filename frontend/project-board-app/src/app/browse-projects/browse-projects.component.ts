@@ -10,7 +10,7 @@ import { AlertService } from '../_services/alert.service';
 import { Application, EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
 import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
-import { APPLICATION_TOOLTIP, BOOKMARK_TOOLTIP, SEARCH_INFO_TOOLTIP } from '../tooltips';
+import { APPLICATION_TOOLTIP, BOOKMARK_TOOLTIP, SEARCH_INFO_TOOLTIP, SEARCH_INFO_TOOLTIP_HEADER } from '../tooltips';
 
 @Component({
   selector: 'app-browse-projects',
@@ -22,6 +22,7 @@ export class BrowseProjectsComponent implements OnInit {
   appTooltip = APPLICATION_TOOLTIP;
   bmTooltip = BOOKMARK_TOOLTIP;
   infoTooltip = SEARCH_INFO_TOOLTIP;
+  infoTooltipHeader = SEARCH_INFO_TOOLTIP_HEADER;
 
   projects: Project[] = [];
   applications: Application[] = [];
@@ -60,7 +61,8 @@ export class BrowseProjectsComponent implements OnInit {
         project: p,
         applicable: this.isProjectApplicable(p.id),
         bookmarked: this.isProjectBookmarked(p.id),
-        isUserBoss: this.isUserBoss
+        isUserBoss: this.isUserBoss,
+        hasAccess:  true
       }
     });
     this.dialogRef.componentInstance.bookmark

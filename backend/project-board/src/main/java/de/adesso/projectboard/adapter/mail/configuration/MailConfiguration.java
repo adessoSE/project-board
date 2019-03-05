@@ -7,7 +7,9 @@ import de.adesso.projectboard.adapter.mail.handler.MailUserAccessEventHandler;
 import de.adesso.projectboard.adapter.mail.persistence.MessageRepository;
 import de.adesso.projectboard.base.access.handler.UserAccessEventHandler;
 import de.adesso.projectboard.base.application.handler.ProjectApplicationEventHandler;
+import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.base.user.service.UserService;
+import de.adesso.projectboard.reader.JiraConfigurationProperties;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
@@ -60,15 +62,17 @@ public class MailConfiguration {
     @Autowired
     @Bean
     @DependsOn({"mailSenderService", "velocityMailTemplateService"})
-    public ProjectApplicationEventHandler mailProjectApplicationHandler(MailSenderService mailSenderService, UserService userService, VelocityMailTemplateService velocityMailTemplateService) {
-        return new MailProjectApplicationEventHandler(mailSenderService, userService, velocityMailTemplateService);
+    public ProjectApplicationEventHandler mailProjectApplicationHandler(MailSenderService mailSenderService, UserService userService, VelocityMailTemplateService velocityMailTemplateService,
+                                                                        JiraConfigurationProperties jiraConfigProperties) {
+        return new MailProjectApplicationEventHandler(mailSenderService, userService, velocityMailTemplateService, jiraConfigProperties);
     }
 
     @Autowired
     @Bean
     @DependsOn({"mailSenderService", "velocityMailTemplateService"})
-    public UserAccessEventHandler mailUserAccessEventHandler(MailSenderService mailSenderService, UserService userService, VelocityMailTemplateService velocityMailTemplateService) {
-        return new MailUserAccessEventHandler(mailSenderService, userService, velocityMailTemplateService);
+    public UserAccessEventHandler mailUserAccessEventHandler(MailSenderService mailSenderService, UserService userService, VelocityMailTemplateService velocityMailTemplateService,
+                                                             ProjectBoardConfigurationProperties configurationProperties) {
+        return new MailUserAccessEventHandler(mailSenderService, userService, velocityMailTemplateService, configurationProperties);
     }
 
 }

@@ -9,6 +9,7 @@ export const GO_TO_JIRA_TOOLTIP = 'Zum Jira-Projekt';
 export const START_REQUEST_TOOLTIP = 'Projektanfrage erstellen';
 export const ABORT_REQUEST_TOOLTIP = 'Projektanfrage abbrechen';
 export const SEND_REQUEST_TOOLTIP = 'Projektanfrage absenden';
+export const SEARCH_INFO_TOOLTIP_HEADER = 'Projekte suchen';
 export const SEARCH_INFO_TOOLTIP = 'OR-Verknüfungen mit `|` (z.B. Dortmund | Essen)<br><br>' +
   'AND-Verknüpfungen mit `+`, `&` oder Leerzeichen (z.B. Dortmund + Essen)<br><br>' +
   'Ähnliche Begriffe mit Tilde (Dortmund~ findet z.B. auch Dotrmund)<br><br>' +
@@ -16,6 +17,7 @@ export const SEARCH_INFO_TOOLTIP = 'OR-Verknüfungen mit `|` (z.B. Dortmund | Es
   'Gruppierung mit runden Klammern (z.B. Java & (JUnit | Mockito) )<br><br>' +
   'NOT-Verknüpfungen mit `-` (Scrum -Java findet z.B. nur Projekte, in denen das Wort ' +
   'Scrum enthalten, aber das Wort Java nicht enthalten ist)';
+export const EMPLOYEE_SEARCH_INFO_TOOLTIP_HEADER = 'Mitarbeiter suchen';
 export const EMPLOYEE_SEARCH_INFO_TOOLTIP = 'OR-Verknüfungen mit `|` (z.B. Meier | Müller)<br><br>' +
   'AND-Verknüpfungen mit `+`, `&` oder Leerzeichen (z.B. Meier + Müller)<br><br>' +
   'Ähnliche Begriffe mit Tilde (Mlüler~1 findet z.B. auch Müller)<br><br>' +
@@ -29,3 +31,4 @@ export const PROJECTS_TOOLTIP = 'Projekte';
 export const EMPLOYEES_TOOLTIP = 'Mitarbeiter';
 export const FAQ_TOOLTIP = 'FAQ';
 export const LOGOUT_TOOLTIP = 'Abmelden';
+
