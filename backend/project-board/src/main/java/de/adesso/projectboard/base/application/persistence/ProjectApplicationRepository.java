@@ -16,6 +16,8 @@ public interface ProjectApplicationRepository extends CrudRepository<ProjectAppl
 
     List<ProjectApplication> findAllByUserIn(Iterable<User> users, Sort sort);
 
+    List<ProjectApplication> findAllByUser(User user, Sort sort);
+
     boolean existsByUserAndProject(User user, Project project);
 
 }

@@ -54,10 +54,11 @@ public interface ApplicationService {
      * @param user
      *          The {@link User} to get the applications of.
      *
+     * @param sort
      * @return
      *          The user's {@link ProjectApplication applications}.
      */
-    List<ProjectApplication> getApplicationsOfUser(User user);
+    List<ProjectApplication> getApplicationsOfUser(User user, Sort sort);
 
     /**
      *
