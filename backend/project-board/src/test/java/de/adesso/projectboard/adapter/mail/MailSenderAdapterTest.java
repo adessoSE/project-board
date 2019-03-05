@@ -24,7 +24,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MailSenderServiceTest {
+public class MailSenderAdapterTest {
 
     @Mock
     private MessageRepository messageRepositoryMock;
@@ -46,7 +46,7 @@ public class MailSenderServiceTest {
 
     private Clock clock;
 
-    private MailSenderService mailSenderService;
+    private MailSenderAdapter mailSenderAdapter;
 
     @Before
     public void setUp() {
@@ -54,7 +54,7 @@ public class MailSenderServiceTest {
         var zoneId = ZoneId.systemDefault();
 
         this.clock = Clock.fixed(instant, zoneId);
-        this.mailSenderService = new MailSenderService(messageRepositoryMock, javaMailSenderMock,
+        this.mailSenderAdapter = new MailSenderAdapter(messageRepositoryMock, javaMailSenderMock,
                 userServiceMock, clock);
     }
 
@@ -82,7 +82,7 @@ public class MailSenderServiceTest {
         given(userDataMock.getEmail()).willReturn(expectedTo);
 
         // when
-        mailSenderService.sendPendingMessages();
+        mailSenderAdapter.sendPendingMessages();
 
         // then
         verify(messageRepositoryMock, times(2)).delete(templateMessageMock);
@@ -109,7 +109,7 @@ public class MailSenderServiceTest {
         given(userDataMock.getEmail()).willReturn(expectedTo);
 
         // when
-        mailSenderService.sendMessage(templateMessageMock);
+        mailSenderAdapter.sendMessage(templateMessageMock);
 
         // then
         verify(javaMailSenderMock).send(expectedSimpleMessage);

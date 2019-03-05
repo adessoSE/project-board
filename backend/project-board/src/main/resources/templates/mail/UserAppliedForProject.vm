@@ -1,28 +1,31 @@
+#* @vtlvariable name="managerData" type="de.adesso.projectboard.base.user.persistence.data.UserData" *#
 #* @vtlvariable name="applicantData" type="de.adesso.projectboard.base.user.persistence.data.UserData" *#
 #* @vtlvariable name="projectApplication" type="de.adesso.projectboard.base.application.persistence.ProjectApplication" *#
-##
+#* @vtlvariable name="jiraIssueLink" type="java.lang.String" *#
+
 #set( $comment = $projectApplication.getComment() )
 #set( $project = $projectApplication.getProject())
 #set( $projectId = $project.getId() )
 #set( $projectTitle = $project.getTitle() )
-#set( $applicantName = $applicantData.getFirstName() + " " + $applicantData.getLastName() )
-
+#set( $applicantFirstName = $applicantData.getFirstName() )
+#set( $applicantLastName = $applicantData.getLastName() )
+#set( $applicantManagerFirstName = $managerData.getFirstName() )
 
 --!--SUBJECT--!--
-$applicantName hat eine Anfrage für das Projekt $projectId gestellt
 
+Dein(e) Mitarbeiter(in) ${applicantFirstName} ${applicantLastName} hat eine Anfrage im project board gestellt
 
 
 --!--TEXT--!--
-$applicantName hat eine Anfrage für das Projekt '$projectTitle' mit dem JIRA Schlüßel $projectId gestellt ##
-#if( $comment )
-und hat folgenden Kommentar angegeben:
 
-$comment
-#else
-.
-#end
+Hallo ${applicantManagerFirstName},
 
+dein(e) Mitarbeiter(in) ${applicantFirstName} ${applicantLastName} hat über das project board Interesse an der folgenden Position bekundet:
 
+${projectTitle}
+
+${jiraIssueLink}
+
+Bitte prüfe die weiteren Schritte und setze dich mit der/dem Mitarbeiter(in) in Verbindung, um zu klären, ob die Position in Frage kommt.
 
 #include("/templates/mail/MailFooter.vm")

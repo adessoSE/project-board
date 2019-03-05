@@ -1,17 +1,21 @@
 #* @vtlvariable name="userData" type="de.adesso.projectboard.base.user.persistence.data.UserData" *#
-#* @vtlvariable name="dateAndTime" type="java.lang.String" *#
-##
+#* @vtlvariable name="newDateTime" type="java.lang.String" *#
+#* @vtlvariable name="projectBoardUrl" type="java.lang.String" *#
+
 #set( $firstName = $userData.getFirstName() )
 
-
 --!--SUBJECT--!--
-Du wurdest für das project board freigeschaltet!
+
+Du wurdest für das project board freigeschaltet
 
 
 --!--TEXT--!--
-Hallo $firstName,
 
-du hast nun bis zum $dateAndTime Uhr Zugang zum projectboard und kannst dort aktuelle und zukünftige Projekte durchstöbern.
+Hallo ${firstName},
 
+du wurdest von deiner Führungskraft bis zum ${newDateTime} Uhr für das project board freigeschaltet. Dort kannst du offene Stellen in adesso-Projekten ##
+und aktuellen Akquisesituation durchsuchen und deine Führungskraft darüber informieren, wenn du etwas interessantes gefunden hast.
+
+Du kannst das project board hier erreichen: ${projectBoardUrl}.
 
 #include("/templates/mail/MailFooter.vm")

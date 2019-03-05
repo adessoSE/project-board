@@ -40,10 +40,10 @@ public class JiraProjectReader implements ProjectReader {
 
     private final RestTemplate restTemplate;
 
-    private final JiraProjectReaderConfigurationProperties properties;
+    private final JiraConfigurationProperties properties;
 
     @Autowired
-    public JiraProjectReader(RestTemplateBuilder builder, JiraProjectReaderConfigurationProperties properties) {
+    public JiraProjectReader(RestTemplateBuilder builder, JiraConfigurationProperties properties) {
         this.restTemplate = builder
                 .basicAuthentication(properties.getUsername(), properties.getPassword())
                 .build();
