@@ -170,7 +170,7 @@ export class EmployeeDialogComponent implements OnInit {
   }
 
   markAsRead(application: Application) {
-    if (!application.readByBoss) {
+    if (!application.readByBoss && this.isDirectEmployee) {
       this.employeeService.markApplicationAsRead(this.data.employee.id, application.id)
         .pipe(takeUntil(this.destroy$))
         .subscribe(() => application.readByBoss = true);
