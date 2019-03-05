@@ -1,6 +1,6 @@
 package de.adesso.projectboard.adapter.mail.handler;
 
-import de.adesso.projectboard.adapter.mail.MailSenderService;
+import de.adesso.projectboard.adapter.mail.MailSenderAdapter;
 import de.adesso.projectboard.adapter.mail.VelocityMailTemplateService;
 import de.adesso.projectboard.adapter.mail.persistence.SimpleMessage;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
@@ -27,7 +27,7 @@ public class MailProjectApplicationEventHandlerTest {
     private static final String JIRA_ISSUE_URL = "https://jira.com/issues/";
 
     @Mock
-    private MailSenderService mailSenderServiceMock;
+    private MailSenderAdapter mailSenderAdapterMock;
 
     @Mock
     private UserService userServiceMock;
@@ -63,7 +63,7 @@ public class MailProjectApplicationEventHandlerTest {
         given(jiraConfigPropertiesMock.getIssueUrl()).willReturn(JIRA_ISSUE_URL);
 
         this.mailProjectApplicationEventHandler =
-                new MailProjectApplicationEventHandler(mailSenderServiceMock, userServiceMock, velocityMailTemplateServiceMock, jiraConfigPropertiesMock);
+                new MailProjectApplicationEventHandler(mailSenderAdapterMock, userServiceMock, velocityMailTemplateServiceMock, jiraConfigPropertiesMock);
     }
 
     @Test
@@ -100,7 +100,7 @@ public class MailProjectApplicationEventHandlerTest {
         mailProjectApplicationEventHandler.onApplicationReceived(projectApplicationMock);
 
         // then
-        verify(mailSenderServiceMock).queueMessage(expectedMessage);
+        verify(mailSenderAdapterMock).queueMessage(expectedMessage);
     }
 
 }

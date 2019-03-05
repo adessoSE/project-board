@@ -1,6 +1,6 @@
 package de.adesso.projectboard.adapter.mail.configuration;
 
-import de.adesso.projectboard.adapter.mail.MailSenderService;
+import de.adesso.projectboard.adapter.mail.MailSenderAdapter;
 import de.adesso.projectboard.adapter.mail.VelocityMailTemplateService;
 import de.adesso.projectboard.adapter.mail.handler.MailProjectApplicationEventHandler;
 import de.adesso.projectboard.adapter.mail.handler.MailUserAccessEventHandler;
@@ -53,26 +53,26 @@ public class MailConfiguration {
     }
 
     @Autowired
-    @Bean("mailSenderService")
-    public MailSenderService mailSenderService(MessageRepository messageRepository, JavaMailSenderImpl javaMailSender,
+    @Bean("mailSenderAdapter")
+    public MailSenderAdapter mailSenderAdapter(MessageRepository messageRepository, JavaMailSenderImpl javaMailSender,
                                                UserService userService, Clock clock) {
-        return new MailSenderService(messageRepository, javaMailSender, userService, clock);
+        return new MailSenderAdapter(messageRepository, javaMailSender, userService, clock);
     }
 
     @Autowired
     @Bean
-    @DependsOn({"mailSenderService", "velocityMailTemplateService"})
-    public ProjectApplicationEventHandler mailProjectApplicationHandler(MailSenderService mailSenderService, UserService userService, VelocityMailTemplateService velocityMailTemplateService,
+    @DependsOn({"mailSenderAdapter", "velocityMailTemplateService"})
+    public ProjectApplicationEventHandler mailProjectApplicationHandler(MailSenderAdapter mailSenderAdapter, UserService userService, VelocityMailTemplateService velocityMailTemplateService,
                                                                         JiraConfigurationProperties jiraConfigProperties) {
-        return new MailProjectApplicationEventHandler(mailSenderService, userService, velocityMailTemplateService, jiraConfigProperties);
+        return new MailProjectApplicationEventHandler(mailSenderAdapter, userService, velocityMailTemplateService, jiraConfigProperties);
     }
 
     @Autowired
     @Bean
-    @DependsOn({"mailSenderService", "velocityMailTemplateService"})
-    public UserAccessEventHandler mailUserAccessEventHandler(MailSenderService mailSenderService, UserService userService, VelocityMailTemplateService velocityMailTemplateService,
+    @DependsOn({"mailSenderAdapter", "velocityMailTemplateService"})
+    public UserAccessEventHandler mailUserAccessEventHandler(MailSenderAdapter mailSenderAdapter, UserService userService, VelocityMailTemplateService velocityMailTemplateService,
                                                              ProjectBoardConfigurationProperties configurationProperties) {
-        return new MailUserAccessEventHandler(mailSenderService, userService, velocityMailTemplateService, configurationProperties);
+        return new MailUserAccessEventHandler(mailSenderAdapter, userService, velocityMailTemplateService, configurationProperties);
     }
 
 }
