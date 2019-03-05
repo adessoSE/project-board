@@ -21,14 +21,17 @@ import javax.validation.constraints.Pattern;
 @Validated
 @Getter
 @Setter
-public class JiraProjectReaderConfigurationProperties {
+public class JiraConfigurationProperties {
 
     /**
      * The request URL for JIRA. It must contain a string placeholder
      * like <i>{jqlQuery}</i>. The string placeholder is replaced
      * with the actual JQL query.
      */
-    @Pattern(regexp = ".*jql=\\{.+\\}.*", message = "The JIRA URL must contain a placeholder for the JQL query!")
+    @Pattern(
+            regexp = ".*jql=\\{.+\\}.*",
+            message = "The JIRA URL must contain a placeholder for the JQL query!"
+    )
     @NotEmpty
     private String requestUrl;
 
@@ -37,6 +40,17 @@ public class JiraProjectReaderConfigurationProperties {
      */
     @NotEmpty
     private String serverInfoUrl;
+
+    /**
+     * The URL the project ID gets appended to
+     * to refer to the JIRA issue.
+     */
+    @Pattern(
+            regexp = ".*/issues/",
+            message = "The issue URL must end with '/issues/'!"
+    )
+    @NotEmpty
+    private String issueUrl;
 
     /**
      * The username to use for authorization.
