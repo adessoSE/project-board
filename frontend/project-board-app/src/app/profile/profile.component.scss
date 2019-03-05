@@ -232,6 +232,14 @@ button:focus, button:active {
   color: orange;
 }
 
+@media only screen and (max-width: 540px){
+  .toggle-filter-btn {
+    position: relative;
+    width: 100%;
+    left: 0;
+  }
+}
+
 @include media-breakpoint-up(xl) {
   .left-bar {
     height: 550px;

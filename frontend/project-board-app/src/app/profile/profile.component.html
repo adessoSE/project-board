@@ -48,20 +48,20 @@
       </div>
 
       <div *ngIf="user.boss" (click)="selectTab(2)" id="tab2" class="nav-point col-12 active">
-        <button *ngIf="filteredEmployeeApplications.length === employeeApplications.length && employeeApplications.length > 0"
-                class="btn btn-primary toggle-filter-btn"
-                (click)="toggleFilter()">
-          Nur neue zeigen
-        </button>
-        <button *ngIf="filteredEmployeeApplications.length !== employeeApplications.length && employeeApplications.length > 0"
-                class="btn btn-primary toggle-filter-btn"
-                (click)="toggleFilter()">
-          Alle zeigen
-        </button>
         <div class="profile-nav-icon">
           <mat-icon>email</mat-icon>
         </div>
         Projektanfragen Mitarbeiter
+        <button *ngIf="filteredEmployeeApplications.length === employeeApplications.length && employeeApplications.length > 0"
+            class="btn btn-primary toggle-filter-btn"
+            (click)="toggleFilter()">
+      Nur neue zeigen
+    </button>
+    <button *ngIf="filteredEmployeeApplications.length !== employeeApplications.length && employeeApplications.length > 0"
+            class="btn btn-primary toggle-filter-btn"
+            (click)="toggleFilter()">
+      Alle zeigen
+    </button>
       </div>
     </div>
 
