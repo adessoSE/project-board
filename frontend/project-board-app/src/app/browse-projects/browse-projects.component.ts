@@ -11,7 +11,7 @@ import { Application, EmployeeService } from '../_services/employee.service';
 import { ProjectLocation } from '../_services/project-location.service';
 import { Project, ProjectService } from '../_services/project.service';
 import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
-import { APPLICATION_TOOLTIP, BOOKMARK_TOOLTIP, SEARCH_INFO_TOOLTIP } from '../tooltips';
+import { APPLICATION_TOOLTIP, BOOKMARK_TOOLTIP, SEARCH_INFO_TOOLTIP, SEARCH_INFO_TOOLTIP_HEADER } from '../tooltips';
 
 import { FormControl } from '@angular/forms';
 import { MatSelect } from '@angular/material';
@@ -44,6 +44,7 @@ export class BrowseProjectsComponent implements OnInit {
   appTooltip = 'Du hast dieses Projekt bereits angefragt.';
   bmTooltip = 'Du hast ein Lesezeichen an diesem Projekt.';
   infoTooltip = SEARCH_INFO_TOOLTIP;
+  infoTooltipHeader = SEARCH_INFO_TOOLTIP_HEADER;
 
   projects: Project[] = [];
   filteredProjects: Project[] = [];
