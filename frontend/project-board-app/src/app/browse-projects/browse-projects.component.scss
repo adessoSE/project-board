@@ -30,25 +30,12 @@ button span {
 }
 
 .projects-info-wrapper {
-  margin: 0 auto;
+  margin-bottom: 4px;
 }
 
-.projects-info-wrapper p {
-  display: inline-block;
-  width: calc(100% - 53px);
-}
-
-.projects-info-icon-wrapper {
-  display: inline-block;
-  cursor: default;
-  vertical-align: top;
-  padding-right: 15px;
-}
-
-.projects-info-icon-wrapper mat-icon {
-  font-size: 38px;
-  width: 38px;
-  height: 38px;
+.projects-info-wrapper mat-icon {
+  margin-bottom: 1px;
+  vertical-align: bottom;
 }
 
 #projectContainer {
@@ -202,18 +189,8 @@ table#result-table > thead th {
 }
 
 @include media-breakpoint-up(sm) {
+
   .projects-info-wrapper {
-    min-width: 500px;
-    max-width: 60%;
-  }
-
-  .projects-info-wrapper p {
-    width: calc(100% - 79px);
-  }
-
-  .projects-info-icon-wrapper mat-icon {
-    font-size: 64px;
-    width: 64px;
-    height: 64px;
+    text-align: center;
   }
 }

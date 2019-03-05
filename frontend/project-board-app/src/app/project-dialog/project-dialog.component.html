@@ -133,7 +133,7 @@
 
     <p>Dein Vorgesetzter wird per Email über deine Anfrage benachrichtigt.</p>
   </div>
-  <span *ngIf="!showBox && data.applicable && !data.isUserBoss && data.hasAccess" id="ask-project">Du bist an diesem Projekt interessiert? Erstelle eine Anfrage!</span>
+  <span *ngIf="!showBox && data.applicable && !data.isUserBoss && data.hasAccess" id="ask-project">Du bist an diesem Projekt interessiert? Dann benachrichtige deine Führungskraft darüber, indem du hier eine Anfrage erstellst.</span>
   <div id="buttonBox" *ngIf="!data.isUserBoss">
     <button *ngIf="showBox" class="btn btn-primary" (click)="sendApplication()" [title]="sendRequestTooltip">
       <mat-icon>send</mat-icon>
