@@ -75,11 +75,18 @@ export class EmployeeDialogComponent implements OnInit {
     this.mobile = document.body.clientWidth < 992;
   }
 
+  daysInMonth(){
+    let date: Date = new Date();
+    return new Date(date.getFullYear(), date.getMonth()+1, 0).getDate();
+  }
+
   ngOnInit() {
+    console.log("Test: " + this.daysInMonth());
+
     this.mobile = document.body.clientWidth < 992;
     this.minDate = new Date(Date.now());
-    // 2332800000 milliseconds are 27 days
-    this.maxDate = new Date(this.minDate.getTime() + 2332800000);
+    // 86400000 milliseconds are 1 day
+    this.maxDate = new Date(this.minDate.getTime() + 86400000*this.daysInMonth());
 
     this.daysAlready = this.daysUntil(this.data.employee.accessInfo.accessStart);
     this.daysLeft = this.daysUntil(this.data.employee.accessInfo.accessEnd);
