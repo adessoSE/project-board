@@ -89,6 +89,7 @@ export class BrowseProjectsComponent implements OnInit {
         applicable: this.isProjectApplicable(p.id),
         bookmarked: this.isProjectBookmarked(p.id),
         isUserBoss: this.isUserBoss,
+        hasAccess: true
       }
     });
     this.dialogRef.componentInstance.bookmark
