@@ -8,7 +8,7 @@
         <mat-icon class="search-info-icon">help</mat-icon>
         <div class="search-info-tooltip">
           <div class="arrow"></div>
-          <div class="search-info-tooltip-header">Projekte suchen</div>
+          <div class="search-info-tooltip-header" [innerHTML]="infoTooltipHeader"></div>
           <div [innerHTML]="infoTooltip"></div>
         </div>
       </span>
