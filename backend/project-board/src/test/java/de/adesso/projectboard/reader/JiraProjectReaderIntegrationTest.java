@@ -40,7 +40,7 @@ public class JiraProjectReaderIntegrationTest {
     private final String REQUEST_PATH = "/test";
 
     @MockBean
-    private JiraProjectReaderConfigurationProperties properties;
+    private JiraConfigurationProperties properties;
 
     @MockBean
     private RestTemplateBuilder builder;

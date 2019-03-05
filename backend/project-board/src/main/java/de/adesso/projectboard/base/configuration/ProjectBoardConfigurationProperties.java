@@ -8,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Configuration
 @ConfigurationProperties(prefix = "projectboard")
@@ -29,5 +30,11 @@ public class ProjectBoardConfigurationProperties {
      */
     @NotEmpty
     private String projectionNameRequestParameter = "projection";
+
+    /**
+     * The URL of the project board.
+     */
+    @NotEmpty
+    private String url = "http://localhost:4200/";
 
 }
