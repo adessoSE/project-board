@@ -105,7 +105,7 @@ task dockerCopy(dependsOn: build) {
 
 						if(!tokenReplacement) {
 							throw new IllegalStateException("Could not replace token ${it} in property file! " +
-									"No system property or environment variable set!")
+									"No system property or environment variable ${tokenWithoutDelimiters} set!")
 						}
 
 						replacedLine = replacedLine.replace("${it}", tokenReplacement)
