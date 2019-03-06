@@ -95,11 +95,13 @@ task dockerCopy(dependsOn: build) {
 				include '*.properties'
 
 				filter { String line ->
-					def replacedLine = line
 					def tokensInLine = line.findAll('@\\w+@')
+					def replacedLine = line
 
 					tokensInLine.each {
-						def tokenReplacement = System.getenv("${it}") || System.getProperty("${it}")
+						def tokenWithoutDelimiters = it.replace('@', '')
+						def envVariable = System.getenv(tokenWithoutDelimiters)
+						def tokenReplacement = (envVariable != null) ? envVariable : System.getProperty(tokenWithoutDelimiters)
 
 						if(!tokenReplacement) {
 							throw new IllegalStateException("Could not replace token ${it} in property file! " +
