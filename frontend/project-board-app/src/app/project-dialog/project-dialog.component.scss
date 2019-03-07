@@ -193,26 +193,32 @@ a:hover {
   margin-right: 5px;
 }
 
+#ask-project mat-icon {
+  color: #887D75;
+  font-size: 32px;
+  width: 32px;
+  height: 38px;
+  padding-top: 5px;
+  cursor: default;
+}
+
+/deep/ .mat-tooltip {
+  font-size: 14px;
+}
+
 @include media-breakpoint-down(md) {
 
-  #ask-project {
-    text-align: center;
-    margin: 0 auto;
-  }
-
-  mat-dialog-actions div {
-    width: 100%;
-    text-align: center;
-  }
-
   mat-dialog-content {
-    max-height: calc((100vh - 80px) - 126px); /*100vh - Titel - Actions*/
+    max-height: calc(100vh - (80px + 54px)); /*100vh - Titel - Actions*/
   }
 
   mat-dialog-content.shorten {
     max-height: calc(100vh - 340px);
   }
 
+  #buttonBox {
+    margin: 0 auto;
+  }
 }
 
 @include media-breakpoint-down(sm) {
