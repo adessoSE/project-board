@@ -4,7 +4,7 @@ pipeline {
 
     tools {
         gradle '4.10.2'
-        jdk 'jdk-11.0.1
+        jdk 'jdk-11.0.1'
     }
 
     environment {
