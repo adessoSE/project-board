@@ -4,6 +4,7 @@ pipeline {
 
     tools {
         gradle '4.10.2'
+        jdk 'jdk-11.0.1
     }
 
     environment {
@@ -25,9 +26,6 @@ pipeline {
             }
 
             steps {
-                env.JAVA_HOME="${tool 'JDK-10.0.1'}"
-                env.PATH="${env.JAVA_HOME}/bin:${env.PATH}"
-
                 dir(BACKEND_DIR) {
                     sh 'gradle clean dockerCopy -x test'
                     stash includes: 'docker/temp/**', name: 'dockerArtifacts'
