@@ -206,6 +206,18 @@
   overflow: hidden;
 }
 
+.helper-icon {
+  font-size: 11px;
+  width: 12px;
+  height: 12px;
+  margin-left: -3px;
+  vertical-align: text-top;
+}
+
+/deep/ .mat-tooltip {
+  font-size: 14px;
+}
+
 @include media-breakpoint-up(xl) {
   .left-bar {
     height: 550px;
@@ -263,4 +275,10 @@ button:focus, button:active {
   -moz-box-shadow: none;
   box-shadow: none;
   outline: none;
+}
+
+@media screen and (max-width: 345px) {
+  #tab1 {
+    font-size: 14px;
+  }
 }
