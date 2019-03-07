@@ -32,17 +32,12 @@ pipeline {
             }
         }
 
-        stage('Deploy') {BaseAttributeMapperTest
+        stage('Deploy') {
             agent {
                 label 'docker'
             }
 
             steps {
-
-                dir('docker-temp') {
-                    deleteDir
-                }
-
                 dir('docker-temp') {
                     unstash 'dockerArtifacts'
 
