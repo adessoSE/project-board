@@ -22,7 +22,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.ldap.support.LdapUtils.emptyLdapName;
 
 @RunWith(MockitoJUnitRunner.class)
-public class LdapServiceTest {
+public class LdapAdapterTest {
 
     private final String ID_ATTR = "sAMAccountName";
 
@@ -34,7 +34,7 @@ public class LdapServiceTest {
 
     private Clock clock;
 
-    private LdapService ldapService;
+    private LdapAdapter ldapAdapter;
 
     @Before
     public void setUp() {
@@ -44,7 +44,7 @@ public class LdapServiceTest {
         ZoneId zoneId = ZoneId.systemDefault();
 
         this.clock = Clock.fixed(instant, zoneId);
-        this.ldapService = new LdapService(ldapTemplateMock, ldapPropertiesMock, clock);
+        this.ldapAdapter = new LdapAdapter(ldapTemplateMock, ldapPropertiesMock, clock);
     }
 
     @Test
@@ -88,7 +88,7 @@ public class LdapServiceTest {
         var expectedTimestamp = Long.toString(131_908_234_200_000_000L);
 
         // when
-        var actualTimeStamp = ldapService.getActiveDirectoryTimestamp(dateTime);
+        var actualTimeStamp = ldapAdapter.getActiveDirectoryTimestamp(dateTime);
 
         // then
         assertThat(actualTimeStamp).isEqualTo(expectedTimestamp);
@@ -96,7 +96,7 @@ public class LdapServiceTest {
 
     private void compareActualWithExpectedCriteria(List<String> userIds, ContainerCriteria expectedCriteria) {
         // when
-        var actualCriteria = ldapService.buildIdCriteria(userIds);
+        var actualCriteria = ldapAdapter.buildIdCriteria(userIds);
 
         // then
         var softly = new SoftAssertions();

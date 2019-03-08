@@ -1,6 +1,6 @@
 package de.adesso.projectboard.ad.user;
 
-import de.adesso.projectboard.ad.service.LdapService;
+import de.adesso.projectboard.ad.service.LdapAdapter;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.exceptions.HierarchyNotFoundException;
 import de.adesso.projectboard.base.exceptions.UserDataNotFoundException;
@@ -43,7 +43,7 @@ public class RepositoryUserServiceTest {
     private UserDataRepository userDataRepoMock;
 
     @Mock
-    private LdapService ldapServiceMock;
+    private LdapAdapter ldapAdapterMock;
 
     @Mock
     private HierarchyTreeNodeRepository hierarchyTreeNodeRepoMock;
@@ -70,7 +70,7 @@ public class RepositoryUserServiceTest {
 
     @Before
     public void setUp() {
-        this.repoUserService = new RepositoryUserService(userRepoMock, userDataRepoMock, ldapServiceMock,
+        this.repoUserService = new RepositoryUserService(userRepoMock, userDataRepoMock, ldapAdapterMock,
                 hierarchyTreeNodeRepoMock, hibernateSearchServiceMock);
 
         given(userMock.getId()).willReturn(USER_ID);
@@ -203,7 +203,7 @@ public class RepositoryUserServiceTest {
 
         given(userDataRepoMock.findByUser(userMock)).willReturn(Optional.of(uninitializedData));
         given(userDataRepoMock.saveAll(List.of(expectedData))).willReturn(List.of(expectedData));
-        given(ldapServiceMock.getThumbnailPhotos(List.of(USER_ID))).willReturn(Map.of(
+        given(ldapAdapterMock.getThumbnailPhotos(List.of(USER_ID))).willReturn(Map.of(
                 USER_ID, expectedThumbnail
         ));
 
@@ -329,7 +329,7 @@ public class RepositoryUserServiceTest {
         given(hierarchyTreeNodeMock.getDirectStaff()).willReturn(List.of(otherHierarchyTreeNodeMock));
         given(otherHierarchyTreeNodeMock.getUser()).willReturn(otherUserMock);
 
-        given(ldapServiceMock.getThumbnailPhotos(List.of(otherUserId))).willReturn(Map.of(
+        given(ldapAdapterMock.getThumbnailPhotos(List.of(otherUserId))).willReturn(Map.of(
                 otherUserId, expectedThumbnail
         ));
 
@@ -374,7 +374,7 @@ public class RepositoryUserServiceTest {
         given(userDataMock.isPictureInitialized()).willReturn(true);
 
         given(hibernateSearchServiceMock.searchUserData(List.of(userMock), givenSimpleQuery)).willReturn(List.of(userDataMock));
-        given(ldapServiceMock.getThumbnailPhotos(List.of())).willReturn(Map.of());
+        given(ldapAdapterMock.getThumbnailPhotos(List.of())).willReturn(Map.of());
 
         // when
         var actualUserData = repoUserService.searchStaffMemberDataOfUser(userMock, givenSimpleQuery, Sort.unsorted());
@@ -504,7 +504,7 @@ public class RepositoryUserServiceTest {
         given(userDataMock.getUser()).willReturn(otherUserMock);
         given(otherUserMock.getId()).willReturn(otherUserId);
 
-        given(ldapServiceMock.getThumbnailPhotos(List.of(USER_ID))).willReturn(Map.of(
+        given(ldapAdapterMock.getThumbnailPhotos(List.of(USER_ID))).willReturn(Map.of(
                 USER_ID, expectedThumbnail
         ));
 
@@ -516,7 +516,7 @@ public class RepositoryUserServiceTest {
         // then
         assertThat(actualInitialized).containsExactly(expectedInitialized, userDataMock);
 
-        verify(ldapServiceMock).getThumbnailPhotos(List.of(USER_ID));
+        verify(ldapAdapterMock).getThumbnailPhotos(List.of(USER_ID));
         verify(userDataRepoMock).saveAll(List.of(expectedInitialized));
     }
 

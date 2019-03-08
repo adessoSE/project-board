@@ -9,7 +9,6 @@ import org.bouncycastle.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.ldap.query.ContainerCriteria;
-import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import javax.validation.constraints.NotNull;
@@ -24,8 +23,7 @@ import java.util.stream.Collectors;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
 
-@Service
-public class LdapService {
+public class LdapAdapter {
 
     private static final String[] USER_NODE_ATTRIBUTES = new String[] {"name", "givenName", "mail", "manager", "sn", "department", "division", "directReports", "distinguishedName"};
 
@@ -40,7 +38,7 @@ public class LdapService {
     private final String idAttribute;
 
     @Autowired
-    public LdapService(LdapTemplate ldapTemplate, LdapConfigurationProperties properties, Clock clock) {
+    public LdapAdapter(LdapTemplate ldapTemplate, LdapConfigurationProperties properties, Clock clock) {
         this.ldapTemplate = ldapTemplate;
         this.clock = clock;
 

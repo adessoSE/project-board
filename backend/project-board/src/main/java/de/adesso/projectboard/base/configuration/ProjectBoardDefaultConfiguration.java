@@ -18,8 +18,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.Clock;
+
 @Configuration
-public class ProjectBoardAutoConfiguration {
+public class ProjectBoardDefaultConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ExpressionEvaluator.class)
@@ -56,6 +58,11 @@ public class ProjectBoardAutoConfiguration {
     @Autowired
     public UserAuthService defaultUserAuthService(UserService userService, AuthenticationInfoRetriever retriever) {
         return new DefaultUserAuthService(userService, retriever);
+    }
+
+    @Bean
+    public Clock clock() {
+        return Clock.systemDefaultZone();
     }
 
 }

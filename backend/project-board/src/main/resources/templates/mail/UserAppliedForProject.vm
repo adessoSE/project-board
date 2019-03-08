@@ -1,7 +1,7 @@
 #* @vtlvariable name="managerData" type="de.adesso.projectboard.base.user.persistence.data.UserData" *#
 #* @vtlvariable name="applicantData" type="de.adesso.projectboard.base.user.persistence.data.UserData" *#
 #* @vtlvariable name="projectApplication" type="de.adesso.projectboard.base.application.persistence.ProjectApplication" *#
-#* @vtlvariable name="jiraIssueLink" type="java.lang.String" *#
+#* @vtlvariable name="issueLink" type="java.lang.String" *#
 
 #set( $comment = $projectApplication.getComment() )
 #set( $project = $projectApplication.getProject())
@@ -24,7 +24,7 @@ dein(e) Mitarbeiter(in) ${applicantFirstName} ${applicantLastName} hat über das
 
 ${projectTitle}
 
-${jiraIssueLink}
+${issueLink}
 
 Bitte prüfe die weiteren Schritte und setze dich mit der/dem Mitarbeiter(in) in Verbindung, um zu klären, ob die Position in Frage kommt.
 

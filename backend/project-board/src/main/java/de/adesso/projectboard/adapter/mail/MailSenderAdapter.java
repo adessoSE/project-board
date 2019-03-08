@@ -5,7 +5,7 @@ import de.adesso.projectboard.adapter.mail.persistence.TemplateMessage;
 import de.adesso.projectboard.base.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,14 +21,14 @@ public class MailSenderAdapter {
 
     private final MessageRepository messageRepository;
 
-    private final JavaMailSenderImpl mailSender;
+    private final JavaMailSender mailSender;
 
     private final UserService userService;
 
     private final Clock clock;
 
     public MailSenderAdapter(MessageRepository messageRepository,
-                             JavaMailSenderImpl mailSender,
+                             JavaMailSender mailSender,
                              UserService userService,
                              Clock clock) {
         this.messageRepository = messageRepository;

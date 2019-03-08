@@ -1,10 +1,8 @@
-package de.adesso.projectboard.reader;
+package de.adesso.projectboard.reader.configuration;
 
-import lombok.Getter;
-import lombok.Setter;
+import de.adesso.projectboard.reader.JiraProjectReader;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotEmpty;
@@ -15,13 +13,16 @@ import javax.validation.constraints.Pattern;
  *
  * @see JiraProjectReader
  */
-@Profile("adesso-jira")
-@ConfigurationProperties(prefix = "jira")
-@Configuration
+@ConfigurationProperties(prefix = "projectboard.jira")
 @Validated
-@Getter
-@Setter
+@Data
 public class JiraConfigurationProperties {
+
+    /**
+     * Whether or not to enable the JIRA project reader.
+     * Enabled by default.
+     */
+    private boolean enabled = true;
 
     /**
      * The request URL for JIRA. It must contain a string placeholder
