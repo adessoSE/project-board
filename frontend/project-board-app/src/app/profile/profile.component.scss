@@ -207,10 +207,9 @@
 }
 
 .helper-icon {
-  font-size: 11px;
-  width: 12px;
-  height: 12px;
-  margin-left: -3px;
+  font-size: 15px;
+  width: 15px;
+  height: 15px;
   vertical-align: text-top;
 }
 
@@ -238,6 +237,11 @@
 }
 
 @include media-breakpoint-down(sm) {
+
+  .helper-icon {
+    display: none;
+  }
+
   .row {
     padding: 0 15px 0 15px;
   }
@@ -275,10 +279,4 @@ button:focus, button:active {
   -moz-box-shadow: none;
   box-shadow: none;
   outline: none;
-}
-
-@media screen and (max-width: 345px) {
-  #tab1 {
-    font-size: 14px;
-  }
 }
