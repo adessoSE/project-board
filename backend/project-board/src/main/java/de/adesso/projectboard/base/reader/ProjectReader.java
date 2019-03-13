@@ -14,8 +14,6 @@ import java.util.List;
 public interface ProjectReader {
 
     /**
-     * This method gets invoked by the {@link de.adesso.projectboard.base.updater.ProjectUpdater}
-     * to update the projects in the database.
      *
      * @param dateTime
      *          The {@link LocalDateTime} of the last <b>successful</b> update.
@@ -31,8 +29,6 @@ public interface ProjectReader {
     List<Project> getAllProjectsSince(LocalDateTime dateTime) throws Exception;
 
     /**
-     * This method gets invoked by the {@link de.adesso.projectboard.base.updater.ProjectUpdater}
-     * to get the initial list of projects when no successful update was performed before.
      *
      * @return
      *         A list of {@link Project}s.
@@ -43,9 +39,6 @@ public interface ProjectReader {
     List<Project> getInitialProjects() throws Exception;
 
     /**
-     * This method is invoked by the {@link ReaderHealthIndicator} to get
-     * the {@link Health} of the reader. Always returns {@link Health#up()}
-     * in its default implementation.
      *
      * @return
      *          The {@link Health} of the reader.

@@ -1,0 +1,54 @@
+pipeline {
+
+    agent any
+
+    tools {
+        gradle '4.10.2'
+        jdk '11'
+    }
+
+    environment {
+        BACKEND_DIR = 'backend/project-board'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            environment {
+                JIRA_CREDS = credentials('jira-creds')
+                LDAP_CREDS = credentials('ldap-creds')
+                DATA_SRC_CREDS = credentials('data-src-creds')
+            }
+
+            steps {
+                dir(BACKEND_DIR) {
+                    sh 'gradle clean dockerCopy -x test'
+                    stash includes: 'docker/temp/**', name: 'dockerArtifacts'
+                }
+            }
+        }
+
+        stage('Deploy') {
+            agent {
+                label 'docker'
+            }
+
+            steps {
+                dir('docker-temp') {
+                    unstash 'dockerArtifacts'
+
+                    sh 'sudo docker build -t pb_backend .'
+                    sh 'sudo docker save pb_backend -o pb_backend.img'
+                    sh 'ls -la'
+                }
+            }
+        }
+
+    }
+
+}

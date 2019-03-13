@@ -133,12 +133,16 @@
 
     <p>Dein Vorgesetzter wird per Email über deine Anfrage benachrichtigt.</p>
   </div>
-  <span *ngIf="!showBox && data.applicable && !data.isUserBoss && data.hasAccess" id="ask-project">Du bist an diesem Projekt interessiert? Dann benachrichtige deine Führungskraft darüber, indem du hier eine Anfrage erstellst.</span>
   <div id="buttonBox" *ngIf="!data.isUserBoss">
     <button *ngIf="showBox" class="btn btn-primary" (click)="sendApplication()" [title]="sendRequestTooltip">
       <mat-icon>send</mat-icon>
       Absenden
     </button>
+    <span *ngIf="!showBox && data.applicable && !data.isUserBoss && data.hasAccess" id="ask-project"
+  matTooltip="Du bist an diesem Projekt interessiert? Dann benachrichtige deine Führungskraft darüber, indem du hier eine Anfrage erstellst."
+  [matTooltipPosition]="position.value">
+    <mat-icon class="apply-info-icon">info</mat-icon>
+  </span>
     <button *ngIf="!showBox && data.applicable && data.hasAccess" class="btn btn-primary" (click)="toggleRequestArea()" [title]="startRequestTooltip">
       <mat-icon>create</mat-icon>
       Anfrage erstellen

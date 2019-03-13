@@ -36,10 +36,15 @@ public interface ApplicationService {
     ProjectApplication createApplicationForUser(User user, String projectId, String comment) throws AlreadyAppliedException;
 
     /**
-     * @param user The {@link User} to get the applications of.
-     * @return The user's {@link ProjectApplication applications}.
+     *
+     * @param user
+     *          The {@link User} to get the applications of.
+     *
+     * @param sort
+     * @return
+     *          The user's {@link ProjectApplication applications}.
      */
-    List<ProjectApplication> getApplicationsOfUser(User user);
+    List<ProjectApplication> getApplicationsOfUser(User user, Sort sort);
 
     /**
      * @param users The {@link User}s to get the staff applications of.

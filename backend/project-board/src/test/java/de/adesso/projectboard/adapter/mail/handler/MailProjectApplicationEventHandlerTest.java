@@ -1,14 +1,14 @@
 package de.adesso.projectboard.adapter.mail.handler;
 
-import de.adesso.projectboard.adapter.mail.MailSenderService;
+import de.adesso.projectboard.adapter.mail.MailSenderAdapter;
 import de.adesso.projectboard.adapter.mail.VelocityMailTemplateService;
+import de.adesso.projectboard.adapter.mail.configuration.MailConfigurationProperties;
 import de.adesso.projectboard.adapter.mail.persistence.SimpleMessage;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.service.UserService;
-import de.adesso.projectboard.reader.JiraConfigurationProperties;
 import org.apache.velocity.util.Pair;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +27,7 @@ public class MailProjectApplicationEventHandlerTest {
     private static final String JIRA_ISSUE_URL = "https://jira.com/issues/";
 
     @Mock
-    private MailSenderService mailSenderServiceMock;
+    private MailSenderAdapter mailSenderAdapterMock;
 
     @Mock
     private UserService userServiceMock;
@@ -36,7 +36,7 @@ public class MailProjectApplicationEventHandlerTest {
     private VelocityMailTemplateService velocityMailTemplateServiceMock;
 
     @Mock
-    private JiraConfigurationProperties jiraConfigPropertiesMock;
+    private MailConfigurationProperties mailConfigPropertiesMock;
 
     @Mock
     private ProjectApplication projectApplicationMock;
@@ -60,10 +60,10 @@ public class MailProjectApplicationEventHandlerTest {
 
     @Before
     public void setUp() {
-        given(jiraConfigPropertiesMock.getIssueUrl()).willReturn(JIRA_ISSUE_URL);
+        given(mailConfigPropertiesMock.getReferralBaseUrl()).willReturn(JIRA_ISSUE_URL);
 
         this.mailProjectApplicationEventHandler =
-                new MailProjectApplicationEventHandler(mailSenderServiceMock, userServiceMock, velocityMailTemplateServiceMock, jiraConfigPropertiesMock);
+                new MailProjectApplicationEventHandler(mailSenderAdapterMock, userServiceMock, velocityMailTemplateServiceMock, mailConfigPropertiesMock);
     }
 
     @Test
@@ -81,7 +81,7 @@ public class MailProjectApplicationEventHandlerTest {
                 "projectApplication", projectApplicationMock,
                 "applicantData", applicantDataMock,
                 "managerData", managerDataMock,
-                "jiraIssueLink", jiraIssueLink
+                "issueLink", jiraIssueLink
         );
 
         given(projectApplicationMock.getUser()).willReturn(applicantUserMock);
@@ -100,7 +100,7 @@ public class MailProjectApplicationEventHandlerTest {
         mailProjectApplicationEventHandler.onApplicationReceived(projectApplicationMock);
 
         // then
-        verify(mailSenderServiceMock).queueMessage(expectedMessage);
+        verify(mailSenderAdapterMock).queueMessage(expectedMessage);
     }
 
 }

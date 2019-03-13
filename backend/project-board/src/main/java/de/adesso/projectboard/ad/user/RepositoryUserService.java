@@ -1,6 +1,6 @@
 package de.adesso.projectboard.ad.user;
 
-import de.adesso.projectboard.ad.service.LdapService;
+import de.adesso.projectboard.ad.service.LdapAdapter;
 import de.adesso.projectboard.base.exceptions.HierarchyNotFoundException;
 import de.adesso.projectboard.base.exceptions.UserDataNotFoundException;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
@@ -13,9 +13,7 @@ import de.adesso.projectboard.base.user.persistence.hierarchy.HierarchyTreeNode;
 import de.adesso.projectboard.base.user.persistence.hierarchy.HierarchyTreeNodeRepository;
 import de.adesso.projectboard.base.user.service.UserService;
 import lombok.NonNull;
-import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
@@ -23,8 +21,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-@Profile("adesso-ad")
-@Service
 @Transactional
 public class RepositoryUserService implements UserService {
 
@@ -32,7 +28,7 @@ public class RepositoryUserService implements UserService {
 
     private final UserDataRepository dataRepo;
 
-    private final LdapService ldapService;
+    private final LdapAdapter ldapAdapter;
 
     private final HierarchyTreeNodeRepository hierarchyTreeNodeRepo;
 
@@ -40,12 +36,12 @@ public class RepositoryUserService implements UserService {
 
     public RepositoryUserService(UserRepository userRepo,
                                  UserDataRepository dataRepo,
-                                 LdapService ldapService,
+                                 LdapAdapter ldapAdapter,
                                  HierarchyTreeNodeRepository hierarchyTreeNodeRepo,
                                  HibernateSearchService hibernateSearchService) {
         this.userRepo = userRepo;
         this.dataRepo = dataRepo;
-        this.ldapService = ldapService;
+        this.ldapAdapter = ldapAdapter;
         this.hierarchyTreeNodeRepo = hierarchyTreeNodeRepo;
         this.hibernateSearchService = hibernateSearchService;
     }
@@ -174,7 +170,7 @@ public class RepositoryUserService implements UserService {
                             Function.identity()
                         ));
 
-        var idPhotoMap = ldapService.getThumbnailPhotos(uninitializedUserIds);
+        var idPhotoMap = ldapAdapter.getThumbnailPhotos(uninitializedUserIds);
         var newlyInitialized = uninitializedUserIds.stream()
                 .map(userId -> {
                     var thumbnailPhoto = idPhotoMap.get(userId);

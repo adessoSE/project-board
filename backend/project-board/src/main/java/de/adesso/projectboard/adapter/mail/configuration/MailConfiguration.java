@@ -1,6 +1,6 @@
 package de.adesso.projectboard.adapter.mail.configuration;
 
-import de.adesso.projectboard.adapter.mail.MailSenderService;
+import de.adesso.projectboard.adapter.mail.MailSenderAdapter;
 import de.adesso.projectboard.adapter.mail.VelocityMailTemplateService;
 import de.adesso.projectboard.adapter.mail.handler.MailProjectApplicationEventHandler;
 import de.adesso.projectboard.adapter.mail.handler.MailUserAccessEventHandler;
@@ -9,28 +9,48 @@ import de.adesso.projectboard.base.access.handler.UserAccessEventHandler;
 import de.adesso.projectboard.base.application.handler.ProjectApplicationEventHandler;
 import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.base.user.service.UserService;
-import de.adesso.projectboard.reader.JiraConfigurationProperties;
 import org.apache.velocity.app.VelocityEngine;
 import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Clock;
 import java.util.Properties;
 
-@ConditionalOnResource(resources = "classpath:mail.properties")
-@PropertySource("classpath:mail.properties")
+@ConditionalOnProperty(
+        prefix = "projectboard.mail",
+        name = "enabled",
+        havingValue = "true",
+        matchIfMissing = true
+)
 @Configuration
-public class MailConfiguration {
+@EnableConfigurationProperties(MailConfigurationProperties.class)
+class MailConfiguration {
 
-    @Bean("velocityEngine")
+    @Autowired
+    @Bean
+    public JavaMailSender javaMailSenderImpl(MailConfigurationProperties mailConfigurationProperties) {
+        var mailProperties = new Properties();
+        mailProperties.putAll(mailConfigurationProperties.getProperties());
+
+        var mailSender = new JavaMailSenderImpl();
+        mailSender.setUsername(mailConfigurationProperties.getUsername());
+        mailSender.setPassword(mailConfigurationProperties.getPassword());
+        mailSender.setPort(mailConfigurationProperties.getPort());
+        mailSender.setHost(mailConfigurationProperties.getHost());
+        mailSender.setJavaMailProperties(mailProperties);
+
+        return mailSender;
+    }
+
+    @Bean
     public VelocityEngine velocityEngine() {
         // set the classpath resource loader as the default velocity resource loader
         var properties = new Properties();
@@ -46,33 +66,30 @@ public class MailConfiguration {
     }
 
     @Autowired
-    @Bean("velocityMailTemplateService")
-    @DependsOn("velocityEngine")
+    @Bean
     public VelocityMailTemplateService velocityTemplateService(VelocityEngine velocityEngine) {
         return new VelocityMailTemplateService(velocityEngine);
     }
 
     @Autowired
-    @Bean("mailSenderService")
-    public MailSenderService mailSenderService(MessageRepository messageRepository, JavaMailSenderImpl javaMailSender,
+    @Bean
+    public MailSenderAdapter mailSenderAdapter(MessageRepository messageRepository, JavaMailSender javaMailSender,
                                                UserService userService, Clock clock) {
-        return new MailSenderService(messageRepository, javaMailSender, userService, clock);
+        return new MailSenderAdapter(messageRepository, javaMailSender, userService, clock);
     }
 
     @Autowired
     @Bean
-    @DependsOn({"mailSenderService", "velocityMailTemplateService"})
-    public ProjectApplicationEventHandler mailProjectApplicationHandler(MailSenderService mailSenderService, UserService userService, VelocityMailTemplateService velocityMailTemplateService,
-                                                                        JiraConfigurationProperties jiraConfigProperties) {
-        return new MailProjectApplicationEventHandler(mailSenderService, userService, velocityMailTemplateService, jiraConfigProperties);
+    public ProjectApplicationEventHandler mailProjectApplicationHandler(MailSenderAdapter mailSenderAdapter, UserService userService, VelocityMailTemplateService velocityMailTemplateService,
+                                                                        MailConfigurationProperties mailConfigProperties) {
+        return new MailProjectApplicationEventHandler(mailSenderAdapter, userService, velocityMailTemplateService, mailConfigProperties);
     }
 
     @Autowired
     @Bean
-    @DependsOn({"mailSenderService", "velocityMailTemplateService"})
-    public UserAccessEventHandler mailUserAccessEventHandler(MailSenderService mailSenderService, UserService userService, VelocityMailTemplateService velocityMailTemplateService,
+    public UserAccessEventHandler mailUserAccessEventHandler(MailSenderAdapter mailSenderAdapter, UserService userService, VelocityMailTemplateService velocityMailTemplateService,
                                                              ProjectBoardConfigurationProperties configurationProperties) {
-        return new MailUserAccessEventHandler(mailSenderService, userService, velocityMailTemplateService, configurationProperties);
+        return new MailUserAccessEventHandler(mailSenderAdapter, userService, velocityMailTemplateService, configurationProperties);
     }
 
 }

@@ -48,9 +48,9 @@ public class ApplicationController {
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @GetMapping(path = "/{userId}/applications")
-    public ResponseEntity<?> getApplicationsOfUser(@PathVariable String userId) {
+    public ResponseEntity<?> getApplicationsOfUser(@PathVariable String userId, @SortDefault(sort = "applicationDate", direction = Sort.Direction.DESC) Sort sort) {
         var user = userService.getUserById(userId);
-        var staffApplications = applicationService.getApplicationsOfUser(user);
+        var staffApplications = applicationService.getApplicationsOfUser(user, sort);
 
         var projections = projectionFactory.createProjectionsForAuthenticatedUser(staffApplications,
                 ReducedApplicationProjection.class, FullApplicationProjection.class);

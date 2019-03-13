@@ -1,25 +1,19 @@
 package de.adesso.projectboard.base.configuration;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
-@Configuration
 @ConfigurationProperties(prefix = "projectboard")
-@Getter
-@Setter
+@Data
 @Validated
 public class ProjectBoardConfigurationProperties {
 
     /**
-     * The delay between each database refresh in
-     * minutes.
+     * The delay between every project refresh.
      */
     @Min(1L)
     private long refreshInterval = 30L;
@@ -32,7 +26,8 @@ public class ProjectBoardConfigurationProperties {
     private String projectionNameRequestParameter = "projection";
 
     /**
-     * The URL of the project board.
+     * The URL of the project board. Used to set the allowed origins
+     * when the prod profile is activated.
      */
     @NotEmpty
     private String url = "http://localhost:4200/";

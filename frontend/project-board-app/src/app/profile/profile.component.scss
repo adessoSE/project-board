@@ -238,6 +238,17 @@ button:focus, button:active {
     width: 100%;
     left: 0;
   }
+  .helper-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+    vertical-align: text-top;
+  }
+
+  /deep/ .mat-tooltip {
+    font-size: 14px;
+  >>>>>>> master
+  }
 }
 
 @include media-breakpoint-up(xl) {
@@ -260,6 +271,11 @@ button:focus, button:active {
 }
 
 @include media-breakpoint-down(sm) {
+
+  .helper-icon {
+    display: none;
+  }
+
   .row {
     padding: 0 15px 0 15px;
   }

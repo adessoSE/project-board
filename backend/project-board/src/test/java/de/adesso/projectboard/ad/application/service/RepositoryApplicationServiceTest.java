@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -122,14 +123,15 @@ public class RepositoryApplicationServiceTest {
     @Test
     public void getApplicationsOfUser() {
         // given
+        var sort = Sort.unsorted();
         var firstApplicationMock = mock(ProjectApplication.class);
         var secondApplicationMock = mock(ProjectApplication.class);
-        var expectedApplications = Set.of(firstApplicationMock, secondApplicationMock);
+        var expectedApplications = List.of(firstApplicationMock, secondApplicationMock);
 
-        given(userMock.getApplications()).willReturn(expectedApplications);
+        given(applicationRepoMock.findAllByUser(userMock, sort)).willReturn(expectedApplications);
 
         // when
-        var actualApplications = applicationService.getApplicationsOfUser(userMock);
+        var actualApplications = applicationService.getApplicationsOfUser(userMock, sort);
 
         // then
         assertThat(actualApplications).containsExactlyInAnyOrder(firstApplicationMock, secondApplicationMock);

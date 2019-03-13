@@ -1,6 +1,6 @@
 package de.adesso.projectboard.adapter.mail.handler;
 
-import de.adesso.projectboard.adapter.mail.MailSenderService;
+import de.adesso.projectboard.adapter.mail.MailSenderAdapter;
 import de.adesso.projectboard.adapter.mail.VelocityMailTemplateService;
 import de.adesso.projectboard.adapter.mail.persistence.TimeAwareMessage;
 import de.adesso.projectboard.base.access.persistence.AccessInterval;
@@ -30,7 +30,7 @@ public class MailUserAccessEventHandlerTest {
     private static final String PROJECT_BOARD_URL = "http://localhost:4200/";
 
     @Mock
-    private MailSenderService mailSenderServiceMock;
+    private MailSenderAdapter mailSenderAdapterMock;
 
     @Mock
     private UserService userServiceMock;
@@ -56,7 +56,7 @@ public class MailUserAccessEventHandlerTest {
     public void setUp() {
         given(configurationPropertiesMock.getUrl()).willReturn(PROJECT_BOARD_URL);
 
-        this.mailUserAccessEventHandler = new MailUserAccessEventHandler(mailSenderServiceMock,
+        this.mailUserAccessEventHandler = new MailUserAccessEventHandler(mailSenderAdapterMock,
                 userServiceMock, velocityMailTemplateServiceMock, configurationPropertiesMock);
     }
 
@@ -85,7 +85,7 @@ public class MailUserAccessEventHandlerTest {
         mailUserAccessEventHandler.onAccessCreated(userMock, accessIntervalMock);
 
         // then
-        verify(mailSenderServiceMock).queueMessage(expectedMessage);
+        verify(mailSenderAdapterMock).queueMessage(expectedMessage);
     }
 
     @Test
@@ -114,7 +114,7 @@ public class MailUserAccessEventHandlerTest {
         mailUserAccessEventHandler.onAccessChanged(userMock, accessIntervalMock, expectedOldEndTime);
 
         // then
-        verify(mailSenderServiceMock).queueMessage(expectedMessage);
+        verify(mailSenderAdapterMock).queueMessage(expectedMessage);
     }
 
     @Test
@@ -143,7 +143,7 @@ public class MailUserAccessEventHandlerTest {
         mailUserAccessEventHandler.onAccessChanged(userMock, accessIntervalMock, expectedOldEndTime);
 
         // then
-        verify(mailSenderServiceMock).queueMessage(expectedMessage);
+        verify(mailSenderAdapterMock).queueMessage(expectedMessage);
     }
 
     @Test
@@ -157,13 +157,13 @@ public class MailUserAccessEventHandlerTest {
         mailUserAccessEventHandler.onAccessChanged(userMock, accessIntervalMock, newAndOldEndTime);
 
         // then
-        verifyZeroInteractions(mailSenderServiceMock);
+        verifyZeroInteractions(mailSenderAdapterMock);
     }
 
     @Test
     public void onAccessRevokedDoesNotQueueAMessage() {
         // given / when / then
-        verifyZeroInteractions(mailSenderServiceMock);
+        verifyZeroInteractions(mailSenderAdapterMock);
     }
 
     @Test

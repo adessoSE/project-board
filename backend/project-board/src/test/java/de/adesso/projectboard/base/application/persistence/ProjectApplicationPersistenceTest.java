@@ -13,6 +13,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -90,11 +91,33 @@ public class ProjectApplicationPersistenceTest {
     })
     public void findAllByProjectEquals() {
         // given
+        var project = projectRepo.findById("STF-4").orElseThrow();
+        var expectedProjectApplications = applicationRepo.findAllById(List.of(3L, 4L));
 
         // when
+        var actualProjectApplications = applicationRepo.findAllByProjectEquals(project);
 
         // then
+        assertThat(actualProjectApplications).containsExactlyInAnyOrderElementsOf(expectedProjectApplications);
+    }
 
+    @Sql({
+            "classpath:de/adesso/projectboard/persistence/Users.sql",
+            "classpath:/de/adesso/projectboard/persistence/Projects.sql",
+            "classpath:/de/adesso/projectboard/persistence/Applications.sql"
+    })
+    public void findAllByUser() {
+        // given
+        var user = userRepo.findById("User1").orElseThrow();
+        var sort = Sort.unsorted();
+
+        var expectedProjectApplications = applicationRepo.findAllById(List.of(1L, 2L));
+
+        // when
+        var actualProjectApplications = applicationRepo.findAllByUser(user, sort);
+
+        // then
+        assertThat(actualProjectApplications).containsExactlyInAnyOrderElementsOf(expectedProjectApplications);
     }
 
     @Test

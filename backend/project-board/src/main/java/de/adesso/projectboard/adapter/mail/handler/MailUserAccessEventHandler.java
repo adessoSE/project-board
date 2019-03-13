@@ -1,6 +1,6 @@
 package de.adesso.projectboard.adapter.mail.handler;
 
-import de.adesso.projectboard.adapter.mail.MailSenderService;
+import de.adesso.projectboard.adapter.mail.MailSenderAdapter;
 import de.adesso.projectboard.adapter.mail.VelocityMailTemplateService;
 import de.adesso.projectboard.adapter.mail.persistence.TimeAwareMessage;
 import de.adesso.projectboard.base.access.handler.UserAccessEventHandler;
@@ -8,11 +8,8 @@ import de.adesso.projectboard.base.access.persistence.AccessInterval;
 import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.service.UserService;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.velocity.util.Pair;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
@@ -26,7 +23,7 @@ public class MailUserAccessEventHandler implements UserAccessEventHandler {
 
     static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
-    private final MailSenderService mailSenderService;
+    private final MailSenderAdapter mailSenderAdapter;
 
     private final UserService userService;
 
@@ -34,11 +31,11 @@ public class MailUserAccessEventHandler implements UserAccessEventHandler {
 
     private final String projectBoardUrl;
 
-    public MailUserAccessEventHandler(MailSenderService mailSenderService,
+    public MailUserAccessEventHandler(MailSenderAdapter mailSenderAdapter,
                                       UserService userService,
                                       VelocityMailTemplateService velocityMailTemplateService,
                                       ProjectBoardConfigurationProperties configurationProperties) {
-        this.mailSenderService = mailSenderService;
+        this.mailSenderAdapter = mailSenderAdapter;
         this.userService = userService;
         this.velocityMailTemplateService = velocityMailTemplateService;
 
@@ -52,7 +49,7 @@ public class MailUserAccessEventHandler implements UserAccessEventHandler {
                 velocityMailTemplateService.getSubjectAndText("/templates/mail/UserAccessCreated.vm", contextMap);
         var message = new TimeAwareMessage(user, user, subjectTextPair.getFirst(),
                 subjectTextPair.getSecond(), accessInterval.getEndTime());
-        mailSenderService.queueMessage(message);
+        mailSenderAdapter.queueMessage(message);
     }
 
     @Override
@@ -64,7 +61,7 @@ public class MailUserAccessEventHandler implements UserAccessEventHandler {
             var subjectTextPair = velocityMailTemplateService.getSubjectAndText(templatePath, contextMap);
             var message = new TimeAwareMessage(user, user, subjectTextPair.getFirst(),
                     subjectTextPair.getSecond(), accessInterval.getEndTime());
-            mailSenderService.queueMessage(message);
+            mailSenderAdapter.queueMessage(message);
         }
     }
 
