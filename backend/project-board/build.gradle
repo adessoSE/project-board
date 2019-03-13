@@ -1,40 +1,25 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 
-buildscript {
-	ext {
-		springBootVersion = '2.1.1.RELEASE'
-		keycloakVersion = '4.8.1.Final'
-		unboundIDVersion = '3.1.1'
-		hibernateSearchVersion = '5.10.5.Final'
-	}
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-	}
-}
-
 plugins {
-	id 'net.ltgt.apt' version '0.10'
-	id "org.sonarqube" version "2.5"
+	id 'java'
+	id 'org.springframework.boot' version '2.1.1.RELEASE'
+	id 'jacoco'
 }
 
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
-apply plugin: 'net.ltgt.apt'
-apply plugin: 'jacoco'
+
+repositories {
+	mavenCentral()
+}
 
 group = 'de.adesso'
 version = '1.0.0-SNAPSHOT'
 
-targetCompatibility = 11
-sourceCompatibility = 11
+targetCompatibility = '11'
+sourceCompatibility = '11'
 
 jacoco {
-	toolVersion = "0.8.2"
+	toolVersion = "${jacocoToolVersion}"
 }
 
 jacocoTestReport {
@@ -43,48 +28,37 @@ jacocoTestReport {
 	}
 }
 
-repositories {
-	mavenCentral()
-}
-
-dependencyManagement {
-	imports {
-		mavenBom "org.keycloak.bom:keycloak-adapter-bom:${keycloakVersion}"
-	}
-}
-
 dependencies {
-	compile(
-			[group: 'org.springframework.boot', name: 'spring-boot-starter-actuator'],
-			[group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'],
-			[group: 'org.springframework.boot', name: 'spring-boot-starter-web'],
-			[group: 'org.springframework.boot', name: 'spring-boot-starter-security'],
-			[group: 'org.springframework.boot', name: 'spring-boot-starter-mail']
-	)
-	compile(group: 'org.keycloak', name: 'keycloak-spring-boot-starter')
-	compile(group: 'org.springframework.ldap', name: 'spring-ldap-core')
-	compile(group: 'mysql', name: 'mysql-connector-java')
-	compile(group: 'org.hibernate', name: 'hibernate-search-orm', version: "${hibernateSearchVersion}")
+	implementation platform("org.keycloak.bom:keycloak-adapter-bom:${keycloakVersion}",)
 
-	compile(group: 'org.apache.velocity', name: 'velocity-engine-core', version: '2.0')
-	compile(group: 'org.apache.velocity.tools', name: 'velocity-tools-generic', version: '3.0')
+	implementation('org.springframework.boot:spring-boot-starter-actuator')
+	implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+	implementation('org.springframework.boot:spring-boot-starter-web')
+	implementation('org.springframework.boot:spring-boot-starter-security')
+	implementation('org.springframework.boot:spring-boot-starter-mail')
+	implementation('org.springframework.ldap:spring-ldap-core')
 
-	compileOnly(group: 'org.springframework.boot', name: 'spring-boot-configuration-processor')
-	compileOnly(group: 'org.projectlombok', name: 'lombok')
+	implementation('org.keycloak:keycloak-spring-boot-starter')
+	implementation('mysql:mysql-connector-java')
+	implementation("org.hibernate:hibernate-search-orm:${hibernateSearchVersion}")
 
-	runtime(group: 'org.springframework.boot', name: 'spring-boot-devtools')
-	runtime(group: 'org.hsqldb', name: 'hsqldb')
+	implementation("org.apache.velocity:velocity-engine-core:${velocityEngineCoreVersion}")
+	implementation("org.apache.velocity.tools:velocity-tools-generic:${velocityToolsGenericVersion}")
 
-	testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test')
-	testCompile(group: 'org.springframework.security', name: 'spring-security-test')
-    testCompile(group: 'org.springframework.ldap', name: 'spring-ldap-test')
+	compileOnly('org.projectlombok:lombok')
 
-	annotationProcessor(group: 'org.projectlombok', name: 'lombok')
+	runtime('org.springframework.boot:spring-boot-devtools')
+	runtime('org.hsqldb:hsqldb')
 
-	apt(group: 'org.projectlombok', name: 'lombok')
+	testImplementation('org.springframework.boot:spring-boot-starter-test')
+	testImplementation('org.springframework.security:spring-security-test')
+	testImplementation('org.springframework.ldap:spring-ldap-test')
+
+	annotationProcessor('org.projectlombok:lombok')
+	annotationProcessor('org.springframework.boot:spring-boot-configuration-processor')
 }
 
-task dockerCopy(dependsOn: build) {
+task('dockerCopy', type: DefaultTask, dependsOn: build) {
 	doFirst {
 		delete 'docker/temp'
 	}
@@ -103,7 +77,7 @@ task dockerCopy(dependsOn: build) {
 						def envVariable = System.getenv(tokenWithoutDelimiters)
 						def tokenReplacement = (envVariable != null) ? envVariable : System.getProperty(tokenWithoutDelimiters)
 
-						if(!tokenReplacement) {
+						if (!tokenReplacement) {
 							throw new IllegalStateException("Could not replace token ${it} in property file! " +
 									"No system property or environment variable ${tokenWithoutDelimiters} set!")
 						}
