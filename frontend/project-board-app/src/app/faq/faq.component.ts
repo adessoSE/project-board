@@ -14,7 +14,7 @@ export class FaqComponent implements OnInit {
   bossQA: { question: string, answer: string }[] = [
     {
       question: 'Was passiert mit den Projektanfragen meiner Mitarbeiter, wenn sie keinen Zugang mehr haben?',
-      answer: 'Die Anfragen werden 4 Wochen nachdem der Zugang deaktiviert wurde gelöscht.'
+      answer: 'Die Anfragen werden einen Monat nachdem der Zugang deaktiviert wurde gelöscht.'
     },
     {
       question: 'Wer wird über die Anfragen meiner Mitarbeiter benachrichtigt?',

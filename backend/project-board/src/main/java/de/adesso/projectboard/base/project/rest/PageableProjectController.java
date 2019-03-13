@@ -8,7 +8,7 @@ import de.adesso.projectboard.base.projection.BaseProjectionFactory;
 import de.adesso.projectboard.base.user.service.PageableUserProjectService;
 import de.adesso.projectboard.base.user.service.UserAuthService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
@@ -22,7 +22,11 @@ import org.springframework.web.bind.annotation.*;
  *
  * @see NonPageableProjectController
  */
-@Profile("rest-pagination")
+@ConditionalOnProperty(
+        prefix = "projectboard.project-pagination",
+        name = "enabled",
+        havingValue = "true"
+)
 @RestController
 @RequestMapping(path = "/projects")
 public class PageableProjectController extends BaseProjectController {

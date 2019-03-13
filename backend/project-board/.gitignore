@@ -3,9 +3,7 @@
 !gradle/wrapper/gradle-wrapper.jar
 
 ### Spring Properties ###
-/src/main/resources/application-adesso-jira.properties
-/src/main/resources/application-adesso-ad.properties
-/src/main/resources/mail.properties
+/src/main/resources/application.properties
 
 ### Docker Directory ###
 /docker/temp/

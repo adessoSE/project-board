@@ -1,6 +1,6 @@
 package de.adesso.projectboard.ad.updater;
 
-import de.adesso.projectboard.ad.service.LdapService;
+import de.adesso.projectboard.ad.service.LdapAdapter;
 import de.adesso.projectboard.ad.service.node.LdapUserNode;
 import de.adesso.projectboard.ad.user.RepositoryUserService;
 import de.adesso.projectboard.base.user.persistence.User;
@@ -33,7 +33,7 @@ public class UserUpdaterTest {
     private HierarchyTreeNodeRepository hierarchyTreeNodeRepoMock;
 
     @Mock
-    private LdapService ldapServiceMock;
+    private LdapAdapter ldapAdapterMock;
 
     @Mock
     private RepositoryUserService repoUserServiceMock;
@@ -48,7 +48,7 @@ public class UserUpdaterTest {
 
     @Before
     public void setUp() {
-        this.userUpdater = new UserUpdater(hierarchyTreeNodeRepoMock, repoUserServiceMock, userDataRepoMock, ldapServiceMock);
+        this.userUpdater = new UserUpdater(hierarchyTreeNodeRepoMock, repoUserServiceMock, userDataRepoMock, ldapAdapterMock);
     }
 
     @Test

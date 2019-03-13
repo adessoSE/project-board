@@ -6,11 +6,11 @@ VOLUME /tmp
 # Volume for Apache Lucene Indexes
 VOLUME /var/lucene
 
-# Token is replaced by gradle
-EXPOSE 8080
+# External Port
+EXPOSE 8180
 
 # Token is replaced by gradle
-ARG JAR_FILE=@jarName@
+ARG JAR_FILE=@JAR_NAME@
 
 # Copy jar archive
 COPY ${JAR_FILE} project-board.jar

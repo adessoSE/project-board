@@ -1,6 +1,7 @@
 package de.adesso.projectboard.reader;
 
 import de.adesso.projectboard.base.project.persistence.Project;
+import de.adesso.projectboard.reader.configuration.JiraConfigurationProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

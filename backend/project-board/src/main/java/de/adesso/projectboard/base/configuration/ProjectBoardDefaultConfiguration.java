@@ -15,11 +15,15 @@ import de.adesso.projectboard.base.user.service.UserAuthService;
 import de.adesso.projectboard.base.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.Clock;
+
 @Configuration
-public class ProjectBoardAutoConfiguration {
+@EnableConfigurationProperties(ProjectBoardConfigurationProperties.class)
+public class ProjectBoardDefaultConfiguration {
 
     @Bean
     @ConditionalOnMissingBean(ExpressionEvaluator.class)
@@ -56,6 +60,11 @@ public class ProjectBoardAutoConfiguration {
     @Autowired
     public UserAuthService defaultUserAuthService(UserService userService, AuthenticationInfoRetriever retriever) {
         return new DefaultUserAuthService(userService, retriever);
+    }
+
+    @Bean
+    public Clock clock() {
+        return Clock.systemDefaultZone();
     }
 
 }

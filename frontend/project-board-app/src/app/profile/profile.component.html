@@ -38,6 +38,8 @@
           <mat-icon>bookmark</mat-icon>
         </div>
         Lesezeichen
+        <mat-icon class="helper-icon" matTooltip="Projekte, die du für dich selbst markiert hast."
+        [matTooltipPosition]="position.value">help</mat-icon>
       </div>
 
       <div *ngIf="!user.boss" (click)="selectTab(1)" id="tab1" class="nav-point col-6">
@@ -45,6 +47,8 @@
           <mat-icon>email</mat-icon>
         </div>
         Projektanfragen
+        <mat-icon class="helper-icon" matTooltip="Projekte, für die du eine Anfrage bei deiner Führungskraft erstellt hast."
+        [matTooltipPosition]="position.value">help</mat-icon>
       </div>
 
       <div *ngIf="user.boss" (click)="selectTab(2)" id="tab2" class="nav-point col-12 active">
@@ -52,6 +56,8 @@
           <mat-icon>email</mat-icon>
         </div>
         Projektanfragen Mitarbeiter
+        <mat-icon class="helper-icon" matTooltip="Anfragen deiner Mitarbeiter, die an einem Projekt interessiert sind. Anfragen werden automatisch einen Monat nach Ablauf der Freischaltung für den Mitarbeiter zum Project Board gelöscht."
+        [matTooltipPosition]="position.value">help</mat-icon>
       </div>
     </div>
 

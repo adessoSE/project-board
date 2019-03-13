@@ -7,14 +7,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.adesso.projectboard.base.project.deserializer.JiraIssue;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.reader.ProjectReader;
+import de.adesso.projectboard.reader.configuration.JiraConfigurationProperties;
 import de.adesso.projectboard.reader.jql.JqlComparator;
 import de.adesso.projectboard.reader.jql.JqlQueryStringBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -34,15 +32,12 @@ import java.util.stream.Collectors;
  *
  * @see de.adesso.projectboard.base.updater.ProjectUpdater
  */
-@Profile("adesso-jira")
-@Service
 public class JiraProjectReader implements ProjectReader {
 
     private final RestTemplate restTemplate;
 
     private final JiraConfigurationProperties properties;
 
-    @Autowired
     public JiraProjectReader(RestTemplateBuilder builder, JiraConfigurationProperties properties) {
         this.restTemplate = builder
                 .basicAuthentication(properties.getUsername(), properties.getPassword())
