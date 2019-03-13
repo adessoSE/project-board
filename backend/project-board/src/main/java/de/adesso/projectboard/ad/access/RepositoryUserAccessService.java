@@ -40,7 +40,7 @@ public class RepositoryUserAccessService implements UserAccessService {
 
         var latestIntervalOptional = user.getLatestAccessInterval();
 
-        if(!latestIntervalOptional.isPresent() || !userHasActiveAccessInterval(user)) {
+        if(latestIntervalOptional.isEmpty() || !userHasActiveAccessInterval(user)) {
             var interval = new AccessInterval(user, LocalDateTime.now(clock), until);
             user.addAccessInterval(interval);
 
@@ -50,6 +50,10 @@ public class RepositoryUserAccessService implements UserAccessService {
         } else {
             var latestInterval = latestIntervalOptional.get();
             var oldEndTime = latestInterval.getEndTime();
+            if(oldEndTime.isEqual(until)) {
+                return user;
+            }
+
             latestInterval.setEndTime(until);
             intervalRepo.save(latestInterval);
 
@@ -85,7 +89,7 @@ public class RepositoryUserAccessService implements UserAccessService {
             var endTime = latestInterval.getEndTime();
             var now = LocalDateTime.now(clock);
 
-            return ((startTime.isEqual(now) || startTime.isBefore(now)) && endTime.isAfter(now));
+            return (startTime.isEqual(now) || startTime.isBefore(now)) && (endTime.isEqual(now) || endTime.isAfter(now));
         }
 
         return false;
