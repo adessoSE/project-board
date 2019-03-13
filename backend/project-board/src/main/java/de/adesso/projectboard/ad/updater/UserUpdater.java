@@ -1,6 +1,6 @@
 package de.adesso.projectboard.ad.updater;
 
-import de.adesso.projectboard.ad.service.LdapService;
+import de.adesso.projectboard.ad.service.LdapAdapter;
 import de.adesso.projectboard.ad.service.node.LdapUserNode;
 import de.adesso.projectboard.ad.user.RepositoryUserService;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
@@ -9,16 +9,12 @@ import de.adesso.projectboard.base.user.persistence.hierarchy.HierarchyTreeNode;
 import de.adesso.projectboard.base.user.persistence.hierarchy.HierarchyTreeNodeRepository;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Profile("adesso-ad")
-@Service
 @Transactional
 public class UserUpdater {
 
@@ -28,21 +24,21 @@ public class UserUpdater {
 
     private final UserDataRepository userDataRepo;
 
-    private final LdapService ldapService;
+    private final LdapAdapter ldapAdapter;
 
     @Autowired
     public UserUpdater(HierarchyTreeNodeRepository hierarchyTreeNodeRepo,
                        RepositoryUserService repoUserService,
                        UserDataRepository userDataRepo,
-                       LdapService ldapService) {
+                       LdapAdapter ldapAdapter) {
         this.hierarchyTreeNodeRepo = hierarchyTreeNodeRepo;
         this.repoUserService = repoUserService;
         this.userDataRepo = userDataRepo;
-        this.ldapService = ldapService;
+        this.ldapAdapter = ldapAdapter;
     }
 
     public void updateHierarchyAndUserData() {
-        var ldapUserNodes = ldapService.getAllUserNodes();
+        var ldapUserNodes = ldapAdapter.getAllUserNodes();
         var filteredAndCleanedNodes = cleanDirectReports(filterNodesWithMissingManager(ldapUserNodes));
 
         updateHierarchy(filteredAndCleanedNodes);
