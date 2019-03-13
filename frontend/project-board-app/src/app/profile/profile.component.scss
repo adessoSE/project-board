@@ -217,6 +217,10 @@
   font-size: 14px;
 }
 
+.small-delete {
+  display: none;
+}
+
 @include media-breakpoint-up(xl) {
   .left-bar {
     height: 550px;
@@ -224,8 +228,22 @@
 }
 
 @include media-breakpoint-down(md) {
+  .headline span {
+    margin-left: 0;
+  }
+
   .middle {
     padding: 0 15px 0 15px;
+  }
+
+  .small-delete {
+    display: block;
+    cursor: pointer;
+    float: right;
+  }
+
+  .big-delete {
+    display: none;
   }
 
   .project-title {

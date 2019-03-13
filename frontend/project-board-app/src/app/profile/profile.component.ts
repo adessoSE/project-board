@@ -146,6 +146,12 @@ export class ProfileComponent implements OnInit {
       .subscribe(() => this.bookmarks = this.bookmarks.filter(p => p.id !== projectId));
   }
 
+  removeApplication(applicationId): void {
+    this.employeeService.removeApplication(this.authService.username, applicationId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => this.employeeApplications = this.employeeApplications.filter(p => p.id !== applicationId));
+  }
+
   getEmployeeApplications(): void {
     this.loadingEmployeeApplications = true;
     this.employeeService.getApplicationsForEmployeesOfUser(this.user.id)

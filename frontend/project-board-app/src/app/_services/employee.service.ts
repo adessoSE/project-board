@@ -76,6 +76,10 @@ export class EmployeeService {
     return this.http.delete(`${environment.resourceServer}/users/${userId}/bookmarks/${projectId}`);
   }
 
+  removeApplication(userId: string, projectId: string): Observable<any> {
+    return this.http.delete(`${environment.resourceServer}/users/${userId}/application/${projectId}`);
+  }
+
   isApplicable(applications: Application[], projectId: string): boolean {
     return applications ? !applications.some(a => a && a.project.id === projectId) : true;
   }
