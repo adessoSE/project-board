@@ -8,7 +8,6 @@ import de.adesso.projectboard.base.security.ExpressionEvaluator;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
  *
  * @see ExpressionEvaluator
  */
-@Profile("user-access")
 @Service
 public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
 

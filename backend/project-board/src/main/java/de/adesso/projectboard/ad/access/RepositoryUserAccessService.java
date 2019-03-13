@@ -7,14 +7,10 @@ import de.adesso.projectboard.base.access.persistence.AccessIntervalRepository;
 import de.adesso.projectboard.base.access.service.UserAccessService;
 import de.adesso.projectboard.base.user.persistence.User;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
 
-@Profile("adesso-ad")
-@Service
 public class RepositoryUserAccessService implements UserAccessService {
 
     private final RepositoryUserService userService;

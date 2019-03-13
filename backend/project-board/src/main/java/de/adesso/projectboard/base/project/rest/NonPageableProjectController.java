@@ -8,7 +8,7 @@ import de.adesso.projectboard.base.projection.BaseProjectionFactory;
 import de.adesso.projectboard.base.user.service.UserAuthService;
 import de.adesso.projectboard.base.user.service.UserProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +22,12 @@ import org.springframework.web.bind.annotation.*;
  *
  * @see BaseProjectController
  */
-@Profile("!rest-pagination")
+@ConditionalOnProperty(
+        prefix = "projectboard.project-pagination",
+        name = "enabled",
+        havingValue = "false",
+        matchIfMissing = true
+)
 @RestController
 @RequestMapping(path = "/projects")
 public class NonPageableProjectController extends BaseProjectController {
