@@ -208,8 +208,18 @@
   padding: 15px;
 }
 
-@include media-breakpoint-up(xl){
+.helper-icon {
+  font-size: 15px;
+  width: 15px;
+  height: 15px;
+  vertical-align: text-top;
+}
 
+/deep/ .mat-tooltip {
+  font-size: 14px;
+}
+
+@include media-breakpoint-up(xl) {
   .left-bar {
     height: 550px;
   }
@@ -230,6 +240,10 @@
 }
 
 @include media-breakpoint-down(sm) {
+
+  .helper-icon {
+    display: none;
+  }
 
   .row {
     padding: 0 15px 0 15px;

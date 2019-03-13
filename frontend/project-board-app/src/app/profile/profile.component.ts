@@ -9,6 +9,8 @@ import { Application, Employee, EmployeeService } from '../_services/employee.se
 import { Project, ProjectService } from '../_services/project.service';
 import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
 import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
+import {FormControl} from '@angular/forms';
+import {TooltipPosition} from '@angular/material';
 
 @Component({
   selector: 'app-profile',
@@ -26,6 +28,9 @@ export class ProfileComponent implements OnInit {
   pieChartLabels: string[] = ['Meine Mitarbeiter', 'Global'];
   pieChartType: string = 'pie';
   pieChartColors: any[] = [{ backgroundColor: ["#EF8200", "grey"] }];
+
+  positionOptions: TooltipPosition[] = ['after', 'before', 'above', 'below', 'left', 'right'];
+  position = new FormControl(this.positionOptions[2]);
 
   user: Employee;
   tabIndex = 0;

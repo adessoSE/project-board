@@ -65,7 +65,7 @@ public class ProjectApplication {
 
     /**
      * Constructs a new instance. Adds the application to the user's
-     * {@link User#applications}.
+     * {@link User#getApplications() applications}.
      *
      * <p>
      *      <b>Note:</b> The {@link #applicationDate} is set to the
@@ -98,7 +98,7 @@ public class ProjectApplication {
     /**
      * Compares the {@link #id}, {@link #comment}, {@link #project}
      * {@link #applicationDate application date} with {@link Objects#equals(Object, Object)}
-     * and the {@link User#id ID}s of the {@link User}s of both instances.
+     * and the {@link User#getId()}  ID}s of the {@link User}s of both instances.
      *
      * @param obj
      *          The instance to compare {@code this} instance
