@@ -78,14 +78,13 @@ dependencies {
 	testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test')
 	testCompile(group: 'org.springframework.security', name: 'spring-security-test')
     testCompile(group: 'org.springframework.ldap', name: 'spring-ldap-test')
-	// testCompile(group: 'com.unboundid', name: 'unboundid-ldapsdk', version: "${unboundIDVersion}")
 
 	annotationProcessor(group: 'org.projectlombok', name: 'lombok')
 
 	apt(group: 'org.projectlombok', name: 'lombok')
 }
 
-task dockerBuild(dependsOn: build) {
+task dockerCopy(dependsOn: build) {
 	doFirst {
 		delete 'docker/temp'
 	}
@@ -93,52 +92,34 @@ task dockerBuild(dependsOn: build) {
 	doLast {
 		copy {
 			from('docker') {
-				include 'application.properties'
+				include '*.properties'
 
-				filter(ReplaceTokens, tokens: [
-						datasourceDialect: System.getProperty('datasourceDialect'),
-						datasourceUrl: System.getProperty('datasourceUrl'),
-						datasourceUsername: System.getProperty('datasourceUsername'),
-						datasourcePassword: System.getProperty('datasourcePassword')
-				])
-			}
+				filter { String line ->
+					def tokensInLine = line.findAll('@\\w+@')
+					def replacedLine = line
 
-			from('docker') {
-				include 'application-adesso-jira.properties'
+					tokensInLine.each {
+						def tokenWithoutDelimiters = it.replace('@', '')
+						def envVariable = System.getenv(tokenWithoutDelimiters)
+						def tokenReplacement = (envVariable != null) ? envVariable : System.getProperty(tokenWithoutDelimiters)
 
-				filter(ReplaceTokens, tokens: [
-						jiraUrl: System.getProperty('jiraUrl'),
-						jiraUsername: System.getProperty('jiraUsername'),
-						jiraPassword: System.getProperty('jiraPassword')
-				])
-			}
+						if(!tokenReplacement) {
+							throw new IllegalStateException("Could not replace token ${it} in property file! " +
+									"No system property or environment variable ${tokenWithoutDelimiters} set!")
+						}
 
-			from('docker') {
-				include 'application-adesso-ad.properties'
+						replacedLine = replacedLine.replace("${it}", tokenReplacement)
+					}
 
-				filter(ReplaceTokens, tokens: [
-						ldapUrl: System.getProperty('ldapUrl'),
-						ldapUsername: System.getProperty('ldapUsername'),
-						ldapPassword: System.getProperty('ldapPassword'),
-						ldapBase: System.getProperty('ldapBase')
-				])
-			}
-
-			from('docker') {
-				include 'application-keycloak.properties'
-
-				filter(ReplaceTokens, tokens: [
-						keycloakUrl: System.getProperty('keycloakUrl'),
-						keycloakRealm: System.getProperty('keycloakRealm'),
-						keycloakClient: System.getProperty('keycloakClient'),
-				])
+					return replacedLine
+				}
 			}
 
 			from('docker') {
 				include 'Dockerfile'
 
 				filter(ReplaceTokens, tokens: [
-						jarName: jar.archiveName
+						JAR_NAME: jar.archiveName
 				])
 			}
 

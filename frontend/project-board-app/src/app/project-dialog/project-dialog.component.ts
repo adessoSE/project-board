@@ -18,6 +18,9 @@ import {
   START_REQUEST_TOOLTIP
 } from '../tooltips';
 
+import {FormControl} from '@angular/forms';
+import {TooltipPosition} from '@angular/material';
+
 export interface ProjectDialogData {
   project: Project;
   isUserBoss: boolean;
@@ -41,6 +44,8 @@ export class ProjectDialogComponent implements OnInit {
   abortRequestTooltip = ABORT_REQUEST_TOOLTIP;
   sendRequestTooltip = SEND_REQUEST_TOOLTIP;
 
+  positionOptions: TooltipPosition[] = ['after', 'before', 'above', 'below', 'left', 'right'];
+  position = new FormControl(this.positionOptions[2]);
   mobile: boolean;
   @Output() bookmark = new EventEmitter();
   @Output() application = new EventEmitter<Application>();

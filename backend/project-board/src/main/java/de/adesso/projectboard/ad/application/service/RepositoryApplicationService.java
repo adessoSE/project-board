@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -71,8 +70,8 @@ public class RepositoryApplicationService implements ApplicationService {
     }
 
     @Override
-    public List<ProjectApplication> getApplicationsOfUser(User user) {
-        return new ArrayList<>(user.getApplications());
+    public List<ProjectApplication> getApplicationsOfUser(User user, Sort sort) {
+        return applicationRepo.findAllByUser(user, sort);
     }
 
     @Override
