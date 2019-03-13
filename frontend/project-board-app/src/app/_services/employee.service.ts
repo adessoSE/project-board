@@ -76,8 +76,8 @@ export class EmployeeService {
     return this.http.delete(`${environment.resourceServer}/users/${userId}/bookmarks/${projectId}`);
   }
 
-  removeApplication(userId: string, projectId: string): Observable<any> {
-    return this.http.delete(`${environment.resourceServer}/users/${userId}/application/${projectId}`);
+  removeApplication(userId: string, applicationId: number): Observable<any> {
+    return this.http.delete(`${environment.resourceServer}/users/${userId}/application/${applicationId}`);
   }
 
   isApplicable(applications: Application[], projectId: string): boolean {

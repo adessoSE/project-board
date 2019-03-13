@@ -9,6 +9,7 @@ import { Application, Employee, EmployeeService } from '../_services/employee.se
 import { Project, ProjectService } from '../_services/project.service';
 import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
 import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
+import { SafetyqueryDialogComponent } from '../safetyquery-dialog/safetyquery-dialog.component';
 import {FormControl} from '@angular/forms';
 import {TooltipPosition} from '@angular/material';
 
@@ -147,9 +148,20 @@ export class ProfileComponent implements OnInit {
   }
 
   removeApplication(applicationId): void {
-    this.employeeService.removeApplication(this.authService.username, applicationId)
+   /* this.employeeService.removeApplication(this.authService.username, applicationId)
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => this.employeeApplications = this.employeeApplications.filter(p => p.id !== applicationId));
+    */
+
+   let dialogRef = this.dialog.open(SafetyqueryDialogComponent, {
+     disableClose: false
+   });
+    dialogRef.afterClosed().subscribe(result => {
+      if(result) {
+          this.employeeApplications = this.employeeApplications.filter(p => p.id !== applicationId);
+          console.log("Nur im Frontend gelöscht" + applicationId);
+      }
+    });
   }
 
   getEmployeeApplications(): void {

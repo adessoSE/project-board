@@ -105,22 +105,25 @@
       <!-- employee-applications tab-->
       <ng-container *ngIf="tabIndex == 2">
         <div class="employee-application" *ngFor="let a of employeeApplications; index as i" [ngClass]="{'border-bottom': i<employeeApplications.length-1}">
-            <div class="headline">
-                <button mat-icon-button class="small-delete" title="Anfrage permanent löschen" (click)="removeApplication(a.id)">
-                    <mat-icon>delete</mat-icon>
-                </button>
-          
+          <div class="row">
+            <div class="col-10">
           <span class="project-title">
-              <div class="linking-icon-wrapper">
-                  <div class="linking-icon" title="Öffnen" (click)="openDialog(a.project)">
-                    <mat-icon>open_in_new</mat-icon>
-                  </div>
-                </div>
+            <div class="linking-icon-wrapper">
+              <div class="linking-icon" title="Öffnen" (click)="openDialog(a.project)">
+                <mat-icon>open_in_new</mat-icon>
+              </div>
+            </div>
             {{a.project.title}} 
           </span>
-          <button class="btn btn-outline-secondary remover big-delete" style="height: auto;" title="Anfrage permanent löschen" (click)="removeApplication(a.id)">
-              <span style="padding-top: 3px;">löschen</span><mat-icon>delete</mat-icon>
+            </div>
+            <div class="col-2">
+          <button mat-icon-button class="small-delete" title="Anfrage permanent löschen" (click)="removeApplication(a.id)">
+              <mat-icon>delete</mat-icon>
           </button>
+          <button class="btn btn-outline-secondary remover big-delete" style="height: auto;" title="Anfrage permanent löschen" (click)="removeApplication(a.id)">
+              <span style="vertical-align: bottom;">löschen</span><mat-icon>delete</mat-icon>
+          </button>
+        </div>
         </div>
           <div class="application-details">
             <div (click)="openEmployeeDialog(a.user)" class="requester">{{a.user.lastName}}, {{a.user.firstName}}</div>
