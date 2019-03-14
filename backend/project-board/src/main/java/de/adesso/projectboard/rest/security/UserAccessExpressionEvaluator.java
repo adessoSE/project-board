@@ -75,7 +75,7 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *          The id of the {@link Project} the user wants to access.
      *
      * @return
-     *          {@code true}, iff the at least one of the following conditions is {@code true}
+     *          {@code true}, iff the at least one of the following conditions is satisfied
      *
      *          <ul>
      *              <li>

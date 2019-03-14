@@ -2,6 +2,7 @@ package de.adesso.projectboard.ad.configuration;
 
 import de.adesso.projectboard.ad.access.RepositoryUserAccessService;
 import de.adesso.projectboard.ad.service.LdapAdapter;
+import de.adesso.projectboard.ad.updater.UserUpdateJob;
 import de.adesso.projectboard.ad.updater.UserUpdater;
 import de.adesso.projectboard.ad.user.RepositoryUserService;
 import de.adesso.projectboard.base.access.handler.UserAccessEventHandler;
@@ -62,6 +63,12 @@ public class LdapConfiguration {
     public UserUpdater userUpdater(HierarchyTreeNodeRepository hierarchyTreeNodeRepo, RepositoryUserService repositoryUserService,
                                    UserDataRepository userDataRepo, LdapAdapter ldapAdapter) {
         return new UserUpdater(hierarchyTreeNodeRepo, repositoryUserService, userDataRepo, ldapAdapter);
+    }
+
+    @Autowired
+    @Bean
+    public UserUpdateJob userUpdateJob(UserUpdater userUpdater, LdapConfigurationProperties ldapConfigProperties, Clock clock) {
+        return new UserUpdateJob(userUpdater, ldapConfigProperties, clock);
     }
 
 }

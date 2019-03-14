@@ -20,32 +20,30 @@ import java.util.List;
 @Service
 @Slf4j
 public class Cleaner {
+
     private final UserService userService;
 
     private final BookmarkService bookmarkService;
 
-    private final AccessIntervalRepository air;
+    private final AccessIntervalRepository accessIntervalRepo;
 
     private final Clock clock;
 
     @Autowired
     public Cleaner(UserService userService,
                    BookmarkService bookmarkService,
-                   AccessIntervalRepository air,
+                   AccessIntervalRepository accessIntervalRepo,
                    Clock clock) {
         this.bookmarkService = bookmarkService;
         this.userService = userService;
-        this.air = air;
+        this.accessIntervalRepo = accessIntervalRepo;
         this.clock = clock;
     }
 
-    /**
-     * Cleans up old bookmarks and applications of deactivated users.
-     */
     @Scheduled(fixedDelay = 86400000L)
     @Transactional
     public void removeOldBookmarksAndApplications() {
-        List<AccessInterval> latestAccessIntervals = air.findAllLatestIntervals();
+        List<AccessInterval> latestAccessIntervals = accessIntervalRepo.findAllLatestIntervals();
         for (AccessInterval interval : latestAccessIntervals) {
             if (interval.getEndTime().plusDays(28L).isBefore(LocalDateTime.now(clock))) {
                 bookmarkService.removeAllBookmarksOfUser(interval.getUser());
@@ -53,5 +51,7 @@ public class Cleaner {
                 log.debug("deleted bookmarks and applications of user " + interval.getUser().getId());
             }
         }
+
     }
+
 }
