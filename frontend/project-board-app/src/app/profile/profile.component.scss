@@ -121,6 +121,14 @@
   padding: 15px;
 }
 
+.deleted {
+  color: lightgrey;
+}
+
+.deleted .linking-icon-wrapper .material-icons {
+  color: lightblue;
+}
+
 .employee-application {
   border-bottom: 1px solid #e6e6e6;
   padding: 15px;

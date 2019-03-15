@@ -2,6 +2,7 @@ package de.adesso.projectboard.base.application.service;
 
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.exceptions.AlreadyAppliedException;
+import de.adesso.projectboard.base.exceptions.ApplicationNotFoundException;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.user.persistence.User;
 import org.springframework.data.domain.Sort;
@@ -73,5 +74,18 @@ public interface ApplicationService {
      *          members of the user.
      */
     List<ProjectApplication> getApplicationsOfUsers(Collection<User> users, Sort sort);
+
+    /**
+     *
+     * @param user
+     *          The {@link User} to get the applications of.
+     *
+     * @param applicationId
+     *          The id of application to delete.
+     *
+     * @return
+     *          The response.
+     */
+    ProjectApplication deleteApplicationOfUser(User user, long applicationId) throws ApplicationNotFoundException;
 
 }

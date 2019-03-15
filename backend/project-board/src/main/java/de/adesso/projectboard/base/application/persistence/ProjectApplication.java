@@ -63,6 +63,12 @@ public class ProjectApplication {
     )
     LocalDateTime applicationDate;
 
+    @Column(
+            name = "DELETED",
+            nullable = false
+    )
+    boolean deleted;
+
     /**
      * Constructs a new instance. Adds the application to the user's
      * {@link User#getApplications() applications}.
@@ -91,6 +97,7 @@ public class ProjectApplication {
         this.comment = comment;
         this.user = user;
         this.applicationDate = applicationDate;
+        this.deleted = false;
 
         user.addApplication(this);
     }

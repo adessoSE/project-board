@@ -25,6 +25,7 @@ export class ProfileComponent implements OnInit {
   @Input() projects: Project[] = [];
   employees: Employee[] = [];
   employeeApplications: Application[] = [];
+  filteredEmployeeApplications : Application[] = [];
 
   positionOptions: TooltipPosition[] = ['after', 'before', 'above', 'below', 'left', 'right'];
   position = new FormControl(this.positionOptions[2]);
@@ -147,19 +148,16 @@ export class ProfileComponent implements OnInit {
       .subscribe(() => this.bookmarks = this.bookmarks.filter(p => p.id !== projectId));
   }
 
-  removeApplication(applicationId): void {
-   /* this.employeeService.removeApplication(this.authService.username, applicationId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.employeeApplications = this.employeeApplications.filter(p => p.id !== applicationId));
-    */
+  removeApplication(applicationId :number): void {
 
    let dialogRef = this.dialog.open(SafetyqueryDialogComponent, {
      disableClose: false
    });
     dialogRef.afterClosed().subscribe(result => {
       if(result) {
-          this.employeeApplications = this.employeeApplications.filter(p => p.id !== applicationId);
-          console.log("Nur im Frontend gelöscht" + applicationId);
+        this.employeeService.revokeApplication(this.employeeApplications.find(x => x.id === applicationId).user.id, applicationId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(() => this.filteredEmployeeApplications = this.filteredEmployeeApplications.filter(p => p.id !== applicationId));
       }
     });
   }
@@ -170,7 +168,8 @@ export class ProfileComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe(employeeApplications => {
         this.employeeApplications = employeeApplications;
-        this.loadingEmployeeApplications = false;
+        this.filteredEmployeeApplications = employeeApplications.filter(p => p.deleted === false);
+        this.loadingEmployeeApplications = false;    
       });
   }
 }
