@@ -2,6 +2,12 @@ package de.adesso.projectboard.base.scheduled;
 
 import java.time.LocalDateTime;
 
+/**
+ * Classes implementing this interface that are supplied as a spring bean will be automatically
+ * registered for execution.
+ *
+ * @see AutoRegistered
+ */
 public interface ScheduledJob {
 
     /**

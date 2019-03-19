@@ -120,8 +120,6 @@ public class ScheduledJobExecutor implements ApplicationContextAware {
         jobLogRepo.save(jobLog);
     }
 
-
-
     /**
      * Adds a scheduled job to the executed jobs of this executor.
      *

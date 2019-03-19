@@ -1,32 +1,28 @@
 package de.adesso.projectboard.ad.updater;
 
 import de.adesso.projectboard.ad.configuration.LdapConfigurationProperties;
-import de.adesso.projectboard.base.scheduled.ScheduledJob;
+import de.adesso.projectboard.base.scheduled.FixedHourScheduledJob;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Clock;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 
+/**
+ * {@link FixedHourScheduledJob} used to update user related data using a {@link UserUpdater}. The
+ * execution time can be configured by modifying the {@link LdapConfigurationProperties#getUpdateHour() update hour}
+ * of the {@link LdapConfigurationProperties}.
+ */
 @Slf4j
-@Transactional
-public class UserUpdateJob implements ScheduledJob {
+public class UserUpdateJob extends FixedHourScheduledJob {
 
     private final UserUpdater userUpdater;
 
-    private final Clock clock;
-
-    private final int updateHour;
-
     @Autowired
     public UserUpdateJob(UserUpdater userUpdater, LdapConfigurationProperties properties, Clock clock) {
-        this.userUpdater = userUpdater;
-        this.clock = clock;
+        super(clock, properties.getUpdateHour());
 
-        this.updateHour = properties.getUpdateHour();
+        this.userUpdater = userUpdater;
     }
 
     @Override
@@ -44,50 +40,6 @@ public class UserUpdateJob implements ScheduledJob {
     @Override
     public String getJobIdentifier() {
         return "USER-UPDATER";
-    }
-
-    /**
-     *
-     * @param lastExecuteTime
-     *          The last time the job was executed successfully, not null.
-     *
-     * @return
-     *          {@code true}, iff one of the following conditions is satisfied:
-     *          <ul>
-     *              <li>
-     *                  The last execute was at least two days ago.
-     *              </li>
-     *
-     *              <li>
-     *                  The last execute was yesterday and the current hour is
-     *                  greater or equal to the update hour.
-     *              </li>
-     *
-     *              <li>
-     *                  The last update was today but before the update hour
-     *                  was reached. (The update should have been done yesterday)
-     *              </li>
-     *          </ul>
-     */
-    @Override
-    public boolean shouldExecute(LocalDateTime lastExecuteTime) {
-        var now = LocalDateTime.now(clock);
-        var today = LocalDate.now(clock);
-        var yesterday = today.minus(1, ChronoUnit.DAYS);
-        var lastExecuteDate = lastExecuteTime.toLocalDate();
-
-        // last execute two days or more ago
-        if(yesterday.isAfter(lastExecuteDate)) {
-            return true;
-
-        // last execute yesterday
-        } else if(today.isAfter(lastExecuteDate)) {
-            return now.getHour() >= this.updateHour;
-
-        // last execute today
-        } else {
-            return lastExecuteTime.getHour() < this.updateHour;
-        }
     }
 
 }

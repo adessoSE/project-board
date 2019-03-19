@@ -7,8 +7,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.time.*;
-import java.time.temporal.ChronoUnit;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -73,67 +75,5 @@ public class UserUpdateJobTest {
         assertThat(actualIdentifier).isEqualTo(expectedIdentifier);
     }
 
-    @Test
-    public void shouldUpdateReturnsTrueWhenLastExecuteAtLeastTwoDaysAgo() {
-        // given
-        var lastExecuteTime = LocalDateTime.now(clock).minus(2L, ChronoUnit.DAYS);
-
-        // when
-        var actualShouldUpdate = userUpdateJob.shouldExecute(lastExecuteTime);
-
-        // then
-        assertThat(actualShouldUpdate).isTrue();
-    }
-
-    @Test
-    public void shouldUpdateReturnsTrueWhenLastExecuteWasTodayButBeforeUpdateHour() {
-        // given
-        var lastExecuteHour = UPDATE_HOUR - 1;
-        var lastExecuteTime = LocalDate.now(clock).atTime(lastExecuteHour, 0);
-
-        // when
-        var actualShouldUpdate = userUpdateJob.shouldExecute(lastExecuteTime);
-
-        // then
-        assertThat(actualShouldUpdate).isTrue();
-    }
-
-    @Test
-    public void shouldUpdateReturnsTrueWhenLastExecuteWasYesterdayAndUpdateHourPassed() {
-        // given
-        var updateHour = 4;
-        var instant = Instant.parse("2019-03-14T05:00:00.00Z");
-        var zoneId = ZoneId.systemDefault();
-        var localClock = Clock.fixed(instant, zoneId);
-        given(ldapConfigPropertiesMock.getUpdateHour()).willReturn(updateHour);
-        var localUserUpdateJob = new UserUpdateJob(userUpdaterMock, ldapConfigPropertiesMock, localClock);
-
-        var lastExecuteTime = LocalDateTime.now(localClock).minus(1L, ChronoUnit.DAYS);
-
-        // when
-        var actualShouldUpdate = localUserUpdateJob.shouldExecute(lastExecuteTime);
-
-        // then
-        assertThat(actualShouldUpdate).isTrue();
-    }
-
-    @Test
-    public void shouldUpdateReturnsFalseWhenLastExecuteWasTodayAfterUpdateHour() {
-        // given
-        var updateHour = 4;
-        var instant = Instant.parse("2019-03-14T05:00:00.00Z");
-        var zoneId = ZoneId.systemDefault();
-        var localClock = Clock.fixed(instant, zoneId);
-        given(ldapConfigPropertiesMock.getUpdateHour()).willReturn(updateHour);
-        var localUserUpdateJob = new UserUpdateJob(userUpdaterMock, ldapConfigPropertiesMock, localClock);
-
-        var lastExecuteTime = LocalDateTime.now(localClock);
-
-        // when
-        var actualShouldUpdate = localUserUpdateJob.shouldExecute(lastExecuteTime);
-
-        // then
-        assertThat(actualShouldUpdate).isFalse();
-    }
 
 }

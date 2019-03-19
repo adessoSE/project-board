@@ -2,6 +2,8 @@ package de.adesso.projectboard.base.scheduled;
 
 import de.adesso.projectboard.base.scheduled.persistence.ScheduledJobLog;
 import de.adesso.projectboard.base.scheduled.persistence.ScheduledJobLogRepository;
+import helper.base.scheduled.AutoRegisteredJob;
+import helper.base.scheduled.NonAnnotatedJob;
 import helper.base.scheduled.NonAutoRegisteredJob;
 import org.junit.Before;
 import org.junit.Test;
@@ -245,6 +247,42 @@ public class ScheduledJobExecutorTest {
 
         // then
         assertThat(scheduledJobExecutor.scheduledJobIdMap).containsExactly(Map.entry(jobMock, jobId));
+    }
+
+    @Test
+    public void shouldAutoRegisterReturnsTrueWhenClassNotAnnotated() {
+        // given
+        var job = new NonAnnotatedJob();
+
+        // when
+        var actualShouldAutoRegister = scheduledJobExecutor.shouldAutoRegister(job);
+
+        // then
+        assertThat(actualShouldAutoRegister).isTrue();
+    }
+
+    @Test
+    public void shouldAutoRegisterReturnsTrueWhenAnnotatedAndValueIsTrue() {
+        // given
+        var job = new AutoRegisteredJob();
+
+        // when
+        var actualShouldAutoRegister = scheduledJobExecutor.shouldAutoRegister(job);
+
+        // then
+        assertThat(actualShouldAutoRegister).isTrue();
+    }
+
+    @Test
+    public void shouldAutoRegisterReturnsFalseWhenAnnotatedAndValueIsFalse() {
+        // given
+        var job = new NonAutoRegisteredJob();
+
+        // when
+        var actualShouldAutoRegister = scheduledJobExecutor.shouldAutoRegister(job);
+
+        // then
+        assertThat(actualShouldAutoRegister).isFalse();
     }
 
 }
