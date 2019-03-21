@@ -12,6 +12,13 @@ repositories {
 	mavenCentral()
 }
 
+configurations {
+	developmentOnly
+	runtimeClasspath {
+		extendsFrom developmentOnly
+	}
+}
+
 group = 'de.adesso'
 version = '1.0.0-SNAPSHOT'
 
@@ -47,7 +54,6 @@ dependencies {
 
 	compileOnly('org.projectlombok:lombok')
 
-	runtime('org.springframework.boot:spring-boot-devtools')
 	runtime('org.hsqldb:hsqldb')
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
@@ -56,9 +62,11 @@ dependencies {
 
 	annotationProcessor('org.projectlombok:lombok')
 	annotationProcessor('org.springframework.boot:spring-boot-configuration-processor')
+
+	developmentOnly("org.springframework.boot:spring-boot-devtools")
 }
 
-task('dockerCopy', type: DefaultTask, dependsOn: build) {
+task('dockerCopy', type: DefaultTask, dependsOn: bootJar) {
 	doFirst {
 		delete 'docker/temp'
 	}
