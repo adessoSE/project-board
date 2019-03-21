@@ -2,7 +2,7 @@ package de.adesso.projectboard.base.scheduled;
 
 import de.adesso.projectboard.base.scheduled.persistence.ScheduledJobLog;
 import de.adesso.projectboard.base.scheduled.persistence.ScheduledJobLogRepository;
-import helper.base.scheduled.AutoRegisteredJob;
+import helper.base.scheduled.AnnotatedJob;
 import helper.base.scheduled.NonAnnotatedJob;
 import helper.base.scheduled.NonAutoRegisteredJob;
 import org.junit.Before;
@@ -264,7 +264,7 @@ public class ScheduledJobExecutorTest {
     @Test
     public void shouldAutoRegisterReturnsTrueWhenAnnotatedAndValueIsTrue() {
         // given
-        var job = new AutoRegisteredJob();
+        var job = new AnnotatedJob();
 
         // when
         var actualShouldAutoRegister = scheduledJobExecutor.shouldAutoRegister(job);

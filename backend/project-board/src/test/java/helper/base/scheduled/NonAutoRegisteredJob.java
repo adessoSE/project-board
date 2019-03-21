@@ -20,7 +20,7 @@ public class NonAutoRegisteredJob implements ScheduledJob {
 
     @Override
     public String getJobIdentifier() {
-        return "TEST";
+        return "NON-AUTO-REGISTERED";
     }
 
     @Override

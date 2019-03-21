@@ -18,7 +18,7 @@ public class NonAnnotatedJob implements ScheduledJob {
 
     @Override
     public String getJobIdentifier() {
-        return null;
+        return "NON-ANNOTATED";
     }
 
     @Override

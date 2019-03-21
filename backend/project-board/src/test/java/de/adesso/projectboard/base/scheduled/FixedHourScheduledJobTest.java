@@ -84,6 +84,24 @@ public class FixedHourScheduledJobTest {
     }
 
     @Test
+    public void shouldUpdateReturnsFalseWhenLastExecuteWasTodayAfterUpdateHour() {
+        // given
+        var updateHour = 4;
+        var instant = Instant.parse("2019-03-14T05:00:00.00Z");
+        var zoneId = ZoneId.systemDefault();
+        var localClock = Clock.fixed(instant, zoneId);
+        var localFixedHourJob = new FixedHourJob(localClock, updateHour);
+
+        var lastExecuteTime = LocalDateTime.now(localClock);
+
+        // when
+        var actualShouldUpdate = localFixedHourJob.shouldExecute(lastExecuteTime);
+
+        // then
+        assertThat(actualShouldUpdate).isFalse();
+    }
+
+    @Test
     public void shouldUpdateReturnsTrueWhenLastExecuteWasYesterdayAndUpdateHourPassed() {
         // given
         var updateHour = 4;
@@ -102,9 +120,9 @@ public class FixedHourScheduledJobTest {
     }
 
     @Test
-    public void shouldUpdateReturnsFalseWhenLastExecuteWasTodayAfterUpdateHour() {
+    public void shouldUpdateReturnsFalseWhenLasExecuteWasYesterdayButUpdateHourDidNotPass() {
         // given
-        var updateHour = 4;
+        var updateHour = 7;
         var instant = Instant.parse("2019-03-14T05:00:00.00Z");
         var zoneId = ZoneId.systemDefault();
         var localClock = Clock.fixed(instant, zoneId);
@@ -116,7 +134,7 @@ public class FixedHourScheduledJobTest {
         var actualShouldUpdate = localFixedHourJob.shouldExecute(lastExecuteTime);
 
         // then
-        assertThat(actualShouldUpdate).isTrue();
+        assertThat(actualShouldUpdate).isFalse();
     }
 
 }

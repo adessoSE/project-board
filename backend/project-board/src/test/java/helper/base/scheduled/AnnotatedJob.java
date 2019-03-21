@@ -6,7 +6,7 @@ import de.adesso.projectboard.base.scheduled.ScheduledJob;
 import java.time.LocalDateTime;
 
 @AutoRegistered
-public class AutoRegisteredJob implements ScheduledJob {
+public class AnnotatedJob implements ScheduledJob {
 
     @Override
     public void execute(LocalDateTime lastExecuteTime) throws Exception {
@@ -20,7 +20,7 @@ public class AutoRegisteredJob implements ScheduledJob {
 
     @Override
     public String getJobIdentifier() {
-        return null;
+        return "ANNOTATED";
     }
 
     @Override
