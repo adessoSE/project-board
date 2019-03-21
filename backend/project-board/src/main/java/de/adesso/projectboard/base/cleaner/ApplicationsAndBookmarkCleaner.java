@@ -2,6 +2,7 @@ package de.adesso.projectboard.base.cleaner;
 
 import de.adesso.projectboard.base.access.persistence.AccessInterval;
 import de.adesso.projectboard.base.access.persistence.AccessIntervalRepository;
+import de.adesso.projectboard.base.scheduled.AutoRegistered;
 import de.adesso.projectboard.base.scheduled.FixedHourScheduledJob;
 import de.adesso.projectboard.base.user.service.BookmarkService;
 import de.adesso.projectboard.base.user.service.UserService;
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
  */
 @Component
 @Slf4j
+@AutoRegistered
 public class ApplicationsAndBookmarkCleaner extends FixedHourScheduledJob {
 
     private static final int EXECUTION_HOUR = 3;

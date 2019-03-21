@@ -3,6 +3,7 @@ package de.adesso.projectboard.base.project.updater;
 import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.reader.ProjectReader;
+import de.adesso.projectboard.base.scheduled.AutoRegistered;
 import de.adesso.projectboard.base.scheduled.ScheduledJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
  * {@link ScheduledJob} implementation to update persisted jobs.
  */
 @Component
+@AutoRegistered
 public class ProjectUpdater implements ScheduledJob {
 
     private final ProjectService projectService;

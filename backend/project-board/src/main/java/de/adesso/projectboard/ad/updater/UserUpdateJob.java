@@ -1,6 +1,7 @@
 package de.adesso.projectboard.ad.updater;
 
 import de.adesso.projectboard.ad.configuration.LdapConfigurationProperties;
+import de.adesso.projectboard.base.scheduled.AutoRegistered;
 import de.adesso.projectboard.base.scheduled.FixedHourScheduledJob;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
  * of the {@link LdapConfigurationProperties}.
  */
 @Slf4j
+@AutoRegistered
 public class UserUpdateJob extends FixedHourScheduledJob {
 
     private final UserUpdater userUpdater;
