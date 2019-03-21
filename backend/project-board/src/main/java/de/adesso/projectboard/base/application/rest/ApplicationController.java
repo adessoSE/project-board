@@ -1,6 +1,7 @@
 package de.adesso.projectboard.base.application.rest;
 
 import de.adesso.projectboard.base.application.payload.ProjectApplicationPayload;
+import de.adesso.projectboard.base.application.payload.ProjectApplicationStatePayload;
 import de.adesso.projectboard.base.application.projection.FullApplicationProjection;
 import de.adesso.projectboard.base.application.projection.ReducedApplicationProjection;
 import de.adesso.projectboard.base.application.service.ApplicationService;
@@ -70,10 +71,10 @@ public class ApplicationController {
     }
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
-    @DeleteMapping(path = "/{userId}/applications/{applicationId}")
-    public ResponseEntity<?> deleteApplicationOfUser(@PathVariable String userId, @PathVariable long applicationId) {
+    @PutMapping(path = "/{userId}/applications/{applicationId}")
+    public ResponseEntity<?> changeApplicationStateOfUser(@Valid @RequestBody ProjectApplicationStatePayload payload, @PathVariable String userId, @PathVariable long applicationId) {
         var user = userService.getUserById(userId);
-        var application = applicationService.deleteApplicationOfUser(user, applicationId);
+        var application = applicationService.changeApplicationStateOfUser(user, applicationId, payload.getState());
 
         var projection = projectionFactory.createProjectionForAuthenticatedUser(application,
                 ReducedApplicationProjection.class, FullApplicationProjection.class);

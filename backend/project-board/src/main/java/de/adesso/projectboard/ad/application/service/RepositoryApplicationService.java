@@ -84,12 +84,12 @@ public class RepositoryApplicationService implements ApplicationService {
 
     @Transactional
     @Override
-    public ProjectApplication deleteApplicationOfUser(User user, long applicationId) throws ApplicationNotFoundException {
-         var application = applicationRepo.findByUserAndId(user, applicationId).orElseThrow(ApplicationNotFoundException::new);
-         application.setDeleted(true);
-         applicationRepo.save(application);
+    public ProjectApplication changeApplicationStateOfUser(User user, long applicationId, ProjectApplication.State state) throws ApplicationNotFoundException {
+        var application = applicationRepo.findByUserAndId(user, applicationId).orElseThrow(ApplicationNotFoundException::new);
+        application.setState(state);
+        applicationRepo.save(application);
 
-         log.debug(String.format("Application with id %d of user with id %s was deleted", applicationId, user.getId()));
-         return application;
+        log.debug(String.format("Application with id %d of user with id %s changed state to %s", applicationId, user.getId(), state));
+        return application;
     }
 }

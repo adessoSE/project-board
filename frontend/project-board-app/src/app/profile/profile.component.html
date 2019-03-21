@@ -22,7 +22,7 @@
       </div>
       <div *ngIf="!user.boss" class="user-detail-point">
         <p class="detail-heading">Projektanfragen</p>
-        <span class="point-text">{{applications.length}}</span>
+        <span class="point-text">{{filteredApplications.length}}</span>
       </div>
       <div *ngIf="user.boss" class="user-detail-point">
         <p class="detail-heading">Mitarbeiter</p>
@@ -83,12 +83,12 @@
 
       <!-- applications tab -->
       <ng-container *ngIf="tabIndex == 1">
-        <div class="application" *ngFor="let a of applications; index as i" [ngClass]="{'border-bottom': i<applications.length-1, 'deleted': a.deleted}">
+        <div class="application" *ngFor="let a of applications; index as i" [ngClass]="{'border-bottom': i<applications.length-1, 'deleted': a.state === State.DELETED}">
           <div class="headline">
             <div class="linking-icon-wrapper" title="Öffnen" (click)="openDialog(a.project)">
               <mat-icon>open_in_new</mat-icon>
             </div>
-            <span class="project-title">{{a.project.title}} {{a.deleted ? "(gelöscht)" : ""}}</span>
+            <span class="project-title">{{a.project.title}} {{a.state === State.DELETED ? "(gelöscht)" : ""}}</span>
           </div>
           <div class="application-details">
             <div class="font-weight-bold">Datum:</div>

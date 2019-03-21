@@ -63,11 +63,15 @@ public class ProjectApplication {
     )
     LocalDateTime applicationDate;
 
+
+    /**
+     * The state of the application.
+     */
     @Column(
-            name = "DELETED",
+            name = "STATE",
             nullable = false
     )
-    boolean deleted;
+    State state;
 
     /**
      * Constructs a new instance. Adds the application to the user's
@@ -97,7 +101,7 @@ public class ProjectApplication {
         this.comment = comment;
         this.user = user;
         this.applicationDate = applicationDate;
-        this.deleted = false;
+        this.state = State.NONE;
 
         user.addApplication(this);
     }
@@ -144,6 +148,10 @@ public class ProjectApplication {
         int userIdHash = this.user != null ? Objects.hashCode(this.user.getId()) : 0;
 
         return baseHash + 31 * userIdHash;
+    }
+
+    public enum State {
+        NONE, DELETED, OFFERED, DELETEDANDOFFERED;
     }
 
 }

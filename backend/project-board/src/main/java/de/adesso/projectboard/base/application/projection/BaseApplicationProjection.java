@@ -1,5 +1,6 @@
 package de.adesso.projectboard.base.application.projection;
 
+import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.user.projection.NameAndIdProjection;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -17,5 +18,5 @@ public interface BaseApplicationProjection {
     @Value("#{@userProjectionFactory.createProjection(target.user, T(de.adesso.projectboard.base.user.projection.NameAndIdProjection))}")
     NameAndIdProjection getUser();
 
-    boolean getDeleted();
+    ProjectApplication.State getState();
 }
