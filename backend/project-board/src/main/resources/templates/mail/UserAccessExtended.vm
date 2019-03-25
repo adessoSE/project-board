@@ -1,6 +1,6 @@
 #* @vtlvariable name="userData" type="de.adesso.projectboard.base.user.persistence.data.UserData" *#
 #* @vtlvariable name="projectBoardUrl" type="java.lang.String" *#
-#* @vtlvariable name="newDateTime" type="java.lang.String" *#
+#* @vtlvariable name="newDate" type="java.lang.String" *#
 
 #set( $firstName = $userData.getFirstName() )
 
@@ -13,7 +13,7 @@ Deine Freischaltung für das Project Board wurde verlängert
 
 Hallo ${firstName},
 
-deine Freischaltung für das Project Board wurde bis zum ${newDateTime} Uhr verlängert.
+deine Freischaltung für das Project Board wurde bis zum ${newDate} verlängert.
 
 Du kannst das project board hier erreichen: ${projectBoardUrl}.
 

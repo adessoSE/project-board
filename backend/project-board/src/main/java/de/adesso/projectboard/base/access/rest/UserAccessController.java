@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.time.LocalTime;
 
 @RestController
 @RequestMapping("/users")
@@ -35,7 +36,7 @@ public class UserAccessController {
     @PostMapping(path = "/{userId}/access")
     public ResponseEntity<?> createAccessForUser(@Valid @RequestBody UserAccessPayload payload, @PathVariable String userId) {
         var user = userService.getUserById(userId);
-        var updatedUser = userAccessService.giveUserAccessUntil(user, payload.getAccessEnd());
+        var updatedUser = userAccessService.giveUserAccessUntil(user, payload.getAccessEnd().atTime(LocalTime.MAX));
 
         return ResponseEntity.ok(projectionFactory.createProjection(updatedUser, DefaultUserProjection.class));
     }
