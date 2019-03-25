@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * A specification for a reader that is used in {@link de.adesso.projectboard.base.updater.ProjectUpdater}.
+ * A specification for a reader that is used in {@link de.adesso.projectboard.base.project.updater.ProjectUpdater}.
  *
  * @see de.adesso.projectboard.reader.JiraProjectReader
  */
@@ -24,7 +24,7 @@ public interface ProjectReader {
      * @throws Exception
      *          When a error occurs.
      *
-     * @see de.adesso.projectboard.base.updater.ProjectUpdater
+     * @see de.adesso.projectboard.base.project.updater.ProjectUpdater
      */
     List<Project> getAllProjectsSince(LocalDateTime dateTime) throws Exception;
 

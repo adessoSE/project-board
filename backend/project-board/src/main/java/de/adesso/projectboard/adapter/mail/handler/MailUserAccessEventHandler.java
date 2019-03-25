@@ -21,7 +21,7 @@ import java.util.Map;
 @Slf4j
 public class MailUserAccessEventHandler implements UserAccessEventHandler {
 
-    static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+    static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
     private final MailSenderAdapter mailSenderAdapter;
 
@@ -77,7 +77,7 @@ public class MailUserAccessEventHandler implements UserAccessEventHandler {
 
         return Map.of(
                 "userData", userData,
-                "newDateTime", newDateAndTime,
+                "newDate", newDateAndTime,
                 "projectBoardUrl", projectBoardUrl
         );
     }
