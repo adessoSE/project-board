@@ -41,6 +41,6 @@ public class LdapConfigurationProperties {
      */
     @Min(0L)
     @Max(23L)
-    private long updateHour = 4;
+    private int updateHour = 4;
 
 }

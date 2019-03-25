@@ -20,9 +20,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MailUserAccessEventHandlerTest {
@@ -69,7 +69,7 @@ public class MailUserAccessEventHandlerTest {
         var expectedEndTime = LocalDateTime.of(2019, 2, 3, 10, 0);
         var expectedContextMap = Map.of(
                 "userData", userDataMock,
-                "newDateTime", "03.02.2019 10:00",
+                "newDate", expectedEndTime.format(MailUserAccessEventHandler.DATE_TIME_FORMATTER),
                 "projectBoardUrl", PROJECT_BOARD_URL
         );
         var expectedMessage = new TimeAwareMessage(userMock, userMock, expectedSubject, expectedText, expectedEndTime);
@@ -98,7 +98,7 @@ public class MailUserAccessEventHandlerTest {
         var expectedOldEndTime = LocalDateTime.of(2019, 1, 1, 10, 0);
         var expectedContextMap = Map.of(
                 "userData", userDataMock,
-                "newDateTime", expectedEndTime.format(MailUserAccessEventHandler.DATE_TIME_FORMATTER),
+                "newDate", expectedEndTime.format(MailUserAccessEventHandler.DATE_TIME_FORMATTER),
                 "projectBoardUrl", PROJECT_BOARD_URL
         );
         var expectedMessage = new TimeAwareMessage(userMock, userMock, expectedSubject, expectedText, expectedEndTime);
@@ -127,7 +127,7 @@ public class MailUserAccessEventHandlerTest {
         var expectedOldEndTime = LocalDateTime.of(2019, 3, 1, 10, 0);
         var expectedContextMap = Map.of(
                 "userData", userDataMock,
-                "newDateTime", expectedEndTime.format(MailUserAccessEventHandler.DATE_TIME_FORMATTER),
+                "newDate", expectedEndTime.format(MailUserAccessEventHandler.DATE_TIME_FORMATTER),
                 "projectBoardUrl", PROJECT_BOARD_URL
         );
         var expectedMessage = new TimeAwareMessage(userMock, userMock, expectedSubject, expectedText, expectedEndTime);
@@ -173,7 +173,7 @@ public class MailUserAccessEventHandlerTest {
         var formattedNewEndDateTime = newDateTime.format(MailUserAccessEventHandler.DATE_TIME_FORMATTER);
         var expectedContextMap = Map.of(
             "userData", userDataMock,
-            "newDateTime", formattedNewEndDateTime,
+            "newDate", formattedNewEndDateTime,
             "projectBoardUrl", PROJECT_BOARD_URL
         );
 

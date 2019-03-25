@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  *     is defined.
  * </p>
  *
- * @see de.adesso.projectboard.base.updater.ProjectUpdater
+ * @see de.adesso.projectboard.base.project.updater.ProjectUpdater
  */
 public class JiraProjectReader implements ProjectReader {
 
