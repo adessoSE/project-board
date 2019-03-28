@@ -34,8 +34,11 @@ export class EmployeeService {
     return this.http.get<Employee[]>(`${environment.resourceServer}/users/${userId}/staff/search?query=${query}&projection=withpicture`);
   }
 
-  revokeApplication(userId, appId): Observable<Application> {
-    return this.http.delete<Application>(`${environment.resourceServer}/users/${userId}/applications/${appId}`);
+  changeApplicationState(userId: string, appId: number, state: State): Observable<Application> {
+    const body = {
+      'state': state
+    };
+    return this.http.put<Application>(`${environment.resourceServer}/users/${userId}/applications/${appId}`, body);
   }
 
   applyForProject(userId: string, projectId: string, comment: string): Observable<Application> {
@@ -106,4 +109,11 @@ export interface Application {
   project: Project;
   comment: string;
   date: Date;
+}
+
+export enum State {
+  NONE = "NONE",
+  NEW = "NEW",
+  DELETED = "DELETED",
+  OFFERED = "OFFERED",
 }

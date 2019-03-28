@@ -5,6 +5,7 @@ import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.persistence.ProjectApplicationRepository;
 import de.adesso.projectboard.base.application.service.ApplicationService;
 import de.adesso.projectboard.base.exceptions.AlreadyAppliedException;
+import de.adesso.projectboard.base.exceptions.ApplicationNotFoundException;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.user.persistence.User;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -24,6 +26,7 @@ import java.util.List;
  */
 @Service
 @Transactional(readOnly = true)
+@Slf4j
 public class RepositoryApplicationService implements ApplicationService {
 
     private final ProjectService projectService;
@@ -77,6 +80,17 @@ public class RepositoryApplicationService implements ApplicationService {
     @Override
     public List<ProjectApplication> getApplicationsOfUsers(Collection<User> users, Sort sort) {
         return applicationRepo.findAllByUserIn(users, sort);
+    }
+
+    @Transactional
+    @Override
+    public ProjectApplication changeApplicationStateOfUser(User user, long applicationId, ProjectApplication.State state) throws ApplicationNotFoundException {
+        var application = applicationRepo.findByUserAndId(user, applicationId).orElseThrow(ApplicationNotFoundException::new);
+        application.setState(state);
+        applicationRepo.save(application);
+
+        log.debug(String.format("Application with id %d of user with id %s changed state to %s", applicationId, user.getId(), state));
+        return application;
     }
 
 }

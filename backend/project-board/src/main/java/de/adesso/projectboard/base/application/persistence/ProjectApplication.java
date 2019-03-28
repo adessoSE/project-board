@@ -64,6 +64,15 @@ public class ProjectApplication {
     LocalDateTime applicationDate;
 
     /**
+     * The state of the application.
+     */
+    @Column(
+            name = "STATE",
+            nullable = false
+    )
+    State state;
+
+    /**
      * Constructs a new instance. Adds the application to the user's
      * {@link User#getApplications() applications}.
      *
@@ -91,6 +100,7 @@ public class ProjectApplication {
         this.comment = comment;
         this.user = user;
         this.applicationDate = applicationDate;
+        this.state = State.NEW;
 
         user.addApplication(this);
     }
@@ -137,6 +147,10 @@ public class ProjectApplication {
         int userIdHash = this.user != null ? Objects.hashCode(this.user.getId()) : 0;
 
         return baseHash + 31 * userIdHash;
+    }
+
+    public enum State {
+       NONE, NEW, DELETED, OFFERED;
     }
 
 }

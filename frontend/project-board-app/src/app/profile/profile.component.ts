@@ -5,7 +5,7 @@ import * as $ from 'jquery';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthenticationService } from '../_services/authentication.service';
-import { Application, Employee, EmployeeService } from '../_services/employee.service';
+import { Application, Employee, EmployeeService, State } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
 import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
 import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
@@ -154,5 +154,12 @@ export class ProfileComponent implements OnInit {
         this.employeeApplications = employeeApplications;
         this.loadingEmployeeApplications = false;
       });
+  }
+
+  changeStateOfApplication(applicationId : number, state :State){
+
+         this.employeeService.changeApplicationState(this.employeeApplications.find(x => x.id === applicationId).user.id, applicationId, state)
+         .pipe(takeUntil(this.destroy$))
+         .subscribe();
   }
 }
