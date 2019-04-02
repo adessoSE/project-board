@@ -74,9 +74,9 @@ public class HierarchyTreeNode implements Iterable<HierarchyTreeNode>, Streamabl
      */
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
-            name = "ALL_STAFF",
-            joinColumns = @JoinColumn(name = "MANAGER_NODE_ID", nullable = false),
-            inverseJoinColumns = @JoinColumn(name = "NODE_ID", nullable = false)
+            name = "HIERARCHY_TREE_NODE_ALL_STAFF",
+            joinColumns = @JoinColumn(name = "MANAGER_NODE_ID"),
+            inverseJoinColumns = @JoinColumn(name = "NODE_ID")
     )
     List<HierarchyTreeNode> staff;
 
