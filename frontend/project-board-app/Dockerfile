@@ -1,19 +1,12 @@
-# Stage 1
-FROM node:8.11.2-alpine as node
+# Use the latest nginx alpine image
+FROM nginx:alpine
 
-WORKDIR /usr/src/app
+# Copy nginx configuration file
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-COPY package.json ./
-COPY yarn.lock ./
+# Set working directory to nginx static resource directory
+WORKDIR /usr/share/nginx/html/
 
-RUN yarn install
+# Copy the production/development build
+COPY dist/project-board-app .
 
-COPY . .
-
-RUN yarn run build --prod
-
-# Stage 2
-FROM nginx:1.13.12-alpine
-
-COPY --from=node /usr/src/app/dist/project-board-app /usr/share/nginx/html
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
