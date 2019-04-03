@@ -49,7 +49,7 @@ public class UserPersistenceTest {
         User user = new User(expectedUserId);
         user.addBookmark(project);
 
-        new ProjectApplication(project, "Comment", user, applicationDate);
+        new ProjectApplication(project, "Comment", user, applicationDate, false);
         new AccessInterval(user, intervalStartTime, intervalEndTime);
 
         // when

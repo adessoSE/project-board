@@ -56,8 +56,19 @@
           <mat-icon>email</mat-icon>
         </div>
         Projektanfragen Mitarbeiter
-        <mat-icon class="helper-icon" matTooltip="Anfragen deiner Mitarbeiter, die an einem Projekt interessiert sind. Anfragen werden automatisch einen Monat nach Ablauf der Freischaltung für den Mitarbeiter zum Project Board gelöscht."
-        [matTooltipPosition]="position.value">help</mat-icon>
+        <button *ngIf="filteredEmployeeApplications.length === employeeApplications.length && employeeApplications.length > 0"
+            class="btn btn-primary toggle-filter-btn"
+            (click)="toggleFilter()">
+      Nur neue zeigen
+    </button>
+    <button *ngIf="filteredEmployeeApplications.length !== employeeApplications.length && employeeApplications.length > 0"
+            class="btn btn-primary toggle-filter-btn"
+            (click)="toggleFilter()">
+      Alle zeigen
+    </button>
+
+    <mat-icon class="helper-icon" matTooltip="Anfragen deiner Mitarbeiter, die an einem Projekt interessiert sind. Anfragen werden automatisch einen Monat nach Ablauf der Freischaltung für den Mitarbeiter zum Project Board gelöscht."
+    [matTooltipPosition]="position.value">help</mat-icon>
       </div>
     </div>
 
@@ -104,16 +115,17 @@
 
       <!-- employee-applications tab-->
       <ng-container *ngIf="tabIndex == 2">
-        <div class="employee-application" *ngFor="let a of employeeApplications; index as i" [ngClass]="{'border-bottom': i<employeeApplications.length-1}">
+        <div class="employee-application" *ngFor="let a of employeeApplications; index as i" [ngClass]="{'border-bottom': i<employeeApplications.length-1, 'unread': a.state === 'NEW'}">
           <div class="row">
             <div class="col-10">
           <span class="project-title">
+            <div *ngIf="a.state === 'NEW'" class="new-info">[NEU]</div>
             <div class="linking-icon-wrapper">
-              <div class="linking-icon" title="Öffnen" (click)="openDialog(a.project)">
+              <div class="linking-icon" title="Öffnen" (click)="openDialog(a.project); markAsRead(a);">
                 <mat-icon>open_in_new</mat-icon>
               </div>
             </div>
-            {{a.project.title}} 
+            {{a.project.title}}
           </span>
             </div>
             <div class="col-2">
@@ -133,8 +145,12 @@
             <div class="comment-display">{{a.comment.length > 0 ? a.comment : '-'}}</div>
           </div>
         </div>
-        <div class="inset" *ngIf="!loadingEmployeeApplications && (!employeeApplications || employeeApplications.length === 0)">
-          Keine Projektanfragen deiner Mitarbeiter.
+        <div class="inset" *ngIf="!loadingEmployeeApplications && (!filteredEmployeeApplications || filteredEmployeeApplications.length === 0)">
+          {{
+          filteredEmployeeApplications.length !== employeeApplications.length ?
+          'Keine neuen Projektanfragen.' :
+          'Keine Projektanfragen deiner Mitarbeiter.'
+          }}
         </div>
         <div *ngIf="loadingEmployeeApplications" class="inset">
           <div class="loading-spinner">

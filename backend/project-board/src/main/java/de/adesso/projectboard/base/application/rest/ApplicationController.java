@@ -58,6 +58,14 @@ public class ApplicationController {
     }
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
+    @PostMapping(path = "/{userId}/staff/applications/{applicationId}")
+    public ResponseEntity<?> markApplicationAsRead(@PathVariable String userId, @PathVariable Long applicationId) {
+        var application = this.applicationService.markApplicationAsRead(applicationId);
+        var projection = projectionFactory.createProjection(application, FullApplicationProjection.class);
+        return ResponseEntity.ok(projection);
+    }
+
+    @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @GetMapping(path = "/{userId}/staff/applications")
     public ResponseEntity<?> getApplicationsOfStaffMembers(@PathVariable String userId, @SortDefault(sort = "applicationDate", direction = Sort.Direction.DESC) Sort sort) {
         var user = userService.getUserById(userId);

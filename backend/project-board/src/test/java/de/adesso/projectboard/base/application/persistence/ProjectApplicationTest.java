@@ -37,7 +37,7 @@ public class ProjectApplicationTest {
         var comment = "This is a comment!";
         var date = LocalDateTime.now();
 
-        var application = new ProjectApplication(projectMock, comment, userMock, date);
+        var application = new ProjectApplication(projectMock, comment, userMock, date, false);
         application.id = applicationId;
 
         // when
@@ -56,9 +56,9 @@ public class ProjectApplicationTest {
 
         given(userMock.getId()).willReturn(userId);
 
-        var application = new ProjectApplication(projectMock, comment, userMock, date);
+        var application = new ProjectApplication(projectMock, comment, userMock, date, false);
 
-        var otherApplication = new ProjectApplication(projectMock, comment, userMock, date);
+        var otherApplication = new ProjectApplication(projectMock, comment, userMock, date, false);
 
         // when
         boolean actualEquals = application.equals(otherApplication);
@@ -85,10 +85,10 @@ public class ProjectApplicationTest {
 
         given(userMock.getId()).willReturn(userId);
 
-        var application = new ProjectApplication(null, comment, userMock, date);
+        var application = new ProjectApplication(null, comment, userMock, date, false);
         application.id = applicationId;
 
-        var otherApplication = new ProjectApplication(null, comment, userMock, date);
+        var otherApplication = new ProjectApplication(null, comment, userMock, date, false);
         otherApplication.id = applicationId;
 
         // when & then
@@ -104,10 +104,10 @@ public class ProjectApplicationTest {
 
         given(userMock.getId()).willReturn(userId);
 
-        var application = new ProjectApplication(projectMock, null, userMock, date);
+        var application = new ProjectApplication(projectMock, null, userMock, date, false);
         application.id = applicationId;
 
-        var otherApplication = new ProjectApplication(projectMock, null, userMock, date);
+        var otherApplication = new ProjectApplication(projectMock, null, userMock, date, false);
         otherApplication.id = applicationId;
 
         // when & then
@@ -123,10 +123,10 @@ public class ProjectApplicationTest {
 
         given(userMock.getId()).willReturn(userId);
 
-        var application = new ProjectApplication(projectMock, comment, userMock, null);
+        var application = new ProjectApplication(projectMock, comment, userMock, null, false);
         application.id = applicationId;
 
-        var otherApplication = new ProjectApplication(projectMock, comment, userMock, null);
+        var otherApplication = new ProjectApplication(projectMock, comment, userMock, null, false);
         otherApplication.id = applicationId;
 
         // when & then
@@ -141,9 +141,9 @@ public class ProjectApplicationTest {
 
         given(userMock.getId()).willReturn(null);
 
-        var application = new ProjectApplication(projectMock, comment, userMock, date);
+        var application = new ProjectApplication(projectMock, comment, userMock, date, false);
 
-        var otherApplication = new ProjectApplication(projectMock, comment, userMock, date);
+        var otherApplication = new ProjectApplication(projectMock, comment, userMock, date, false);
 
         // when & then
         assertEqualsAndHashCodeEquals(application, otherApplication);
@@ -159,10 +159,10 @@ public class ProjectApplicationTest {
 
         given(userMock.getId()).willReturn(userId);
 
-        var application = new ProjectApplication(projectMock, comment, userMock, date);
+        var application = new ProjectApplication(projectMock, comment, userMock, date, false);
         application.id = applicationId;
 
-        var otherApplication = new ProjectApplication(projectMock, comment, userMock, date);
+        var otherApplication = new ProjectApplication(projectMock, comment, userMock, date, false);
         otherApplication.id = applicationId;
 
         // when & then
@@ -180,10 +180,10 @@ public class ProjectApplicationTest {
         given(userMock.getId()).willReturn(userId);
         given(otherUserMock.getId()).willReturn(userId);
 
-        var application = new ProjectApplication(projectMock, comment, userMock, date);
+        var application = new ProjectApplication(projectMock, comment, userMock, date, false);
         application.id = applicationId;
 
-        var otherApplication = new ProjectApplication(projectMock, comment, otherUserMock, date);
+        var otherApplication = new ProjectApplication(projectMock, comment, otherUserMock, date, false);
         otherApplication.id = applicationId;
 
         // when & then
@@ -196,7 +196,7 @@ public class ProjectApplicationTest {
         var comment = "This is a comment!";
         var date = LocalDateTime.now();
 
-        var application = new ProjectApplication(projectMock, comment, userMock, date);
+        var application = new ProjectApplication(projectMock, comment, userMock, date, false);
 
         // when
         boolean actualEquals = application.equals("Test");
@@ -216,10 +216,10 @@ public class ProjectApplicationTest {
 
         given(userMock.getId()).willReturn(userId);
 
-        var application = new ProjectApplication(projectMock, comment, userMock, date);
+        var application = new ProjectApplication(projectMock, comment, userMock, date, false);
         application.id = applicationId;
 
-        var otherApplication = new ProjectApplication(projectMock, comment, userMock, date);
+        var otherApplication = new ProjectApplication(projectMock, comment, userMock, date, false);
         otherApplication.id = otherApplicationId;
 
         // when
@@ -239,10 +239,10 @@ public class ProjectApplicationTest {
 
         given(userMock.getId()).willReturn(userId);
 
-        var application = new ProjectApplication(projectMock, comment, userMock, date);
+        var application = new ProjectApplication(projectMock, comment, userMock, date, false);
         application.id = applicationId;
 
-        var otherApplication = new ProjectApplication(otherProjectMock, comment, userMock, date);
+        var otherApplication = new ProjectApplication(otherProjectMock, comment, userMock, date, false);
         otherApplication.id = applicationId;
 
         // when
@@ -263,10 +263,10 @@ public class ProjectApplicationTest {
 
         given(userMock.getId()).willReturn(userId);
 
-        var application = new ProjectApplication(projectMock, comment, userMock, date);
+        var application = new ProjectApplication(projectMock, comment, userMock, date, false);
         application.id = applicationId;
 
-        var otherApplication = new ProjectApplication(projectMock, otherComment, userMock, date);
+        var otherApplication = new ProjectApplication(projectMock, otherComment, userMock, date, false);
         otherApplication.id = applicationId;
 
         // when
@@ -287,10 +287,10 @@ public class ProjectApplicationTest {
 
         given(userMock.getId()).willReturn(userId);
 
-        var application = new ProjectApplication(projectMock, comment, userMock, date);
+        var application = new ProjectApplication(projectMock, comment, userMock, date, false);
         application.id = applicationId;
 
-        var otherApplication = new ProjectApplication(projectMock, comment, userMock, otherDate);
+        var otherApplication = new ProjectApplication(projectMock, comment, userMock, otherDate, false);
         otherApplication.id = applicationId;
 
         // when
@@ -312,10 +312,10 @@ public class ProjectApplicationTest {
         given(userMock.getId()).willReturn(userId);
         given(otherUserMock.getId()).willReturn(otherUserId);
 
-        var application = new ProjectApplication(projectMock, comment, userMock, date);
+        var application = new ProjectApplication(projectMock, comment, userMock, date, false);
         application.id = applicationId;
 
-        var otherApplication = new ProjectApplication(projectMock, comment, otherUserMock, date);
+        var otherApplication = new ProjectApplication(projectMock, comment, otherUserMock, date, false);
         otherApplication.id = applicationId;
 
         // when

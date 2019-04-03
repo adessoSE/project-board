@@ -25,6 +25,8 @@ export class ProfileComponent implements OnInit {
   @Input() projects: Project[] = [];
   employees: Employee[] = [];
   employeeApplications: Application[] = [];
+  filteredEmployeeApplications: Application[] = [];
+  unreadApplications: string[];
 
   positionOptions: TooltipPosition[] = ['after', 'before', 'above', 'below', 'left', 'right'];
   position = new FormControl(this.positionOptions[2]);
@@ -153,10 +155,10 @@ export class ProfileComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe(employeeApplications => {
         this.employeeApplications = employeeApplications;
+        this.filteredEmployeeApplications = employeeApplications;
         this.loadingEmployeeApplications = false;
       });
   }
-
   removeApplication(applicationId : number) {
     this.changeStateOfApplication(applicationId, State.DELETED)
   }
@@ -165,8 +167,13 @@ export class ProfileComponent implements OnInit {
     return this.applications.filter(a => a.state !== State.DELETED).length;
   }
 
+  markAsRead(application: Application) {
+    if(application.state === "NEW"){
+    this.changeStateOfApplication(application.id, State.NONE);
+    }
+  }
+
   changeStateOfApplication(applicationId : number, state :State){
-    console.log("Aufruf");
       if(state === "DELETED"){
         let dialogRef = this.dialog.open(SafetyqueryDialogComponent, {
           disableClose: false
@@ -179,5 +186,19 @@ export class ProfileComponent implements OnInit {
            }
         });
       }
+      if(state === "NONE") {
+        this.employeeService.changeApplicationState(this.employeeApplications.find(x => x.id === applicationId).user.id, applicationId, state)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => this.employeeApplications.find(x => x.id === applicationId).state = State.NONE);
+      }
   }
+
+
+toggleFilter() {
+  if (this.filteredEmployeeApplications.length === this.employeeApplications.length) {
+    this.filteredEmployeeApplications = this.employeeApplications.filter(app => app.state === "NEW");
+  } else {
+    this.filteredEmployeeApplications = this.employeeApplications;
+  }
+}
 }

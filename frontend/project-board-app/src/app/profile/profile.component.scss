@@ -130,8 +130,10 @@
 }
 
 .employee-application {
-  border-bottom: 1px solid #e6e6e6;
   padding: 15px;
+  &:not(:last-child) {
+    border-bottom: 1px solid #e6e6e6;
+  }
 }
 
 .remover {
@@ -214,15 +216,46 @@
   overflow: hidden;
 }
 
-.helper-icon {
-  font-size: 15px;
-  width: 15px;
-  height: 15px;
-  vertical-align: text-top;
+button:focus, button:active {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  outline: none;
 }
 
-/deep/ .mat-tooltip {
-  font-size: 14px;
+.unread {
+  background-color: aliceblue;
+}
+
+.toggle-filter-btn {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  width: 135px;
+  padding-top: calc((33px - 1.5rem) / 2);
+  padding-bottom: calc((33px - 1.5rem) / 2);
+}
+
+.new-info {
+  color: orange;
+}
+
+@media only screen and (max-width: 540px){
+  .toggle-filter-btn {
+    position: relative;
+    width: 100%;
+    left: 0;
+  }
+  .helper-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+    vertical-align: text-top;
+  }
+
+  /deep/ .mat-tooltip {
+    font-size: 14px;
+  }
 }
 
 .small-delete {
@@ -315,3 +348,4 @@ button:focus, button:active {
   box-shadow: none;
   outline: none;
 }
+
