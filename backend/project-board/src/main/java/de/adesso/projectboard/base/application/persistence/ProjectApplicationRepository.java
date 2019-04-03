@@ -22,5 +22,4 @@ public interface ProjectApplicationRepository extends CrudRepository<ProjectAppl
     Optional<ProjectApplication> findByUserAndId(User user, long id);
 
     boolean existsByUserAndProject(User user, Project project);
-
 }

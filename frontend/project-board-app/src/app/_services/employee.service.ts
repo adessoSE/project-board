@@ -109,6 +109,7 @@ export interface Application {
   project: Project;
   comment: string;
   date: Date;
+  state: State;
 }
 
 export enum State {

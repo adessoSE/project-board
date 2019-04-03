@@ -29,6 +29,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { ProjectDialogComponent } from './project-dialog/project-dialog.component';
 import { SearchComponent } from './search/search.component';
 import { FaqComponent } from './faq/faq.component';
+import { SafetyqueryDialogComponent } from './safetyquery-dialog/safetyquery-dialog.component';
 
 declare var Hammer: any;
 
@@ -56,7 +57,8 @@ registerLocaleData(localeDe, 'de');
     ProfileComponent,
     DatepickerHeaderComponent,
     SearchComponent,
-    FaqComponent
+    FaqComponent,
+    SafetyqueryDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -73,7 +75,8 @@ registerLocaleData(localeDe, 'de');
   entryComponents: [
     ProjectDialogComponent,
     EmployeeDialogComponent,
-    DatepickerHeaderComponent
+    DatepickerHeaderComponent,
+    SafetyqueryDialogComponent
   ],
   providers: [
     {provide: LOCALE_ID, useValue: 'de'},

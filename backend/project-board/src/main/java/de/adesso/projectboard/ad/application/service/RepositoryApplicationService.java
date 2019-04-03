@@ -19,6 +19,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * {@link ApplicationService} implementation that persists {@link ProjectApplication}s
@@ -74,12 +75,17 @@ public class RepositoryApplicationService implements ApplicationService {
 
     @Override
     public List<ProjectApplication> getApplicationsOfUser(User user, Sort sort) {
+
         return applicationRepo.findAllByUser(user, sort);
     }
 
     @Override
     public List<ProjectApplication> getApplicationsOfUsers(Collection<User> users, Sort sort) {
-        return applicationRepo.findAllByUserIn(users, sort);
+
+        List<ProjectApplication> Applications = applicationRepo.findAllByUserIn(users, sort).stream()
+                .filter(a -> a.getState() != ProjectApplication.State.DELETED).collect(Collectors.toList());
+
+        return Applications;
     }
 
     @Transactional
