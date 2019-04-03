@@ -47,9 +47,11 @@ public class UserUpdater {
 
     void updateHierarchy(@NonNull Collection<LdapUserNode> nodes) {
         var rootNodes = getRootNodes(nodes);
+        var hierarchyTreeNodeRoots = buildHierarchyTrees(rootNodes, nodes);
 
-        hierarchyTreeNodeRepo.deleteAllInBatch();
-        hierarchyTreeNodeRepo.saveAll(buildHierarchyNodes(rootNodes, nodes));
+        hierarchyTreeNodeRepo.deleteAll();
+        hierarchyTreeNodeRepo.flush();
+        hierarchyTreeNodeRepo.saveAll(hierarchyTreeNodeRoots);
     }
 
     void updateUserData(@NonNull Collection<LdapUserNode> nodes) {
@@ -61,7 +63,8 @@ public class UserUpdater {
                 })
                 .collect(Collectors.toSet());
 
-        userDataRepo.deleteAllInBatch();
+        userDataRepo.deleteAll();
+        userDataRepo.flush();
         userDataRepo.saveAll(userData);
     }
 
@@ -83,16 +86,16 @@ public class UserUpdater {
     /**
      *
      * @param rootNodes
-     *          The root nodes to create hierarchy nodes for, not null.
+     *          The root nodes to create hierarchy trees for, not null.
      *
      * @param allNodes
-     *          All nodes that are needed to build the hierarchy nodes, not null.
+     *          All nodes that are needed to build the hierarchy trees, not null.
      *
      * @return
-     *          A collection of {@link HierarchyTreeNode}, one for each node
-     *          in the given {@code rootNodes}.
+     *          A collection of {@link HierarchyTreeNode}s representing the roots of the
+     *          created trees, one for each node in the given {@code rootNodes}.
      */
-    Collection<HierarchyTreeNode> buildHierarchyNodes(@NonNull Collection<LdapUserNode> rootNodes, @NonNull Collection<LdapUserNode> allNodes) {
+    Collection<HierarchyTreeNode> buildHierarchyTrees(@NonNull Collection<LdapUserNode> rootNodes, @NonNull Collection<LdapUserNode> allNodes) {
         var dnNodeMap = allNodes.stream()
                 .collect(Collectors.toMap(LdapUserNode::getDn, Function.identity()));
 

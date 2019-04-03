@@ -100,7 +100,8 @@ public class UserUpdaterTest {
         userUpdater.updateUserData(List.of(firstNode, secondNode));
 
         // then
-        verify(userDataRepoMock).deleteAllInBatch();
+        verify(userDataRepoMock).deleteAll();
+        verify(userDataRepoMock).flush();
         verify(userDataRepoMock).saveAll(userDataCaptor.capture());
 
         assertThat(userDataCaptor.getValue()).containsExactlyInAnyOrder(firstExpected, secondExpected);
@@ -179,7 +180,7 @@ public class UserUpdaterTest {
         given(repoUserServiceMock.getOrCreateUserById(secondRootChildUserId)).willReturn(secondRootChildUser);
 
         // when
-        var actualRootHierarchyNodes = userUpdater.buildHierarchyNodes(List.of(firstRootNode, secondRootNode),
+        var actualRootHierarchyNodes = userUpdater.buildHierarchyTrees(List.of(firstRootNode, secondRootNode),
                 List.of(firstRootNode, secondRootNode, firstRootChildNode, secondRootChildNode));
 
         // then
@@ -202,7 +203,7 @@ public class UserUpdaterTest {
         var expectedMessage = String.format("Child node with DN '%s' not found!", missingNodeDn);
 
         // when / then
-        assertThatThrownBy(() -> userUpdater.buildHierarchyNodes(List.of(rootNode), List.of(rootNode)))
+        assertThatThrownBy(() -> userUpdater.buildHierarchyTrees(List.of(rootNode), List.of(rootNode)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(expectedMessage);
     }
