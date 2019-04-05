@@ -70,7 +70,6 @@ public class ApplicationController {
         return ResponseEntity.ok(projections);
     }
 
-
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
     @PutMapping(path = "/{userId}/applications/{applicationId}")
     public ResponseEntity<?> changeApplicationStateOfUser(@Valid @RequestBody ProjectApplicationStatePayload payload, @PathVariable String userId, @PathVariable long applicationId) {
@@ -92,5 +91,4 @@ public class ApplicationController {
                 ReducedApplicationProjection.class, FullApplicationProjection.class);
         return ResponseEntity.ok(projection);
     }
-
 }

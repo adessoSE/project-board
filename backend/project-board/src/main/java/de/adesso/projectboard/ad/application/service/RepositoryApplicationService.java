@@ -78,19 +78,13 @@ public class RepositoryApplicationService implements ApplicationService {
     @Override
     public List<ProjectApplication> getApplicationsOfUser(User user, Sort sort) {
 
-        List<ProjectApplication> Applications = applicationRepo.findAllByUser(user, sort).stream()
-                .filter(a -> a.getState() != ProjectApplication.State.DELETED).collect(Collectors.toList());
-
-        return Applications;
+        return applicationRepo.findAllByUser(user, sort);
     }
 
     @Override
     public List<ProjectApplication> getApplicationsOfUsers(Collection<User> users, Sort sort) {
 
-        List<ProjectApplication> Applications = applicationRepo.findAllByUserIn(users, sort).stream()
-                .filter(a -> a.getState() != ProjectApplication.State.DELETED).collect(Collectors.toList());
-
-        return Applications;
+        return applicationRepo.findAllByUserIn(users, sort);
     }
 
     @Transactional

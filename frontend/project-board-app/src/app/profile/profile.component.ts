@@ -173,13 +173,6 @@ export class ProfileComponent implements OnInit {
         this.loadingEmployeeApplications = false;
       });
   }
-  removeApplication(applicationId : number) {
-    this.changeStateOfApplication(applicationId, State.DELETED)
-  }
-
-  getUndeleted(): number {
-    return this.applications.filter(a => a.state !== State.DELETED).length;
-  }
 
   markAsRead(application: Application) {
     if(application.state === "NEW"){
@@ -188,23 +181,9 @@ export class ProfileComponent implements OnInit {
   }
 
   changeStateOfApplication(applicationId : number, state :State){
-      if(state === "DELETED"){
-        let dialogRef = this.dialog.open(SafetyqueryDialogComponent, {
-          disableClose: false
-        });
-         dialogRef.afterClosed().subscribe(result => {
-           if(result) {
-            this.employeeService.changeApplicationState(this.employeeApplications.find(x => x.id === applicationId).user.id, applicationId, state)
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(() => this.employeeApplications = this.employeeApplications.filter(p => p.id !== applicationId));
-           }
-        });
-      }
-      if(state === "NONE") {
-        this.employeeService.changeApplicationState(this.employeeApplications.find(x => x.id === applicationId).user.id, applicationId, state)
+        this.employeeService.changeApplicationState(this.employeeApplications.find(x => x.id === applicationId).user.id, applicationId, State.NONE)
             .pipe(takeUntil(this.destroy$))
             .subscribe(() => this.employeeApplications.find(x => x.id === applicationId).state = State.NONE);
-      }
   }
 
 

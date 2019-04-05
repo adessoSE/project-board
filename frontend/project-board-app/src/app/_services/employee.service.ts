@@ -34,7 +34,6 @@ export class EmployeeService {
     return this.http.get<Employee[]>(`${environment.resourceServer}/users/${userId}/staff/search?query=${query}&projection=withpicture`);
   }
 
-
   changeApplicationState(userId: string, appId: number, state: State): Observable<Application> {
     const body = {
       'state': state
@@ -136,6 +135,5 @@ export interface Application {
 export enum State {
   NONE = "NONE",
   NEW = "NEW",
-  DELETED = "DELETED",
   OFFERED = "OFFERED",
 }
