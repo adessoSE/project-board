@@ -158,7 +158,7 @@ export class ProfileComponent implements OnInit {
       if(result) {
         this.employeeService.removeApplication(this.employeeApplications.find(x => x.id === applicationId).user.id, applicationId)
         .pipe(takeUntil(this.destroy$))
-        .subscribe(() => this.employeeApplications = this.employeeApplications.filter(p => p.id !== applicationId));
+        .subscribe(() => this.filteredEmployeeApplications = this.filteredEmployeeApplications.filter(p => p.id !== applicationId));
       }
     });
   }
