@@ -68,7 +68,7 @@ public class ScheduledJobExecutor implements ApplicationContextAware {
      */
     @Scheduled(
             initialDelay = 0L,
-            fixedDelay = 120_000L
+            fixedDelay = 45_000L
     )
     public void executeJobs() {
         log.debug("Executing registered scheduled jobs...");
@@ -106,7 +106,7 @@ public class ScheduledJobExecutor implements ApplicationContextAware {
             var executionTime = LocalDateTime.now(clock);
             jobLog = new ScheduledJobLog(executionTime, jobIdentifier, ScheduledJobLog.Status.SUCCESS);
 
-            log.debug(String.format("Successfully executed scheduled job with job identifier '%s'!",
+            log.debug(String.format("Successfully executed scheduled job with job identifier %s!",
                     jobIdentifier));
         } catch (Exception ex) {
             // execution failed
