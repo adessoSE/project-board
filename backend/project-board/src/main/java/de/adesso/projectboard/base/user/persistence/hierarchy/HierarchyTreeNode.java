@@ -63,8 +63,7 @@ public class HierarchyTreeNode implements Iterable<HierarchyTreeNode>, Streamabl
      */
     @OneToMany(
             mappedBy = "manager",
-            orphanRemoval = true,
-            cascade = CascadeType.ALL
+            cascade = CascadeType.PERSIST
     )
     List<HierarchyTreeNode> directStaff;
 
@@ -72,11 +71,11 @@ public class HierarchyTreeNode implements Iterable<HierarchyTreeNode>, Streamabl
      * <b>All</b> staff members' nodes. Also includes
      * the direct staff members' nodes.
      */
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(
-            name = "ALL_STAFF",
-            joinColumns = @JoinColumn(name = "MANAGER_NODE_ID", nullable = false),
-            inverseJoinColumns = @JoinColumn(name = "NODE_ID", nullable = false)
+            name = "HIERARCHY_TREE_NODE_ALL_STAFF",
+            joinColumns = @JoinColumn(name = "MANAGER_NODE_ID"),
+            inverseJoinColumns = @JoinColumn(name = "NODE_ID")
     )
     List<HierarchyTreeNode> staff;
 
