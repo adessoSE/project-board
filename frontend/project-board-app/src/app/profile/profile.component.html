@@ -116,7 +116,7 @@
 
       <!-- employee-applications tab-->
       <ng-container *ngIf="tabIndex == 2">
-        <div class="employee-application" *ngFor="let a of employeeApplications; index as i" [ngClass]="{'border-bottom': i<employeeApplications.length-1, 'unread': a.state === 'NEW'}">
+        <div class="employee-application" *ngFor="let a of filteredEmployeeApplications; index as i" [ngClass]="{'border-bottom': i<filteredEmployeeApplications.length-1, 'unread': a.state === 'NEW'}">
           <div class="row">
             <div class="col-10">
           <span class="project-title">
