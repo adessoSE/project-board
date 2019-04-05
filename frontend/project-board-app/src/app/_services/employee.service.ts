@@ -34,11 +34,16 @@ export class EmployeeService {
     return this.http.get<Employee[]>(`${environment.resourceServer}/users/${userId}/staff/search?query=${query}&projection=withpicture`);
   }
 
+
   changeApplicationState(userId: string, appId: number, state: State): Observable<Application> {
     const body = {
       'state': state
     };
     return this.http.put<Application>(`${environment.resourceServer}/users/${userId}/applications/${appId}`, body);
+  }
+
+  removeApplication(userId: string, appId: number): Observable<Application> {
+    return this.http.delete<Application>(`${environment.resourceServer}/users/${userId}/applications/${appId}`);
   }
 
   applyForProject(userId: string, projectId: string, comment: string): Observable<Application> {

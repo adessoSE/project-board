@@ -69,4 +69,18 @@ public interface ApplicationService {
      *          The response.
      */
     ProjectApplication changeApplicationStateOfUser(User user, long applicationId, ProjectApplication.State state) throws ApplicationNotFoundException;
+
+    /**
+     *
+     * @param user
+     *          The {@link User} to get the applications of.
+     *
+     * @param applicationId
+     *          The id of application to delete.
+     *
+     * @return
+     *          The response.
+     */
+    ProjectApplication deleteApplication(User user, long applicationId) throws ApplicationNotFoundException;
+
 }

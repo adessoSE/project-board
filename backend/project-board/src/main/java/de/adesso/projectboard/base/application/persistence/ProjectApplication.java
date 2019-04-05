@@ -140,7 +140,7 @@ public class ProjectApplication {
     }
 
     public enum State {
-       NONE, NEW, DELETED, OFFERED;
+       NONE, NEW, OFFERED;
     }
 
 }
