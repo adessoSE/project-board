@@ -17,6 +17,4 @@ public interface BaseApplicationProjection {
 
     @Value("#{@userProjectionFactory.createProjection(target.user, T(de.adesso.projectboard.base.user.projection.NameAndIdProjection))}")
     NameAndIdProjection getUser();
-
-    ProjectApplication.State getState();
 }

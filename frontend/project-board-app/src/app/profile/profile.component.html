@@ -22,7 +22,7 @@
       </div>
       <div *ngIf="!user.boss" class="user-detail-point">
         <p class="detail-heading">Projektanfragen</p>
-        <span class="point-text">{{filteredApplications.length}}</span>
+        <span class="point-text">{{applications.length}}</span>
       </div>
       <div *ngIf="user.boss" class="user-detail-point">
         <p class="detail-heading">Mitarbeiter</p>
@@ -104,7 +104,7 @@
 
       <!-- employee-applications tab-->
       <ng-container *ngIf="tabIndex == 2">
-        <div class="employee-application" *ngFor="let a of filteredEmployeeApplications; index as i" [ngClass]="{'border-bottom': i<filteredEmployeeApplications.length-1}">
+        <div class="employee-application" *ngFor="let a of employeeApplications; index as i" [ngClass]="{'border-bottom': i<employeeApplications.length-1}">
           <div class="row">
             <div class="col-10">
           <span class="project-title">
@@ -133,7 +133,7 @@
             <div class="comment-display">{{a.comment.length > 0 ? a.comment : '-'}}</div>
           </div>
         </div>
-        <div class="inset" *ngIf="!loadingEmployeeApplications && (!filteredEmployeeApplications || filteredEmployeeApplications.length === 0)">
+        <div class="inset" *ngIf="!loadingEmployeeApplications && (!employeeApplications || employeeApplications.length === 0)">
           Keine Projektanfragen deiner Mitarbeiter.
         </div>
         <div *ngIf="loadingEmployeeApplications" class="inset">

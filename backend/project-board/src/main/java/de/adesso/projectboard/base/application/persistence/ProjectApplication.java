@@ -63,16 +63,6 @@ public class ProjectApplication {
     )
     LocalDateTime applicationDate;
 
-
-    /**
-     * The state of the application.
-     */
-    @Column(
-            name = "STATE",
-            nullable = false
-    )
-    State state;
-
     /**
      * Constructs a new instance. Adds the application to the user's
      * {@link User#getApplications() applications}.
@@ -101,7 +91,6 @@ public class ProjectApplication {
         this.comment = comment;
         this.user = user;
         this.applicationDate = applicationDate;
-        this.state = State.NONE;
 
         user.addApplication(this);
     }
@@ -149,9 +138,4 @@ public class ProjectApplication {
 
         return baseHash + 31 * userIdHash;
     }
-
-    public enum State {
-        NONE, DELETED, OFFERED, DELETEDANDOFFERED;
-    }
-
 }

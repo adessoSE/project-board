@@ -5,14 +5,13 @@ import * as $ from 'jquery';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthenticationService } from '../_services/authentication.service';
-import { Application, Employee, EmployeeService, State } from '../_services/employee.service';
+import { Application, Employee, EmployeeService } from '../_services/employee.service';
 import { Project, ProjectService } from '../_services/project.service';
 import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
 import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
 import { SafetyqueryDialogComponent } from '../safetyquery-dialog/safetyquery-dialog.component';
 import {FormControl} from '@angular/forms';
 import {TooltipPosition} from '@angular/material';
-import { state } from '@angular/animations';
 
 @Component({
   selector: 'app-profile',
@@ -24,10 +23,8 @@ export class ProfileComponent implements OnInit {
   @Input() bookmarks: Project[] = [];
   @Input() applications: Application[] = [];
   @Input() projects: Project[] = [];
-  filteredApplications: Application[] = [];
   employees: Employee[] = [];
   employeeApplications: Application[] = [];
-  filteredEmployeeApplications : Application[] = [];
 
   positionOptions: TooltipPosition[] = ['after', 'before', 'above', 'below', 'left', 'right'];
   position = new FormControl(this.positionOptions[2]);
@@ -56,7 +53,6 @@ export class ProfileComponent implements OnInit {
         this.user = data.user;
         this.bookmarks = data.bookmarks;
         this.applications = data.applications;
-        this.filteredApplications = this.applications.filter(p => p.state === State.NONE);
       });
 
     if (this.user.boss) {
@@ -158,9 +154,9 @@ export class ProfileComponent implements OnInit {
    });
     dialogRef.afterClosed().subscribe(result => {
       if(result) {
-        this.employeeService.changeApplicationState(this.employeeApplications.find(x => x.id === applicationId).user.id, applicationId, State.DELETED)
+        this.employeeService.removeApplication(this.employeeApplications.find(x => x.id === applicationId).user.id, applicationId)
         .pipe(takeUntil(this.destroy$))
-        .subscribe(() => this.filteredEmployeeApplications = this.filteredEmployeeApplications.filter(p => p.id !== applicationId));
+        .subscribe(() => this.employeeApplications = this.employeeApplications.filter(p => p.id !== applicationId));
       }
     });
   }
@@ -171,9 +167,6 @@ export class ProfileComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe(employeeApplications => {
         this.employeeApplications = employeeApplications;
-        let i = 0;
-        this.filteredEmployeeApplications = employeeApplications.filter(p => p.state === State.NONE);
-        console.log(State.NONE);
         this.loadingEmployeeApplications = false;    
       });
   }
