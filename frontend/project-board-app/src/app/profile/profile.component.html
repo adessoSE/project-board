@@ -22,7 +22,7 @@
       </div>
       <div *ngIf="!user.boss" class="user-detail-point">
         <p class="detail-heading">Projektanfragen</p>
-        <span class="point-text">{{getUndeleted()}}</span>
+        <span class="point-text">{{applications.length}}</span>
       </div>
       <div *ngIf="user.boss" class="user-detail-point">
         <p class="detail-heading">Mitarbeiter</p>
