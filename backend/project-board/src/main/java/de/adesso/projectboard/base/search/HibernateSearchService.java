@@ -38,10 +38,14 @@ public class HibernateSearchService {
     @PersistenceContext
     EntityManager entityManager;
 
+    final Map<Class<?>, List<String>> classIndexedFieldMap;
+
     public HibernateSearchService() {
         // increase the max clause count to allow searching for
         // staff members of users with more than 1024 staff members
         BooleanQuery.setMaxClauseCount(MAX_CLAUSE_COUNT);
+
+        this.classIndexedFieldMap = new HashMap<>();
     }
 
     Query getProjectBaseQuery(@NonNull String simpleQueryString, @NonNull Set<String> status) {
@@ -154,7 +158,11 @@ public class HibernateSearchService {
      *          it is not empty.
      */
     List<String> getNamesOfAnnotatedStringFields(Class<?> entityType) {
-        return Arrays.stream(entityType.getDeclaredFields())
+        if(classIndexedFieldMap.containsKey(entityType)) {
+            return classIndexedFieldMap.get(entityType);
+        }
+
+        var indexedStringFields = Arrays.stream(entityType.getDeclaredFields())
                 .filter(field -> String.class.equals(field.getType()) && Objects.nonNull(field.getAnnotation(Field.class)))
                 .map(field -> {
                     var fieldAnnotation = field.getAnnotation(Field.class);
@@ -166,6 +174,9 @@ public class HibernateSearchService {
                     return field.getName();
                 })
                 .collect(Collectors.toList());
+        classIndexedFieldMap.put(entityType, indexedStringFields);
+
+        return indexedStringFields;
     }
 
     /**

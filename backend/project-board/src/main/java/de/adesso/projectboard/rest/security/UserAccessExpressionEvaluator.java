@@ -15,10 +15,6 @@ import org.springframework.stereotype.Service;
  * A {@link ExpressionEvaluator} implementation that is used to authorize access
  * to the REST interface by using persisted user data.
  *
- * <p>
- *     Activated via the <i>user-access</i> spring profile.
- * </p>
- *
  * @see ExpressionEvaluator
  */
 @Service

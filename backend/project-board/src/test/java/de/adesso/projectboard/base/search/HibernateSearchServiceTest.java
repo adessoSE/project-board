@@ -7,6 +7,7 @@ import helper.base.search.IndexedEntity;
 import helper.base.search.IndexedEntityWithoutFields;
 import helper.base.search.NonIndexedEntity;
 import org.apache.lucene.search.Query;
+import org.assertj.core.api.SoftAssertions;
 import org.hibernate.search.MassIndexer;
 import org.hibernate.search.SearchFactory;
 import org.hibernate.search.jpa.FullTextEntityManager;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.PageRequest;
 
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -304,15 +306,36 @@ public class HibernateSearchServiceTest {
     }
 
     @Test
-    public void getNamesOfAnnotatedStringFields() {
+    public void getNamesOfAnnotatedStringFieldsReturnsCachedListWhenPresent() {
         // given
-        var expectedFieldNames = Set.of("renamed_field", "secondField");
+        var cachedFieldNames = List.of("field_1", "field_2");
+        hibernateSearchService.classIndexedFieldMap.put(IndexedEntity.class, cachedFieldNames);
 
         // when
         var actualFieldNames = hibernateSearchService.getNamesOfAnnotatedStringFields(IndexedEntity.class);
 
         // then
-        assertThat(actualFieldNames).containsExactlyInAnyOrderElementsOf(expectedFieldNames);
+        assertThat(actualFieldNames).containsExactlyInAnyOrderElementsOf(cachedFieldNames);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void getNamesOfAnnotatedStringFieldsGetsNamesOfAnnotatedStringFieldsAndCachesResultWhenNotPresent() {
+        // given
+        var expectedFieldNames = List.of("renamed_field", "secondField");
+
+        // when
+        var actualFieldNames = hibernateSearchService.getNamesOfAnnotatedStringFields(IndexedEntity.class);
+
+        // then
+        var softly = new SoftAssertions();
+
+        softly.assertThat(actualFieldNames).containsExactlyInAnyOrderElementsOf(expectedFieldNames);
+        softly.assertThat(hibernateSearchService.classIndexedFieldMap).containsExactly(
+                Map.entry(IndexedEntity.class, expectedFieldNames)
+        );
+
+        softly.assertAll();
     }
 
     @Test
