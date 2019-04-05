@@ -8,7 +8,7 @@ import { Moment } from 'moment';
 import { combineLatest, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthenticationService } from '../_services/authentication.service';
-import { Application, Employee, EmployeeService } from '../_services/employee.service';
+import { Application, Employee, EmployeeService, State } from '../_services/employee.service';
 import { Project } from '../_services/project.service';
 import { DatepickerHeaderComponent } from '../datepicker-header/datepicker-header.component';
 import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
@@ -168,16 +168,16 @@ export class EmployeeDialogComponent implements OnInit {
   }
 
   markAsRead(application: Application) {
-    if (!application.readByBoss && this.isDirectEmployee) {
-      this.employeeService.markApplicationAsRead(this.data.employee.id, application.id)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(() => application.readByBoss = true);
+    if ((application.state === "NEW") && this.isDirectEmployee) {
+        this.employeeService.changeApplicationState(this.data.employee.id, application.id, State.NONE)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => application.state = State.NONE);
     }
   }
 
   toggleFilter() {
     if (this.filteredApplications.length === this.applications.length) {
-      this.filteredApplications = this.applications.filter(app => app.readByBoss === false);
+      this.filteredApplications = this.applications.filter(app => app.state === "NEW");
     } else {
       this.filteredApplications = this.applications;
     }

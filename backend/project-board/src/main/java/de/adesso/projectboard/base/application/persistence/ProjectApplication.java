@@ -85,9 +85,8 @@ public class ProjectApplication {
      * @param comment         The comment of the application.
      * @param user            The {@link User} this project belongs to.
      * @param applicationDate The {@link LocalDateTime date} of the application.
-     * @param readByBoss      A flag that shows if this application has been read by the boss.
      */
-    public ProjectApplication(Project project, String comment, User user, LocalDateTime applicationDate, boolean readByBoss) {
+    public ProjectApplication(Project project, String comment, User user, LocalDateTime applicationDate) {
         Objects.requireNonNull(user);
 
         this.project = project;

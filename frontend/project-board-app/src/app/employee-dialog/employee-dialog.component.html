@@ -70,8 +70,8 @@
             (click)="toggleFilter()">
       Alle zeigen
     </button>
-    <div class="employee-application" *ngFor="let a of filteredApplications" [ngClass]="{'unread': !a.readByBoss && isDirectEmployee}">
-      <div *ngIf="!a.readByBoss && isDirectEmployee" class="new-info">[NEU]</div>
+    <div class="employee-application" *ngFor="let a of filteredApplications" [ngClass]="{'unread': a.state === 'NEW' && isDirectEmployee}">
+      <div *ngIf="a.state === 'NEW' && isDirectEmployee" class="new-info">[NEU]</div>
       <div class="linking-icon" (click)="openProjectDialog(a.project); markAsRead(a)">
         <mat-icon>open_in_new</mat-icon>
       </div>

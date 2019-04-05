@@ -7,6 +7,4 @@ public interface FullApplicationProjection extends BaseApplicationProjection {
 
     @Value("#{@baseProjectionFactory.createProjection(target.project, T(de.adesso.projectboard.base.project.projection.FullProjectProjection))}")
     FullProjectProjection getProject();
-
-    boolean getReadByBoss();
 }

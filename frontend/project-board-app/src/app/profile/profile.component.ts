@@ -194,11 +194,11 @@ export class ProfileComponent implements OnInit {
   }
 
 
-toggleFilter() {
-  if (this.filteredEmployeeApplications.length === this.employeeApplications.length) {
-    this.filteredEmployeeApplications = this.employeeApplications.filter(app => app.state === "NEW");
-  } else {
-    this.filteredEmployeeApplications = this.employeeApplications;
+  toggleFilter() {
+    if (this.filteredEmployeeApplications.length === this.employeeApplications.length) {
+      this.filteredEmployeeApplications = this.employeeApplications.filter(app => app.state === "NEW");
+    } else {
+      this.filteredEmployeeApplications = this.employeeApplications;
+    }
   }
-}
 }

@@ -20,12 +20,13 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * {@link ApplicationService} implementation that persists {@link ProjectApplication}s
  * in a repository.
  */
-@Slf4j
+
 @Service
 @Transactional(readOnly = true)
 @Slf4j
@@ -66,7 +67,7 @@ public class RepositoryApplicationService implements ApplicationService {
 
         // use a clock for testing
         LocalDateTime applicationDate = LocalDateTime.now(clock);
-        ProjectApplication application = new ProjectApplication(project, comment, user, applicationDate, false);
+        ProjectApplication application = new ProjectApplication(project, comment, user, applicationDate);
 
         var savedApplication = applicationRepo.save(application);
         applicationEventHandler.onApplicationReceived(savedApplication);
@@ -77,7 +78,10 @@ public class RepositoryApplicationService implements ApplicationService {
     @Override
     public List<ProjectApplication> getApplicationsOfUser(User user, Sort sort) {
 
-        return applicationRepo.findAllByUser(user, sort);
+        List<ProjectApplication> Applications = applicationRepo.findAllByUser(user, sort).stream()
+                .filter(a -> a.getState() != ProjectApplication.State.DELETED).collect(Collectors.toList());
+
+        return Applications;
     }
 
     @Override
@@ -99,12 +103,4 @@ public class RepositoryApplicationService implements ApplicationService {
         log.debug(String.format("Application with id %d of user with id %s changed state to %s", applicationId, user.getId(), state));
         return application;
     }
-
-    @Override
-    public ProjectApplication markApplicationAsRead(Long applicationId) throws ApplicationNotFoundException {
-        var application = applicationRepo.findById(applicationId).get();
-        application.setReadByBoss(true);
-        return applicationRepo.save(application);
-    }
-
 }
