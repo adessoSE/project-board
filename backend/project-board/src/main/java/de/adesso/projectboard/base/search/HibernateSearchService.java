@@ -40,12 +40,15 @@ public class HibernateSearchService {
 
     final Map<Class<?>, List<String>> classIndexedFieldMap;
 
-    public HibernateSearchService() {
+    final SimpleQueryEnhancer simpleQueryEnhancer;
+
+    public HibernateSearchService(SimpleQueryEnhancer simpleQueryEnhancer) {
         // increase the max clause count to allow searching for
         // staff members of users with more than 1024 staff members
         BooleanQuery.setMaxClauseCount(MAX_CLAUSE_COUNT);
 
         this.classIndexedFieldMap = new HashMap<>();
+        this.simpleQueryEnhancer = simpleQueryEnhancer;
     }
 
     Query getProjectBaseQuery(@NonNull String simpleQueryString, @NonNull Set<String> status) {
