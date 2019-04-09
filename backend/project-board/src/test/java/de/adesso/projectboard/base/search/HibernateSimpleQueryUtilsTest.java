@@ -9,13 +9,128 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SimpleQueryEnhancerTest {
+public class HibernateSimpleQueryUtilsTest {
 
-    private SimpleQueryEnhancer simpleQueryEnhancer;
+    private HibernateSimpleQueryUtils hibernateSimpleQueryUtils;
 
     @Before
     public void setUp() {
-        this.simpleQueryEnhancer = new SimpleQueryEnhancer();
+        this.hibernateSimpleQueryUtils = new HibernateSimpleQueryUtils();
+    }
+
+    @Test
+    public void makeQueryPrefixAndFuzzyReturnsExpectedQuery() {
+        // given
+        var givenSimpleQuery = "((java | junit) & mockito~2) | spring*";
+        var expectedSimpleQuery = "(((java | java~2 | java*) | (junit | junit~2 | junit*)) & mockito~2) | spring*";
+
+        // when
+        var actualQuery = hibernateSimpleQueryUtils.makeQueryPrefixAndFuzzy(givenSimpleQuery);
+
+        // then
+        assertThat(actualQuery).isEqualTo(expectedSimpleQuery);
+    }
+
+    @Test
+    public void makeQueryPrefixAndFuzzyReplacesNonExplicitTerms() {
+        // given
+        var givenSimpleQuery = "java";
+        var expectedSimpleQuery = "(java | java~2 | java*)";
+
+        // when
+        var actualQuery = hibernateSimpleQueryUtils.makeQueryPrefixAndFuzzy(givenSimpleQuery);
+
+        // then
+        assertThat(actualQuery).isEqualTo(expectedSimpleQuery);
+    }
+
+    @Test
+    public void makeQueryPrefixAndFuzzyDoesNotReplaceFuzzyTerm() {
+        // given
+        var expectedSimpleQuery = "java~2";
+
+        // when
+        var actualQuery = hibernateSimpleQueryUtils.makeQueryPrefixAndFuzzy(expectedSimpleQuery);
+
+        // then
+        assertThat(actualQuery).isEqualTo(expectedSimpleQuery);
+    }
+
+    @Test
+    public void makeQueryPrefixAndFuzzyDoesNotReplacePrefixTerms() {
+        // given
+        var expectedSimpleQuery = "java*";
+
+        // when
+        var actualQuery = hibernateSimpleQueryUtils.makeQueryPrefixAndFuzzy(expectedSimpleQuery);
+
+        // then
+        assertThat(actualQuery).isEqualTo(expectedSimpleQuery);
+    }
+
+    @Test
+    public void replaceSubstringReplacesWholeStringWhenStartIndexZeroAndEndIndexLastOfWord() {
+        // given
+        var originalString = "replace";
+        var replacement = "java";
+        var startIndex = 0;
+        var endIndex = originalString.length() - 1;
+
+        // when
+        var actualString = hibernateSimpleQueryUtils.replaceSubstring(startIndex, endIndex, originalString, replacement);
+
+        // then
+        assertThat(actualString).isEqualTo(replacement);
+    }
+
+    @Test
+    public void replaceSubstringReplacesSubstringAtTheEndOfWord() {
+        // given
+        var originalString = "Spring Security";
+        var replacement = "Data";
+        var expectedString = "Spring Data";
+        var startIndex = 7;
+        var endIndex = 14;
+
+        // when
+        var actualString = hibernateSimpleQueryUtils.replaceSubstring(startIndex, endIndex, originalString, replacement);
+
+        // then
+        assertThat(actualString).isEqualTo(expectedString);
+    }
+
+    @Test
+    public void replaceSubstringReplacesAtTheBeginningOfWord() {
+        // given
+        var originalString = "Hello World";
+        var replacement = "Hi";
+        var expectedString = "Hi World";
+        var startIndex = 0;
+        var endIndex = 4;
+
+        // when
+        var actualString = hibernateSimpleQueryUtils.replaceSubstring(startIndex, endIndex, originalString, replacement);
+
+        // then
+        assertThat(actualString).isEqualTo(expectedString);
+
+    }
+
+    @Test
+    public void replaceSubstringReplacesInTheMiddleOfTheWord() {
+        // given
+        var originalString = "Oh hello there";
+        var replacement = "hi";
+        var expectedString = "Oh hi there";
+        var startIndex = 3;
+        var endIndex = 7;
+
+        // when
+        var actualString = hibernateSimpleQueryUtils.replaceSubstring(startIndex, endIndex, originalString, replacement);
+
+        // then
+        assertThat(actualString).isEqualTo(expectedString);
+
     }
 
     @Test
@@ -34,7 +149,7 @@ public class SimpleQueryEnhancerTest {
         );
 
         // when
-        var actualPairs = simpleQueryEnhancer.getReplaceableTermsOfQuery(simpleQuery);
+        var actualPairs = hibernateSimpleQueryUtils.getReplaceableTermsOfQuery(simpleQuery);
 
         // then
         assertThat(actualPairs).containsExactlyInAnyOrderElementsOf(expectedPairs);
@@ -47,7 +162,7 @@ public class SimpleQueryEnhancerTest {
         var expectedPair = Pair.of(0, simpleQuery.length() - 1);
 
         // when
-        var actualPairs = simpleQueryEnhancer.getReplaceableTermsOfQuery(simpleQuery);
+        var actualPairs = hibernateSimpleQueryUtils.getReplaceableTermsOfQuery(simpleQuery);
 
         // then
         assertThat(actualPairs).containsExactly(expectedPair);
@@ -60,7 +175,7 @@ public class SimpleQueryEnhancerTest {
         var expectedPair = Pair.of(1, simpleQuery.length() - 1);
 
         // when
-        var actualPairs = simpleQueryEnhancer.getReplaceableTermsOfQuery(simpleQuery);
+        var actualPairs = hibernateSimpleQueryUtils.getReplaceableTermsOfQuery(simpleQuery);
 
         // then
         assertThat(actualPairs).containsExactly(expectedPair);
@@ -76,7 +191,7 @@ public class SimpleQueryEnhancerTest {
         );
 
         // when
-        var actualPairs = simpleQueryEnhancer.getReplaceableTermsOfQuery(simpleQuery);
+        var actualPairs = hibernateSimpleQueryUtils.getReplaceableTermsOfQuery(simpleQuery);
 
         // then
         assertThat(actualPairs).containsExactlyInAnyOrderElementsOf(expectedPairs);
@@ -92,7 +207,7 @@ public class SimpleQueryEnhancerTest {
         );
 
         // when
-        var actualPairs = simpleQueryEnhancer.getReplaceableTermsOfQuery(simpleQuery);
+        var actualPairs = hibernateSimpleQueryUtils.getReplaceableTermsOfQuery(simpleQuery);
 
         // then
         assertThat(actualPairs).containsExactlyInAnyOrderElementsOf(expectedPairs);
@@ -108,7 +223,7 @@ public class SimpleQueryEnhancerTest {
         );
 
         // when
-        var actualPairs = simpleQueryEnhancer.getReplaceableTermsOfQuery(simpleQuery);
+        var actualPairs = hibernateSimpleQueryUtils.getReplaceableTermsOfQuery(simpleQuery);
 
         // then
         assertThat(actualPairs).containsExactlyInAnyOrderElementsOf(expectedPairs);
@@ -124,7 +239,7 @@ public class SimpleQueryEnhancerTest {
         );
 
         // when
-        var actualPairs = simpleQueryEnhancer.getReplaceableTermsOfQuery(simpleQuery);
+        var actualPairs = hibernateSimpleQueryUtils.getReplaceableTermsOfQuery(simpleQuery);
 
         // then
         assertThat(actualPairs).containsExactlyInAnyOrderElementsOf(expectedPairs);
@@ -140,7 +255,7 @@ public class SimpleQueryEnhancerTest {
         );
 
         // when
-        var actualPairs = simpleQueryEnhancer.getReplaceableTermsOfQuery(simpleQuery);
+        var actualPairs = hibernateSimpleQueryUtils.getReplaceableTermsOfQuery(simpleQuery);
 
         // then
         assertThat(actualPairs).containsExactlyInAnyOrderElementsOf(expectedPairs);
@@ -156,7 +271,7 @@ public class SimpleQueryEnhancerTest {
         );
 
         // when
-        var actualPairs = simpleQueryEnhancer.getReplaceableTermsOfQuery(simpleQuery);
+        var actualPairs = hibernateSimpleQueryUtils.getReplaceableTermsOfQuery(simpleQuery);
 
         // then
         assertThat(actualPairs).containsExactlyInAnyOrderElementsOf(expectedPairs);
@@ -169,7 +284,7 @@ public class SimpleQueryEnhancerTest {
         var expectedPair = Pair.of(2, 5);
 
         // when
-        var actualPairs = simpleQueryEnhancer.getReplaceableTermsOfQuery(simpleQuery);
+        var actualPairs = hibernateSimpleQueryUtils.getReplaceableTermsOfQuery(simpleQuery);
 
         // then
         assertThat(actualPairs).containsExactly(expectedPair);
@@ -181,7 +296,7 @@ public class SimpleQueryEnhancerTest {
         var simpleQuery = "test~2";
 
         // when
-        var actualPairs = simpleQueryEnhancer.getReplaceableTermsOfQuery(simpleQuery);
+        var actualPairs = hibernateSimpleQueryUtils.getReplaceableTermsOfQuery(simpleQuery);
 
         // then
         assertThat(actualPairs).isEmpty();
@@ -193,7 +308,7 @@ public class SimpleQueryEnhancerTest {
         var simpleQuery = "test*";
 
         // when
-        var actualPairs = simpleQueryEnhancer.getReplaceableTermsOfQuery(simpleQuery);
+        var actualPairs = hibernateSimpleQueryUtils.getReplaceableTermsOfQuery(simpleQuery);
 
         // then
         assertThat(actualPairs).isEmpty();
@@ -205,7 +320,7 @@ public class SimpleQueryEnhancerTest {
         var simpleQuery = "\"test\"";
 
         // when
-        var actualPairs = simpleQueryEnhancer.getReplaceableTermsOfQuery(simpleQuery);
+        var actualPairs = hibernateSimpleQueryUtils.getReplaceableTermsOfQuery(simpleQuery);
 
         // then
         assertThat(actualPairs).isEmpty();
@@ -217,7 +332,7 @@ public class SimpleQueryEnhancerTest {
         var simpleQuery = "\"test\"~10";
 
         // when
-        var actualPairs = simpleQueryEnhancer.getReplaceableTermsOfQuery(simpleQuery);
+        var actualPairs = hibernateSimpleQueryUtils.getReplaceableTermsOfQuery(simpleQuery);
 
         // then
         assertThat(actualPairs).isEmpty();
@@ -230,7 +345,7 @@ public class SimpleQueryEnhancerTest {
         var expectedPair = Pair.of(1, 4);
 
         // when
-        var actualPairs = simpleQueryEnhancer.getReplaceableTermsOfQuery(simpleQuery);
+        var actualPairs = hibernateSimpleQueryUtils.getReplaceableTermsOfQuery(simpleQuery);
 
         // then
         assertThat(actualPairs).containsExactly(expectedPair);
@@ -242,7 +357,7 @@ public class SimpleQueryEnhancerTest {
         var simpleQuery = "*";
 
         // when
-        var actualPairs = simpleQueryEnhancer.getReplaceableTermsOfQuery(simpleQuery);
+        var actualPairs = hibernateSimpleQueryUtils.getReplaceableTermsOfQuery(simpleQuery);
 
         // then
         assertThat(actualPairs).isEmpty();
@@ -254,7 +369,7 @@ public class SimpleQueryEnhancerTest {
         var simpleQuery = "~2";
 
         // when
-        var actualPairs = simpleQueryEnhancer.getReplaceableTermsOfQuery(simpleQuery);
+        var actualPairs = hibernateSimpleQueryUtils.getReplaceableTermsOfQuery(simpleQuery);
 
         // then
         assertThat(actualPairs).isEmpty();
@@ -269,7 +384,7 @@ public class SimpleQueryEnhancerTest {
         var startIndex = 0;
 
         // when
-        var actualIndex = simpleQueryEnhancer.getIndexAfterFirstAppearanceOf(startIndex, character, input);
+        var actualIndex = hibernateSimpleQueryUtils.getIndexAfterFirstAppearanceOf(startIndex, character, input);
 
         // then
         assertThat(actualIndex).isEqualTo(expectedIndex);
@@ -284,7 +399,7 @@ public class SimpleQueryEnhancerTest {
         var startIndex = 0;
 
         // when
-        var actualIndex = simpleQueryEnhancer.getIndexAfterFirstAppearanceOf(startIndex, character, input);
+        var actualIndex = hibernateSimpleQueryUtils.getIndexAfterFirstAppearanceOf(startIndex, character, input);
 
         // then
         assertThat(actualIndex).isEqualTo(expectedIndex);
@@ -299,7 +414,7 @@ public class SimpleQueryEnhancerTest {
         var startIndex = input.length();
 
         // when
-        var actualIndex = simpleQueryEnhancer.getIndexAfterFirstAppearanceOf(startIndex, character, input);
+        var actualIndex = hibernateSimpleQueryUtils.getIndexAfterFirstAppearanceOf(startIndex, character, input);
 
         // then
         assertThat(actualIndex).isEqualTo(expectedIndex);
@@ -314,7 +429,7 @@ public class SimpleQueryEnhancerTest {
         var startIndex = 0;
 
         // when
-        var actualIndex = simpleQueryEnhancer.getIndexAfterFirstAppearanceOf(startIndex, character, input);
+        var actualIndex = hibernateSimpleQueryUtils.getIndexAfterFirstAppearanceOf(startIndex, character, input);
 
         // then
         assertThat(actualIndex).isEqualTo(expectedIndex);
@@ -329,7 +444,7 @@ public class SimpleQueryEnhancerTest {
         var startIndex = 3;
 
         // when
-        var actualIndex = simpleQueryEnhancer.getIndexAfterFirstAppearanceOf(startIndex, character, input);
+        var actualIndex = hibernateSimpleQueryUtils.getIndexAfterFirstAppearanceOf(startIndex, character, input);
 
         // then
         assertThat(actualIndex).isEqualTo(expectedIndex);
@@ -344,7 +459,7 @@ public class SimpleQueryEnhancerTest {
         var startIndex = 4;
 
         // when
-        var actualIndex = simpleQueryEnhancer.getIndexAfterFirstAppearanceOfAny(startIndex, characters, input);
+        var actualIndex = hibernateSimpleQueryUtils.getIndexAfterFirstAppearanceOfAny(startIndex, characters, input);
 
         // then
         assertThat(actualIndex).isEqualTo(expectedIndex);
@@ -359,7 +474,7 @@ public class SimpleQueryEnhancerTest {
         var startIndex = 0;
 
         // when
-        var actualIndex = simpleQueryEnhancer.getIndexAfterFirstAppearanceOfAny(startIndex, characters, input);
+        var actualIndex = hibernateSimpleQueryUtils.getIndexAfterFirstAppearanceOfAny(startIndex, characters, input);
 
         // then
         assertThat(actualIndex).isEqualTo(expectedIndex);
@@ -374,7 +489,7 @@ public class SimpleQueryEnhancerTest {
         var startIndex = 3;
 
         // when
-        var actualIndex = simpleQueryEnhancer.getIndexAfterFirstAppearanceOfAny(startIndex, characters, input);
+        var actualIndex = hibernateSimpleQueryUtils.getIndexAfterFirstAppearanceOfAny(startIndex, characters, input);
 
         // then
         assertThat(actualIndex).isEqualTo(expectedIndex);
@@ -389,7 +504,7 @@ public class SimpleQueryEnhancerTest {
         var startIndex = 2;
 
         // when
-        var actualIndex = simpleQueryEnhancer.getIndexAfterFirstAppearanceOfAny(startIndex, characters, input);
+        var actualIndex = hibernateSimpleQueryUtils.getIndexAfterFirstAppearanceOfAny(startIndex, characters, input);
 
         // then
         assertThat(actualIndex).isEqualTo(expectedIndex);
@@ -404,7 +519,7 @@ public class SimpleQueryEnhancerTest {
         var startIndex = 0;
 
         // when
-        var actualIndex = simpleQueryEnhancer.getIndexAfterFirstAppearanceOfAny(startIndex, characters, input);
+        var actualIndex = hibernateSimpleQueryUtils.getIndexAfterFirstAppearanceOfAny(startIndex, characters, input);
 
         // then
         assertThat(actualIndex).isEqualTo(expectedIndex);
@@ -418,7 +533,7 @@ public class SimpleQueryEnhancerTest {
         var expectedIndex = 10;
 
         // when
-        var actualIndex = simpleQueryEnhancer.getIndexAfterPhraseTerm(startIndex, simpleQuery);
+        var actualIndex = hibernateSimpleQueryUtils.getIndexAfterPhraseTerm(startIndex, simpleQuery);
 
         // then
         assertThat(actualIndex).isEqualTo(expectedIndex);
@@ -432,7 +547,7 @@ public class SimpleQueryEnhancerTest {
         var expectedIndex = 6;
 
         // when
-        var actualIndex = simpleQueryEnhancer.getIndexAfterPhraseTerm(startIndex, simpleQuery);
+        var actualIndex = hibernateSimpleQueryUtils.getIndexAfterPhraseTerm(startIndex, simpleQuery);
 
         // then
         assertThat(actualIndex).isEqualTo(expectedIndex);
@@ -446,7 +561,7 @@ public class SimpleQueryEnhancerTest {
         var expectedIndex = -1;
 
         // when
-        var actualIndex = simpleQueryEnhancer.getIndexAfterPhraseTerm(startIndex, simpleQuery);
+        var actualIndex = hibernateSimpleQueryUtils.getIndexAfterPhraseTerm(startIndex, simpleQuery);
 
         // then
         assertThat(actualIndex).isEqualTo(expectedIndex);
@@ -460,7 +575,7 @@ public class SimpleQueryEnhancerTest {
         var expectedIndex = -1;
 
         // when
-        var actualIndex = simpleQueryEnhancer.getIndexAfterPhraseTerm(startIndex, simpleQuery);
+        var actualIndex = hibernateSimpleQueryUtils.getIndexAfterPhraseTerm(startIndex, simpleQuery);
 
         // then
         assertThat(actualIndex).isEqualTo(expectedIndex);
@@ -474,7 +589,7 @@ public class SimpleQueryEnhancerTest {
         var expectedIndex = -1;
 
         // when
-        var actualIndex = simpleQueryEnhancer.getIndexAfterPhraseTerm(startIndex, simpleQuery);
+        var actualIndex = hibernateSimpleQueryUtils.getIndexAfterPhraseTerm(startIndex, simpleQuery);
 
         // then
         assertThat(actualIndex).isEqualTo(expectedIndex);
@@ -489,7 +604,7 @@ public class SimpleQueryEnhancerTest {
         var expectedIndex = -1;
 
         // when
-        var actualIndex = simpleQueryEnhancer.getIndexOfFirstAppearanceOfAny(startIndex, characters, input);
+        var actualIndex = hibernateSimpleQueryUtils.getIndexOfFirstAppearanceOfAny(startIndex, characters, input);
 
         // then
         assertThat(actualIndex).isEqualTo(expectedIndex);
@@ -504,7 +619,7 @@ public class SimpleQueryEnhancerTest {
         var expectedIndex = -1;
 
         // when
-        var actualIndex = simpleQueryEnhancer.getIndexOfFirstAppearanceOfAny(startIndex, characters, input);
+        var actualIndex = hibernateSimpleQueryUtils.getIndexOfFirstAppearanceOfAny(startIndex, characters, input);
 
         // then
         assertThat(actualIndex).isEqualTo(expectedIndex);
@@ -519,10 +634,36 @@ public class SimpleQueryEnhancerTest {
         var expectedIndex = 1;
 
         // when
-        var actualIndex = simpleQueryEnhancer.getIndexOfFirstAppearanceOfAny(startIndex, characters, input);
+        var actualIndex = hibernateSimpleQueryUtils.getIndexOfFirstAppearanceOfAny(startIndex, characters, input);
 
         // then
         assertThat(actualIndex).isEqualTo(expectedIndex);
+    }
+
+    @Test
+    public void createHibernateSearchDisjunctionSeparatesValuesWithOrOperator() {
+        // given
+        var values = List.of("val1", "val2", "val3");
+        var expectedDisjunction = "val1 | val2 | val3";
+
+        // when
+        var actualDisjunction = hibernateSimpleQueryUtils.createHibernateSearchDisjunction(values);
+
+        // then
+        assertThat(actualDisjunction).isEqualTo(expectedDisjunction);
+    }
+
+    @Test
+    public void createHibernateSearchDisjunctionDoesNotInsertOrOperatorWhenSingleValuePresent() {
+        // given
+        var values = List.of("val1");
+        var expectedDisjunction = "val1";
+
+        // when
+        var actualDisjunction = hibernateSimpleQueryUtils.createHibernateSearchDisjunction(values);
+
+        // then
+        assertThat(actualDisjunction).isEqualTo(expectedDisjunction);
     }
 
 }

@@ -5,17 +5,18 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 @Component
-public class SimpleQueryEnhancer {
+public class HibernateSimpleQueryUtils {
 
     private final Set<Character> TERM_DELIMITER = Set.of('(', ')', '|', ' ', '&', '-');
 
     private final Set<Character> SPECIAL_CHARACTERS = Set.of('~', '*');
 
-    public String enhanceSimpleQuery(@NonNull String simpleQuery) {
+    public String makeQueryPrefixAndFuzzy(@NonNull String simpleQuery) {
         var trimmedSimpleQuery = simpleQuery.trim();
         var replaceableTermIndexPairs = getReplaceableTermsOfQuery(trimmedSimpleQuery);
 
@@ -23,12 +24,47 @@ public class SimpleQueryEnhancer {
             return trimmedSimpleQuery;
         }
 
+        var fuzzyAndPrefixQuery = trimmedSimpleQuery;
         var addedOffset = 0;
-        for(var pair : replaceableTermIndexPairs) {
 
+        for(var pair : replaceableTermIndexPairs) {
+            var termStartIndex = pair.getFirst() + addedOffset;
+            var termEndIndex = pair.getSecond() + addedOffset;
+
+            var term = fuzzyAndPrefixQuery.substring(termStartIndex, termEndIndex + 1);
+            var replaceTerm = String.format("(%s)",
+                    createHibernateSearchDisjunction(List.of(term, term + "~2", term + "*")));
+
+            fuzzyAndPrefixQuery = replaceSubstring(termStartIndex, termEndIndex, fuzzyAndPrefixQuery, replaceTerm);
+
+            addedOffset += replaceTerm.length() - term.length();
         }
 
-        return trimmedSimpleQuery;
+        return fuzzyAndPrefixQuery;
+    }
+
+    /**
+     *
+     * @param startIndex
+     *          The index the substring to replace starts, must be in range.
+     *
+     * @param endIndex
+     *          The index the substring to replace ends, must be in range.
+     *
+     * @param stringToReplaceIn
+     *          The string to replace the substring in, not null.
+     *
+     * @param replacement
+     *          The string to replace the substring with.
+     *
+     * @return
+     *          The string the substring is replaced in.
+     */
+    String replaceSubstring(int startIndex, int endIndex, String stringToReplaceIn, String replacement) {
+        var predReplaceSubstring = startIndex <= 1 ? "" : stringToReplaceIn.substring(0, startIndex);
+        var succReplaceSubstring = endIndex >= (stringToReplaceIn.length() - 1) ? "" : stringToReplaceIn.substring(endIndex + 1);
+
+        return String.format("%s%s%s", predReplaceSubstring, replacement, succReplaceSubstring);
     }
 
     /**
@@ -165,8 +201,8 @@ public class SimpleQueryEnhancer {
      *          The simple query to get the replaceable terms of, not null.
      *
      * @return
-     *          A set of {@code [startindex, endindex]} pairs of
-     *          each replaceable term inside the query.
+     *          A list of {@code [startindex, endindex]} pairs of
+     *          each replaceable term of the query ordered in ascending order.
      */
     List<Pair<Integer, Integer>> getReplaceableTermsOfQuery(String simpleQuery) {
         var termIndexPairs = new ArrayList<Pair<Integer, Integer>>();
@@ -176,22 +212,22 @@ public class SimpleQueryEnhancer {
         while(index >= 0 && index < queryCharCount) {
             var currentChar = simpleQuery.charAt(index);
 
-            // ignore phrase terms and near operators
-            if(currentChar == '"') {
-                index = getIndexAfterPhraseTerm(index, simpleQuery);
-                continue;
-            }
-
             // skip term delimiters
             if(TERM_DELIMITER.contains(currentChar)) {
                 index++;
                 continue;
             }
 
+            // ignore phrase terms and near operators
+            if(currentChar == '"') {
+                index = getIndexAfterPhraseTerm(index, simpleQuery);
+                continue;
+            }
+
             var nextSpecialCharIndex = getIndexOfFirstAppearanceOfAny(index, SPECIAL_CHARACTERS, simpleQuery);
             var nextTermDelimiterIndex = getIndexOfFirstAppearanceOfAny(index, TERM_DELIMITER, simpleQuery);
 
-            // no term delimiter found
+            // no term delimiter found after the current term
             if(nextTermDelimiterIndex < 0) {
                 nextTermDelimiterIndex = queryCharCount;
             }
@@ -210,6 +246,29 @@ public class SimpleQueryEnhancer {
         }
 
         return termIndexPairs;
+    }
+
+    /**
+     *
+     * @param values
+     *          The values to create the disjunction of, not null.
+     *
+     * @return
+     *          A hibernate simple query representing a disjunction of all given
+     *          {@code values}.
+     *          .
+     */
+    public String createHibernateSearchDisjunction(Collection<String> values) {
+        var valueArr = values.toArray(String[]::new);
+        var fieldMatchStringBuilder = new StringBuilder(valueArr[0]);
+
+        for(var valueIndex = 1; valueIndex < valueArr.length; valueIndex++) {
+            fieldMatchStringBuilder
+                    .append(" | ")
+                    .append(valueArr[valueIndex]);
+        }
+
+        return fieldMatchStringBuilder.toString();
     }
 
 }

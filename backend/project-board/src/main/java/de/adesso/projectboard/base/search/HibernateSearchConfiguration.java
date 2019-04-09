@@ -15,14 +15,14 @@ public class HibernateSearchConfiguration {
     private EntityManager entityManager;
 
     @Bean
-    public SimpleQueryEnhancer simpleQueryEnhancer() {
-        return new SimpleQueryEnhancer();
+    public HibernateSimpleQueryUtils simpleQueryEnhancer() {
+        return new HibernateSimpleQueryUtils();
     }
 
     @Autowired
     @Bean
-    public HibernateSearchService hibernateSearchService(SimpleQueryEnhancer simpleQueryEnhancer) {
-        var searchService = new HibernateSearchService(simpleQueryEnhancer);
+    public HibernateSearchService hibernateSearchService(HibernateSimpleQueryUtils hibernateSimpleQueryUtils) {
+        var searchService = new HibernateSearchService(hibernateSimpleQueryUtils);
         searchService.initialize(entityManager);
 
         return searchService;

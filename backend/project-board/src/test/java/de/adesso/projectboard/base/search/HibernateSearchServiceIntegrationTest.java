@@ -13,6 +13,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
@@ -25,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,7 +37,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 @SqlConfig(transactionMode = SqlConfig.TransactionMode.ISOLATED)
 @TestPropertySource("classpath:application-persistence-test.properties")
-@DataJpaTest
+@DataJpaTest(
+        includeFilters = @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = HibernateSimpleQueryUtils.class
+        )
+)
 public class HibernateSearchServiceIntegrationTest {
 
     @PersistenceContext(type = PersistenceContextType.EXTENDED)
@@ -48,11 +57,14 @@ public class HibernateSearchServiceIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private HibernateSimpleQueryUtils hibernateSimpleQueryUtils;
+
     private HibernateSearchService hibernateSearchService;
 
     @Before
     public void setUp() {
-        var hibernateSearchService = new HibernateSearchService();
+        var hibernateSearchService = new HibernateSearchService(hibernateSimpleQueryUtils);
         hibernateSearchService.entityManager = entityManager;
         hibernateSearchService.initialize(entityManager);
 
@@ -68,13 +80,31 @@ public class HibernateSearchServiceIntegrationTest {
 
     @Test
     @Sql(scripts = "classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void searchProjectsNonPaginated() {
+    public void searchProjectsNonPaginatedWithPhraseQueryFindsExactMatches() {
         // given
-        var simpleQuery = "extraordinary | mockito | spring";
+        var simpleQuery = "\"extraordinary\" | \"mockito\" | \"spring\"";
         var status = Set.of("eskaliert", "open", "offen");
         var expectedProjects =
                 entityManager.createQuery("SELECT p FROM de.adesso.projectboard.base.project.persistence.Project AS p " +
                                 "WHERE p.id = 'STF-3' OR p.id = 'STF-8' OR p.id = 'STF-9'",
+                        Project.class).getResultList();
+
+        // when
+        var actualProjects = hibernateSearchService.searchProjects(simpleQuery, status);
+
+        // then
+        assertThat(actualProjects).containsExactlyInAnyOrderElementsOf(expectedProjects);
+    }
+
+    @Test
+    @Sql(scripts = "classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void searchProjectsNonPaginatedUsesFuzzyAndPrefixAsWell() {
+        // given
+        var simpleQuery = "exrtaordinary | spri | jaava";
+        var status = Set.of("eskaliert", "open", "offen");
+        var expectedProjects =
+                entityManager.createQuery("SELECT p FROM de.adesso.projectboard.base.project.persistence.Project AS p " +
+                                "WHERE p.id = 'STF-3' OR p.id = 'STF-8' OR p.id = 'STF-1'",
                         Project.class).getResultList();
 
         // when
@@ -104,14 +134,39 @@ public class HibernateSearchServiceIntegrationTest {
 
     @Test
     @Sql(scripts = "classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void searchProjectsPaginated() {
+    public void searchProjectsPaginatedWithPhraseQueryFindsExactMatches() {
         // given
-        var simpleQuery = "extraordinary | mockito | spring";
+        var simpleQuery = "\"extraordinary\" | \"mockito\" | \"spring\"";
         var status = Set.of("eskaliert", "open", "offen");
         var pageable = PageRequest.of(1, 1);
         var expectedProjects =
                 entityManager.createQuery("SELECT p FROM de.adesso.projectboard.base.project.persistence.Project AS p " +
                                 "WHERE p.id = 'STF-3' OR p.id = 'STF-8' OR p.id = 'STF-9'",
+                        Project.class).getResultList();
+
+        // when
+        var actualProjectPage = hibernateSearchService.searchProjects(simpleQuery, status, pageable);
+
+        // then
+        var softly = new SoftAssertions();
+
+        softly.assertThat(actualProjectPage.getTotalElements()).isEqualTo(3L);
+        softly.assertThat(actualProjectPage.getTotalPages()).isEqualTo(3L);
+        softly.assertThat(actualProjectPage.getContent()).containsAnyElementsOf(expectedProjects);
+
+        softly.assertAll();
+    }
+
+    @Test
+    @Sql(scripts = "classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void searchProjectsPaginatedUsesFuzzyAndPrefixAsWell() {
+        // given
+        var simpleQuery = "exrtaordinary | spri | javva";
+        var status = Set.of("eskaliert", "open", "offen");
+        var pageable = PageRequest.of(1, 1);
+        var expectedProjects =
+                entityManager.createQuery("SELECT p FROM de.adesso.projectboard.base.project.persistence.Project AS p " +
+                                "WHERE p.id = 'STF-3' OR p.id = 'STF-8' OR p.id = 'STF-1'",
                         Project.class).getResultList();
 
         // when
@@ -157,9 +212,29 @@ public class HibernateSearchServiceIntegrationTest {
             @Sql(scripts = "classpath:de/adesso/projectboard/persistence/Users.sql"),
             @Sql(scripts = "classpath:de/adesso/projectboard/persistence/UserData.sql")
     })
-    public void searchUserData() {
+    public void searchUserDataWithPhraseQueryFindsExactMatches() {
         // given
-        var simpleQuery = "first | third";
+        var simpleQuery = "\"first\" | \"third\"";
+        var givenUsers = entityManager.createQuery("SELECT u FROM de.adesso.projectboard.base.user.persistence.User AS u " +
+                "WHERE u.id LIKE 'User%'", User.class).getResultList();
+        var expectedData = entityManager.createQuery("SELECT d FROM de.adesso.projectboard.base.user.persistence.data.UserData AS d " +
+                "WHERE d.id = 1 OR d.id = 3", UserData.class).getResultList();
+
+        // when
+        var actualData = hibernateSearchService.searchUserData(givenUsers, simpleQuery);
+
+        // then
+        assertThat(actualData).containsExactlyInAnyOrderElementsOf(expectedData);
+    }
+
+    @Test
+    @SqlGroup({
+            @Sql(scripts = "classpath:de/adesso/projectboard/persistence/Users.sql"),
+            @Sql(scripts = "classpath:de/adesso/projectboard/persistence/UserData.sql")
+    })
+    public void searchUserDataUsesFuzzyAndPrefixAsWell() {
+        // given
+        var simpleQuery = "frist | thi";
         var givenUsers = entityManager.createQuery("SELECT u FROM de.adesso.projectboard.base.user.persistence.User AS u " +
                 "WHERE u.id LIKE 'User%'", User.class).getResultList();
         var expectedData = entityManager.createQuery("SELECT d FROM de.adesso.projectboard.base.user.persistence.data.UserData AS d " +
@@ -190,6 +265,30 @@ public class HibernateSearchServiceIntegrationTest {
 
         // then
         assertThat(actualData).containsExactlyInAnyOrderElementsOf(expectedData);
+    }
+
+    @Test
+    public void searchProjectsFindsNewlyAddedEntities() {
+        // given
+        var simpleQuery = "spring";
+
+        var updateCreateTime = LocalDateTime.of(2019, 4, 9, 14, 9);
+        var projectStatus = "eskaliert";
+        var projectId = "STF-1";
+        var project = new Project(projectId, projectStatus, "Type", "Searching Spring Expert", List.of(), "Job", "Skills", "Description",
+                "LoB", "Customer", "Location", "Start", "End", "Effort", updateCreateTime, updateCreateTime, "Freelancer",
+                "Elongation", "Other", "dailyRate", "travelCostsCompensated", Project.Origin.JIRA);
+        projectRepository.save(project);
+
+        var retrievedProject = entityManager.createQuery("SELECT p FROM de.adesso.projectboard.base.project.persistence.Project AS p " +
+                "WHERE p.id = '" + projectId + "'", Project.class)
+                .getResultList().get(0);
+
+        // when
+        var actualProjects = hibernateSearchService.searchProjects(simpleQuery, Set.of("eskaliert"));
+
+        // then
+        assertThat(actualProjects).containsExactly(retrievedProject);
     }
 
 }
