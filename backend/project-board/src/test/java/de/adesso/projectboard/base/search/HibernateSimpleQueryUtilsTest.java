@@ -21,8 +21,8 @@ public class HibernateSimpleQueryUtilsTest {
     @Test
     public void makeQueryPrefixAndFuzzyReturnsExpectedQuery() {
         // given
-        var givenSimpleQuery = "((java | junit) & mockito~2) | spring*";
-        var expectedSimpleQuery = "(((java | java~2 | java*) | (junit | junit~2 | junit*)) & mockito~2) | spring*";
+        var givenSimpleQuery = "((java | junit) & mockito~2) | spring* | \"kotlin\"";
+        var expectedSimpleQuery = "(((java | java~2 | java*) | (junit | junit~2 | junit*)) & mockito~2) | spring* | \"kotlin\"";
 
         // when
         var actualQuery = hibernateSimpleQueryUtils.makeQueryPrefixAndFuzzy(givenSimpleQuery);
@@ -69,15 +69,56 @@ public class HibernateSimpleQueryUtilsTest {
     }
 
     @Test
+    public void makeQueryPrefixAndFuzzyDoesNotReplacePhraseTerms() {
+        // given
+        var expectedSimpleQuery = "\"java\"";
+
+        // when
+        var actualQuery = hibernateSimpleQueryUtils.makeQueryPrefixAndFuzzy(expectedSimpleQuery);
+
+        // then
+        assertThat(actualQuery).isEqualTo(expectedSimpleQuery);
+    }
+
+    @Test
+    public void makeQueryPrefixAndFuzzyDoesNotReplacePhraseTermsWithNearOperator() {
+        // given
+        var expectedSimpleQuery = "\"java pro\"~12";
+
+        // when
+        var actualQuery = hibernateSimpleQueryUtils.makeQueryPrefixAndFuzzy(expectedSimpleQuery);
+
+        // then
+        assertThat(actualQuery).isEqualTo(expectedSimpleQuery);
+    }
+
+    @Test
+    public void replaceTermWithFuzzyAndPrefixDisjunctionReplacesTermWithBracedDisjunction() {
+        // given
+        var simpleQuery = "java";
+        var expectedQuery = "(java | java~2 | java*)";
+        var startIndex = 0;
+        var endIndex = 3;
+        var startEndIndexPair = Pair.of(startIndex, endIndex);
+
+        // when
+        var actualQuery = hibernateSimpleQueryUtils.replaceTermWithFuzzyAndPrefixDisjunction(startEndIndexPair, simpleQuery);
+
+        // then
+        assertThat(actualQuery).isEqualTo(expectedQuery);
+    }
+
+    @Test
     public void replaceSubstringReplacesWholeStringWhenStartIndexZeroAndEndIndexLastOfWord() {
         // given
         var originalString = "replace";
         var replacement = "java";
         var startIndex = 0;
         var endIndex = originalString.length() - 1;
+        var startEndIndexPair = Pair.of(startIndex, endIndex);
 
         // when
-        var actualString = hibernateSimpleQueryUtils.replaceSubstring(startIndex, endIndex, originalString, replacement);
+        var actualString = hibernateSimpleQueryUtils.replaceSubstring(startEndIndexPair, originalString, replacement);
 
         // then
         assertThat(actualString).isEqualTo(replacement);
@@ -91,9 +132,10 @@ public class HibernateSimpleQueryUtilsTest {
         var expectedString = "Spring Data";
         var startIndex = 7;
         var endIndex = 14;
+        var startEndIndexPair = Pair.of(startIndex, endIndex);
 
         // when
-        var actualString = hibernateSimpleQueryUtils.replaceSubstring(startIndex, endIndex, originalString, replacement);
+        var actualString = hibernateSimpleQueryUtils.replaceSubstring(startEndIndexPair, originalString, replacement);
 
         // then
         assertThat(actualString).isEqualTo(expectedString);
@@ -107,9 +149,10 @@ public class HibernateSimpleQueryUtilsTest {
         var expectedString = "Hi World";
         var startIndex = 0;
         var endIndex = 4;
+        var startEndIndexPair = Pair.of(startIndex, endIndex);
 
         // when
-        var actualString = hibernateSimpleQueryUtils.replaceSubstring(startIndex, endIndex, originalString, replacement);
+        var actualString = hibernateSimpleQueryUtils.replaceSubstring(startEndIndexPair, originalString, replacement);
 
         // then
         assertThat(actualString).isEqualTo(expectedString);
@@ -124,9 +167,10 @@ public class HibernateSimpleQueryUtilsTest {
         var expectedString = "Oh hi there";
         var startIndex = 3;
         var endIndex = 7;
+        var startEndIndexPair = Pair.of(startIndex, endIndex);
 
         // when
-        var actualString = hibernateSimpleQueryUtils.replaceSubstring(startIndex, endIndex, originalString, replacement);
+        var actualString = hibernateSimpleQueryUtils.replaceSubstring(startEndIndexPair, originalString, replacement);
 
         // then
         assertThat(actualString).isEqualTo(expectedString);

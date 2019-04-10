@@ -16,6 +16,24 @@ public class HibernateSimpleQueryUtils {
 
     private final Set<Character> SPECIAL_CHARACTERS = Set.of('~', '*');
 
+    /**
+     * Replaces all simple terms in a given Hibernate search simple query. A simple
+     * term is a term that is neither fuzzy (eg. <i>java~2</i>) nor a prefix term
+     * (eg. <i>java*</i>) or phrase term (eg. <i>"java"</i>). The term gets replaced
+     * by a disjunction of the original term, a fuzzy term with a maximum editing distance
+     * of {@code 2} and a prefix term.
+     *
+     * <p/>
+     *
+     * <b>Example</b>: The simple query <i>((java | junit*) & spring*)</i> will be converted
+     * to <i>((<b>(java | java~2 | java*)</b> | junit*) & spring*)</i>.
+     *
+     * @param simpleQuery
+     *          The simple query to replace all simple terms in, not null.
+     *
+     * @return
+     *          A trimmed simple query with all simple terms replaced.
+     */
     public String makeQueryPrefixAndFuzzy(@NonNull String simpleQuery) {
         var trimmedSimpleQuery = simpleQuery.trim();
         var replaceableTermIndexPairs = getReplaceableTermsOfQuery(trimmedSimpleQuery);
@@ -25,19 +43,18 @@ public class HibernateSimpleQueryUtils {
         }
 
         var fuzzyAndPrefixQuery = trimmedSimpleQuery;
-        var addedOffset = 0;
+        var addedOffsetByReplacingTerms = 0;
 
         for(var pair : replaceableTermIndexPairs) {
-            var termStartIndex = pair.getFirst() + addedOffset;
-            var termEndIndex = pair.getSecond() + addedOffset;
+            var termStartIndex = pair.getFirst() + addedOffsetByReplacingTerms;
+            var termEndIndex = pair.getSecond() + addedOffsetByReplacingTerms;
+            var termStartEndIndexPair = Pair.of(termStartIndex, termEndIndex);
 
-            var term = fuzzyAndPrefixQuery.substring(termStartIndex, termEndIndex + 1);
-            var replaceTerm = String.format("(%s)",
-                    createHibernateSearchDisjunction(List.of(term, term + "~2", term + "*")));
+            var preReplacementQueryLength = fuzzyAndPrefixQuery.length();
+            fuzzyAndPrefixQuery = replaceTermWithFuzzyAndPrefixDisjunction(termStartEndIndexPair, fuzzyAndPrefixQuery);
+            var postReplacementQueryLength = fuzzyAndPrefixQuery.length();
 
-            fuzzyAndPrefixQuery = replaceSubstring(termStartIndex, termEndIndex, fuzzyAndPrefixQuery, replaceTerm);
-
-            addedOffset += replaceTerm.length() - term.length();
+            addedOffsetByReplacingTerms += postReplacementQueryLength - preReplacementQueryLength;
         }
 
         return fuzzyAndPrefixQuery;
@@ -45,11 +62,32 @@ public class HibernateSimpleQueryUtils {
 
     /**
      *
-     * @param startIndex
-     *          The index the substring to replace starts, must be in range.
+     * @param startEndIndexPair
+     *          The start and end index pair of the term to replace, not null.
      *
-     * @param endIndex
-     *          The index the substring to replace ends, must be in range.
+     * @param simpleQuery
+     *          The simple query to replace the term in, not null.
+     *
+     * @return
+     *          A query where the given term is replaced by a disjunction of
+     *          the original term, a fuzzy term with a maximum editing distance of {@code 2}
+     *          and a prefix term.
+     */
+    String replaceTermWithFuzzyAndPrefixDisjunction(Pair<Integer, Integer> startEndIndexPair, String simpleQuery) {
+        var termStartIndex = startEndIndexPair.getFirst();
+        var termEndIndex = startEndIndexPair.getSecond();
+
+        var term = simpleQuery.substring(termStartIndex, termEndIndex + 1);
+        var replaceTerm = String.format("(%s)",
+                createHibernateSearchDisjunction(List.of(term, term + "~2", term + "*")));
+
+        return replaceSubstring(startEndIndexPair, simpleQuery, replaceTerm);
+    }
+
+    /**
+     *
+     * @param startEndIndexPair
+     *          A pair of the start and end index of the substring to replace, not null.
      *
      * @param stringToReplaceIn
      *          The string to replace the substring in, not null.
@@ -60,7 +98,10 @@ public class HibernateSimpleQueryUtils {
      * @return
      *          The string the substring is replaced in.
      */
-    String replaceSubstring(int startIndex, int endIndex, String stringToReplaceIn, String replacement) {
+    String replaceSubstring(Pair<Integer, Integer> startEndIndexPair, String stringToReplaceIn, String replacement) {
+        var startIndex = startEndIndexPair.getFirst();
+        var endIndex = startEndIndexPair.getSecond();
+
         var predReplaceSubstring = startIndex <= 1 ? "" : stringToReplaceIn.substring(0, startIndex);
         var succReplaceSubstring = endIndex >= (stringToReplaceIn.length() - 1) ? "" : stringToReplaceIn.substring(endIndex + 1);
 
