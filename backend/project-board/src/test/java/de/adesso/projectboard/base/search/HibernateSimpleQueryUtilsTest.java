@@ -22,7 +22,7 @@ public class HibernateSimpleQueryUtilsTest {
     public void makeQueryPrefixAndFuzzyReturnsExpectedQuery() {
         // given
         var givenSimpleQuery = "((java | junit) & mockito~2) | spring* | \"kotlin\"";
-        var expectedSimpleQuery = "(((java | java~2 | java*) | (junit | junit~2 | junit*)) & mockito~2) | spring* | \"kotlin\"";
+        var expectedSimpleQuery = "(((java | java~1 | java*) | (junit | junit~1 | junit*)) & mockito~2) | spring* | \"kotlin\"";
 
         // when
         var actualQuery = hibernateSimpleQueryUtils.makeQueryPrefixAndFuzzy(givenSimpleQuery);
@@ -35,7 +35,7 @@ public class HibernateSimpleQueryUtilsTest {
     public void makeQueryPrefixAndFuzzyReplacesNonExplicitTerms() {
         // given
         var givenSimpleQuery = "java";
-        var expectedSimpleQuery = "(java | java~2 | java*)";
+        var expectedSimpleQuery = "(java | java~1 | java*)";
 
         // when
         var actualQuery = hibernateSimpleQueryUtils.makeQueryPrefixAndFuzzy(givenSimpleQuery);
@@ -96,7 +96,7 @@ public class HibernateSimpleQueryUtilsTest {
     public void replaceTermWithFuzzyAndPrefixDisjunctionReplacesTermWithBracedDisjunction() {
         // given
         var simpleQuery = "java";
-        var expectedQuery = "(java | java~2 | java*)";
+        var expectedQuery = "(java | java~1 | java*)";
         var startIndex = 0;
         var endIndex = 3;
         var startEndIndexPair = Pair.of(startIndex, endIndex);

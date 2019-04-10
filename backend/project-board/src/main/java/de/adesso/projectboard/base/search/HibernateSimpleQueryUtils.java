@@ -21,7 +21,7 @@ public class HibernateSimpleQueryUtils {
      * term is a term that is neither fuzzy (eg. <i>java~2</i>) nor a prefix term
      * (eg. <i>java*</i>) or phrase term (eg. <i>"java"</i>). The term gets replaced
      * by a disjunction of the original term, a fuzzy term with a maximum editing distance
-     * of {@code 2} and a prefix term.
+     * of {@code 1} and a prefix term.
      *
      * <p/>
      *
@@ -70,7 +70,7 @@ public class HibernateSimpleQueryUtils {
      *
      * @return
      *          A query where the given term is replaced by a disjunction of
-     *          the original term, a fuzzy term with a maximum editing distance of {@code 2}
+     *          the original term, a fuzzy term with a maximum editing distance of {@code 1}
      *          and a prefix term.
      */
     String replaceTermWithFuzzyAndPrefixDisjunction(Pair<Integer, Integer> startEndIndexPair, String simpleQuery) {
@@ -79,7 +79,7 @@ public class HibernateSimpleQueryUtils {
 
         var term = simpleQuery.substring(termStartIndex, termEndIndex + 1);
         var replaceTerm = String.format("(%s)",
-                createHibernateSearchDisjunction(List.of(term, term + "~2", term + "*")));
+                createHibernateSearchDisjunction(List.of(term, term + "~1", term + "*")));
 
         return replaceSubstring(startEndIndexPair, simpleQuery, replaceTerm);
     }
@@ -276,7 +276,8 @@ public class HibernateSimpleQueryUtils {
 
             // when a term delimiter is present and the term is not a fuzzy or prefix term add
             // the pair -> ignore fuzzy and prefix terms
-            if(nextSpecialCharIndex < 0 || nextTermDelimiterIndex < nextSpecialCharIndex) {
+            var isSimpleTerm = nextSpecialCharIndex < 0 || nextTermDelimiterIndex < nextSpecialCharIndex;
+            if(isSimpleTerm) {
                 termIndexPairs.add(Pair.of(index, termEndIndex));
 
                 index = nextTermDelimiterIndex + 1;
