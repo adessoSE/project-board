@@ -1,5 +1,6 @@
 package de.adesso.projectboard.base.search;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,8 +15,14 @@ public class HibernateSearchConfiguration {
     private EntityManager entityManager;
 
     @Bean
-    public HibernateSearchService hibernateSearchService() {
-        var searchService = new HibernateSearchService();
+    public HibernateSimpleQueryUtils simpleQueryEnhancer() {
+        return new HibernateSimpleQueryUtils();
+    }
+
+    @Autowired
+    @Bean
+    public HibernateSearchService hibernateSearchService(HibernateSimpleQueryUtils hibernateSimpleQueryUtils) {
+        var searchService = new HibernateSearchService(hibernateSimpleQueryUtils);
         searchService.initialize(entityManager);
 
         return searchService;

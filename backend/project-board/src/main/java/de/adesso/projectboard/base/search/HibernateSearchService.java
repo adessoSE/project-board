@@ -38,10 +38,17 @@ public class HibernateSearchService {
     @PersistenceContext
     EntityManager entityManager;
 
-    public HibernateSearchService() {
+    final Map<Class<?>, List<String>> classIndexedFieldMap;
+
+    final HibernateSimpleQueryUtils hibernateSimpleQueryUtils;
+
+    public HibernateSearchService(HibernateSimpleQueryUtils hibernateSimpleQueryUtils) {
         // increase the max clause count to allow searching for
         // staff members of users with more than 1024 staff members
         BooleanQuery.setMaxClauseCount(MAX_CLAUSE_COUNT);
+
+        this.classIndexedFieldMap = new HashMap<>();
+        this.hibernateSimpleQueryUtils = hibernateSimpleQueryUtils;
     }
 
     Query getProjectBaseQuery(@NonNull String simpleQueryString, @NonNull Set<String> status) {
@@ -54,7 +61,7 @@ public class HibernateSearchService {
         var queryBuilder = getQueryBuilder(Project.class);
         var statusQuery = queryBuilder.simpleQueryString()
                 .onField("status")
-                .matching(createLuceneDisjunction(status))
+                .matching(hibernateSimpleQueryUtils.createHibernateSearchDisjunction(status))
                 .createQuery();
         return queryBuilder.bool()
                 .must(statusQuery)
@@ -99,7 +106,7 @@ public class HibernateSearchService {
                 .collect(Collectors.toSet());
         var idDisjunctionQuery = queryBuilder.simpleQueryString()
                 .onField("user_id")
-                .matching(createLuceneDisjunction(userIds))
+                .matching(hibernateSimpleQueryUtils.createHibernateSearchDisjunction(userIds))
                 .createQuery();
 
         var boolQuery = queryBuilder.bool()
@@ -135,11 +142,13 @@ public class HibernateSearchService {
             throw new IllegalArgumentException("No field of type String annotated with @Field!");
         }
 
+        var fuzzyAndPrefixQuery = hibernateSimpleQueryUtils.makeQueryPrefixAndFuzzy(simpleQueryString);
+
         var queryBuilder = getQueryBuilder(entityType);
         return queryBuilder.simpleQueryString()
                 .onFields(annotatedStringFields.get(0), annotatedStringFields.subList(1, annotatedStringFields.size()).toArray(String[]::new))
                 .withAndAsDefaultOperator()
-                .matching(simpleQueryString)
+                .matching(fuzzyAndPrefixQuery)
                 .createQuery();
     }
 
@@ -154,7 +163,11 @@ public class HibernateSearchService {
      *          it is not empty.
      */
     List<String> getNamesOfAnnotatedStringFields(Class<?> entityType) {
-        return Arrays.stream(entityType.getDeclaredFields())
+        if(classIndexedFieldMap.containsKey(entityType)) {
+            return classIndexedFieldMap.get(entityType);
+        }
+
+        var indexedStringFields = Arrays.stream(entityType.getDeclaredFields())
                 .filter(field -> String.class.equals(field.getType()) && Objects.nonNull(field.getAnnotation(Field.class)))
                 .map(field -> {
                     var fieldAnnotation = field.getAnnotation(Field.class);
@@ -166,6 +179,9 @@ public class HibernateSearchService {
                     return field.getName();
                 })
                 .collect(Collectors.toList());
+        classIndexedFieldMap.put(entityType, indexedStringFields);
+
+        return indexedStringFields;
     }
 
     /**
@@ -223,28 +239,6 @@ public class HibernateSearchService {
                 .buildQueryBuilder()
                 .forEntity(type)
                 .get();
-    }
-
-    /**
-     *
-     * @param values
-     *          The values to create the matching string for, not null
-     *          and not empty.
-     *
-     * @return
-     *          A lucene simple query string.
-     */
-    String createLuceneDisjunction(Set<String> values) {
-        var valueArr = values.toArray(String[]::new);
-        var fieldMatchStringBuilder = new StringBuilder(valueArr[0]);
-
-        for(var valueIndex = 1; valueIndex < valueArr.length; valueIndex++) {
-            fieldMatchStringBuilder
-                    .append(" | ")
-                    .append(valueArr[valueIndex]);
-        }
-
-        return fieldMatchStringBuilder.toString();
     }
 
 }

@@ -7,6 +7,7 @@ import helper.base.search.IndexedEntity;
 import helper.base.search.IndexedEntityWithoutFields;
 import helper.base.search.NonIndexedEntity;
 import org.apache.lucene.search.Query;
+import org.assertj.core.api.SoftAssertions;
 import org.hibernate.search.MassIndexer;
 import org.hibernate.search.SearchFactory;
 import org.hibernate.search.jpa.FullTextEntityManager;
@@ -20,8 +21,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
-import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,11 +52,14 @@ public class HibernateSearchServiceTest {
     @Mock
     private MustJunction mustJunctionMock;
 
+    @Mock
+    private HibernateSimpleQueryUtils hibernateSimpleQueryUtilsMock;
+
     private HibernateSearchService hibernateSearchService;
 
     @Before
     public void setUp() {
-        this.hibernateSearchService = new HibernateSearchService();
+        this.hibernateSearchService = new HibernateSearchService(hibernateSimpleQueryUtilsMock);
         this.hibernateSearchService.entityManager = fullTextEntityManagerMock;
     }
 
@@ -65,13 +69,16 @@ public class HibernateSearchServiceTest {
         var expectedQuery = mock(Query.class);
 
         var givenQuery = "java";
+        var expectedFuzzyAndPrefixQuery = "(java | java~2 | java*)";
         var expectedFirstField = "status";
         var expectedOtherFields = new String[] { "title", "job", "skills", "description", "lob",
                 "customer", "location", "operationStart", "operationEnd", "effort", "other" };
 
-        var matchingContextMock = createSimpleQueryStringMatchingContext(givenQuery, expectedQuery);
+        var matchingContextMock = createSimpleQueryStringMatchingContext(expectedFuzzyAndPrefixQuery, expectedQuery);
         configureQueryBuilderSimpleQueryString(expectedFirstField, expectedOtherFields, matchingContextMock);
         configureGetQueryBuilderToReturnBuilderForType(Project.class);
+
+        given(hibernateSimpleQueryUtilsMock.makeQueryPrefixAndFuzzy(givenQuery)).willReturn(expectedFuzzyAndPrefixQuery);
 
         // when
         var actualQuery = hibernateSearchService.getProjectBaseQuery(givenQuery, Set.of());
@@ -88,13 +95,14 @@ public class HibernateSearchServiceTest {
         var expectedResultQuery = mock(Query.class);
 
         var givenSimpleQuery = "java";
+        var expectedFuzzyAndPrefixQuery = "(java | java~2 | java*)";
         var givenStatusSet = Set.of("open");
         var expectedSimpleStatusQuery = "open";
         var expectedFirstField = "status";
         var expectedOtherFields = new String[] { "title", "job", "skills", "description", "lob",
                 "customer", "location", "operationStart", "operationEnd", "effort", "other" };
 
-        var givenQueryMatchingContext = createSimpleQueryStringMatchingContext(givenSimpleQuery, expectedSimpleQueryStringQuery);
+        var givenQueryMatchingContext = createSimpleQueryStringMatchingContext(expectedFuzzyAndPrefixQuery, expectedSimpleQueryStringQuery);
         var statusQueryMatchingContext = createSimpleQueryStringMatchingContext(expectedSimpleStatusQuery, expectedStatusQuery);
         configureQueryBuilderSimpleQueryString(expectedFirstField, expectedOtherFields, givenQueryMatchingContext);
         configureQueryBuilderSimpleQueryString("status", statusQueryMatchingContext);
@@ -104,6 +112,9 @@ public class HibernateSearchServiceTest {
         given(booleanJunctionMock.must(expectedStatusQuery)).willReturn(mustJunctionMock);
         given(mustJunctionMock.must(expectedSimpleQueryStringQuery)).willReturn(mustJunctionMock);
         given(mustJunctionMock.createQuery()).willReturn(expectedResultQuery);
+
+        given(hibernateSimpleQueryUtilsMock.makeQueryPrefixAndFuzzy(givenSimpleQuery)).willReturn(expectedFuzzyAndPrefixQuery);
+        given(hibernateSimpleQueryUtilsMock.createHibernateSearchDisjunction(givenStatusSet)).willReturn(expectedSimpleStatusQuery);
 
         // when
         var actualQuery = hibernateSearchService.getProjectBaseQuery(givenSimpleQuery, givenStatusSet);
@@ -121,13 +132,14 @@ public class HibernateSearchServiceTest {
         var expectedResult = List.of(mock(Project.class));
 
         var givenSimpleQuery = "java";
+        var expectedFuzzyAndPrefixQuery = "(java | java~2 | java*)";
         var givenStatusSet = Set.of("open");
         var expectedSimpleStatusQuery = "open";
         var expectedFirstField = "status";
         var expectedOtherFields = new String[] { "title", "job", "skills", "description", "lob",
                 "customer", "location", "operationStart", "operationEnd", "effort", "other" };
 
-        var givenQueryMatchingContext = createSimpleQueryStringMatchingContext(givenSimpleQuery, expectedSimpleQueryStringQuery);
+        var givenQueryMatchingContext = createSimpleQueryStringMatchingContext(expectedFuzzyAndPrefixQuery, expectedSimpleQueryStringQuery);
         var statusQueryMatchingContext = createSimpleQueryStringMatchingContext(expectedSimpleStatusQuery, expectedStatusQuery);
         configureQueryBuilderSimpleQueryString(expectedFirstField, expectedOtherFields, givenQueryMatchingContext);
         configureQueryBuilderSimpleQueryString("status", statusQueryMatchingContext);
@@ -137,6 +149,9 @@ public class HibernateSearchServiceTest {
         given(booleanJunctionMock.must(expectedStatusQuery)).willReturn(mustJunctionMock);
         given(mustJunctionMock.must(expectedSimpleQueryStringQuery)).willReturn(mustJunctionMock);
         given(mustJunctionMock.createQuery()).willReturn(expectedResultQuery);
+
+        given(hibernateSimpleQueryUtilsMock.makeQueryPrefixAndFuzzy(givenSimpleQuery)).willReturn(expectedFuzzyAndPrefixQuery);
+        given(hibernateSimpleQueryUtilsMock.createHibernateSearchDisjunction(givenStatusSet)).willReturn(expectedSimpleStatusQuery);
 
         given(fullTextEntityManagerMock.createFullTextQuery(expectedResultQuery, Project.class)).willReturn(fullTextQueryMock);
         given(fullTextQueryMock.getResultList()).willReturn(expectedResult);
@@ -155,6 +170,7 @@ public class HibernateSearchServiceTest {
         var pageCount = 1;
         var givenPageable = PageRequest.of(pageCount, pageSize);
         var givenSimpleQuery = "java";
+        var expectedFuzzyAndPrefixQuery = "(java | java~2 | java*)";
         var givenStatusSet = Set.of("open");
         var expectedSimpleStatusQuery = "open";
         var expectedFirstField = "status";
@@ -167,7 +183,7 @@ public class HibernateSearchServiceTest {
         var expectedProjects = List.of(mock(Project.class));
         var expectedResultPage = new PageImpl<>(expectedProjects, givenPageable, totalResults);
 
-        var givenQueryMatchingContext = createSimpleQueryStringMatchingContext(givenSimpleQuery, expectedSimpleQueryStringQuery);
+        var givenQueryMatchingContext = createSimpleQueryStringMatchingContext(expectedFuzzyAndPrefixQuery, expectedSimpleQueryStringQuery);
         var statusQueryMatchingContext = createSimpleQueryStringMatchingContext(expectedSimpleStatusQuery, expectedStatusQuery);
         configureQueryBuilderSimpleQueryString(expectedFirstField, expectedOtherFields, givenQueryMatchingContext);
         configureQueryBuilderSimpleQueryString("status", statusQueryMatchingContext);
@@ -183,6 +199,9 @@ public class HibernateSearchServiceTest {
         given(fullTextQueryMock.setMaxResults(pageSize)).willReturn(fullTextQueryMock);
         given(fullTextQueryMock.getResultSize()).willReturn(totalResults);
         given(fullTextQueryMock.getResultList()).willReturn(expectedProjects);
+
+        given(hibernateSimpleQueryUtilsMock.makeQueryPrefixAndFuzzy(givenSimpleQuery)).willReturn(expectedFuzzyAndPrefixQuery);
+        given(hibernateSimpleQueryUtilsMock.createHibernateSearchDisjunction(givenStatusSet)).willReturn(expectedSimpleStatusQuery);
 
         // when
         var actualResultPage = hibernateSearchService.searchProjects(givenSimpleQuery, givenStatusSet, givenPageable);
@@ -202,6 +221,7 @@ public class HibernateSearchServiceTest {
     public void searchUserDataReturnsExpectedResult() {
         // given
         var simpleQuery = "Jane | Doe";
+        var expectedFuzzyAndPrefixQuery = "(Jane | Jane~2 | Jane*) | (Doe | Doe~2  | Doe)";
 
         var expectedUserIdQuery = mock(Query.class);
         var expectedFieldQuery = mock(Query.class);
@@ -220,7 +240,7 @@ public class HibernateSearchServiceTest {
         var otherFields = new String[] { "lastName" };
 
         var userIdMatchingContext = createSimpleQueryStringMatchingContext(userIdSimpleQuery, expectedUserIdQuery);
-        var fieldMatchingContext = createSimpleQueryStringMatchingContext(simpleQuery, expectedFieldQuery);
+        var fieldMatchingContext = createSimpleQueryStringMatchingContext(expectedFuzzyAndPrefixQuery, expectedFieldQuery);
         configureGetQueryBuilderToReturnBuilderForType(UserData.class);
         configureQueryBuilderSimpleQueryString("user_id", userIdMatchingContext);
         configureQueryBuilderSimpleQueryString(firstField, otherFields, fieldMatchingContext);
@@ -232,6 +252,9 @@ public class HibernateSearchServiceTest {
 
         given(fullTextEntityManagerMock.createFullTextQuery(expectedCompleteQuery, UserData.class)).willReturn(fullTextQueryMock);
         given(fullTextQueryMock.getResultList()).willReturn(expectedSearchResult);
+
+        given(hibernateSimpleQueryUtilsMock.makeQueryPrefixAndFuzzy(simpleQuery)).willReturn(expectedFuzzyAndPrefixQuery);
+        given(hibernateSimpleQueryUtilsMock.createHibernateSearchDisjunction(Set.of(firstUserId, secondUserId))).willReturn(userIdSimpleQuery);
 
         // when
         var actualSearchResult = hibernateSearchService.searchUserData(List.of(firstUser, secondUser), simpleQuery);
@@ -270,16 +293,19 @@ public class HibernateSearchServiceTest {
         var expectedQuery = mock(Query.class);
 
         var givenType = IndexedEntity.class;
-        var givenQuery = "param1 | param2";
+        var givenSimpleQuery = "param1 | param2";
+        var expectedFuzzyAndPrefixQuery = "(param1 | param1~2 | param1*) | (param2 | param2~2 | param2*)";
         var expectedFirstField = "renamed_field";
         var expectedOtherFields = new String[] { "secondField" };
 
-        var matchingContextMock = createSimpleQueryStringMatchingContext(givenQuery, expectedQuery);
+        var matchingContextMock = createSimpleQueryStringMatchingContext(expectedFuzzyAndPrefixQuery, expectedQuery);
         configureQueryBuilderSimpleQueryString(expectedFirstField, expectedOtherFields, matchingContextMock);
         configureGetQueryBuilderToReturnBuilderForType(givenType);
 
+        given(hibernateSimpleQueryUtilsMock.makeQueryPrefixAndFuzzy(givenSimpleQuery)).willReturn(expectedFuzzyAndPrefixQuery);
+
         // when
-        var actualQuery = hibernateSearchService.getQuerySearchingForAllIndexedFields(givenType, givenQuery);
+        var actualQuery = hibernateSearchService.getQuerySearchingForAllIndexedFields(givenType, givenSimpleQuery);
 
         // then
         assertThat(actualQuery).isEqualTo(expectedQuery);
@@ -304,15 +330,36 @@ public class HibernateSearchServiceTest {
     }
 
     @Test
-    public void getNamesOfAnnotatedStringFields() {
+    public void getNamesOfAnnotatedStringFieldsReturnsCachedListWhenPresent() {
         // given
-        var expectedFieldNames = Set.of("renamed_field", "secondField");
+        var cachedFieldNames = List.of("field_1", "field_2");
+        hibernateSearchService.classIndexedFieldMap.put(IndexedEntity.class, cachedFieldNames);
 
         // when
         var actualFieldNames = hibernateSearchService.getNamesOfAnnotatedStringFields(IndexedEntity.class);
 
         // then
-        assertThat(actualFieldNames).containsExactlyInAnyOrderElementsOf(expectedFieldNames);
+        assertThat(actualFieldNames).containsExactlyInAnyOrderElementsOf(cachedFieldNames);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void getNamesOfAnnotatedStringFieldsGetsNamesOfAnnotatedStringFieldsAndCachesResultWhenNotPresent() {
+        // given
+        var expectedFieldNames = List.of("renamed_field", "secondField");
+
+        // when
+        var actualFieldNames = hibernateSearchService.getNamesOfAnnotatedStringFields(IndexedEntity.class);
+
+        // then
+        var softly = new SoftAssertions();
+
+        softly.assertThat(actualFieldNames).containsExactlyInAnyOrderElementsOf(expectedFieldNames);
+        softly.assertThat(hibernateSearchService.classIndexedFieldMap).containsExactly(
+                Map.entry(IndexedEntity.class, expectedFieldNames)
+        );
+
+        softly.assertAll();
     }
 
     @Test
@@ -349,32 +396,6 @@ public class HibernateSearchServiceTest {
 
         // then
         assertThat(actualQueryBuilder).isEqualTo(queryBuilderMock);
-    }
-
-    @Test
-    public void createLuceneDisjunctionReturnsElementWhenOnlyOneIsPresent() {
-        // given
-        var expectedDisjunction = "param1";
-        var givenValues = Set.of(expectedDisjunction);
-
-        // when
-        var actualDisjunction = hibernateSearchService.createLuceneDisjunction(givenValues);
-
-        // then
-        assertThat(actualDisjunction).isEqualTo(expectedDisjunction);
-    }
-
-    @Test
-    public void createLuceneDisjunctionReturnsExpectedDisjunction() {
-        // given
-        var expectedDisjunction = "param1 | param2 | param3";
-        var givenValues = new LinkedHashSet<>(List.of("param1", "param2", "param3"));
-
-        // when
-        var actualDisjunction = hibernateSearchService.createLuceneDisjunction(givenValues);
-
-        // then
-        assertThat(actualDisjunction).isEqualTo(expectedDisjunction);
     }
 
     private void configureGetQueryBuilderToReturnBuilderForType(Class<?> entityType) {
