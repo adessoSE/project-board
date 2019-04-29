@@ -1,14 +1,14 @@
+#!groovy
+def BACKEND_DIR = 'backend/project-board'
+def DOCKER_ARTIFACT_DIR = 'docker/temp'
+
 pipeline {
 
     agent any
 
     tools {
-        gradle '4.10.2'
-        jdk '11'
-    }
-
-    environment {
-        BACKEND_DIR = 'backend/project-board'
+        gradle '5.0'
+        jdk 'JDK-11.0.1 (OpenJDK)'
     }
 
     stages {
@@ -18,33 +18,52 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Test') {
+
+            steps {
+                dir(BACKEND_DIR) {
+                    sh 'gradle clean test jacocoTestReport'
+                    jacoco buildOverBuild: true, classPattern: '**/classes', deltaBranchCoverage: '5', execPattern: '**/**.exec', sourceInclusionPattern: '**/*.java', sourcePattern: '**/src/main/java'
+                }
+            }
+
+        }
+
+        stage('Build Artifacts') {
             environment {
                 JIRA_CREDS = credentials('jira-creds')
                 LDAP_CREDS = credentials('ldap-creds')
                 DATA_SRC_CREDS = credentials('data-src-creds')
+                MAIL_CREDS = credentials('mail-creds')
             }
 
             steps {
                 dir(BACKEND_DIR) {
-                    sh 'gradle clean dockerCopy -x test'
-                    stash includes: 'docker/temp/**', name: 'dockerArtifacts'
+                    sh 'gradle dockerCopy'
+
+                    dir(DOCKER_ARTIFACT_DIR) {
+                        stash includes: '*', name: 'dockerArtifacts'
+                    }
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Build Docker Image') {
             agent {
                 label 'docker'
             }
 
             steps {
-                dir('docker-temp') {
+                dir(DOCKER_ARTIFACT_DIR) {
                     unstash 'dockerArtifacts'
 
                     sh 'sudo docker build -t pb_backend .'
-                    sh 'sudo docker save pb_backend -o pb_backend.img'
-                    sh 'ls -la'
+                    sh 'sudo docker save pb_backend -o pb_backend.tar'
+                    sh 'sudo chmod 777 pb_backend.tar'
+
+                    sshagent(['test-server-ssh-conf']) {
+                        sh 'scp -o StrictHostKeyChecking=no pb_backend.tar jenkins@$REMOTE_HOST:~'
+                    }
                 }
             }
         }

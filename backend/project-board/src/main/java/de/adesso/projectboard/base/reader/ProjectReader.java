@@ -34,7 +34,7 @@ public interface ProjectReader {
      *         A list of {@link Project}s.
      *
      * @throws Exception
-     *          When a error occurrs.
+     *          When a error occurs.
      */
     List<Project> getInitialProjects() throws Exception;
 

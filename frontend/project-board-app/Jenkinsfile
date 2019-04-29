@@ -1,0 +1,63 @@
+#!groovy
+def FRONTEND_DIR = 'frontend/project-board-app'
+def DOCKER_ARTIFACT_DIR = 'dist/project-board-app'
+
+pipeline {
+
+    agent any
+
+    tools {
+        nodejs '10.14.2'
+    }
+
+    stages {
+        stage('Checkout') {
+          steps {
+            checkout scm
+          }
+        }
+
+        stage('Build Artifacts') {
+
+            steps {
+                dir(FRONTEND_DIR) {
+
+                    sh 'npm install @angular/cli'
+                    sh 'npm install yarn'
+                    sh './node_modules/yarn/bin/yarn install'
+                    sh './node_modules/@angular/cli/bin/ng build --prod'
+
+                    dir(DOCKER_ARTIFACT_DIR) {
+                        stash includes: '*', name: 'dockerArtifacts'
+                    }
+                }
+            }
+
+        }
+
+        stage('Docker Build') {
+            agent {
+                label 'docker'
+            }
+
+            steps {
+                dir(FRONTEND_DIR) {
+
+                    dir(DOCKER_ARTIFACT_DIR) {
+                        unstash 'dockerArtifacts'
+                    }
+
+                    sh 'sudo docker build -t pb_frontend .'
+                    sh 'sudo docker save pb_frontend -o pb_frontend.tar'
+                    sh 'sudo chmod 777 pb_frontend.tar'
+
+                    sshagent(['test-server-ssh-conf']) {
+                        sh 'scp -o StrictHostKeyChecking=no pb_frontend.tar jenkins@$REMOTE_HOST:~'
+                    }
+                }
+            }
+
+        }
+    }
+
+}
