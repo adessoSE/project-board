@@ -18,5 +18,11 @@ COPY ${JAR_FILE} project-board.jar
 # Copy all property files to /config/ for Spring
 COPY *.properties /config/
 
+# Copy the required SSL certificate
+COPY publicCert.pem /tmp/
+
+# Add the SSL certificate to the default Keystore
+RUN $JAVA_HOME/bin/keytool -import -noprompt -storepass changeit -alias test-server -file /tmp/publicCert.pem -keystore $JAVA_HOME/lib/security/cacerts -trustcacerts
+
 # Set entrypoint to execute jar
 ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom", "-jar", "/project-board.jar"]
