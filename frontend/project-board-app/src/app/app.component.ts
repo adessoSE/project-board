@@ -1,4 +1,13 @@
-import { Component, DoCheck, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, DoCheck, HostListener, OnInit, ViewChild, NgZone, Renderer, ElementRef } from '@angular/core';
+import {
+  Router,
+  // import as RouterEvent to avoid confusion with the DOM Event
+  Event as RouterEvent,
+  NavigationStart,
+  NavigationEnd,
+  NavigationCancel,
+  NavigationError
+} from '@angular/router'
 import { MatSidenav } from '@angular/material';
 import { faChevronUp } from '@fortawesome/free-solid-svg-icons/faChevronUp';
 import { AuthConfig, JwksValidationHandler, OAuthService } from 'angular-oauth2-oidc';
@@ -24,6 +33,7 @@ import {
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit, DoCheck {
+  
   faChevronUp = faChevronUp;
   username = 'default';
   boss: boolean;
@@ -36,14 +46,63 @@ export class AppComponent implements OnInit, DoCheck {
   faqTooltip = FAQ_TOOLTIP;
   logoutTooltip = LOGOUT_TOOLTIP;
   supportEmail: string;
-
   destroy$ = new Subject();
+
   @ViewChild('snav') sidenav: MatSidenav;
+  @ViewChild('spinnerElement')
+  spinnerElement: ElementRef;
 
   constructor(private authenticationService: AuthenticationService,
               private employeeService: EmployeeService,
-              private oAuthService: OAuthService
-  ) { this.configureWithNewConfigApi(); }
+              private oAuthService: OAuthService,
+              private router: Router,
+              private ngZone: NgZone,
+              private renderer: Renderer
+  ) { 
+    router.events.subscribe((event: RouterEvent) => {
+      this._navigationInterceptor(event)
+    });
+    this.configureWithNewConfigApi(); 
+  }
+
+   // Shows and hides the loading spinner during RouterEvent changes
+   private _navigationInterceptor(event: RouterEvent): void {
+    if (event instanceof NavigationStart) {
+      this.ngZone.runOutsideAngular(() => {
+        this.renderer.setElementStyle(
+          this.spinnerElement.nativeElement,
+          'display',
+          'block'
+        )
+      })
+    }
+    if (event instanceof NavigationEnd) {
+      this._hideSpinner()
+    }
+    // Set loading state to false in both of the below events to
+    // hide the spinner in case a request fails
+    if (event instanceof NavigationCancel) {
+      this._hideSpinner()
+    }
+    if (event instanceof NavigationError) {
+      this._hideSpinner()
+    }
+  }
+
+  private _hideSpinner(): void {
+    // We wanna run this function outside of Angular's zone to
+    // bypass change detection,
+    this.ngZone.runOutsideAngular(() => {
+      // For simplicity we are going to turn opacity on / off
+      // you could add/remove a class for more advanced styling
+      // and enter/leave animation of the spinner
+      this.renderer.setElementStyle(
+        this.spinnerElement.nativeElement,
+        'display',
+        'none'
+      )
+    })
+  }
 
   private configureWithNewConfigApi(): void {
     this.oAuthService.configure(authConfig);
