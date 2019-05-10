@@ -1,3 +1,11 @@
+<!-- loading spinenr -->
+<div class="loading-overlay" #spinnerElement style="display: block;">
+  <!-- md-spinner is short for <md-progress-circle mode="indeterminate"></md-progress-circle> -->
+  <div id="router-spinner">
+    <mat-spinner></mat-spinner>
+  </div>
+</div>
+
 <!--Scroll Badge -->
 <button id="top-badge" class="btn btn-primary back-to-top-badge" (click)="scrollTop()">
   <fa-icon [icon]="faChevronUp"></fa-icon>
@@ -29,7 +37,8 @@
             <span>Projekte</span>
           </div>
         </ng-template>
-        <a class="nav-link" *ngIf="hasAccess; else disabledProjectsMain" routerLink="/browse" routerLinkActive="active-link">
+        <a class="nav-link" *ngIf="hasAccess; else disabledProjectsMain" routerLink="/browse"
+          routerLinkActive="active-link">
           <mat-icon class="navbar-icon">folder_open</mat-icon>
           <span>Projekte</span>
         </a>
@@ -72,8 +81,10 @@
       <ng-template #disabledProjectsMini>
         <mat-icon class="disabled" [title]="noAccessTooltip"></mat-icon>
       </ng-template>
-      <mat-icon [title]="projectsTooltip" *ngIf="hasAccess; else disabledProjectsMini" routerLink="/browse" routerLinkActive="active-mini-link">folder_open</mat-icon>
-      <mat-icon [title]="employeesTooltip" *ngIf="isBoss" routerLink="/employees" routerLinkActive="active-mini-link">people</mat-icon>
+      <mat-icon [title]="projectsTooltip" *ngIf="hasAccess; else disabledProjectsMini" routerLink="/browse"
+        routerLinkActive="active-mini-link">folder_open</mat-icon>
+      <mat-icon [title]="employeesTooltip" *ngIf="isBoss" routerLink="/employees" routerLinkActive="active-mini-link">
+        people</mat-icon>
       <mat-icon [title]="faqTooltip" routerLink="/faq" routerLinkActive="active-mini-link">question_answer</mat-icon>
     </div>
     <div>
