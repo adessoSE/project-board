@@ -3,6 +3,7 @@ package de.adesso.projectboard.base.user.persistence;
 import de.adesso.projectboard.base.access.persistence.AccessInterval;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.project.persistence.Project;
+import de.adesso.projectboard.base.user.persistence.data.UserData;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,7 +21,7 @@ import java.util.*;
 @Table(name = "PB_USER")
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(exclude = "userData")
 public class User {
 
     /**
@@ -63,6 +64,13 @@ public class User {
             mappedBy = "user"
     )
     List<AccessInterval> accessIntervals;
+
+    /**
+     * The user's data containing the name and
+     * more information.
+     */
+    @OneToOne(mappedBy = "user")
+    UserData userData;
 
     /**
      *

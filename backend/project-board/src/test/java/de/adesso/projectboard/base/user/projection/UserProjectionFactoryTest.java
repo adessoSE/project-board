@@ -85,7 +85,7 @@ public class UserProjectionFactoryTest {
 
         given(projectionFactoryMock.createProjection(projection, userProjectionSource)).willReturn(expectedProjection);
 
-        given(userServiceMock.getUserData(userMock)).willReturn(userDataMock);
+        given(userServiceMock.getUserDataWithImage(userMock)).willReturn(userDataMock);
         given(userServiceMock.userIsManager(userMock)).willReturn(true);
 
         // when

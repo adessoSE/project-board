@@ -1,4 +1,4 @@
-package de.adesso.projectboard.reader.jql;
+package de.adesso.projectboard.adapter.jira.reader.jql;
 
 /**
  * Comparator to create JQL statements.

@@ -1,8 +1,8 @@
 package de.adesso.projectboard.adapter.mail.handler;
 
 import de.adesso.projectboard.adapter.mail.MailSenderAdapter;
-import de.adesso.projectboard.adapter.mail.VelocityMailTemplateService;
 import de.adesso.projectboard.adapter.mail.persistence.TimeAwareMessage;
+import de.adesso.projectboard.adapter.velocity.VelocityTemplateService;
 import de.adesso.projectboard.base.access.handler.UserAccessEventHandler;
 import de.adesso.projectboard.base.access.persistence.AccessInterval;
 import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProperties;
@@ -27,13 +27,13 @@ public class MailUserAccessEventHandler implements UserAccessEventHandler {
 
     private final UserService userService;
 
-    private final VelocityMailTemplateService velocityMailTemplateService;
+    private final VelocityTemplateService velocityMailTemplateService;
 
     private final String projectBoardUrl;
 
     public MailUserAccessEventHandler(MailSenderAdapter mailSenderAdapter,
                                       UserService userService,
-                                      VelocityMailTemplateService velocityMailTemplateService,
+                                      VelocityTemplateService velocityMailTemplateService,
                                       ProjectBoardConfigurationProperties configurationProperties) {
         this.mailSenderAdapter = mailSenderAdapter;
         this.userService = userService;
@@ -73,7 +73,7 @@ public class MailUserAccessEventHandler implements UserAccessEventHandler {
 
     Map<String, Object> getContextMap(User user, LocalDateTime newEndTime) {
         var newDateAndTime = newEndTime.format(DATE_TIME_FORMATTER);
-        var userData = userService.getUserData(user);
+        var userData = userService.getUserDataWithImage(user);
 
         return Map.of(
                 "userData", userData,

@@ -1,4 +1,4 @@
-package de.adesso.projectboard.reader;
+package de.adesso.projectboard.adapter.jira.reader;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;

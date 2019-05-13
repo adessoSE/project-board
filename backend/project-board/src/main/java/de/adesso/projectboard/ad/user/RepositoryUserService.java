@@ -63,7 +63,7 @@ public class RepositoryUserService implements UserService {
     }
 
     @Override
-    public UserData getUserData(@NonNull User user) {
+    public UserData getUserDataWithImage(@NonNull User user) {
         var data = dataRepo.findByUser(user)
                 .orElseThrow(() -> new UserDataNotFoundException(user.getId()));
 

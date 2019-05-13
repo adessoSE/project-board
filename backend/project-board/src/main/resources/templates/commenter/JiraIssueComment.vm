@@ -1,0 +1,13 @@
+#* @vtlvariable name="offeringUser" type="de.adesso.projectboard.base.user.persistence.User" *#
+#* @vtlvariable name="application" type="de.adesso.projectboard.base.application.persistence.ProjectApplication" *#
+##
+#set( $offeringUserData = $offeringUser.getUserData() )
+#set( $offeringUserFirstName = $offeringUserData.getFirstName() )
+#set( $offeringUserLastName = $offeringUserData.getLastName() )
+##
+#set( $offeredUserData = $application.getUser().getUserData() )
+#set( $offeredUserFirstName = $offeredUserData.getFirstName() )
+#set( $offeredUserLastName = $offeredUserData.getLastName() )
+##
+${offeringUserFirstName} ${offeringUserLastName} hat seinen Mitarbeiter ${offeredUserFirstName} ${offeredUserLastName} ##
+angeboten.

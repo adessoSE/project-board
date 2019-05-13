@@ -1,12 +1,12 @@
-package de.adesso.projectboard.reader;
+package de.adesso.projectboard.adapter.jira.reader;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.adesso.projectboard.adapter.jira.configuration.JiraConfigurationProperties;
+import de.adesso.projectboard.adapter.jira.reader.jql.JqlComparator;
+import de.adesso.projectboard.adapter.jira.reader.jql.JqlQueryStringBuilder;
 import de.adesso.projectboard.base.project.deserializer.JiraIssue;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.reader.ProjectReader;
-import de.adesso.projectboard.reader.configuration.JiraConfigurationProperties;
-import de.adesso.projectboard.reader.jql.JqlComparator;
-import de.adesso.projectboard.reader.jql.JqlQueryStringBuilder;
 import de.adesso.projectboard.util.FieldTruncationUtils;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -22,13 +22,6 @@ import java.util.stream.Collectors;
 /**
  * A {@link ProjectReader} implementation that reads {@link Project}s from
  * a Jira REST API.
- *
- * <p>
- *     Auto-configured implementation in case no other {@link ProjectReader} bean
- *     is present in the application context.
- * </p>
- *
- * @see de.adesso.projectboard.base.project.updater.ProjectUpdater
  */
 public class JiraProjectReader implements ProjectReader {
 

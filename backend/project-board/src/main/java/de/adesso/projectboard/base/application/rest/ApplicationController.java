@@ -5,6 +5,7 @@ import de.adesso.projectboard.base.application.projection.FullApplicationProject
 import de.adesso.projectboard.base.application.projection.ReducedApplicationProjection;
 import de.adesso.projectboard.base.application.service.ApplicationService;
 import de.adesso.projectboard.base.projection.BaseProjectionFactory;
+import de.adesso.projectboard.base.user.service.UserAuthService;
 import de.adesso.projectboard.base.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -21,15 +22,19 @@ public class ApplicationController {
 
     private final UserService userService;
 
+    private final UserAuthService userAuthService;
+
     private final ApplicationService applicationService;
 
     private final BaseProjectionFactory projectionFactory;
 
     @Autowired
     public ApplicationController(UserService userService,
+                                 UserAuthService userAuthService,
                                  ApplicationService applicationService,
                                  BaseProjectionFactory projectionFactory) {
         this.userService = userService;
+        this.userAuthService = userAuthService;
         this.applicationService = applicationService;
         this.projectionFactory = projectionFactory;
     }
@@ -70,12 +75,24 @@ public class ApplicationController {
     }
 
     @PreAuthorize("hasElevatedAccessToUser(#userId) || hasRole('admin')")
-    @DeleteMapping (path = "/{userId}/applications/{applicationId}")
+    @DeleteMapping(path = "/{userId}/applications/{applicationId}")
     public ResponseEntity<?> deleteApplication(@PathVariable String userId, @PathVariable long applicationId) {
         var user = userService.getUserById(userId);
         var application = applicationService.deleteApplication(user, applicationId);
 
         var projection = projectionFactory.createProjectionForAuthenticatedUser(application,
+                ReducedApplicationProjection.class, FullApplicationProjection.class);
+        return ResponseEntity.ok(projection);
+    }
+
+    @PreAuthorize("hasElevatedAccessToUser(#userId) || hasRole('admin')")
+    @PutMapping(path = "/{userId}/applications/{applicationId}/offer")
+    public ResponseEntity<?> offerApplication(@PathVariable String userId, @PathVariable long applicationId) {
+        var offeringUser = userAuthService.getAuthenticatedUser();
+        var offeredUser = userService.getUserById(userId);
+        var offeredApplication = applicationService.offerApplication(offeringUser, offeredUser, applicationId);
+
+        var projection = projectionFactory.createProjectionForAuthenticatedUser(offeredApplication,
                 ReducedApplicationProjection.class, FullApplicationProjection.class);
         return ResponseEntity.ok(projection);
     }

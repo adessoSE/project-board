@@ -1,10 +1,12 @@
 package de.adesso.projectboard.ad.application.service;
 
-import de.adesso.projectboard.base.application.handler.ProjectApplicationEventHandler;
+import de.adesso.projectboard.base.application.handler.ProjectApplicationOfferedEventHandler;
+import de.adesso.projectboard.base.application.handler.ProjectApplicationReceivedEventHandler;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.persistence.ProjectApplicationRepository;
 import de.adesso.projectboard.base.application.service.ApplicationService;
 import de.adesso.projectboard.base.exceptions.AlreadyAppliedException;
+import de.adesso.projectboard.base.exceptions.ApplicationAlreadyOfferedException;
 import de.adesso.projectboard.base.exceptions.ApplicationNotFoundException;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
@@ -33,18 +35,22 @@ public class RepositoryApplicationService implements ApplicationService {
 
     private final ProjectApplicationRepository applicationRepo;
 
-    private final ProjectApplicationEventHandler applicationEventHandler;
+    private final ProjectApplicationReceivedEventHandler applicationEventHandler;
+
+    private final ProjectApplicationOfferedEventHandler applicationOfferedEventHandler;
 
     private final Clock clock;
 
     @Autowired
     public RepositoryApplicationService(ProjectService projectService,
                                         ProjectApplicationRepository applicationRepo,
-                                        ProjectApplicationEventHandler applicationEventHandler,
+                                        ProjectApplicationReceivedEventHandler applicationEventHandler,
+                                        ProjectApplicationOfferedEventHandler applicationOfferedEventHandler,
                                         Clock clock) {
         this.projectService = projectService;
         this.applicationRepo = applicationRepo;
         this.applicationEventHandler = applicationEventHandler;
+        this.applicationOfferedEventHandler = applicationOfferedEventHandler;
         this.clock = clock;
     }
 
@@ -90,6 +96,25 @@ public class RepositoryApplicationService implements ApplicationService {
 
         log.debug(String.format("Application with id '%d' of user '%s' was deleted", applicationId, user.getId()));
         return application;
+    }
+
+    @Transactional
+    @Override
+    public ProjectApplication offerApplication(User offeringUser, User offeredUser, long applicationId) {
+        var application = applicationRepo.findByUserAndId(offeredUser, applicationId)
+                .orElseThrow(ApplicationNotFoundException::new);
+
+        if(application.isOffered()) {
+            throw new ApplicationAlreadyOfferedException();
+        } else {
+            application.setOffered(true);
+            applicationRepo.save(application);
+            log.debug("Application {} of {} was offered by {}", applicationId, offeredUser.getId(), offeringUser.getId());
+
+            applicationOfferedEventHandler.onApplicationOffered(offeringUser, application);
+
+            return application;
+        }
     }
 
 }

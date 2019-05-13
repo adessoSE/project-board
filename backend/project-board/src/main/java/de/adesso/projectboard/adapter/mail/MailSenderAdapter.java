@@ -81,7 +81,7 @@ public class MailSenderAdapter {
 
     void sendMessage(TemplateMessage message) {
         var addressee = message.getAddressee();
-        var addresseeMail = userService.getUserData(addressee).getEmail();
+        var addresseeMail = userService.getUserDataWithImage(addressee).getEmail();
 
         // create a new mail message, set the subject, text, addressee and send it
         var mailMessage = new SimpleMailMessage();

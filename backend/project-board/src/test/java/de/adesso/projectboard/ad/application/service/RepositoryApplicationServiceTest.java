@@ -1,9 +1,11 @@
 package de.adesso.projectboard.ad.application.service;
 
-import de.adesso.projectboard.base.application.handler.ProjectApplicationEventHandler;
+import de.adesso.projectboard.base.application.handler.ProjectApplicationOfferedEventHandler;
+import de.adesso.projectboard.base.application.handler.ProjectApplicationReceivedEventHandler;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.persistence.ProjectApplicationRepository;
 import de.adesso.projectboard.base.exceptions.AlreadyAppliedException;
+import de.adesso.projectboard.base.exceptions.ApplicationAlreadyOfferedException;
 import de.adesso.projectboard.base.exceptions.ApplicationNotFoundException;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
@@ -42,7 +44,10 @@ public class RepositoryApplicationServiceTest {
     private ProjectApplicationRepository applicationRepoMock;
 
     @Mock
-    private ProjectApplicationEventHandler applicationEventHandlerMock;
+    private ProjectApplicationReceivedEventHandler applicationEventHandlerMock;
+
+    @Mock
+    private ProjectApplicationOfferedEventHandler applicationOfferedEventHandlerMock;
 
     @Mock
     private User userMock;
@@ -61,7 +66,7 @@ public class RepositoryApplicationServiceTest {
 
         this.clock = Clock.fixed(instant, zoneId);
         this.applicationService = new RepositoryApplicationService(projectServiceMock, applicationRepoMock,
-                applicationEventHandlerMock, clock);
+                applicationEventHandlerMock, applicationOfferedEventHandlerMock, clock);
     }
 
     @Test
@@ -184,6 +189,60 @@ public class RepositoryApplicationServiceTest {
         // when / then
         assertThatThrownBy(() -> applicationService.deleteApplication(userMock, applicationId))
                 .isInstanceOf(ApplicationNotFoundException.class);
+    }
+
+    @Test
+    public void offerApplicationThrowsExceptionWhenApplicationNotFound() {
+        // given
+        var applicationId = 1L;
+        var offeringUser = mock(User.class);
+        var offeredUser = mock(User.class);
+
+        given(applicationRepoMock.findByUserAndId(offeredUser, applicationId)).willReturn(Optional.empty());
+
+        // when / then
+        assertThatThrownBy(() -> applicationService.offerApplication(offeringUser, offeredUser, applicationId))
+                .isInstanceOf(ApplicationNotFoundException.class);
+    }
+
+    @Test
+    public void offerApplicationThrowsExceptionWhenApplicationIsAlreadyOffered() {
+        // given
+        var applicationId = 1L;
+        var offeringUser = mock(User.class);
+        var offeredUser = mock(User.class);
+
+        var application = new ProjectApplication(projectMock, "Comment", offeredUser, LocalDateTime.now(clock))
+                .setOffered(true);
+
+        given(applicationRepoMock.findByUserAndId(offeredUser, applicationId)).willReturn(Optional.of(application));
+
+        // when / then
+        assertThatThrownBy(() -> applicationService.offerApplication(offeringUser, offeredUser, applicationId))
+                .isInstanceOf(ApplicationAlreadyOfferedException.class);
+    }
+
+    @Test
+    public void offerApplicationOffersApplicationWhenPresentAndNotOffered() {
+        // given
+        var applicationId = 1L;
+        var offeringUserMock = mock(User.class);
+        var offeredUserMock = mock(User.class);
+
+        var application = new ProjectApplication(projectMock, "Comment", offeredUserMock, LocalDateTime.now(clock));
+        var expectedOfferedApplication = new ProjectApplication(projectMock, "Comment", offeredUserMock, LocalDateTime.now(clock))
+                .setOffered(true);
+
+        given(applicationRepoMock.findByUserAndId(offeredUserMock, applicationId)).willReturn(Optional.of(application));
+
+        // when
+        var offeredApplication = applicationService.offerApplication(offeringUserMock, offeredUserMock, applicationId);
+
+        // then
+        assertThat(offeredApplication).isEqualTo(expectedOfferedApplication);
+
+        verify(applicationRepoMock).save(offeredApplication);
+        verify(applicationOfferedEventHandlerMock).onApplicationOffered(offeringUserMock, offeredApplication);
     }
 
 }
