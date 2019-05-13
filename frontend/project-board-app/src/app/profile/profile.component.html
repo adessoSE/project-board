@@ -83,12 +83,12 @@
 
       <!-- applications tab -->
       <ng-container *ngIf="tabIndex == 1">
-        <div class="application" *ngFor="let a of applications; index as i" [ngClass]="{'border-bottom': i<applications.length-1}">
+        <div class="application" *ngFor="let a of applications; index as i" [ngClass]="{'border-bottom': i<applications.length-1, 'deleted': a.state === 'DELETED'}">
           <div class="headline">
             <div class="linking-icon-wrapper" title="Öffnen" (click)="openDialog(a.project)">
               <mat-icon>open_in_new</mat-icon>
             </div>
-            <span class="project-title">{{a.project.title}}</span>
+            <span class="project-title">{{a.project.title}} {{(a.state === 'DELETED') ? "(gelöscht)" : ""}}</span>
           </div>
           <div class="application-details">
             <div class="font-weight-bold">Datum:</div>
@@ -105,12 +105,26 @@
       <!-- employee-applications tab-->
       <ng-container *ngIf="tabIndex == 2">
         <div class="employee-application" *ngFor="let a of employeeApplications; index as i" [ngClass]="{'border-bottom': i<employeeApplications.length-1}">
-          <div class="linking-icon-wrapper">
-            <div class="linking-icon" title="Öffnen" (click)="openDialog(a.project)">
-              <mat-icon>open_in_new</mat-icon>
+          <div class="row">
+            <div class="col-10">
+          <span class="project-title">
+            <div class="linking-icon-wrapper">
+              <div class="linking-icon" title="Öffnen" (click)="openDialog(a.project)">
+                <mat-icon>open_in_new</mat-icon>
+              </div>
             </div>
-          </div>
-          <span class="project-title">{{a.project.title}}</span><br>
+            {{a.project.title}} 
+          </span>
+            </div>
+            <div class="col-2">
+          <button mat-icon-button class="small-delete" title="Anfrage permanent löschen" (click)="removeApplication(a.id)">
+              <mat-icon>delete</mat-icon>
+          </button>
+          <button class="btn btn-outline-secondary remover big-delete" style="height: auto;" title="Anfrage permanent löschen" (click)="removeApplication(a.id)">
+              <span style="vertical-align: bottom;">löschen</span><mat-icon>delete</mat-icon>
+          </button>
+        </div>
+        </div>
           <div class="application-details">
             <div (click)="openEmployeeDialog(a.user)" class="requester">{{a.user.lastName}}, {{a.user.firstName}}</div>
             <div class="font-weight-bold">Datum:</div>

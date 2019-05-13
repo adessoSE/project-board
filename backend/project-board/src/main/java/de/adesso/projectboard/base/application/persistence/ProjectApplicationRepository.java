@@ -6,6 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * {@link CrudRepository} to persist {@link ProjectApplication} objects.
@@ -17,6 +18,8 @@ public interface ProjectApplicationRepository extends CrudRepository<ProjectAppl
     List<ProjectApplication> findAllByUserIn(Iterable<User> users, Sort sort);
 
     List<ProjectApplication> findAllByUser(User user, Sort sort);
+
+    Optional<ProjectApplication> findByUserAndId(User user, long id);
 
     boolean existsByUserAndProject(User user, Project project);
 

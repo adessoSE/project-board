@@ -81,7 +81,6 @@ export class EmployeeDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log("Test: " + this.daysInMonth());
 
     this.mobile = document.body.clientWidth < 992;
     this.minDate = new Date(Date.now());

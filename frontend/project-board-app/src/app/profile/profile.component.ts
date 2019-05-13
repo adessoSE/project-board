@@ -9,6 +9,7 @@ import { Application, Employee, EmployeeService } from '../_services/employee.se
 import { Project, ProjectService } from '../_services/project.service';
 import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
 import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
+import { SafetyqueryDialogComponent } from '../safetyquery-dialog/safetyquery-dialog.component';
 import {FormControl} from '@angular/forms';
 import {TooltipPosition} from '@angular/material';
 
@@ -146,13 +147,27 @@ export class ProfileComponent implements OnInit {
       .subscribe(() => this.bookmarks = this.bookmarks.filter(p => p.id !== projectId));
   }
 
+  removeApplication(applicationId :number): void {
+
+   let dialogRef = this.dialog.open(SafetyqueryDialogComponent, {
+     disableClose: false
+   });
+    dialogRef.afterClosed().subscribe(result => {
+      if(result) {
+        this.employeeService.removeApplication(this.employeeApplications.find(x => x.id === applicationId).user.id, applicationId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(() => this.employeeApplications = this.employeeApplications.filter(p => p.id !== applicationId));
+      }
+    });
+  }
+
   getEmployeeApplications(): void {
     this.loadingEmployeeApplications = true;
     this.employeeService.getApplicationsForEmployeesOfUser(this.user.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe(employeeApplications => {
         this.employeeApplications = employeeApplications;
-        this.loadingEmployeeApplications = false;
+        this.loadingEmployeeApplications = false;    
       });
   }
 }

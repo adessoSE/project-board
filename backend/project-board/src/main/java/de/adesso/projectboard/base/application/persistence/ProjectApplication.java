@@ -138,5 +138,4 @@ public class ProjectApplication {
 
         return baseHash + 31 * userIdHash;
     }
-
 }

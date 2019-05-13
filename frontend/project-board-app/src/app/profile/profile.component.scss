@@ -121,6 +121,14 @@
   padding: 15px;
 }
 
+.deleted {
+  color: lightgrey;
+}
+
+.deleted .linking-icon-wrapper .material-icons {
+  color: lightblue;
+}
+
 .employee-application {
   border-bottom: 1px solid #e6e6e6;
   padding: 15px;
@@ -217,6 +225,11 @@
   font-size: 14px;
 }
 
+.small-delete {
+  display: none;
+}
+
+
 @include media-breakpoint-up(xl) {
   .left-bar {
     height: 550px;
@@ -224,8 +237,22 @@
 }
 
 @include media-breakpoint-down(md) {
+  .headline span {
+    margin-left: 0;
+  }
+
   .middle {
     padding: 0 15px 0 15px;
+  }
+
+  .small-delete {
+    display: block;
+    cursor: pointer;
+    float: right;
+  }
+
+  .big-delete {
+    display: none;
   }
 
   .project-title {
@@ -237,6 +264,14 @@
 }
 
 @include media-breakpoint-down(sm) {
+
+  .employee-application .col-10 {
+    padding-left: 0;
+  }
+  
+  .employee-application .col-2 {
+    padding-right: 0;
+  }
 
   .helper-icon {
     display: none;

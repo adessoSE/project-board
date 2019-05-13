@@ -4,6 +4,7 @@ import de.adesso.projectboard.base.application.handler.ProjectApplicationEventHa
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.persistence.ProjectApplicationRepository;
 import de.adesso.projectboard.base.exceptions.AlreadyAppliedException;
+import de.adesso.projectboard.base.exceptions.ApplicationNotFoundException;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.user.persistence.User;
@@ -20,6 +21,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -153,6 +155,35 @@ public class RepositoryApplicationServiceTest {
         assertThat(actualApplications).containsExactlyInAnyOrder(expectedApplication);
 
         verify(applicationRepoMock).findAllByUserIn(users, sort);
+    }
+
+    @Test
+    public void deleteApplicationDeletesApplicationWhenPresent() {
+        // given
+        var applicationId = 1L;
+        var application = new ProjectApplication(projectMock, "Comment", userMock, LocalDateTime.now(clock));
+
+        given(applicationRepoMock.findByUserAndId(userMock, applicationId)).willReturn(Optional.of(application));
+
+        // when
+        var deletedApplication = applicationService.deleteApplication(userMock, applicationId);
+
+        // then
+        assertThat(deletedApplication).isEqualTo(application);
+
+        verify(applicationRepoMock).delete(application);
+    }
+
+    @Test
+    public void deleteApplicationDeletesApplicationWhenApplicationNotFound() {
+        // given
+        var applicationId = 1L;
+
+        given(applicationRepoMock.findByUserAndId(userMock, applicationId)).willReturn(Optional.empty());
+
+        // when / then
+        assertThatThrownBy(() -> applicationService.deleteApplication(userMock, applicationId))
+                .isInstanceOf(ApplicationNotFoundException.class);
     }
 
 }

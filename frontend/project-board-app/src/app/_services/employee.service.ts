@@ -34,7 +34,7 @@ export class EmployeeService {
     return this.http.get<Employee[]>(`${environment.resourceServer}/users/${userId}/staff/search?query=${query}&projection=withpicture`);
   }
 
-  revokeApplication(userId, appId): Observable<Application> {
+  removeApplication(userId: string, appId: number): Observable<Application> {
     return this.http.delete<Application>(`${environment.resourceServer}/users/${userId}/applications/${appId}`);
   }
 
