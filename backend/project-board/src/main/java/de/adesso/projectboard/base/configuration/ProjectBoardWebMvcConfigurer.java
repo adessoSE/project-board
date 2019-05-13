@@ -23,7 +23,7 @@ class ProjectBoardWebMvcConfigurer extends BaseWebMvcConfigurer {
         // allow CORS on all paths
         registry.addMapping("/**")
                 .allowedOrigins(properties.getUrl())
-                .allowedMethods("GET", "POST", "DELETE", "OPTIONS");
+                .allowedMethods("GET", "POST", "DELETE", "OPTIONS", "PUT");
     }
 
 }

@@ -75,7 +75,7 @@ export class EmployeeDialogComponent implements OnInit {
     this.mobile = document.body.clientWidth < 992;
   }
 
-  daysInMonth(){
+  daysInMonth() {
     let date: Date = new Date();
     return new Date(date.getFullYear(), date.getMonth()+1, 0).getDate();
   }
@@ -156,4 +156,11 @@ export class EmployeeDialogComponent implements OnInit {
       }
     });
   }
+
+  offerEmployee(applicationId: number) {
+    this.employeeService.offerApplication(this.data.employee.id, applicationId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(application => this.applications.find(app => app.id === applicationId).offered = true);
+  }
+
 }

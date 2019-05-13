@@ -67,6 +67,10 @@
         <span>Kommentar:</span>
         <span>{{a.comment}}</span>
       </div>
+      <button [disabled]="a.offered" class="btn btn-outline-secondary btn-offer" (click)="offerEmployee(a.id)" title="{{!a.offered ? 'Kommentar im Staffing Jira erstellen.' : a.user.firstName + ' wurde für dieses Projekt bereits angeboten.'}}">
+        <mat-icon>send</mat-icon>
+        {{data.employee.firstName}} anbieten
+      </button>
     </div>
     <div class="inset" *ngIf="(!applications || applications.length === 0)">
       {{data.employee.firstName}} hat keine Projekte angefragt.

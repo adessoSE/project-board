@@ -17,7 +17,7 @@ class AnyOriginWebMvcConfigurer extends BaseWebMvcConfigurer {
         // allow CORS on all paths
         registry.addMapping("/**")
                 .allowedOrigins("*")
-                .allowedMethods("GET", "POST", "DELETE", "OPTIONS");
+                .allowedMethods("GET", "POST", "DELETE", "OPTIONS", "PUT");
     }
 
 }
