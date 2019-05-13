@@ -252,17 +252,6 @@ public class UserAccessExpressionEvaluatorTest {
     }
 
     @Test
-    public void hasPermissionToEditProjectReturnsFalse() {
-        // given
-
-        // when
-        boolean actualHasPermission = evaluator.hasPermissionToEditProject(authenticationMock, userMock, PROJECT_ID);
-
-        // then
-        assertThat(actualHasPermission).isFalse();
-    }
-
-    @Test
     public void hasElevatedAccessToUserReturnsTrueWhenUserDoesNotExist() {
         // given
         given(userServiceMock.userExists(USER_ID)).willReturn(false);
@@ -303,17 +292,6 @@ public class UserAccessExpressionEvaluatorTest {
 
         // when
         boolean actualHasPermission = evaluator.hasElevatedAccessToUser(authenticationMock, userMock, accessedUserId);
-
-        // then
-        assertThat(actualHasPermission).isFalse();
-    }
-
-    @Test
-    public void hasPermissionToCreateProjectsReturnsFalse() {
-        // given
-
-        // when
-        boolean actualHasPermission = evaluator.hasPermissionToCreateProjects(authenticationMock, userMock);
 
         // then
         assertThat(actualHasPermission).isFalse();

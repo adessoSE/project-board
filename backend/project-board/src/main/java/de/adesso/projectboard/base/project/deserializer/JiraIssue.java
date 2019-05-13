@@ -24,10 +24,7 @@ public class JiraIssue {
     private Project project;
 
     public Project getProjectWithId() {
-        project.setId(id)
-                .setOrigin(Project.Origin.JIRA);
-
-        return project;
+        return project.setId(id);
     }
 
 }

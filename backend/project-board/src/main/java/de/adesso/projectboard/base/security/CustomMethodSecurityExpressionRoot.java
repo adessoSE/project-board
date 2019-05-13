@@ -176,45 +176,6 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
     /**
      *
      * @return
-     *          The result of {@link ExpressionEvaluator#hasPermissionToCreateProjects(Authentication, User)}
-     *          when the user is authenticated (a {@link User} object is present), {@code false} otherwise.
-     *
-     * @see ExpressionEvaluator#hasPermissionToCreateProjects(Authentication, User)
-     * @see NonPageableProjectController
-     */
-    public boolean hasPermissionToCreateProjects() {
-        // check if the user has a corresponding User object
-        if(currentUserExists()) {
-            return evaluator.hasPermissionToCreateProjects(getAuthentication(), userAuthService.getAuthenticatedUser());
-        }
-
-        return false;
-    }
-
-    /**
-     *
-     * @param projectId
-     *          The id of the {@link Project} the user wants to access.
-     *
-     * @return
-     *          The result of {@link ExpressionEvaluator#hasPermissionToEditProject(Authentication, User, String)}
-     *          when the user is authenticated (a {@link User} object is present), {@code false} otherwise.
-     *
-     * @see ExpressionEvaluator#hasPermissionToEditProject(Authentication, User, String)
-     * @see NonPageableProjectController
-     */
-    public boolean hasPermissionToEditProject(String projectId) {
-        // check if the user has a corresponding User object
-        if(currentUserExists()) {
-            return evaluator.hasPermissionToEditProject(getAuthentication(), userAuthService.getAuthenticatedUser(), projectId);
-        }
-
-        return false;
-    }
-
-    /**
-     *
-     * @return
      *          The result of {@link UserService#userExists(String)} with the returned value
      *          of {@link UserAuthService#getAuthenticatedUserId()} as the argument.
      */

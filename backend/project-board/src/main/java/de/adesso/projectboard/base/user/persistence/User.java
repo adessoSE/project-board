@@ -54,17 +54,6 @@ public class User {
     Set<ProjectApplication> applications;
 
     /**
-     * The user's owned {@link Project}s.
-     */
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "PB_USER_OWNED_PROJECTS",
-            joinColumns = @JoinColumn(name = "USER_ID"),
-            inverseJoinColumns = @JoinColumn(name = "PROJECT_ID")
-    )
-    Set<Project> ownedProjects;
-
-    /**
      * The user's {@link AccessInterval} objects to evaluate
      * access.
      */
@@ -92,7 +81,6 @@ public class User {
         this.accessIntervals = new LinkedList<>();
         this.applications = new LinkedHashSet<>();
         this.bookmarks = new LinkedHashSet<>();
-        this.ownedProjects = new LinkedHashSet<>();
     }
 
     /**
@@ -157,26 +145,6 @@ public class User {
         }
 
         return Optional.empty();
-    }
-
-    /**
-     *
-     * @param project
-     *          The {@link Project} to add to the created projects.
-     *
-     */
-    public void addOwnedProject(Project project) {
-        ownedProjects.add(project);
-    }
-
-    /**
-     *
-     * @param project
-     *          The {@link Project} to remove from the created projects.
-     *
-     */
-    public void removeOwnedProject(Project project) {
-        ownedProjects.remove(project);
     }
 
     /**

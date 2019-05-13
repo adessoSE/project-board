@@ -143,41 +143,6 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      * @param user
      *          The {@link User} object of the currently authenticated user.
      *
-     * @return
-     *          {@code false}
-     */
-    @Override
-    public boolean hasPermissionToCreateProjects(Authentication authentication, User user) {
-        return false;
-    }
-
-    /**
-     *
-     *  @param authentication
-     *          The {@link Authentication} object.
-     *
-     * @param user
-     *          The {@link User} object of the currently authenticated user.
-     *
-     * @param projectId
-     *          The id of the {@link Project} the user wants to update.
-     *
-     * @return
-     *          {@code false}
-     */
-    @Override
-    public boolean hasPermissionToEditProject(Authentication authentication, User user, String projectId) {
-        return false;
-    }
-
-    /**
-     *
-     * @param authentication
-     *          The {@link Authentication} object.
-     *
-     * @param user
-     *          The {@link User} object of the currently authenticated user.
-     *
      * @param userId
      *          The id of the {@link User}
      *          the current user wants to access.

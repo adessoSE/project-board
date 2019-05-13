@@ -277,7 +277,7 @@ public class HibernateSearchServiceIntegrationTest {
         var projectId = "STF-1";
         var project = new Project(projectId, projectStatus, "Type", "Searching Spring Expert", List.of(), "Job", "Skills", "Description",
                 "LoB", "Customer", "Location", "Start", "End", "Effort", updateCreateTime, updateCreateTime, "Freelancer",
-                "Elongation", "Other", "dailyRate", "travelCostsCompensated", Project.Origin.JIRA);
+                "Elongation", "Other", "dailyRate", "travelCostsCompensated");
         projectRepository.save(project);
 
         var retrievedProject = entityManager.createQuery("SELECT p FROM de.adesso.projectboard.base.project.persistence.Project AS p " +

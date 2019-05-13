@@ -96,39 +96,6 @@ public interface ExpressionEvaluator {
      * @param user
      *          The {@link User} object of the currently authenticated user.
      *
-     * @return
-     *          {@code true}, if the user is permitted to create projects,
-     *          {@code false} otherwise.
-     *
-     * @see CustomMethodSecurityExpressionRoot#hasPermissionToAccessUser(String)
-     */
-    boolean hasPermissionToCreateProjects(Authentication authentication, User user);
-
-    /**
-     *
-     * @param authentication
-     *          The {@link Authentication} object.
-     *
-     * @param user
-     *          The {@link User} object of the currently authenticated user.
-     *
-     * @param projectId
-     *          The id of the {@link Project} the user wants to update.
-     *
-     * @return
-     *          {@code true}, if the user is permitted to update the project,
-     *          {@code false} otherwise.
-     */
-    boolean hasPermissionToEditProject(Authentication authentication, User user, String projectId);
-
-    /**
-     *
-     * @param authentication
-     *          The {@link Authentication} object.
-     *
-     * @param user
-     *          The {@link User} object of the currently authenticated user.
-     *
      * @param userId
      *          The id of the {@link User}
      *          the current user wants to access.

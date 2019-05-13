@@ -58,31 +58,6 @@ public class RepositoryUserProjectService implements PageableUserProjectService 
     }
 
     @Override
-    public boolean userOwnsProject(User user, Project project) {
-        return userRepo.existsByIdAndOwnedProjectsContaining(user.getId(), project);
-    }
-
-    @Override
-    @Transactional
-    public Project createProjectForUser(Project project, User user) {
-        Project createdProject = projectService.createProject(project);
-
-        user.addOwnedProject(createdProject);
-        userService.save(user);
-
-        return createdProject;
-    }
-
-    @Override
-    @Transactional
-    public Project addProjectToUser(User user, Project project) {
-        user.addOwnedProject(project);
-        userService.save(user);
-
-        return project;
-    }
-
-    @Override
     public Page<Project> getProjectsForUserPaginated(User user, Pageable pageable) {
         return projectRepo.findAll(new StatusSpecification(ALL_STATUS), pageable);
     }

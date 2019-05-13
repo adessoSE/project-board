@@ -134,12 +134,4 @@ public class Project {
     @JsonAlias("customfield_10291")
     String travelCostsCompensated;
 
-    @Column(nullable = false)
-    Origin origin = Origin.JIRA;
-
-    public enum Origin {
-        JIRA,
-        CUSTOM
-    }
-
 }

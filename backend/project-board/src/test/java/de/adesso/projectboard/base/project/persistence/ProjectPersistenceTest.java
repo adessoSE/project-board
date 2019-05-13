@@ -56,8 +56,7 @@ public class ProjectPersistenceTest {
                 .setElongation("Elongation")
                 .setOther("Other")
                 .setDailyRate("Daily Rate")
-                .setTravelCostsCompensated("Travel Costs Compensated")
-                .setOrigin(Project.Origin.CUSTOM);
+                .setTravelCostsCompensated("Travel Costs Compensated");
 
         // when
         projectRepository.save(expectedProject);

@@ -1,9 +1,7 @@
 package de.adesso.projectboard.base.project.service;
 
-import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.exceptions.ProjectNotFoundException;
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.base.user.persistence.User;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,7 +16,7 @@ public interface ProjectService {
 
     /**
      * @param projectId
-     *          The {@link Project#id ID} of the {@link Project}.
+     *          The {@link Project#getId()}  ID} of the {@link Project}.
      *
      * @return
      *          The {@link Project} with the given {@code projectId}.
@@ -33,7 +31,7 @@ public interface ProjectService {
 
     /**
      * @param projectId
-     *          The {@link Project#id ID} of the {@link Project}.
+     *          The {@link Project#getId()}  ID} of the {@link Project}.
      *
      * @return
      *          {@code true}, iff a {@link Project} with the given {@code projectId}
@@ -50,21 +48,6 @@ public interface ProjectService {
      *          The created {@link Project}.
      */
     Project createProject(Project project);
-
-    /**
-     * @param project
-     *          The {@link Project} to update the exising
-     *          project from
-     *
-     * @param projectId
-     *          The {@link Project#id ID} of the {@link Project}
-     *          to update.
-     *
-     * @return
-     *          The updated {@link Project}.
-     *
-     */
-    Project updateProject(Project project, String projectId);
 
     /**
      *
@@ -93,25 +76,5 @@ public interface ProjectService {
             .map(this::save)
             .collect(Collectors.toList());
     }
-
-    /**
-     * @param project
-     *          The {@link Project} to delete.
-     *
-     * @see #deleteProjectById(String)
-     */
-    void deleteProject(Project project);
-
-    /**
-     * Deletes a {@link Project} by it's {@link Project#id ID}. Also removes
-     * it from the {@link User#ownedProjects owned projects} and {@link User#bookmarks bookmarks}
-     * of all {@link User}s and also removes all {@link ProjectApplication}s referring to the
-     * project.
-     *
-     * @param projectId
-     *          The {@link Project#id ID} of the {@link Project}
-     *          to delete.
-     */
-    void deleteProjectById(String projectId);
 
 }

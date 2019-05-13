@@ -21,10 +21,10 @@ import static org.mockito.Mockito.mock;
 public class UserTest {
 
     @Mock
-    ProjectApplication applicationMock;
+    private ProjectApplication applicationMock;
 
     @Mock
-    AccessInterval accessIntervalMock;
+    private AccessInterval accessIntervalMock;
 
     @Test
     public void constructorIdSet() {
@@ -51,7 +51,6 @@ public class UserTest {
         softly.assertThat(user.bookmarks).isNotNull();
         softly.assertThat(user.accessIntervals).isNotNull();
         softly.assertThat(user.applications).isNotNull();
-        softly.assertThat(user.ownedProjects).isNotNull();
 
         softly.assertAll();
     }
@@ -207,35 +206,6 @@ public class UserTest {
 
         // then
         assertThat(actualAccessIntervalOptional).isNotPresent();
-    }
-
-    @Test
-    public void addOwnedProject() {
-        // given
-        Project project = mock(Project.class);
-
-        User user = new User("user");
-
-        // when
-        user.addOwnedProject(project);
-
-        // then
-        assertThat(user.ownedProjects).containsExactly(project);
-    }
-
-    @Test
-    public void removeOwnedProject() {
-        // given
-        Project project = mock(Project.class);
-
-        User user = new User("user");
-        user.ownedProjects.add(project);
-
-        // when
-        user.removeOwnedProject(project);
-
-        // then
-        assertThat(user.ownedProjects).isEmpty();
     }
 
     @Test

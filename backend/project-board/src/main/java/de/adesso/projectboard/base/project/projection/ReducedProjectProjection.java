@@ -1,7 +1,5 @@
 package de.adesso.projectboard.base.project.projection;
 
-import de.adesso.projectboard.base.project.persistence.Project;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -42,7 +40,5 @@ public interface ReducedProjectProjection {
     String getElongation();
 
     String getOther();
-
-    Project.Origin getOrigin();
 
 }

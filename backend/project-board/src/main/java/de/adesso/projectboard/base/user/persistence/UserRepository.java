@@ -13,12 +13,8 @@ import java.util.List;
  */
 public interface UserRepository extends JpaRepository<User, String> {
 
-    List<User> findAllByOwnedProjectsContaining(Project project);
-
     List<User> findAllByBookmarksContaining(Project project);
 
     boolean existsByIdAndBookmarksContaining(String userId, Project project);
-
-    boolean existsByIdAndOwnedProjectsContaining(String userId, Project project);
 
 }
