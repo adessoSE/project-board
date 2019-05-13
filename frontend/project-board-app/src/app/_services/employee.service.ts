@@ -50,6 +50,10 @@ export class EmployeeService {
     return this.http.get<Application[]>(`${environment.resourceServer}/users/${userId}/staff/applications`);
   }
 
+  offerApplication(userId: string, applicationId: number): Observable<Application> {
+    return this.http.put<Application>(`${environment.resourceServer}/users/${userId}/applications/${applicationId}/offer`, {});
+  }
+
   setEmployeeAccessInfo(userId: string, accessEnd): Observable<Employee> {
     const body = {
       'accessEnd': accessEnd
@@ -106,4 +110,5 @@ export interface Application {
   project: Project;
   comment: string;
   date: Date;
+  offered: boolean;
 }
