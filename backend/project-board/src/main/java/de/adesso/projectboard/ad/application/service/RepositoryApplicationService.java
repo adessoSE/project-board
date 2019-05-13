@@ -88,7 +88,8 @@ public class RepositoryApplicationService implements ApplicationService {
         var application = applicationRepo.findByUserAndId(user, applicationId).orElseThrow(ApplicationNotFoundException::new);
         applicationRepo.delete(application);
 
-        log.debug(String.format("Application with id %d of user with id %s was deleted", applicationId, user.getId()));
+        log.debug(String.format("Application with id '%d' of user '%s' was deleted", applicationId, user.getId()));
         return application;
     }
+
 }
