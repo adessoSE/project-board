@@ -2,8 +2,10 @@ package de.adesso.projectboard.base.configuration;
 
 import de.adesso.projectboard.base.access.handler.LogUserAccessEventHandler;
 import de.adesso.projectboard.base.access.handler.UserAccessEventHandler;
-import de.adesso.projectboard.base.application.handler.LogProjectApplicationEventHandler;
-import de.adesso.projectboard.base.application.handler.ProjectApplicationEventHandler;
+import de.adesso.projectboard.base.application.handler.LogProjectApplicationOfferedEventHandler;
+import de.adesso.projectboard.base.application.handler.LogProjectApplicationReceivedEventHandler;
+import de.adesso.projectboard.base.application.handler.ProjectApplicationOfferedEventHandler;
+import de.adesso.projectboard.base.application.handler.ProjectApplicationReceivedEventHandler;
 import de.adesso.projectboard.base.reader.NoActionProjectReader;
 import de.adesso.projectboard.base.reader.ProjectReader;
 import de.adesso.projectboard.base.security.AllowAccessExpressionEvaluator;
@@ -32,9 +34,15 @@ public class ProjectBoardDefaultConfiguration {
     }
 
     @Bean
-    @ConditionalOnMissingBean(ProjectApplicationEventHandler.class)
-    public ProjectApplicationEventHandler logProjectApplicationEventHandler() {
-        return new LogProjectApplicationEventHandler();
+    @ConditionalOnMissingBean(ProjectApplicationReceivedEventHandler.class)
+    public ProjectApplicationReceivedEventHandler logProjectApplicationReceivedEventHandler() {
+        return new LogProjectApplicationReceivedEventHandler();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(ProjectApplicationOfferedEventHandler.class)
+    public ProjectApplicationOfferedEventHandler logProjectApplicationOfferedEventHandler() {
+        return new LogProjectApplicationOfferedEventHandler();
     }
 
     @Bean

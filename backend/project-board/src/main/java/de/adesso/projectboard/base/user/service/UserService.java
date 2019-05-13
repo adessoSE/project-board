@@ -20,7 +20,7 @@ public interface UserService {
     /**
      *
      * @param userId
-     *          The {@link User#id ID} of the {@link User}.
+     *          The {@link User#getId() ID} of the {@link User}.
      *
      * @return
      *          {@code true}, iff a {@link User} instance with the
@@ -55,14 +55,15 @@ public interface UserService {
      *          The {@link User} to get the {@link UserData} for.
      *
      * @return
-     *          The {@link UserData user data} for the given {@code user}.
+     *          The {@link UserData user data} for the given {@code user} with an
+     *          initialized picture.
      */
-    UserData getUserData(User user);
+    UserData getUserDataWithImage(User user);
 
     /**
      *
      * @param userId
-     *          The {@link User#id ID} of the {@link User}.
+     *          The {@link User#getId() ID} of the {@link User}.
      *
      * @return
      *          The corresponding {@link User} instance iff

@@ -1,4 +1,4 @@
-package de.adesso.projectboard.adapter.mail;
+package de.adesso.projectboard.adapter.velocity;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -13,7 +13,7 @@ import java.util.Objects;
 /**
  * Service providing convenience methods for apache velocity templates.
  */
-public class VelocityMailTemplateService {
+public class VelocityTemplateService {
 
     static final String SUBJECT_DELIMITER = "--!--SUBJECT--!--";
 
@@ -21,7 +21,7 @@ public class VelocityMailTemplateService {
 
     private final VelocityEngine velocityEngine;
 
-    public VelocityMailTemplateService(VelocityEngine velocityEngine) {
+    public VelocityTemplateService(VelocityEngine velocityEngine) {
         this.velocityEngine = velocityEngine;
     }
 

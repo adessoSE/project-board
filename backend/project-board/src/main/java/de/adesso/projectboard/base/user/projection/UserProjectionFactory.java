@@ -71,7 +71,7 @@ public class UserProjectionFactory {
      *          A projection of the given {@code user}.
      */
     public <T> T createProjection(@NonNull User user, @NonNull Class<T> projectionType) {
-        var data = userService.getUserData(user);
+        var data = userService.getUserDataWithImage(user);
         var manager = userService.userIsManager(user);
 
         return projectionFactory.createProjection(projectionType, new UserProjectionSource(user, data, manager));

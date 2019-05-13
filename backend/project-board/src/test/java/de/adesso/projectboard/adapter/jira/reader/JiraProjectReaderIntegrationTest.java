@@ -1,7 +1,7 @@
-package de.adesso.projectboard.reader;
+package de.adesso.projectboard.adapter.jira.reader;
 
+import de.adesso.projectboard.adapter.jira.configuration.JiraConfigurationProperties;
 import de.adesso.projectboard.base.project.persistence.Project;
-import de.adesso.projectboard.reader.configuration.JiraConfigurationProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,7 +9,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestClientException;
@@ -33,7 +32,6 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-@ActiveProfiles("adesso-jira")
 @RunWith(SpringRunner.class)
 public class JiraProjectReaderIntegrationTest {
 

@@ -3,7 +3,6 @@ package de.adesso.projectboard.ad.user;
 import de.adesso.projectboard.ad.service.LdapAdapter;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.exceptions.HierarchyNotFoundException;
-import de.adesso.projectboard.base.exceptions.UserDataNotFoundException;
 import de.adesso.projectboard.base.exceptions.UserNotFoundException;
 import de.adesso.projectboard.base.search.HibernateSearchService;
 import de.adesso.projectboard.base.user.persistence.User;
@@ -177,7 +176,7 @@ public class RepositoryUserServiceTest {
         given(userDataMock.isPictureInitialized()).willReturn(true);
 
         // when
-        var actualData = repoUserService.getUserData(userMock);
+        var actualData = repoUserService.getUserDataWithImage(userMock);
 
         // then
         assertThat(actualData).isEqualTo(userDataMock);
@@ -208,23 +207,10 @@ public class RepositoryUserServiceTest {
         ));
 
         // when
-        var actualData = repoUserService.getUserData(userMock);
+        var actualData = repoUserService.getUserDataWithImage(userMock);
 
         // then
         assertThat(actualData).isEqualTo(expectedData);
-    }
-
-    @Test
-    public void getUserDataThrowsExceptionWhenDataNotPresent() {
-        // given
-        var expectedMessage = String.format("Data for User with ID '%s' not found!", USER_ID);
-
-        given(userDataRepoMock.findByUser(userMock)).willReturn(Optional.empty());
-
-        // when / then
-        assertThatThrownBy(() -> repoUserService.getUserData(userMock))
-                .isInstanceOf(UserDataNotFoundException.class)
-                .hasMessage(expectedMessage);
     }
 
     @Test

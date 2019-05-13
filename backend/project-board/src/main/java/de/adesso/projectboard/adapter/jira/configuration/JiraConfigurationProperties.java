@@ -1,6 +1,5 @@
-package de.adesso.projectboard.reader.configuration;
+package de.adesso.projectboard.adapter.jira.configuration;
 
-import de.adesso.projectboard.reader.JiraProjectReader;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
@@ -8,11 +7,6 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
-/**
- * The configuration properties for the {@link JiraProjectReader}.
- *
- * @see JiraProjectReader
- */
 @ConfigurationProperties(prefix = "projectboard.jira")
 @Validated
 @Data
@@ -43,7 +37,7 @@ public class JiraConfigurationProperties {
     private String serverInfoUrl;
 
     /**
-     * The URL the project ID gets appended to
+     * The URL the issue key gets appended to
      * to refer to the JIRA issue.
      */
     @Pattern(
@@ -52,6 +46,17 @@ public class JiraConfigurationProperties {
     )
     @NotEmpty
     private String issueUrl;
+
+    /**
+     * The URL the issue key is inserted into to post a
+     * comment.
+     */
+    @Pattern(
+            regexp = ".*/rest/api/2/issue/\\{.+\\}/comment",
+            message = "The commenter URL must contain a placeholder for the issue key!"
+    )
+    @NotEmpty
+    private String commenterUrl;
 
     /**
      * The username to use for authorization.

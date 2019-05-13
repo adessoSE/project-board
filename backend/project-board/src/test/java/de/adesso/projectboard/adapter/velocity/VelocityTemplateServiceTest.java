@@ -1,4 +1,4 @@
-package de.adesso.projectboard.adapter.mail;
+package de.adesso.projectboard.adapter.velocity;
 
 import helper.adapter.mail.StringWriterArgumentMatcher;
 import helper.adapter.mail.VelocityContextArgumentMatcher;
@@ -20,7 +20,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doAnswer;
 
 @RunWith(MockitoJUnitRunner.class)
-public class VelocityMailTemplateServiceTest {
+public class VelocityTemplateServiceTest {
 
     @Mock
     private VelocityEngine velocityEngineMock;
@@ -28,11 +28,11 @@ public class VelocityMailTemplateServiceTest {
     @Mock
     private Template velocityTemplateMock;
 
-    private VelocityMailTemplateService velocityMailTemplateService;
+    private VelocityTemplateService velocityMailTemplateService;
 
     @Before
     public void setUp() {
-        this.velocityMailTemplateService = new VelocityMailTemplateService(velocityEngineMock);
+        this.velocityMailTemplateService = new VelocityTemplateService(velocityEngineMock);
     }
 
     @Test
@@ -68,8 +68,8 @@ public class VelocityMailTemplateServiceTest {
         var expectedResult = new Pair<>(expectedSubject, expectedText);
         var templatePath = "TestTemplate.vm";
         var templateContent = String.format("%s\r\n%s\r\n%s\r\n%s",
-                VelocityMailTemplateService.SUBJECT_DELIMITER, expectedSubject,
-                VelocityMailTemplateService.TEXT_DELIMITER, expectedText);
+                VelocityTemplateService.SUBJECT_DELIMITER, expectedSubject,
+                VelocityTemplateService.TEXT_DELIMITER, expectedText);
         var contextMap = Map.<String, Object>of("key", "value");
 
         given(velocityEngineMock.getTemplate(templatePath)).willReturn(velocityTemplateMock);

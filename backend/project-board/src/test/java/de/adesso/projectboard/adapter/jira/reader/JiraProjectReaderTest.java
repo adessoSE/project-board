@@ -1,6 +1,6 @@
-package de.adesso.projectboard.reader;
+package de.adesso.projectboard.adapter.jira.reader;
 
-import de.adesso.projectboard.reader.configuration.JiraConfigurationProperties;
+import de.adesso.projectboard.adapter.jira.configuration.JiraConfigurationProperties;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

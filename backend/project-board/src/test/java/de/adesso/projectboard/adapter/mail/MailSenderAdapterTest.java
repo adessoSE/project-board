@@ -78,7 +78,7 @@ public class MailSenderAdapterTest {
         given(templateMessageMock.getText()).willReturn(expectedText);
         given(templateMessageMock.getAddressee()).willReturn(userMock);
 
-        given(userServiceMock.getUserData(userMock)).willReturn(userDataMock);
+        given(userServiceMock.getUserDataWithImage(userMock)).willReturn(userDataMock);
         given(userDataMock.getEmail()).willReturn(expectedTo);
 
         // when
@@ -105,7 +105,7 @@ public class MailSenderAdapterTest {
         given(templateMessageMock.getText()).willReturn(expectedText);
         given(templateMessageMock.getAddressee()).willReturn(userMock);
 
-        given(userServiceMock.getUserData(userMock)).willReturn(userDataMock);
+        given(userServiceMock.getUserDataWithImage(userMock)).willReturn(userDataMock);
         given(userDataMock.getEmail()).willReturn(expectedTo);
 
         // when

@@ -87,4 +87,23 @@ public interface ApplicationService {
      *          The response.
      */
     ProjectApplication deleteApplication(User user, long applicationId) throws ApplicationNotFoundException;
+
+    /**
+     *
+     * @param offeringUser
+     *          The user that initiated the offering, not {@code null}.
+     *
+     * @param offeredUser
+     * @param applicationId
+     *          The ID of the application the offering refers to, not {@code null}.
+     *
+     * @return
+     *          The modified project application that the offering refers to.
+     *
+     * @throws ApplicationNotFoundException
+     *          When no project application with the given {@code applicationId}
+     *          was found.
+     */
+    ProjectApplication offerApplication(User offeringUser, User offeredUser, long applicationId);
+
 }

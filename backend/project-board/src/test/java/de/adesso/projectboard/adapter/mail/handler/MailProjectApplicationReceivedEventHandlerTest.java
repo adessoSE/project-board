@@ -1,9 +1,9 @@
 package de.adesso.projectboard.adapter.mail.handler;
 
 import de.adesso.projectboard.adapter.mail.MailSenderAdapter;
-import de.adesso.projectboard.adapter.mail.VelocityMailTemplateService;
 import de.adesso.projectboard.adapter.mail.configuration.MailConfigurationProperties;
 import de.adesso.projectboard.adapter.mail.persistence.SimpleMessage;
+import de.adesso.projectboard.adapter.velocity.VelocityTemplateService;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.user.persistence.User;
@@ -22,7 +22,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MailProjectApplicationEventHandlerTest {
+public class MailProjectApplicationReceivedEventHandlerTest {
 
     private static final String JIRA_ISSUE_URL = "https://jira.com/issues/";
 
@@ -33,7 +33,7 @@ public class MailProjectApplicationEventHandlerTest {
     private UserService userServiceMock;
 
     @Mock
-    private VelocityMailTemplateService velocityMailTemplateServiceMock;
+    private VelocityTemplateService velocityMailTemplateServiceMock;
 
     @Mock
     private MailConfigurationProperties mailConfigPropertiesMock;
@@ -56,14 +56,14 @@ public class MailProjectApplicationEventHandlerTest {
     @Mock
     private Project projectMock;
 
-    private MailProjectApplicationEventHandler mailProjectApplicationEventHandler;
+    private MailProjectApplicationReceivedEventHandler mailProjectApplicationEventHandler;
 
     @Before
     public void setUp() {
         given(mailConfigPropertiesMock.getReferralBaseUrl()).willReturn(JIRA_ISSUE_URL);
 
         this.mailProjectApplicationEventHandler =
-                new MailProjectApplicationEventHandler(mailSenderAdapterMock, userServiceMock, velocityMailTemplateServiceMock, mailConfigPropertiesMock);
+                new MailProjectApplicationReceivedEventHandler(mailSenderAdapterMock, userServiceMock, velocityMailTemplateServiceMock, mailConfigPropertiesMock);
     }
 
     @Test
@@ -90,8 +90,8 @@ public class MailProjectApplicationEventHandlerTest {
         given(projectMock.getId()).willReturn(projectId);
 
         given(userServiceMock.getManagerOfUser(applicantUserMock)).willReturn(managerUserMock);
-        given(userServiceMock.getUserData(applicantUserMock)).willReturn(applicantDataMock);
-        given(userServiceMock.getUserData(managerUserMock)).willReturn(managerDataMock);
+        given(userServiceMock.getUserDataWithImage(applicantUserMock)).willReturn(applicantDataMock);
+        given(userServiceMock.getUserDataWithImage(managerUserMock)).willReturn(managerDataMock);
 
         given(velocityMailTemplateServiceMock.getSubjectAndText(expectedTemplatePath, expectedContextMap))
             .willReturn(subjectTextPair);

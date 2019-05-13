@@ -1,8 +1,8 @@
 package de.adesso.projectboard.adapter.mail.handler;
 
 import de.adesso.projectboard.adapter.mail.MailSenderAdapter;
-import de.adesso.projectboard.adapter.mail.VelocityMailTemplateService;
 import de.adesso.projectboard.adapter.mail.persistence.TimeAwareMessage;
+import de.adesso.projectboard.adapter.velocity.VelocityTemplateService;
 import de.adesso.projectboard.base.access.persistence.AccessInterval;
 import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.base.user.persistence.User;
@@ -36,7 +36,7 @@ public class MailUserAccessEventHandlerTest {
     private UserService userServiceMock;
 
     @Mock
-    private VelocityMailTemplateService velocityMailTemplateServiceMock;
+    private VelocityTemplateService velocityMailTemplateServiceMock;
 
     @Mock
     private ProjectBoardConfigurationProperties configurationPropertiesMock;
@@ -76,7 +76,7 @@ public class MailUserAccessEventHandlerTest {
         var subjectTextPair = new Pair<>(expectedSubject, expectedText);
 
         given(accessIntervalMock.getEndTime()).willReturn(expectedEndTime);
-        given(userServiceMock.getUserData(userMock)).willReturn(userDataMock);
+        given(userServiceMock.getUserDataWithImage(userMock)).willReturn(userDataMock);
 
         given(velocityMailTemplateServiceMock.getSubjectAndText(expectedTemplatePath, expectedContextMap))
                 .willReturn(subjectTextPair);
@@ -105,7 +105,7 @@ public class MailUserAccessEventHandlerTest {
         var subjectTextPair = new Pair<>(expectedSubject, expectedText);
 
         given(accessIntervalMock.getEndTime()).willReturn(expectedEndTime);
-        given(userServiceMock.getUserData(userMock)).willReturn(userDataMock);
+        given(userServiceMock.getUserDataWithImage(userMock)).willReturn(userDataMock);
 
         given(velocityMailTemplateServiceMock.getSubjectAndText(expectedTemplatePath, expectedContextMap))
                 .willReturn(subjectTextPair);
@@ -134,7 +134,7 @@ public class MailUserAccessEventHandlerTest {
         var subjectTextPair = new Pair<>(expectedSubject, expectedText);
 
         given(accessIntervalMock.getEndTime()).willReturn(expectedEndTime);
-        given(userServiceMock.getUserData(userMock)).willReturn(userDataMock);
+        given(userServiceMock.getUserDataWithImage(userMock)).willReturn(userDataMock);
 
         given(velocityMailTemplateServiceMock.getSubjectAndText(expectedTemplatePath, expectedContextMap))
                 .willReturn(subjectTextPair);
@@ -177,7 +177,7 @@ public class MailUserAccessEventHandlerTest {
             "projectBoardUrl", PROJECT_BOARD_URL
         );
 
-        given(userServiceMock.getUserData(userMock)).willReturn(userDataMock);
+        given(userServiceMock.getUserDataWithImage(userMock)).willReturn(userDataMock);
 
         // when
         var actualContextMap = mailUserAccessEventHandler.getContextMap(userMock, newDateTime);

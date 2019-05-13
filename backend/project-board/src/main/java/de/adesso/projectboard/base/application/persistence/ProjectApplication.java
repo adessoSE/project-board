@@ -63,6 +63,9 @@ public class ProjectApplication {
     )
     LocalDateTime applicationDate;
 
+    @Column(name = "IS_OFFERED")
+    boolean offered;
+
     /**
      * Constructs a new instance. Adds the application to the user's
      * {@link User#getApplications() applications}.
@@ -91,6 +94,7 @@ public class ProjectApplication {
         this.comment = comment;
         this.user = user;
         this.applicationDate = applicationDate;
+        this.offered = false;
 
         user.addApplication(this);
     }

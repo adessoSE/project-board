@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * A specification for a reader that is used in {@link de.adesso.projectboard.base.project.updater.ProjectUpdater}.
  *
- * @see de.adesso.projectboard.reader.JiraProjectReader
+ * @see de.adesso.projectboard.adapter.jira.reader.JiraProjectReader
  */
 public interface ProjectReader {
 
