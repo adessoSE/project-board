@@ -28,7 +28,7 @@ class JiraConfiguration {
         return new JiraProjectReader(builder, properties);
     }
 
-    @Profile("!dev")
+    @Profile("prod")
     @Autowired
     @Bean
     public JiraIssueCommenter jiraIssueCommenter(RestTemplateBuilder builder,
