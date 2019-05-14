@@ -5,6 +5,7 @@ import de.adesso.projectboard.adapter.velocity.VelocityTemplateService;
 import de.adesso.projectboard.base.application.handler.ProjectApplicationOfferedEventHandler;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.user.persistence.User;
+import de.adesso.projectboard.base.user.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +27,13 @@ public class JiraIssueCommenter implements ProjectApplicationOfferedEventHandler
 
     private final VelocityTemplateService velocityTemplateService;
 
+    private final UserService userService;
+
     public JiraIssueCommenter(RestTemplateBuilder builder,
                               JiraConfigurationProperties properties,
-                              VelocityTemplateService velocityTemplateService) {
+                              VelocityTemplateService velocityTemplateService,
+                              UserService userService) {
+        this.userService = userService;
         this.restTemplate = builder
                 .basicAuthentication(properties.getUsername(), properties.getPassword())
                 .build();
@@ -54,9 +59,13 @@ public class JiraIssueCommenter implements ProjectApplicationOfferedEventHandler
     }
 
     String getCommentString(User offeringUser, ProjectApplication application) {
+        var offeringUserData = userService.getUserDataWithImage(offeringUser);
+        var offeredUserdata = userService.getUserDataWithImage(application.getUser());
+
         var contextMap = Map.of(
-            "offeringUser", offeringUser,
-            "application", application
+                "offeringUserData", offeringUserData,
+                "offeredUserData", offeredUserdata,
+                "application", application
         );
 
         return velocityTemplateService.mergeTemplate("/templates/commenter/JiraIssueComment.vm", contextMap)
