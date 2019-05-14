@@ -4,6 +4,7 @@ import de.adesso.projectboard.adapter.jira.commenter.JiraIssueCommenter;
 import de.adesso.projectboard.adapter.jira.reader.JiraProjectReader;
 import de.adesso.projectboard.adapter.velocity.VelocityTemplateService;
 import de.adesso.projectboard.base.reader.ProjectReader;
+import de.adesso.projectboard.base.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -33,8 +34,9 @@ class JiraConfiguration {
     @Bean
     public JiraIssueCommenter jiraIssueCommenter(RestTemplateBuilder builder,
                                                  JiraConfigurationProperties properties,
-                                                 VelocityTemplateService velocityTemplateService) {
-        return new JiraIssueCommenter(builder, properties, velocityTemplateService);
+                                                 VelocityTemplateService velocityTemplateService,
+                                                 UserService userService) {
+        return new JiraIssueCommenter(builder, properties, velocityTemplateService, userService);
     }
 
 }

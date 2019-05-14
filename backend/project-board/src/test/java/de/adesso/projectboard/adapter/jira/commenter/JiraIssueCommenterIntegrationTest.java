@@ -9,6 +9,7 @@ import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
+import de.adesso.projectboard.base.user.service.UserService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +41,9 @@ public class JiraIssueCommenterIntegrationTest {
 
     @MockBean
     private RestTemplateBuilder builder;
+
+    @MockBean
+    private UserService userService;
 
     @Autowired
     private VelocityTemplateService velocityTemplateService;
@@ -73,7 +77,7 @@ public class JiraIssueCommenterIntegrationTest {
         this.server = MockRestServiceServer.bindTo(restTemplate)
                 .build();
 
-        this.commenter = new JiraIssueCommenter(builder, properties, velocityTemplateService);
+        this.commenter = new JiraIssueCommenter(builder, properties, velocityTemplateService, userService);
     }
 
     @Test
@@ -83,13 +87,13 @@ public class JiraIssueCommenterIntegrationTest {
         var offeringUserLastName = "Doe";
         var offeringUser = new User("offering-user");
         var offeringUserData = new UserData(offeringUser, offeringUserFirstName, offeringUserLastName, "mail", "LoB");
-        offeringUser.setUserData(offeringUserData);
+        given(userService.getUserDataWithImage(offeringUser)).willReturn(offeringUserData);
 
         var offeredUserFirstName = "Jane";
         var offeredUserLastName = "Doe";
         var offeredUser = new User("offered-user");
         var offeredUserData = new UserData(offeredUser, offeredUserFirstName, offeredUserLastName, "mail", "LoB");
-        offeredUser.setUserData(offeredUserData);
+        given(userService.getUserDataWithImage(offeredUser)).willReturn(offeredUserData);
 
         var projectId = "PROJ-1";
         var project = new Project().setId(projectId);
