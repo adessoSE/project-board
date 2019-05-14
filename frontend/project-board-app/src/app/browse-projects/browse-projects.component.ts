@@ -38,8 +38,6 @@ export class BrowseProjectsComponent implements OnInit {
   toggle = true;
   dialogRef: MatDialogRef<ProjectDialogComponent>;
 
-  private divToScroll;
-
   destroy$ = new Subject<void>();
   private searchText$ = new Subject<string>();
 
@@ -129,8 +127,6 @@ export class BrowseProjectsComponent implements OnInit {
         this.projectsFound = projects.length;
       });
     this.loadProjects();
-
-    this.divToScroll = document.getElementById('divToScroll');
   }
 
   searchProjects(searchText: string): void {
