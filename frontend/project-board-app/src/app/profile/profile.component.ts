@@ -12,6 +12,7 @@ import { ProjectDialogComponent } from '../project-dialog/project-dialog.compone
 import { SafetyqueryDialogComponent } from '../safetyquery-dialog/safetyquery-dialog.component';
 import {FormControl} from '@angular/forms';
 import {TooltipPosition} from '@angular/material';
+import { AlertService } from '../_services/alert.service';
 
 @Component({
   selector: 'app-profile',
@@ -42,7 +43,8 @@ export class ProfileComponent implements OnInit {
               private employeeService: EmployeeService,
               private projectService: ProjectService,
               private authService: AuthenticationService,
-              public dialog: MatDialog) {}
+              public dialog: MatDialog,
+              private alertService: AlertService) {}
 
   ngOnInit(): void {
     this.mobile = document.body.clientWidth < 992;
@@ -168,6 +170,15 @@ export class ProfileComponent implements OnInit {
       .subscribe(employeeApplications => {
         this.employeeApplications = employeeApplications;
         this.loadingEmployeeApplications = false;    
+      });
+  }
+
+  offerEmployee(applicationId: number, employeeId: string): void {
+    this.employeeService.offerApplication(employeeId, applicationId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(application => {
+        this.employeeApplications.find(app => app.id === applicationId).offered = true;
+        this.alertService.success('Kommentar im Jira erstellt.');
       });
   }
 }

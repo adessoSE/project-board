@@ -69,7 +69,7 @@
       </div>
       <button [disabled]="a.offered" class="btn btn-outline-secondary btn-offer" (click)="offerEmployee(a.id)" title="{{!a.offered ? 'Kommentar im Staffing Jira erstellen.' : a.user.firstName + ' wurde für dieses Projekt bereits angeboten.'}}">
         <mat-icon>send</mat-icon>
-        {{data.employee.firstName}} anbieten
+        {{!a.offered ? a.user.firstName + ' anbieten' : 'angeboten'}}
       </button>
     </div>
     <div class="inset" *ngIf="(!applications || applications.length === 0)">

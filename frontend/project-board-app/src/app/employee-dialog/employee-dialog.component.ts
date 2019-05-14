@@ -75,12 +75,12 @@ export class EmployeeDialogComponent implements OnInit {
     this.mobile = document.body.clientWidth < 992;
   }
 
-  daysInMonth() {
+  daysInMonth(): number {
     let date: Date = new Date();
     return new Date(date.getFullYear(), date.getMonth()+1, 0).getDate();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
 
     this.mobile = document.body.clientWidth < 992;
     this.minDate = new Date(Date.now());
@@ -102,7 +102,7 @@ export class EmployeeDialogComponent implements OnInit {
     }
   }
 
-  activate() {
+  activate(): void {
     const accessEnd = (this.datepickerControl.value instanceof Date) ?
       this.datepickerControl.value :
       (this.datepickerControl.value as Moment).toDate();
@@ -119,7 +119,7 @@ export class EmployeeDialogComponent implements OnInit {
       });
   }
 
-  deactivate() {
+  deactivate(): void {
     this.employeeService.deleteEmployeeAccessInfo(this.data.employee.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe(user => {
@@ -138,13 +138,13 @@ export class EmployeeDialogComponent implements OnInit {
     return diff;
   }
 
-  getApplications() {
+  getApplications(): void {
     this.employeeService.getApplications(this.data.employee.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe(applications => this.applications = applications);
   }
 
-  openProjectDialog(p: Project) {
+  openProjectDialog(p: Project): void {
     this.projectDialogRef = this.projectDialog.open(ProjectDialogComponent, {
       autoFocus: false,
       panelClass: 'custom-dialog-container',
@@ -157,10 +157,12 @@ export class EmployeeDialogComponent implements OnInit {
     });
   }
 
-  offerEmployee(applicationId: number) {
+  offerEmployee(applicationId: number): void {
     this.employeeService.offerApplication(this.data.employee.id, applicationId)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(application => this.applications.find(app => app.id === applicationId).offered = true);
+      .subscribe(application => {
+        this.applications.find(app => app.id === applicationId).offered = true;
+      });
   }
 
 }
