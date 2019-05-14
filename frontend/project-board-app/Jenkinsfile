@@ -12,9 +12,17 @@ pipeline {
 
     stages {
         stage('Checkout') {
-          steps {
-            checkout scm
-          }
+            steps {
+              checkout scm
+            }
+        }
+
+        stage('Replace environment') {
+            steps {
+                dir(FRONTEND_DIR + '/src/environments/') {
+                    writeFile file: environment.prod.ts, text: env.ENV_PROD_TS
+                }
+            }
         }
 
         stage('Build Artifacts') {
@@ -51,7 +59,7 @@ pipeline {
                     sh 'sudo docker save pb_frontend -o pb_frontend.tar'
                     sh 'sudo chmod 777 pb_frontend.tar'
 
-                    sshagent(['test-server-ssh-conf']) {
+                    sshagent(['jenkins-username-ssh-key']) {
                         sh 'scp -o StrictHostKeyChecking=no pb_frontend.tar jenkins@$REMOTE_HOST:~'
                     }
                 }
