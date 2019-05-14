@@ -11,6 +11,6 @@ export class ErrorComponent implements OnInit {
   constructor() { }
 
   ngOnInit(): void {
-    this.message = 'Ein Techniker ist informiert.';
+    this.message = 'Da ist etwas schief gelaufen. Sollte der Fehler nicht zu beheben sein, kontaktiere den project board Support.';
   }
 }

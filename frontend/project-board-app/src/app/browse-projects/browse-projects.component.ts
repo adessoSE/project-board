@@ -130,7 +130,6 @@ export class BrowseProjectsComponent implements OnInit {
   }
 
   searchProjects(searchText: string): void {
-    console.log(searchText);
     this.loadingProjects = true;
     this.projects = [];
     this.searchText = searchText;

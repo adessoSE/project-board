@@ -627,7 +627,6 @@ describe('Component: Executives', () => {
 
         it('sortByRequest lists employee with applications ascending and bosses behind', () => {
             component.sortValue = 0;
-            console.log(component.sortByRequest(employeeMock));
             expect(component.sortByRequest(employeeMock)).toEqual(employeeMockByRequestAscending);
         });
 

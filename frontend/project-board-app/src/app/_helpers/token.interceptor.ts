@@ -27,7 +27,6 @@ export class TokenInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(catchError(res => {
       // globally handle http errors
       if (res instanceof HttpErrorResponse) {
-        console.log('status', res.status);
         if (res.status === 404) {
           this.router.navigateByUrl('/notFound', {skipLocationChange: true});
         } else {
