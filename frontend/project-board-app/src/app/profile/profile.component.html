@@ -132,6 +132,10 @@
             <div class="font-weight-bold">Kommentar:</div>
             <div class="comment-display">{{a.comment.length > 0 ? a.comment : '-'}}</div>
           </div>
+          <button [disabled]="a.offered" class="btn btn-outline-secondary btn-offer" (click)="offerEmployee(a.id, a.user.id)" title="{{!a.offered ? 'Kommentar im Staffing Jira erstellen.' : a.user.firstName + ' wurde für dieses Projekt bereits angeboten.'}}">
+            <mat-icon>send</mat-icon>
+            {{!a.offered ? a.user.firstName + ' anbieten' : 'angeboten'}}
+          </button>
         </div>
         <div class="inset" *ngIf="!loadingEmployeeApplications && (!employeeApplications || employeeApplications.length === 0)">
           Keine Projektanfragen deiner Mitarbeiter.
