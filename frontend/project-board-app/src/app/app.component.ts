@@ -108,8 +108,10 @@ export class AppComponent implements OnInit, DoCheck {
     this.oAuthService.configure(authConfig);
     this.oAuthService.tokenValidationHandler = new JwksValidationHandler();
     this.oAuthService.setupAutomaticSilentRefresh();
+    this.oAuthService.clearHashAfterLogin = false;
     this.oAuthService.loadDiscoveryDocumentAndLogin().then(loggedIn => {
       if (loggedIn) {
+        this.router.navigateByUrl(sessionStorage.getItem("info"));
         if (this.isBoss) {
           this.hasAccess = true;
           return;
