@@ -1,5 +1,6 @@
 #!groovy
 def FRONTEND_DIR = 'frontend/project-board-app'
+def FRONTEND_ENVIRONMENTS_DIR = 'frontend/project-board-app/src/environments/'
 def DOCKER_ARTIFACT_DIR = 'dist/project-board-app'
 
 pipeline {
@@ -19,8 +20,8 @@ pipeline {
 
         stage('Replace environment') {
             steps {
-                dir(FRONTEND_DIR + '/src/environments/') {
-                    writeFile file: environment.prod.ts, text: env.ENV_PROD_TS
+                dir(FRONTEND_ENVIRONMENTS_DIR) {
+                    writeFile file: "environment.prod.ts", text: env.ENV_PROD_TS
                 }
             }
         }
@@ -55,12 +56,12 @@ pipeline {
                         unstash 'dockerArtifacts'
                     }
 
-                    sh 'sudo docker build -t pb_frontend .'
-                    sh 'sudo docker save pb_frontend -o pb_frontend.tar'
-                    sh 'sudo chmod 777 pb_frontend.tar'
+                    sh 'sudo docker build -t pb-frontend .'
+                    sh 'sudo docker save pb-frontend -o pb-frontend.tar'
+                    sh 'sudo chmod 777 pb-frontend.tar'
 
                     sshagent(['jenkins-username-ssh-key']) {
-                        sh 'scp -o StrictHostKeyChecking=no pb_frontend.tar jenkins@$REMOTE_HOST:~'
+                        sh 'scp -o StrictHostKeyChecking=no pb-frontend.tar jenkins@$REMOTE_HOST:~'
                     }
                 }
             }

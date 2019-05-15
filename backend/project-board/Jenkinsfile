@@ -57,12 +57,14 @@ pipeline {
                 dir(DOCKER_ARTIFACT_DIR) {
                     unstash 'dockerArtifacts'
 
-                    sh 'sudo docker build -t pb_backend .'
-                    sh 'sudo docker save pb_backend -o pb_backend.tar'
-                    sh 'sudo chmod 777 pb_backend.tar'
+                    writeFile file: "publicCert.pem", text: env.PUBLIC_CERT
+
+                    sh 'sudo docker build -t pb-backend .'
+                    sh 'sudo docker save pb-backend -o pb-backend.tar'
+                    sh 'sudo chmod 777 pb-backend.tar'
 
                     sshagent(['jenkins-username-ssh-key']) {
-                        sh 'scp -o StrictHostKeyChecking=no pb_backend.tar jenkins@$REMOTE_HOST:~'
+                        sh 'scp -o StrictHostKeyChecking=no pb-backend.tar jenkins@$REMOTE_HOST:~'
                     }
                 }
             }
