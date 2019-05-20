@@ -1,5 +1,6 @@
 package de.adesso.projectboard.adapter.mail;
 
+import de.adesso.projectboard.adapter.mail.configuration.MailConfigurationProperties;
 import de.adesso.projectboard.adapter.mail.persistence.MessageRepository;
 import de.adesso.projectboard.adapter.mail.persistence.TemplateMessage;
 import de.adesso.projectboard.base.user.service.UserService;
@@ -25,15 +26,19 @@ public class MailSenderAdapter {
 
     private final UserService userService;
 
+    private final MailConfigurationProperties properties;
+
     private final Clock clock;
 
     public MailSenderAdapter(MessageRepository messageRepository,
                              JavaMailSender mailSender,
                              UserService userService,
+                             MailConfigurationProperties properties,
                              Clock clock) {
         this.messageRepository = messageRepository;
         this.mailSender = mailSender;
         this.userService = userService;
+        this.properties = properties;
         this.clock = clock;
     }
 
@@ -82,6 +87,7 @@ public class MailSenderAdapter {
         var mailMessage = new SimpleMailMessage();
         mailMessage.setSubject(message.getSubject());
         mailMessage.setText(message.getText());
+        mailMessage.setFrom(properties.getFromMail());
         mailMessage.setTo(addresseeMail);
 
         mailSender.send(mailMessage);

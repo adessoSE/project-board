@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +21,13 @@ public class MailConfigurationProperties {
      * Enabled by default.
      */
     private boolean enabled = true;
+
+    /**
+     * The mail the emails are sent from, not empty.
+     */
+    @NotEmpty
+    @Pattern(regexp = "^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", flags = Pattern.Flag.CASE_INSENSITIVE)
+    private String fromMail;
 
     /**
      * The SMTP host to connect to.

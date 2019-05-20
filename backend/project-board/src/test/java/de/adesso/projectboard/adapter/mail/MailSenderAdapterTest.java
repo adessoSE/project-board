@@ -1,5 +1,6 @@
 package de.adesso.projectboard.adapter.mail;
 
+import de.adesso.projectboard.adapter.mail.configuration.MailConfigurationProperties;
 import de.adesso.projectboard.adapter.mail.persistence.MessageRepository;
 import de.adesso.projectboard.adapter.mail.persistence.TemplateMessage;
 import de.adesso.projectboard.base.user.persistence.User;
@@ -36,6 +37,9 @@ public class MailSenderAdapterTest {
     private UserService userServiceMock;
 
     @Mock
+    private MailConfigurationProperties mailPropertiesMock;
+
+    @Mock
     private TemplateMessage templateMessageMock;
 
     @Mock
@@ -55,17 +59,19 @@ public class MailSenderAdapterTest {
 
         this.clock = Clock.fixed(instant, zoneId);
         this.mailSenderAdapter = new MailSenderAdapter(messageRepositoryMock, javaMailSenderMock,
-                userServiceMock, clock);
+                userServiceMock, mailPropertiesMock, clock);
     }
 
     @Test
     public void sendPendingMessagesOnlySendsRelevantMessages() {
         // given
+        var expectedFrom = "sender@test.com";
         var expectedTo = "email@test.com";
         var expectedSubject = "This is a subject!";
         var expectedText = "This is a long text!";
 
         var expectedSimpleMessage = new SimpleMailMessage();
+        expectedSimpleMessage.setFrom(expectedFrom);
         expectedSimpleMessage.setTo(expectedTo);
         expectedSimpleMessage.setSubject(expectedSubject);
         expectedSimpleMessage.setText(expectedText);
@@ -81,6 +87,8 @@ public class MailSenderAdapterTest {
         given(userServiceMock.getUserData(userMock)).willReturn(userDataMock);
         given(userDataMock.getEmail()).willReturn(expectedTo);
 
+        given(mailPropertiesMock.getFromMail()).willReturn(expectedFrom);
+
         // when
         mailSenderAdapter.sendPendingMessages();
 
@@ -92,11 +100,13 @@ public class MailSenderAdapterTest {
     @Test
     public void sendMessage() {
         // given
+        var expectedFrom = "sender@test.com";
         var expectedTo = "mail@googlemail.com";
         var expectedSubject = "This is a subject :-)";
         var expectedText = "This is a cool text and very long too!";
 
         var expectedSimpleMessage = new SimpleMailMessage();
+        expectedSimpleMessage.setFrom(expectedFrom);
         expectedSimpleMessage.setTo(expectedTo);
         expectedSimpleMessage.setSubject(expectedSubject);
         expectedSimpleMessage.setText(expectedText);
@@ -107,6 +117,8 @@ public class MailSenderAdapterTest {
 
         given(userServiceMock.getUserData(userMock)).willReturn(userDataMock);
         given(userDataMock.getEmail()).willReturn(expectedTo);
+
+        given(mailPropertiesMock.getFromMail()).willReturn(expectedFrom);
 
         // when
         mailSenderAdapter.sendMessage(templateMessageMock);
