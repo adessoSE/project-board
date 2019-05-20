@@ -37,7 +37,7 @@ pipeline {
                     sh './node_modules/@angular/cli/bin/ng build --prod'
 
                     dir(DOCKER_ARTIFACT_DIR) {
-                        stash includes: '*', name: 'dockerArtifacts'
+                        stash includes: '**/*', name: 'dockerArtifacts'
                     }
                 }
             }
