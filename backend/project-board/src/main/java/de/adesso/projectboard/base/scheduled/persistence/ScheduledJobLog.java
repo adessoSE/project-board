@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class ScheduledJobLog {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     @Column(
