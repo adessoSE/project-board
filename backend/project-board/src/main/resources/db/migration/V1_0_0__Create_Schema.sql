@@ -138,6 +138,11 @@ create table if not exists hierarchy_tree_node (
 );
 
 alter table hierarchy_tree_node
+  add constraint fk_hierarchy_tree_node_hierarchy_tree_node
+  foreign key (manager_node_id)
+  references hierarchy_tree_node(id);
+
+alter table hierarchy_tree_node
   add constraint fk_hierarchy_tree_node_pb_user
   foreign key (user_id)
   references pb_user(id);
@@ -152,12 +157,12 @@ create table if not exists hierarchy_tree_node_all_staff (
 );
 
 alter table hierarchy_tree_node_all_staff
-  add constraint fk_manager_hierarchy_tree_node
+  add constraint fk_all_staff_manager_hierarchy_tree_node
   foreign key (manager_node_id)
   references hierarchy_tree_node(id);
 
 alter table hierarchy_tree_node_all_staff
-  add constraint  fk_staff_hierarchy_tree_node
+  add constraint  fk_all_staff_staff_hierarchy_tree_node
   foreign key (node_id)
   references hierarchy_tree_node(id);
 
@@ -169,14 +174,14 @@ create table scheduled_job_log (
   id bigint not null auto_increment primary key,
   job_time datetime(6) not null,
   job_identifier varchar(255) not null,
-  job_status int(5) not null
+  job_status tinyint not null
 );
 
 /****************************************
 *********** template message ************
 ****************************************/
 
-create table template_message (
+create table if not exists template_message (
   id bigint not null auto_increment primary key,
   ref_user_id varchar(255) not null,
   addressee_user_id varchar(255) not null,
@@ -187,12 +192,12 @@ create table template_message (
 alter table template_message
   add constraint fk_template_message_ref_user_pb_user
   foreign key (ref_user_id)
-  references pb_user(ID);
+  references pb_user(id);
 
 alter table template_message
   add constraint fk_template_message_addressee_pb_user
   foreign key (addressee_user_id)
-  references pb_user(ID);
+  references pb_user(id);
 
 /****************************************
 ********** time aware message ***********
