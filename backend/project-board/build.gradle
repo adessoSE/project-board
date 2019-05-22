@@ -52,7 +52,7 @@ dependencies {
 	implementation("org.apache.velocity:velocity-engine-core:${velocityEngineCoreVersion}")
 	implementation("org.apache.velocity.tools:velocity-tools-generic:${velocityToolsGenericVersion}")
 
-	implementation("org.flywaydb:flyway-core")
+	implementation("org.flywaydb:flyway-core:${flywayCoreVersion}")
 
 	compileOnly('org.projectlombok:lombok')
 
