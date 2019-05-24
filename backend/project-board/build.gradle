@@ -46,7 +46,7 @@ dependencies {
 	implementation('org.springframework.ldap:spring-ldap-core')
 
 	implementation('org.keycloak:keycloak-spring-boot-starter')
-	implementation('mysql:mysql-connector-java')
+	implementation("mysql:mysql-connector-java:${mysqlConnectorJVersion}")
 	implementation("org.hibernate:hibernate-search-orm:${hibernateSearchVersion}")
 
 	implementation("org.apache.velocity:velocity-engine-core:${velocityEngineCoreVersion}")
