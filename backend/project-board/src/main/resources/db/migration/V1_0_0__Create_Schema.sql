@@ -59,6 +59,10 @@ create table if not exists pb_user_bookmarks (
 );
 
 alter table pb_user_bookmarks
+  add constraint pk_pb_user_bookmarks
+  primary key (user_id, project_id);
+
+alter table pb_user_bookmarks
   add constraint fk_pb_user_bookmarks_pb_user
   foreign key (user_id)
   references pb_user(id);
@@ -74,7 +78,7 @@ alter table pb_user_bookmarks
 
 create table if not exists pb_user_data (
   id bigint not null auto_increment primary key,
-  user_id varchar(255) not null,
+  user_id varchar(255) not null unique,
   first_name varchar(255) not null,
   last_name varchar(255) not null,
   email varchar(255) not null,
@@ -133,7 +137,7 @@ alter table access_interval
 create table if not exists hierarchy_tree_node (
  id bigint not null auto_increment primary key,
  manager_node_id bigint,
- user_id  varchar(255) not null,
+ user_id  varchar(255) not null unique,
  is_managing_user bit(1) not null
 );
 
@@ -204,7 +208,7 @@ alter table template_message
 ****************************************/
 
 create table time_aware_message (
- id bigint not null,
+ id bigint not null primary key,
  relevancy_date_time datetime(6) not null
 );
 
@@ -218,7 +222,7 @@ alter table time_aware_message
 ****************************************/
 
 create table simple_message (
-  id bigint not null
+  id bigint not null primary key
 );
 
 alter table simple_message
