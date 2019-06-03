@@ -6,6 +6,7 @@ import de.adesso.projectboard.adapter.jira.configuration.JiraConfigurationProper
 import de.adesso.projectboard.adapter.velocity.VelocityTemplateService;
 import de.adesso.projectboard.adapter.velocity.configuration.VelocityConfiguration;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
+import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
@@ -36,8 +37,13 @@ public class JiraIssueCommenterIntegrationTest {
 
     private final String COMMENTER_URL = "rest/api/2/issue/{issueKey}/comment";
 
+    private final String PROJECTBOARD_URL = "https://projectboard.com";
+
     @MockBean
     private JiraConfigurationProperties properties;
+
+    @MockBean
+    private ProjectBoardConfigurationProperties pbProperties;
 
     @MockBean
     private RestTemplateBuilder builder;
@@ -58,6 +64,7 @@ public class JiraIssueCommenterIntegrationTest {
         given(properties.getCommenterUrl()).willReturn(COMMENTER_URL);
         given(properties.getUsername()).willReturn("");
         given(properties.getPassword()).willReturn("");
+        given(pbProperties.getUrl()).willReturn(PROJECTBOARD_URL);
 
         // spring's RestClientTest annotation causes problems
         // because the username/password for basic authentication can't
@@ -77,7 +84,7 @@ public class JiraIssueCommenterIntegrationTest {
         this.server = MockRestServiceServer.bindTo(restTemplate)
                 .build();
 
-        this.commenter = new JiraIssueCommenter(builder, properties, velocityTemplateService, userService);
+        this.commenter = new JiraIssueCommenter(builder, properties, pbProperties, velocityTemplateService, userService);
     }
 
     @Test
@@ -99,8 +106,10 @@ public class JiraIssueCommenterIntegrationTest {
         var project = new Project().setId(projectId);
         var application = new ProjectApplication(project, "Comment", offeredUser, LocalDateTime.now());
 
-        var expectedText = String.format("%s %s hat seinen Mitarbeiter %s %s angeboten.", offeringUserFirstName, offeringUserLastName,
-                offeredUserFirstName, offeredUserLastName);
+        var expectedText = String.format("%s %s wurde über das [projectboard|%s] für diese\r\n" +
+                        "Stelle vorgeschlagen.\r\n\r\n" +
+                        "Diese Nachricht wurde automatisch erstellt. Alle weiteren Schritte bitte organisatorisch klären.",
+                offeredUserFirstName, offeredUserLastName, PROJECTBOARD_URL);
         var expectedBody = new JiraIssueCommenter.JiraCommentPayload(expectedText);
         var expectedBodyJson = new ObjectMapper().writer().writeValueAsString(expectedBody);
 

@@ -1,11 +1,10 @@
-#* @vtlvariable name="offeringUserData" type="de.adesso.projectboard.base.user.persistence.data.UserData" *#
 #* @vtlvariable name="offeredUserData" type="de.adesso.projectboard.base.user.persistence.data.UserData" *#
-##
-#set( $offeringUserFirstName = $offeringUserData.getFirstName() )
-#set( $offeringUserLastName = $offeringUserData.getLastName() )
+#* @vtlvariable name="projectboardUrl" type="java.lang.String" *#
 ##
 #set( $offeredUserFirstName = $offeredUserData.getFirstName() )
 #set( $offeredUserLastName = $offeredUserData.getLastName() )
 ##
-${offeringUserFirstName} ${offeringUserLastName} hat seinen Mitarbeiter ${offeredUserFirstName} ${offeredUserLastName} ##
-angeboten.
+${offeredUserFirstName} ${offeredUserLastName} wurde über das [projectboard|${projectboardUrl}] für diese
+Stelle vorgeschlagen.
+
+Diese Nachricht wurde automatisch erstellt. Alle weiteren Schritte bitte organisatorisch klären.

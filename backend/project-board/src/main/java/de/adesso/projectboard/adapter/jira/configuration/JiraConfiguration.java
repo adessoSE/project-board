@@ -3,6 +3,7 @@ package de.adesso.projectboard.adapter.jira.configuration;
 import de.adesso.projectboard.adapter.jira.commenter.JiraIssueCommenter;
 import de.adesso.projectboard.adapter.jira.reader.JiraProjectReader;
 import de.adesso.projectboard.adapter.velocity.VelocityTemplateService;
+import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.base.reader.ProjectReader;
 import de.adesso.projectboard.base.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +35,10 @@ class JiraConfiguration {
     @Bean
     public JiraIssueCommenter jiraIssueCommenter(RestTemplateBuilder builder,
                                                  JiraConfigurationProperties properties,
+                                                 ProjectBoardConfigurationProperties pbProperties,
                                                  VelocityTemplateService velocityTemplateService,
                                                  UserService userService) {
-        return new JiraIssueCommenter(builder, properties, velocityTemplateService, userService);
+        return new JiraIssueCommenter(builder, properties, pbProperties, velocityTemplateService, userService);
     }
 
 }

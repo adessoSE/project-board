@@ -4,10 +4,12 @@ import de.adesso.projectboard.adapter.jira.configuration.JiraConfigurationProper
 import de.adesso.projectboard.adapter.velocity.VelocityTemplateService;
 import de.adesso.projectboard.base.application.handler.ProjectApplicationOfferedEventHandler;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
+import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.web.client.RestTemplate;
@@ -23,6 +25,8 @@ public class JiraIssueCommenter implements ProjectApplicationOfferedEventHandler
 
     private final RestTemplate restTemplate;
 
+    private final ProjectBoardConfigurationProperties pbProperties;
+
     private final JiraConfigurationProperties properties;
 
     private final VelocityTemplateService velocityTemplateService;
@@ -31,8 +35,10 @@ public class JiraIssueCommenter implements ProjectApplicationOfferedEventHandler
 
     public JiraIssueCommenter(RestTemplateBuilder builder,
                               JiraConfigurationProperties properties,
+                              ProjectBoardConfigurationProperties pbProperties,
                               VelocityTemplateService velocityTemplateService,
                               UserService userService) {
+        this.pbProperties = pbProperties;
         this.userService = userService;
         this.restTemplate = builder
                 .basicAuthentication(properties.getUsername(), properties.getPassword())
@@ -45,27 +51,25 @@ public class JiraIssueCommenter implements ProjectApplicationOfferedEventHandler
     @Override
     public void onApplicationOffered(User offeringUser, ProjectApplication projectApplication) {
         var projectKey = projectApplication.getProject().getId();
-        var applicationPayload = getPayload(offeringUser, projectApplication);
+        var applicationPayload = getRequestPayload(projectApplication);
 
         restTemplate.postForLocation(properties.getCommenterUrl(), applicationPayload, projectKey);
 
         log.debug("Posted comment on Jira Issue {}", projectKey);
     }
 
-    JiraCommentPayload getPayload(User offeringUser, ProjectApplication application) {
-        var body = getCommentString(offeringUser, application);
+    JiraCommentPayload getRequestPayload(ProjectApplication application) {
+        var body = getCommentString(pbProperties.getUrl(), application);
 
         return new JiraCommentPayload(body);
     }
 
-    String getCommentString(User offeringUser, ProjectApplication application) {
-        var offeringUserData = userService.getUserDataWithImage(offeringUser);
+    String getCommentString(String projectboardUrl, ProjectApplication application) {
         var offeredUserdata = userService.getUserDataWithImage(application.getUser());
 
         var contextMap = Map.of(
-                "offeringUserData", offeringUserData,
-                "offeredUserData", offeredUserdata,
-                "application", application
+                "projectboardUrl", projectboardUrl,
+                "offeredUserData", offeredUserdata
         );
 
         return velocityTemplateService.mergeTemplate("/templates/commenter/JiraIssueComment.vm", contextMap)
@@ -74,6 +78,7 @@ public class JiraIssueCommenter implements ProjectApplicationOfferedEventHandler
 
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
     static class JiraCommentPayload {
 
         private String body;
