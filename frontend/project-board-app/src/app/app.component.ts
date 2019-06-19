@@ -1,22 +1,14 @@
-import { Component, DoCheck, HostListener, OnInit, ViewChild, NgZone, Renderer, ElementRef } from '@angular/core';
-import {
-  Router,
-  // import as RouterEvent to avoid confusion with the DOM Event
-  Event as RouterEvent,
-  NavigationStart,
-  NavigationEnd,
-  NavigationCancel,
-  NavigationError
-} from '@angular/router'
-import { MatSidenav } from '@angular/material';
-import { faChevronUp } from '@fortawesome/free-solid-svg-icons/faChevronUp';
-import { AuthConfig, JwksValidationHandler, OAuthService } from 'angular-oauth2-oidc';
+import {Component, DoCheck, ElementRef, HostListener, NgZone, OnInit, Renderer, ViewChild} from '@angular/core';
+import {Event as RouterEvent, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router} from '@angular/router';
+import {MatSidenav} from '@angular/material';
+import {faChevronUp} from '@fortawesome/free-solid-svg-icons/faChevronUp';
+import {AuthConfig, JwksValidationHandler, OAuthService} from 'angular-oauth2-oidc';
 import * as $ from 'jquery';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { environment } from '../environments/environment';
-import { AuthenticationService } from './_services/authentication.service';
-import { EmployeeService } from './_services/employee.service';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
+import {environment} from '../environments/environment';
+import {AuthenticationService} from './_services/authentication.service';
+import {EmployeeService} from './_services/employee.service';
 import {
   CONTACT_SUPPORT_TOOLTIP,
   EMPLOYEES_TOOLTIP,
@@ -267,7 +259,7 @@ export const authConfig: AuthConfig = {
   redirectUri: window.location.origin + '/index.html',
 
   // The SPA's id. The SPA is registerd with this id at the auth-server
-  clientId: 'projekt-boerse-frontend',
+  clientId: 'projectboard-frontend',
 
   // set the scope for the permissions the client should request
   // The first three are defined by OIDC. The 4th is a usecase-specific one
