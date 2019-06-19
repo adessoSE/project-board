@@ -5,7 +5,7 @@ import de.adesso.projectboard.base.project.persistence.ProjectRepository;
 import de.adesso.projectboard.base.project.persistence.specification.StatusSpecification;
 import de.adesso.projectboard.base.search.HibernateSearchService;
 import de.adesso.projectboard.base.user.persistence.User;
-import de.adesso.projectboard.base.user.persistence.UserRepository;
+import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.service.UserService;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,15 +17,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RepositoryUserProjectServiceTest {
-
-    private static final String USER_ID = "user";
 
     @Mock
     private UserService userServiceMock;
@@ -34,16 +31,13 @@ public class RepositoryUserProjectServiceTest {
     private ProjectRepository projectRepoMock;
 
     @Mock
-    private UserRepository userRepoMock;
-
-    @Mock
-    private RepositoryProjectService projectServiceMock;
-
-    @Mock
     private HibernateSearchService hibernateSearchServiceMock;
 
     @Mock
     private User userMock;
+
+    @Mock
+    private UserData userDataMock;
 
     @Mock
     private Project projectMock;
@@ -53,16 +47,19 @@ public class RepositoryUserProjectServiceTest {
     @Before
     public void setUp() {
         this.userProjectService
-                = new RepositoryUserProjectService(userServiceMock, projectRepoMock, userRepoMock, projectServiceMock, hibernateSearchServiceMock);
+                = new RepositoryUserProjectService(projectRepoMock, userServiceMock, hibernateSearchServiceMock);
     }
 
     @Test
     public void getProjectsForUser() {
         // given
-        var expectedSpecification = new StatusSpecification(Set.of("offen", "open", "eskaliert", "escalated"));
+        var userLob = "LoB Test";
+        var expectedSpecification = new StatusSpecification(RepositoryUserProjectService.LOB_INDEPENDENT_STATUS, RepositoryUserProjectService.LOB_DEPENDENT_STATUS, userLob);
         var sort = Sort.unsorted();
         var expectedProjects = List.of(projectMock);
 
+        given(userServiceMock.getUserData(userMock)).willReturn(userDataMock);
+        given(userDataMock.getLob()).willReturn(userLob);
         given(projectRepoMock.findAll(expectedSpecification, sort)).willReturn(expectedProjects);
 
         // when
@@ -74,31 +71,21 @@ public class RepositoryUserProjectServiceTest {
 
     @Test
     public void searchProjectsForUser() {
-        // given
-        var searchQuery = "query";
-        var sort = Sort.unsorted();
-        var status = Set.of("offen", "open", "eskaliert", "escalated");
-        var expectedProjects = List.of(projectMock);
-
-        given(hibernateSearchServiceMock.searchProjects(searchQuery, status)).willReturn(expectedProjects);
-
-        // when
-        var actualProjects = userProjectService.searchProjectsForUser(userMock, searchQuery, sort);
-
-        // then
-        assertThat(actualProjects).isEqualTo(expectedProjects);
+        // TODO: implement
     }
 
     @Test
     public void getProjectsForUserPaginated() {
         // given
-        var status = Set.of("offen", "open", "eskaliert", "escalated");
+        var userLob = "LoB Test1234";
         var pageable = PageRequest.of(0, 100);
-        var statusSpecification = new StatusSpecification(status);
+        var expectedStatusSpecification = new StatusSpecification(RepositoryUserProjectService.LOB_INDEPENDENT_STATUS, RepositoryUserProjectService.LOB_DEPENDENT_STATUS, userLob);
         var expectedProjects = List.of(projectMock);
         var expectedPage = new PageImpl<>(expectedProjects);
 
-        given(projectRepoMock.findAll(statusSpecification, pageable)).willReturn(expectedPage);
+        given(userServiceMock.getUserData(userMock)).willReturn(userDataMock);
+        given(userDataMock.getLob()).willReturn(userLob);
+        given(projectRepoMock.findAll(expectedStatusSpecification, pageable)).willReturn(expectedPage);
 
         // when
         var actualPage = userProjectService.getProjectsForUserPaginated(userMock, pageable);
@@ -109,20 +96,7 @@ public class RepositoryUserProjectServiceTest {
 
     @Test
     public void searchProjectsForUserPaginated() {
-        // given
-        var searchQuery = "query";
-        var pageable = PageRequest.of(0, 100);
-        var expectedProjects = List.of(projectMock);
-        var expectedPage = new PageImpl<>(expectedProjects);
-        var status = Set.of("offen", "open", "eskaliert", "escalated");
-
-        given(hibernateSearchServiceMock.searchProjects(searchQuery, status, pageable)).willReturn(expectedPage);
-
-        // when
-        var actualPage = userProjectService.searchProjectsForUserPaginated(searchQuery, userMock, pageable);
-
-        // then
-        assertThat(actualPage).isEqualTo(expectedPage);
+        //TODO: implement
     }
 
 }
