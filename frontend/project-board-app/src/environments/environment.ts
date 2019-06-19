@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  authHost: 'http://localhost:8080',
+  authHost: 'http://localhost:8080/keycloak',
   resourceServer: 'http://localhost:8081',
   supportEmail: 'support.projectboard@adesso.de'
 };
