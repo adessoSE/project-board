@@ -9,6 +9,7 @@ import {takeUntil} from 'rxjs/operators';
 import {environment} from '../environments/environment';
 import {AuthenticationService} from './_services/authentication.service';
 import {EmployeeService} from './_services/employee.service';
+import { GoogleAnalyticsService } from './_services/google-analytics.service';
 import {
   CONTACT_SUPPORT_TOOLTIP,
   EMPLOYEES_TOOLTIP,
@@ -49,7 +50,8 @@ export class AppComponent implements OnInit, DoCheck {
               private oAuthService: OAuthService,
               private router: Router,
               private ngZone: NgZone,
-              private renderer: Renderer
+              private renderer: Renderer,
+              private googleAnalyticsService: GoogleAnalyticsService,
   ) { 
     router.events.subscribe((event: RouterEvent) => {
       this._navigationInterceptor(event)
@@ -122,7 +124,6 @@ export class AppComponent implements OnInit, DoCheck {
     this.mainNavPosition();
     this.supportEmail = environment.supportEmail;
   }
-
   /* Tested Methods Start */
 
   isUserAuthenticated(): boolean {

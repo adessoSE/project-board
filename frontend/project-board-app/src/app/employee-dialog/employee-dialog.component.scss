@@ -50,6 +50,21 @@ h4 {
   color: lightgrey;
 }
 
+.small-delete {
+  display: none;
+}
+
+.remover {
+  cursor: pointer;
+  float: right;
+  height: 32px;
+  margin-top: -7px;
+}
+
+.remover mat-icon {
+  vertical-align: text-top;
+}
+
 //
 
 #bottom-actions /deep/ .mat-form-field-wrapper {
@@ -201,19 +216,18 @@ img {
 
 .employee-application {
   padding: 15px;
-}
-
-.linking-icon {
-  float: left;
-  margin-right: 16px;
-  height: 32px;
-  cursor: pointer;
+  color: #887D75;
 }
 
 .linking-icon .material-icons {
   font-size: 32px !important;
   margin-top: -5px;
   color: #016EC7;
+  cursor: pointer;
+}
+
+.linking-icon {
+  width: 40px;
 }
 
 .linking-icon .material-icons:hover {
@@ -244,6 +258,18 @@ img {
 }
 
 @include media-breakpoint-down(md) {
+
+  .small-delete {
+    display: block;
+    cursor: pointer;
+    float: right;
+    margin-top: -7px;
+  }
+
+  .big-delete {
+    display: none;
+  }
+
   .btn-activate {
     display: inline-block;
     width: 50%;
@@ -277,6 +303,10 @@ img {
     display: block;
     width: calc(100vw - 48px);
     max-width: 450px;
+  }
+
+  .btn-group > .btn {
+    margin: 0 0 0 0rem;
   }
 
   .full-width {

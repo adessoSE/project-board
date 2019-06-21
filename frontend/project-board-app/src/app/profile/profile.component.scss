@@ -134,6 +134,21 @@
   padding: 15px;
 }
 
+.linking-icon {
+  width: 40px;
+}
+
+.linking-icon .material-icons {
+  font-size: 32px !important;
+  margin-top: -5px;
+  color: #016EC7;
+  cursor: pointer;
+}
+
+.linking-icon .material-icons:hover {
+  color: #338bd2;
+}
+
 .remover {
   cursor: pointer;
   float: right;
