@@ -1,10 +1,13 @@
 <div class="inner-container row">
   <div class="aside col-md-3 left-bar">
     <div id="avatar-area">
-      <div id="username">{{user.firstName}} {{user.lastName}}</div>
+      <div id="username">{{ user.firstName }} {{ user.lastName }}</div>
       <div id="profile-image">
-        <img *ngIf="user.picture" src="data:image/gif;base64,{{user.picture}}">
-        <img *ngIf="!user.picture" src="../../assets/avatar.png">
+        <img
+          *ngIf="user.picture"
+          src="data:image/gif;base64,{{ user.picture }}"
+        />
+        <img *ngIf="!user.picture" src="../../assets/avatar.png" />
       </div>
     </div>
 
@@ -12,89 +15,158 @@
       <div style="border: 0;" class="user-detail-point">
         <p class="detail-heading">Status</p>
         <span class="point-text">
-          {{user.accessInfo.hasAccess || user.boss ? 'Freigeschaltet' : 'Nicht freigeschaltet'}}</span>
+          {{
+            user.accessInfo.hasAccess || user.boss
+              ? "Freigeschaltet"
+              : "Nicht freigeschaltet"
+          }}</span
+        >
       </div>
       <div class="user-detail-point">
         <p class="detail-heading">Freigeschaltet bis</p>
-        <span *ngIf="user.boss" class="point-text">Dauerhaft (Führungskraft)</span>
+        <span *ngIf="user.boss" class="point-text"
+          >Dauerhaft (Führungskraft)</span
+        >
         <span *ngIf="!user.boss" class="point-text">
-          {{user.accessInfo.hasAccess ? (user.accessInfo.accessEnd | date : 'dd.MM.yyyy') : '-'}}</span>
+          {{
+            user.accessInfo.hasAccess
+              ? (user.accessInfo.accessEnd | date: "dd.MM.yyyy")
+              : "-"
+          }}</span
+        >
       </div>
       <div *ngIf="!user.boss" class="user-detail-point">
         <p class="detail-heading">Projektanfragen</p>
-        <span class="point-text">{{applications.length}}</span>
+        <span class="point-text">{{ applications.length }}</span>
       </div>
       <div *ngIf="user.boss" class="user-detail-point">
         <p class="detail-heading">Mitarbeiter</p>
-        <span class="point-text">{{employees.length}}</span>
+        <span class="point-text">{{ employees.length }}</span>
       </div>
     </div>
   </div>
 
   <div class="aside col-md-9 middle">
     <div id="profile-nav">
-      <div *ngIf="!user.boss" (click)="selectTab(0)" id="tab0" class="nav-point col-6 active">
+      <div
+        *ngIf="!user.boss"
+        (click)="selectTab(0)"
+        id="tab0"
+        class="nav-point col-6 active"
+      >
         <div class="profile-nav-icon">
           <mat-icon>bookmark</mat-icon>
         </div>
         Lesezeichen
-        <mat-icon class="helper-icon" matTooltip="Projekte, die du für dich selbst markiert hast."
-        [matTooltipPosition]="position.value">help</mat-icon>
+        <mat-icon
+          class="helper-icon"
+          matTooltip="Projekte, die du für dich selbst markiert hast."
+          [matTooltipPosition]="position.value"
+          >help</mat-icon
+        >
       </div>
 
-      <div *ngIf="!user.boss" (click)="selectTab(1)" id="tab1" class="nav-point col-6">
+      <div
+        *ngIf="!user.boss"
+        (click)="selectTab(1)"
+        id="tab1"
+        class="nav-point col-6"
+      >
         <div class="profile-nav-icon">
           <mat-icon>email</mat-icon>
         </div>
         Projektanfragen
-        <mat-icon class="helper-icon" matTooltip="Projekte, für die du eine Anfrage bei deiner Führungskraft erstellt hast."
-        [matTooltipPosition]="position.value">help</mat-icon>
+        <mat-icon
+          class="helper-icon"
+          matTooltip="Projekte, für die du eine Anfrage bei deiner Führungskraft erstellt hast."
+          [matTooltipPosition]="position.value"
+          >help</mat-icon
+        >
       </div>
 
-      <div *ngIf="user.boss" (click)="selectTab(2)" id="tab2" class="nav-point col-12 active">
+      <div
+        *ngIf="user.boss"
+        (click)="selectTab(2)"
+        id="tab2"
+        class="nav-point col-12 active"
+      >
         <div class="profile-nav-icon">
           <mat-icon>email</mat-icon>
         </div>
         Projektanfragen Mitarbeiter
-        <mat-icon class="helper-icon" matTooltip="Anfragen deiner Mitarbeiter, die an einem Projekt interessiert sind. Anfragen werden automatisch einen Monat nach Ablauf der Freischaltung für den Mitarbeiter zum Project Board gelöscht."
-        [matTooltipPosition]="position.value">help</mat-icon>
+        <mat-icon
+          class="helper-icon"
+          matTooltip="Anfragen deiner Mitarbeiter, die an einem Projekt interessiert sind. Anfragen werden automatisch einen Monat nach Ablauf der Freischaltung für den Mitarbeiter zum Project Board gelöscht."
+          [matTooltipPosition]="position.value"
+          >help</mat-icon
+        >
       </div>
     </div>
 
     <div id="profile-nav-content">
       <!-- bookmarks tab -->
       <ng-container *ngIf="tabIndex == 0">
-        <div class="bookmark" *ngFor="let b of bookmarks; index as i" [ngClass]="{'border-bottom': i<bookmarks.length-1}">
+        <div
+          class="bookmark"
+          *ngFor="let b of bookmarks; index as i"
+          [ngClass]="{ 'border-bottom': i < bookmarks.length - 1 }"
+        >
           <div class="headline">
-            <div class="linking-icon-wrapper" title="Öffnen" (click)="openDialog(b)">
+            <div
+              class="linking-icon-wrapper"
+              title="Öffnen"
+              (click)="openDialog(b)"
+            >
               <mat-icon>open_in_new</mat-icon>
             </div>
-            <div class="remover" title="entfernen" (click)="removeBookmark(b.id)">
+            <div
+              class="remover"
+              title="entfernen"
+              (click)="removeBookmark(b.id)"
+            >
               <mat-icon>clear</mat-icon>
             </div>
             <div *ngIf="!isProjectApplicable(b.id)" class="mail-icon-wrapper">
               <mat-icon title="Bereits angefragt">email</mat-icon>
             </div>
-            <span>{{b.title}}</span>
+            <span>{{ b.title }}</span>
           </div>
         </div>
-        <div class="inset" *ngIf="!bookmarks || bookmarks.length === 0">Du hast keine Lesezeichen hinzugefügt.</div>
+        <div class="inset" *ngIf="!bookmarks || bookmarks.length === 0">
+          Du hast keine Lesezeichen hinzugefügt.
+        </div>
       </ng-container>
 
       <!-- applications tab -->
       <ng-container *ngIf="tabIndex == 1">
-        <div class="application" *ngFor="let a of applications; index as i" [ngClass]="{'border-bottom': i<applications.length-1, 'deleted': a.state === 'DELETED'}">
+        <div
+          class="application"
+          *ngFor="let a of applications; index as i"
+          [ngClass]="{
+            'border-bottom': i < applications.length - 1,
+            deleted: a.state === 'DELETED'
+          }"
+        >
           <div class="headline">
-            <div class="linking-icon-wrapper" title="Öffnen" (click)="openDialog(a.project)">
+            <div
+              class="linking-icon-wrapper"
+              title="Öffnen"
+              (click)="openDialog(a.project)"
+            >
               <mat-icon>open_in_new</mat-icon>
             </div>
-            <span class="project-title">{{a.project.title}} {{(a.state === 'DELETED') ? "(gelöscht)" : ""}}</span>
+            <span class="project-title"
+              >{{ a.project.title }}
+              {{ a.state === "DELETED" ? "(gelöscht)" : "" }}</span
+            >
           </div>
           <div class="application-details">
             <div class="font-weight-bold">Datum:</div>
-            <div>{{a.date | date}}</div>
+            <div>{{ a.date | date }}</div>
             <div class="font-weight-bold">Mein Kommentar:</div>
-            <div class="comment-display">{{a.comment.length > 0 ? a.comment : '-'}}</div>
+            <div class="comment-display">
+              {{ a.comment.length > 0 ? a.comment : "-" }}
+            </div>
           </div>
         </div>
         <div class="inset" *ngIf="!applications || applications.length === 0">
@@ -104,36 +176,63 @@
 
       <!-- employee-applications tab-->
       <ng-container *ngIf="tabIndex == 2">
-        <div class="employee-application" *ngFor="let a of employeeApplications; index as i" [ngClass]="{'border-bottom': i<employeeApplications.length-1}">
+        <div
+          class="employee-application"
+          *ngFor="let a of employeeApplications; index as i"
+          [ngClass]="{ 'border-bottom': i < employeeApplications.length - 1 }"
+        >
           <div class="row">
             <div class="col-10">
-          <span class="project-title">
-            <div class="linking-icon-wrapper">
-              <div class="linking-icon" title="Öffnen" (click)="openDialog(a.project)">
-                <mat-icon>open_in_new</mat-icon>
-              </div>
-            </div>
-            {{a.project.title}} 
-          </span>
+              <span class="project-title">
+                <div
+                  class="linking-icon"
+                  title="Öffnen"
+                  (click)="openDialog(a.project)"
+                >
+                  <mat-icon>open_in_new</mat-icon>
+                </div>
+                {{ a.project.title }}
+              </span>
             </div>
             <div class="col-2">
-          <button mat-icon-button class="small-delete" title="Anfrage permanent löschen" (click)="removeApplication(a.id)">
-              <mat-icon>delete</mat-icon>
-          </button>
-          <button class="btn btn-outline-secondary remover big-delete" style="height: auto;" title="Anfrage permanent löschen" (click)="removeApplication(a.id)">
-              <span style="vertical-align: bottom;">löschen</span><mat-icon>delete</mat-icon>
-          </button>
-        </div>
-        </div>
+              <button
+                mat-icon-button
+                class="small-delete"
+                title="Anfrage permanent löschen"
+                (click)="removeApplication(a.id)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+              <button
+                class="btn btn-outline-secondary remover big-delete"
+                style="height: auto;"
+                title="Anfrage permanent löschen"
+                (click)="removeApplication(a.id)"
+              >
+                <span style="vertical-align: bottom;">löschen</span
+                ><mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
           <div class="application-details">
-            <div (click)="openEmployeeDialog(a.user)" class="requester">{{a.user.lastName}}, {{a.user.firstName}}</div>
+            <div (click)="openEmployeeDialog(a.user)" class="requester">
+              {{ a.user.lastName }}, {{ a.user.firstName }}
+            </div>
             <div class="font-weight-bold">Datum:</div>
-            <div>{{a.date | date}}</div>
+            <div>{{ a.date | date }}</div>
             <div class="font-weight-bold">Kommentar:</div>
-            <div class="comment-display">{{a.comment.length > 0 ? a.comment : '-'}}</div>
+            <div class="comment-display">
+              {{ a.comment.length > 0 ? a.comment : "-" }}
+            </div>
           </div>
         </div>
-        <div class="inset" *ngIf="!loadingEmployeeApplications && (!employeeApplications || employeeApplications.length === 0)">
+        <div
+          class="inset"
+          *ngIf="
+            !loadingEmployeeApplications &&
+            (!employeeApplications || employeeApplications.length === 0)
+          "
+        >
           Keine Projektanfragen deiner Mitarbeiter.
         </div>
         <div *ngIf="loadingEmployeeApplications" class="inset">

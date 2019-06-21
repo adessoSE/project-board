@@ -2,6 +2,7 @@ import { formatDate } from '@angular/common';
 import { Component, HostListener, Inject, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
+import { SafetyqueryDialogComponent } from '../safetyquery-dialog/safetyquery-dialog.component';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { NavigationStart, Router } from '@angular/router';
 import { Moment } from 'moment';
@@ -59,6 +60,7 @@ export class EmployeeDialogComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<EmployeeDialogComponent>,
     public projectDialog: MatDialog,
+    public dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: EmployeeDialogData,
     private employeeService: EmployeeService,
     private router: Router
@@ -143,6 +145,20 @@ export class EmployeeDialogComponent implements OnInit {
       .pipe(takeUntil(this.destroy$))
       .subscribe(applications => this.applications = applications);
   }
+
+  removeApplication(applicationId :number): void {
+
+    let dialogRef = this.dialog.open(SafetyqueryDialogComponent, {
+      disableClose: false
+    });
+     dialogRef.afterClosed().subscribe(result => {
+       if(result) {
+         this.employeeService.removeApplication(this.applications.find(x => x.id === applicationId).user.id, applicationId)
+         .pipe(takeUntil(this.destroy$))
+         .subscribe(() => this.applications = this.applications.filter(p => p.id !== applicationId));
+       }
+     });
+   }
 
   openProjectDialog(p: Project) {
     this.projectDialogRef = this.projectDialog.open(ProjectDialogComponent, {

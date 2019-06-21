@@ -1,53 +1,104 @@
 <span id="close-icon-wrapper">
-  <button mat-icon-button id="close-icon" title="{{closeTooltip}}" (click)="dialogRef.close()"><mat-icon>close</mat-icon></button>
+  <button
+    mat-icon-button
+    id="close-icon"
+    title="{{ closeTooltip }}"
+    (click)="dialogRef.close()"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
 </span>
 
-<h1 mat-dialog-title style="margin-left: 20px">{{data.employee.firstName + ' ' + data.employee.lastName}}</h1>
+<h1 mat-dialog-title style="margin-left: 20px">
+  {{ data.employee.firstName + " " + data.employee.lastName }}
+</h1>
 
 <mat-dialog-content>
   <div class="pb-2 border-bottom">
     <div id="image-wrapper">
-      <img *ngIf="data.employee.picture" src="data:image/gif;base64,{{data.employee.picture}}">
-      <img *ngIf="!data.employee.picture" src="../../assets/avatar.png">
+      <img
+        *ngIf="data.employee.picture"
+        src="data:image/gif;base64,{{ data.employee.picture }}"
+      />
+      <img *ngIf="!data.employee.picture" src="../../assets/avatar.png" />
     </div>
     <div *ngIf="data.employee" class="details">
       <!--  User Info  -->
       <div class="inset">
         <div class="row">
           <div class="col-4">Status:</div>
-          <div class="col right">{{data.employee.accessInfo.hasAccess || data.employee.boss ? 'Freigeschaltet' : 'Nicht freigeschaltet'}}</div>
-          <br>
-        </div>
-        <div [ngClass]="{'row': true, 'greyed-out': !data.employee.accessInfo.hasAccess && !data.employee.boss}" *ngIf="!data.employee.boss">
-          <div class="col-4"><span class="large-text">Freigeschaltet </span>seit:</div>
           <div class="col right">
-            {{data.employee.accessInfo.hasAccess ? (data.employee.accessInfo.accessStart | date) : '-'}}
+            {{
+              data.employee.accessInfo.hasAccess || data.employee.boss
+                ? "Freigeschaltet"
+                : "Nicht freigeschaltet"
+            }}
+          </div>
+          <br />
+        </div>
+        <div
+          [ngClass]="{
+            row: true,
+            'greyed-out':
+              !data.employee.accessInfo.hasAccess && !data.employee.boss
+          }"
+          *ngIf="!data.employee.boss"
+        >
+          <div class="col-4">
+            <span class="large-text">Freigeschaltet </span>seit:
+          </div>
+          <div class="col right">
+            {{
+              data.employee.accessInfo.hasAccess
+                ? (data.employee.accessInfo.accessStart | date)
+                : "-"
+            }}
             <ng-container *ngIf="data.employee.accessInfo.hasAccess">
               <small *ngIf="daysAlready == 0">(heute)</small>
-              <small *ngIf="daysAlready > 0">(bereits {{daysAlready}} Tag{{daysAlready > 1 ? 'e' : ''}})</small>
+              <small *ngIf="daysAlready > 0"
+                >(bereits {{ daysAlready }} Tag{{
+                  daysAlready > 1 ? "e" : ""
+                }})</small
+              >
             </ng-container>
           </div>
         </div>
-        <div [ngClass]="{'row': true, 'greyed-out': !data.employee.accessInfo.hasAccess && !data.employee.boss}">
-          <div class="col-4"><span class="large-text">Freigeschaltet </span>bis:</div>
+        <div
+          [ngClass]="{
+            row: true,
+            'greyed-out':
+              !data.employee.accessInfo.hasAccess && !data.employee.boss
+          }"
+        >
+          <div class="col-4">
+            <span class="large-text">Freigeschaltet </span>bis:
+          </div>
 
           <!-- Differentiate between boss and normal user for readability -->
-          <div class="col right" *ngIf="data.employee.boss">Dauerhaft (Führungskraft)</div>
+          <div class="col right" *ngIf="data.employee.boss">
+            Dauerhaft (Führungskraft)
+          </div>
           <div class="col right" *ngIf="!data.employee.boss">
-            {{data.employee.accessInfo.hasAccess ? (data.employee.accessInfo.accessEnd | date) : '-'}}
+            {{
+              data.employee.accessInfo.hasAccess
+                ? (data.employee.accessInfo.accessEnd | date)
+                : "-"
+            }}
             <ng-container *ngIf="data.employee.accessInfo.hasAccess">
               <small *ngIf="daysLeft == 0">(heute)</small>
-              <small *ngIf="daysLeft > 0">(noch {{daysLeft}} Tag{{daysLeft > 1 ? 'e' : ''}})</small>
+              <small *ngIf="daysLeft > 0"
+                >(noch {{ daysLeft }} Tag{{ daysLeft > 1 ? "e" : "" }})</small
+              >
             </ng-container>
           </div>
         </div>
         <div class="row">
           <div class="col-4">Email:</div>
-          <div class="col right">{{data.employee.email}}</div>
+          <div class="col right">{{ data.employee.email }}</div>
         </div>
         <div class="row">
           <div class="col-4">Anfragen:</div>
-          <div class="col right">{{applications.length}}</div>
+          <div class="col right">{{ applications.length }}</div>
         </div>
       </div>
     </div>
@@ -55,21 +106,48 @@
 
   <!--  Applications  -->
   <ng-container *ngIf="data.employee && !data.employee.boss">
-    <h4>Projektanfragen von {{data.employee.firstName}}</h4>
-    <div class="employee-application" *ngFor="let a of applications; index as i" [ngClass]="{'border-bottom': i < applications.length-1}">
-      <div class="linking-icon" (click)="openProjectDialog(a.project)">
-        <mat-icon>open_in_new</mat-icon>
+    <h4>Projektanfragen von {{ data.employee.firstName }}</h4>
+    <div
+      class="employee-application"
+      *ngFor="let a of applications; index as i"
+      [ngClass]="{ 'border-bottom': i < applications.length - 1 }"
+    >
+      <div class="row">
+        <div class="col-10">
+          <div class="linking-icon" (click)="openProjectDialog(a.project)">
+            <mat-icon>open_in_new</mat-icon>
+          </div>
+          <div>{{ a.project.title }}</div>
+        </div>
+        <div class="col-2">
+          <button
+            mat-icon-button
+            class="small-delete"
+            title="Anfrage permanent löschen"
+            (click)="removeApplication(a.id)"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+          <button
+            class="btn btn-outline-secondary remover big-delete"
+            style="height: auto;"
+            title="Anfrage permanent löschen"
+            (click)="removeApplication(a.id)"
+          >
+            <span style="vertical-align: bottom;">löschen</span
+            ><mat-icon>delete</mat-icon>
+          </button>
+        </div>
       </div>
-      <div>{{a.project.title}}</div>
       <div class="application-details">
         <!--<span class="requester">{{a.user.lastName + ', ' + a.user.firstName}}</span>-->
-        <span>Datum: {{a.date | date}}</span>
+        <span>Datum: {{ a.date | date }}</span>
         <span>Kommentar:</span>
-        <span>{{a.comment}}</span>
+        <span>{{ a.comment }}</span>
       </div>
     </div>
-    <div class="inset" *ngIf="(!applications || applications.length === 0)">
-      {{data.employee.firstName}} hat keine Projekte angefragt.
+    <div class="inset" *ngIf="!applications || applications.length === 0">
+      {{ data.employee.firstName }} hat keine Projekte angefragt.
     </div>
   </ng-container>
 </mat-dialog-content>
@@ -78,14 +156,54 @@
     <div *ngIf="!data.employee.boss">
       <div class="text-center" id="bottom-actions">
         <mat-form-field style="display: inline-block;" appearance="outline">
-          <mat-label>{{datepickerControl.errors ? 'Unzulässiges Datum' : 'Enddatum der Freischaltung'}}</mat-label>
-          <input matInput [min]="minDate" [max]="maxDate" [matDatepicker]="datepicker" [formControl]="datepickerControl">
-          <mat-datepicker-toggle matSuffix [for]="datepicker"></mat-datepicker-toggle>
-          <mat-datepicker #datepicker [touchUi]="mobile" [calendarHeaderComponent]="customHeaderClass"></mat-datepicker>
+          <mat-label>{{
+            datepickerControl.errors
+              ? "Unzulässiges Datum"
+              : "Enddatum der Freischaltung"
+          }}</mat-label>
+          <input
+            matInput
+            [min]="minDate"
+            [max]="maxDate"
+            [matDatepicker]="datepicker"
+            [formControl]="datepickerControl"
+          />
+          <mat-datepicker-toggle
+            matSuffix
+            [for]="datepicker"
+          ></mat-datepicker-toggle>
+          <mat-datepicker
+            #datepicker
+            [touchUi]="mobile"
+            [calendarHeaderComponent]="customHeaderClass"
+          ></mat-datepicker>
         </mat-form-field>
         <div class="btn-group">
-          <button (click)="activate()" title="{{data.employee.firstName}} bis zum {{datepickerControl.value | date}} freischalten." disabled="{{datepickerControl.errors}}" [ngClass]="{'btn btn-primary btn-activate': true, 'width': !data.employee.accessInfo.hasAccess, 'disabled': datepickerControl.errors}">{{!data.employee.accessInfo.hasAccess ? 'Zugang aktivieren' : 'Zugang aktualisieren'}}</button>
-          <button *ngIf="data.employee.accessInfo.hasAccess" (click)="deactivate()" class="btn btn-danger btn-deactivate">Zugang deaktivieren</button>
+          <button
+            (click)="activate()"
+            title="{{ data.employee.firstName }} bis zum {{
+              datepickerControl.value | date
+            }} freischalten."
+            disabled="{{ datepickerControl.errors }}"
+            [ngClass]="{
+              'btn btn-primary btn-activate': true,
+              width: !data.employee.accessInfo.hasAccess,
+              disabled: datepickerControl.errors
+            }"
+          >
+            {{
+              !data.employee.accessInfo.hasAccess
+                ? "Zugang aktivieren"
+                : "Zugang aktualisieren"
+            }}
+          </button>
+          <button
+            *ngIf="data.employee.accessInfo.hasAccess"
+            (click)="deactivate()"
+            class="btn btn-danger btn-deactivate"
+          >
+            Zugang deaktivieren
+          </button>
         </div>
       </div>
     </div>
