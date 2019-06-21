@@ -30,6 +30,7 @@ import { ProjectDialogComponent } from './project-dialog/project-dialog.componen
 import { SearchComponent } from './search/search.component';
 import { FaqComponent } from './faq/faq.component';
 import { SafetyqueryDialogComponent } from './safetyquery-dialog/safetyquery-dialog.component';
+import {GoogleAnalyticsService} from './_services/google-analytics.service';
 
 declare var Hammer: any;
 
@@ -84,6 +85,7 @@ registerLocaleData(localeDe, 'de');
     AuthGuard,
     AuthenticationService,
     EmployeeService,
+    GoogleAnalyticsService,
     {
       provide: HAMMER_GESTURE_CONFIG,
       useClass: MyHammerConfig

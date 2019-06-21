@@ -611,6 +611,11 @@ amdefine@>=0.0.4:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
 
+angular-eager-provider-loader@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/angular-eager-provider-loader/-/angular-eager-provider-loader-3.0.1.tgz#8afbdb34ab891e37b48fc957806a0575bfe38334"
+  integrity sha512-swliDM6YHfU13D8C5bxD5VsxIDaeb3sihqgNIHSvrbq+8tGc5rOUsK07FGTSjsBImoJypEMlDM/jm/sjNeJtHg==
+
 angular-oauth2-oidc@^4.0.2:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/angular-oauth2-oidc/-/angular-oauth2-oidc-4.0.3.tgz#a1441e90c48671f70405b31f518dba426940c92a"
