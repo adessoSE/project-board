@@ -63,6 +63,8 @@ dependencies {
 	testImplementation('org.springframework.security:spring-security-test')
 	testImplementation('org.springframework.ldap:spring-ldap-test')
 
+	testCompileOnly('org.projectlombok:lombok')
+
 	annotationProcessor('org.projectlombok:lombok')
 	annotationProcessor('org.springframework.boot:spring-boot-configuration-processor')
 

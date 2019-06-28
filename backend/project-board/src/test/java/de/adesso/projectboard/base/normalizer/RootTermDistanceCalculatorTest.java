@@ -5,7 +5,6 @@ import org.junit.Test;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class RootTermDistanceCalculatorTest {
 
@@ -96,7 +95,7 @@ public class RootTermDistanceCalculatorTest {
     }
 
     @Test
-    public void nearestRootTermThrowsExceptionWhenThresholdIsExceeded() {
+    public void nearestRootTermReturnsTermWhenThresholdIsExceeded() {
         // given
         var rootTerm = "banana";
         var derivedTerms = Set.of("yellow-thing", "monkey-snack");
@@ -105,10 +104,11 @@ public class RootTermDistanceCalculatorTest {
 
         var calculator = new RootTermDistanceCalculator(rootTerm, derivedTerms);
 
-        // when / then
-        assertThatThrownBy(() -> RootTermDistanceCalculator.nearestRootTerm(Set.of(calculator), term, threshold))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessage("The minimal distance of all calculators exceeds the threshold value");
+        // when
+        var actualRootTerm = RootTermDistanceCalculator.nearestRootTerm(Set.of(calculator), term, threshold);
+
+        // then
+        assertThat(actualRootTerm).isEqualTo(term);
     }
 
 }

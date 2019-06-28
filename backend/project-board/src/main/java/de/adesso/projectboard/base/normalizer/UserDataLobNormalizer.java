@@ -4,20 +4,20 @@ import de.adesso.projectboard.base.user.persistence.data.UserData;
 
 import java.util.Set;
 
-public class UserDataLobNormalizer extends LobNormalizer<UserData> {
+public class UserDataLobNormalizer extends FieldNormalizer<UserData> {
 
     protected UserDataLobNormalizer(Set<RootTermDistanceCalculator> lobDistanceCalculators) {
         super(lobDistanceCalculators);
     }
 
     @Override
-    String getLobOf(UserData lobContainingObject) {
-        return lobContainingObject.getLob();
+    String getFieldValue(UserData fieldContainingObject) {
+        return fieldContainingObject.getLob();
     }
 
     @Override
-    UserData setNormalizedLob(UserData lobContainingObject, String normalizedLob) {
-        return lobContainingObject.setLob(normalizedLob);
+    UserData setNormalizedFieldValue(UserData fieldContainingObject, String normalizedValue) {
+        return fieldContainingObject.setLob(normalizedValue);
     }
 
 }

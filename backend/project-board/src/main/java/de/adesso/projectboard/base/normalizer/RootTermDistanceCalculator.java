@@ -103,17 +103,15 @@ public class RootTermDistanceCalculator {
      *          The term to match against the given {@code distanceCalculators}, not {@code null}.
      *
      * @param threshold
-     *          The max. distance that is allowed as the minimal distance, must be greater than or
-     *          equal to {@code 0}.
+     *          The max. distance that is allowed as the minimal distance returned by any of the given
+     *          {@code distanceCalculators}, must be greater than or equal to {@code 0}.
      *
      * @return
      *          The root term of the {@link RootTermDistanceCalculator} with the lowest
      *          editing distance returned by its {@link #calculateMinimalDistance(String)}
      *          method. May lead to an undefined return value in case multiple calculators return
-     *          the same min distance.
-     *
-     * @throws IllegalStateException
-     *          In case the lowest editing distance is greater than the given {@code threshold}.
+     *          the same min distance. If the minimal distance is greater than the given {@code threshold},
+     *          the given {@code term} is returned.
      */
     public static String nearestRootTerm(Set<RootTermDistanceCalculator> distanceCalculators, String term, int threshold) {
         if(threshold < 0) {
@@ -132,7 +130,7 @@ public class RootTermDistanceCalculator {
         if(minDistanceEntry.getValue() <= threshold) {
             return minDistanceEntry.getKey().getOriginalRootTerm();
         } else {
-            throw new IllegalStateException("The minimal distance of all calculators exceeds the threshold value");
+            return term;
         }
     }
 

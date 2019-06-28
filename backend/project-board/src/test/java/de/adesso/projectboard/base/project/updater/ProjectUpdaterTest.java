@@ -1,6 +1,7 @@
 package de.adesso.projectboard.base.project.updater;
 
 import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProperties;
+import de.adesso.projectboard.base.normalizer.Normalizer;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.reader.ProjectReader;
@@ -43,6 +44,9 @@ public class ProjectUpdaterTest {
     @Mock
     private Project projectMock;
 
+    @Mock
+    private Normalizer<Project> normalizerMock;
+
     private Clock clock;
 
     private ProjectUpdater projectUpdater;
@@ -55,7 +59,7 @@ public class ProjectUpdaterTest {
         given(pbConfigPropertiesMock.getRefreshInterval()).willReturn(REFRESH_INTERVAL);
 
         this.clock = Clock.fixed(instant, zoneId);
-        this.projectUpdater = new ProjectUpdater(projectServiceMock, projectReaderMock, pbConfigPropertiesMock, clock);
+        this.projectUpdater = new ProjectUpdater(projectServiceMock, projectReaderMock, pbConfigPropertiesMock, List.of(normalizerMock), clock);
     }
 
     @Test
@@ -65,6 +69,8 @@ public class ProjectUpdaterTest {
         var expectedProjects = List.of(projectMock);
 
         given(projectReaderMock.getAllProjectsSince(lastExecuteTime))
+                .willReturn(expectedProjects);
+        given(normalizerMock.normalize(expectedProjects))
                 .willReturn(expectedProjects);
 
         // when
@@ -83,6 +89,8 @@ public class ProjectUpdaterTest {
         var expectedProjects = List.of(projectMock);
 
         given(projectReaderMock.getInitialProjects())
+                .willReturn(expectedProjects);
+        given(normalizerMock.normalize(expectedProjects))
                 .willReturn(expectedProjects);
 
         // when

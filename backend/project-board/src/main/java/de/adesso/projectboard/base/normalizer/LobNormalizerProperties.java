@@ -12,27 +12,13 @@ public class LobNormalizerProperties {
 
     private List<NormalizerPair> normalizerPairs = new ArrayList<>();
 
+    @Data
     public static class NormalizerPair {
 
         private String rootName;
 
         private List<String> derivedNames = new ArrayList<>();
 
-        public String getRootName() {
-            return rootName;
-        }
-
-        public void setRootName(String rootName) {
-            this.rootName = rootName;
-        }
-
-        public List<String> getDerivedNames() {
-            return derivedNames;
-        }
-
-        public void setDerivedNames(List<String> derivedNames) {
-            this.derivedNames = derivedNames;
-        }
     }
 
 }

@@ -17,9 +17,10 @@ public class LobNormalizerConfiguration {
 
     //TODO:
     // refactor to separate method
-    // Update tests for UserUpdater/ProjectUpdater
-    // Add test for LobNormalizer
+    // long startup time added -> lazy initialization for normalizers?
     // add additional tests for RootTermDistanceCalculator
+    // adapt preauthorize method when requesting a project by its id
+    // fix lombok processor not running in test classes
     @Bean
     public ProjectLobNormalizer projectLobNormalizer() {
         var calculators = lobNormalizerProperties.getNormalizerPairs()

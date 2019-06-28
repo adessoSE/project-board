@@ -4,20 +4,20 @@ import de.adesso.projectboard.base.project.persistence.Project;
 
 import java.util.Set;
 
-public class ProjectLobNormalizer extends LobNormalizer<Project> {
+public class ProjectLobNormalizer extends FieldNormalizer<Project> {
 
     protected ProjectLobNormalizer(Set<RootTermDistanceCalculator> lobDistanceCalculators) {
         super(lobDistanceCalculators);
     }
 
     @Override
-    String getLobOf(Project lobContainingObject) {
-        return lobContainingObject.getLob();
+    String getFieldValue(Project fieldContainingObject) {
+        return fieldContainingObject.getLob();
     }
 
     @Override
-    Project setNormalizedLob(Project lobContainingObject, String normalizedLob) {
-        return lobContainingObject.setLob(normalizedLob);
+    Project setNormalizedFieldValue(Project fieldContainingObject, String normalizedValue) {
+        return fieldContainingObject.setLob(normalizedValue);
     }
 
 }
