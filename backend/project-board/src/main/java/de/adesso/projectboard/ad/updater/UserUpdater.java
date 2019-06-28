@@ -3,12 +3,12 @@ package de.adesso.projectboard.ad.updater;
 import de.adesso.projectboard.ad.service.LdapAdapter;
 import de.adesso.projectboard.ad.service.node.LdapUserNode;
 import de.adesso.projectboard.ad.user.RepositoryUserService;
+import de.adesso.projectboard.base.normalizer.Normalizer;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.persistence.data.UserDataRepository;
 import de.adesso.projectboard.base.user.persistence.hierarchy.HierarchyTreeNode;
 import de.adesso.projectboard.base.user.persistence.hierarchy.HierarchyTreeNodeRepository;
 import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
@@ -26,15 +26,18 @@ public class UserUpdater {
 
     private final LdapAdapter ldapAdapter;
 
-    @Autowired
+    private final List<Normalizer<UserData>> normalizers;
+
     public UserUpdater(HierarchyTreeNodeRepository hierarchyTreeNodeRepo,
                        RepositoryUserService repoUserService,
                        UserDataRepository userDataRepo,
-                       LdapAdapter ldapAdapter) {
+                       LdapAdapter ldapAdapter,
+                       List<Normalizer<UserData>> normalizers) {
         this.hierarchyTreeNodeRepo = hierarchyTreeNodeRepo;
         this.repoUserService = repoUserService;
         this.userDataRepo = userDataRepo;
         this.ldapAdapter = ldapAdapter;
+        this.normalizers = normalizers;
     }
 
     public void updateHierarchyAndUserData() {
@@ -61,11 +64,21 @@ public class UserUpdater {
 
                     return new UserData(user, node.getGivenName(), node.getSurname(), node.getMail(), node.getDivision());
                 })
-                .collect(Collectors.toSet());
+                .distinct()
+                .collect(Collectors.toList());
+
+        normalizeAndSaveUserData(userData);
+    }
+
+    void normalizeAndSaveUserData(List<UserData> userData) {
+        var normalizedUserData = userData;
+        for(var normalizer : normalizers) {
+            normalizedUserData = normalizer.normalize(normalizedUserData);
+        }
 
         userDataRepo.deleteAll();
         userDataRepo.flush();
-        userDataRepo.saveAll(userData);
+        userDataRepo.saveAll(normalizedUserData);
     }
 
     /**

@@ -48,7 +48,7 @@ public class UserUpdaterTest {
 
     @Before
     public void setUp() {
-        this.userUpdater = new UserUpdater(hierarchyTreeNodeRepoMock, repoUserServiceMock, userDataRepoMock, ldapAdapterMock);
+        this.userUpdater = new UserUpdater(hierarchyTreeNodeRepoMock, repoUserServiceMock, userDataRepoMock, ldapAdapterMock, normalizers);
     }
 
     @Test

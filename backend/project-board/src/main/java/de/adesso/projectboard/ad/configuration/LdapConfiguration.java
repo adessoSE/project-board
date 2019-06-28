@@ -7,8 +7,10 @@ import de.adesso.projectboard.ad.updater.UserUpdater;
 import de.adesso.projectboard.ad.user.RepositoryUserService;
 import de.adesso.projectboard.base.access.handler.UserAccessEventHandler;
 import de.adesso.projectboard.base.access.persistence.AccessIntervalRepository;
+import de.adesso.projectboard.base.normalizer.Normalizer;
 import de.adesso.projectboard.base.search.HibernateSearchService;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
+import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.persistence.data.UserDataRepository;
 import de.adesso.projectboard.base.user.persistence.hierarchy.HierarchyTreeNodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +22,8 @@ import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.LdapTemplate;
 
 import java.time.Clock;
+import java.util.List;
+import java.util.Optional;
 
 @ConditionalOnProperty(
         prefix = "projectboard.ldap",
@@ -58,11 +62,12 @@ public class LdapConfiguration {
         return new RepositoryUserAccessService(repositoryUserService, accessIntervalRepo, userAccessEventHandler, clock);
     }
 
+    //TODO: Optional right decision?
     @Autowired
     @Bean
     public UserUpdater userUpdater(HierarchyTreeNodeRepository hierarchyTreeNodeRepo, RepositoryUserService repositoryUserService,
-                                   UserDataRepository userDataRepo, LdapAdapter ldapAdapter) {
-        return new UserUpdater(hierarchyTreeNodeRepo, repositoryUserService, userDataRepo, ldapAdapter);
+                                   UserDataRepository userDataRepo, LdapAdapter ldapAdapter, Optional<List<Normalizer<UserData>>> normalizers) {
+        return new UserUpdater(hierarchyTreeNodeRepo, repositoryUserService, userDataRepo, ldapAdapter, normalizers.orElse(List.of()));
     }
 
     @Autowired
