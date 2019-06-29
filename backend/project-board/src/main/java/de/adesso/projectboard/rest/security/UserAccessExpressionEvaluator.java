@@ -92,9 +92,22 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      */
     @Override
     public boolean hasAccessToProject(Authentication authentication, User user, String projectId) {
-        return hasAccessToProjects(authentication, user) ||
-                !projectService.projectExists(projectId) ||
-                applicationService.userHasAppliedForProject(user, projectService.getProjectById(projectId));
+        var projectExists = projectService.projectExists(projectId);
+
+        if(!projectExists || userService.userIsManager(user)) {
+            return true;
+        } else {
+            var project = projectService.getProjectById(projectId);
+            var projectLob = project.getLob();
+            var userLob = userService.getUserData(user).getLob();
+            var lobNullOrEquals = (projectLob == null && userLob == null) || userLob.equalsIgnoreCase(projectLob);
+
+            if(lobNullOrEquals && hasAccessToProjects(authentication, user)) {
+                return true;
+            }
+
+            return applicationService.userHasAppliedForProject(user, project);
+        }
     }
 
     /**
