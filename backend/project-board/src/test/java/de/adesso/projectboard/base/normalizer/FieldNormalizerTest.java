@@ -1,7 +1,5 @@
 package de.adesso.projectboard.base.normalizer;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -74,11 +73,36 @@ public class FieldNormalizerTest {
         assertThat(actualNormalizedContainers).containsExactlyInAnyOrderElementsOf(expectedNormalizedContainers);
     }
 
-    @Data
-    @AllArgsConstructor
     private class FruitNameContainer {
 
         private String name;
+
+        private FruitNameContainer(String name) {
+            this.name = name;
+        }
+
+
+        public String getName() {
+            return name;
+        }
+
+        public FruitNameContainer setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            FruitNameContainer that = (FruitNameContainer) o;
+            return name.equals(that.name);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name);
+        }
 
     }
 

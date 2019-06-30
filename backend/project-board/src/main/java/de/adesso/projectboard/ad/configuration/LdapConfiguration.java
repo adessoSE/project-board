@@ -62,7 +62,6 @@ public class LdapConfiguration {
         return new RepositoryUserAccessService(repositoryUserService, accessIntervalRepo, userAccessEventHandler, clock);
     }
 
-    //TODO: Optional right decision?
     @Autowired
     @Bean
     public UserUpdater userUpdater(HierarchyTreeNodeRepository hierarchyTreeNodeRepo, RepositoryUserService repositoryUserService,
