@@ -8,6 +8,7 @@ import de.adesso.projectboard.base.reader.ProjectReader;
 import de.adesso.projectboard.base.scheduled.AutoRegistered;
 import de.adesso.projectboard.base.scheduled.ScheduledJob;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.time.Clock;
@@ -36,7 +37,7 @@ public class ProjectUpdater implements ScheduledJob {
     public ProjectUpdater(ProjectService projectService,
                           ProjectReader projectReader,
                           ProjectBoardConfigurationProperties properties,
-                          List<Normalizer<Project>> normalizers,
+                          @Lazy List<Normalizer<Project>> normalizers,
                           Clock clock) {
         this.projectService = projectService;
         this.projectReader = projectReader;

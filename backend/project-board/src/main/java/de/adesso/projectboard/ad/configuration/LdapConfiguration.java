@@ -18,6 +18,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.LdapTemplate;
 
@@ -65,7 +66,7 @@ public class LdapConfiguration {
     @Autowired
     @Bean
     public UserUpdater userUpdater(HierarchyTreeNodeRepository hierarchyTreeNodeRepo, RepositoryUserService repositoryUserService,
-                                   UserDataRepository userDataRepo, LdapAdapter ldapAdapter, Optional<List<Normalizer<UserData>>> normalizers) {
+                                   UserDataRepository userDataRepo, LdapAdapter ldapAdapter, @Lazy Optional<List<Normalizer<UserData>>> normalizers) {
         return new UserUpdater(hierarchyTreeNodeRepo, repositoryUserService, userDataRepo, ldapAdapter, normalizers.orElse(List.of()));
     }
 
