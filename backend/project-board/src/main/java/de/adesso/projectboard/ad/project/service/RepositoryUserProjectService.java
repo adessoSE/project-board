@@ -8,9 +8,11 @@ import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.service.PageableUserProjectService;
 import de.adesso.projectboard.base.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,45 +23,68 @@ import java.util.Set;
 @Transactional(readOnly = true)
 public class RepositoryUserProjectService implements PageableUserProjectService {
 
+    public static final Set<String> LOB_INDEPENDENT_STATUS_MANAGER = Set.of("offen", "open", "eskaliert", "escalated");
+
     public static final Set<String> LOB_INDEPENDENT_STATUS = Set.of("eskaliert", "escalated");
 
-    public static final Set<String> LOB_DEPENDENT_STATUS = Set.of("open", "offen");
+    public static final Set<String> LOB_DEPENDENT_STATUS = Set.of("offen", "open");
 
     private final ProjectRepository projectRepo;
 
     private final UserService userService;
 
-    private final HibernateSearchService hibernateSearchService;
+    private final HibernateSearchService managerSearchService;
+
+    private final HibernateSearchService staffSearchService;
 
     @Autowired
     public RepositoryUserProjectService(ProjectRepository projectRepo,
                                         UserService userService,
-                                        HibernateSearchService hibernateSearchService) {
+                                        @Qualifier("managerSearchService") HibernateSearchService managerSearchService,
+                                        @Qualifier("staffSearchService") HibernateSearchService staffSearchService) {
         this.projectRepo = projectRepo;
         this.userService = userService;
-        this.hibernateSearchService = hibernateSearchService;
+        this.managerSearchService = managerSearchService;
+        this.staffSearchService = staffSearchService;
     }
 
     @Override
     public List<Project> getProjectsForUser(User user, Sort sort) {
-        var userLob = userService.getUserData(user).getLob();
-        return projectRepo.findAll(new StatusSpecification(LOB_INDEPENDENT_STATUS, LOB_DEPENDENT_STATUS, userLob), sort);
+        return projectRepo.findAll(getProjectSpecificationForUser(user), sort);
     }
 
     @Override
     public List<Project> searchProjectsForUser(User user, String query, Sort sort) {
-        return hibernateSearchService.searchProjects(query, Set.of());
+        if(userService.userIsManager(user)) {
+            return managerSearchService.searchProjects(query, null);
+        } else {
+            var userLob = userService.getUserData(user).getLob();
+            return staffSearchService.searchProjects(query, userLob);
+        }
     }
 
     @Override
     public Page<Project> getProjectsForUserPaginated(User user, Pageable pageable) {
-        var userLob = userService.getUserData(user).getLob();
-        return projectRepo.findAll(new StatusSpecification(LOB_INDEPENDENT_STATUS, LOB_DEPENDENT_STATUS, userLob), pageable);
+        return projectRepo.findAll(getProjectSpecificationForUser(user), pageable);
     }
 
     @Override
     public Page<Project> searchProjectsForUserPaginated(String query, User user, Pageable pageable) {
-        return hibernateSearchService.searchProjects(query, Set.of(), pageable);
+        if(userService.userIsManager(user)) {
+            return managerSearchService.searchProjects(query, pageable,null);
+        } else {
+            var userLob = userService.getUserData(user).getLob();
+            return staffSearchService.searchProjects(query, pageable, userLob);
+        }
+    }
+
+    private Specification<Project> getProjectSpecificationForUser(User user) {
+        if(userService.userIsManager(user)) {
+            return new StatusSpecification(LOB_INDEPENDENT_STATUS_MANAGER, Set.of(), null);
+        } else {
+            var userLob = userService.getUserData(user).getLob();
+            return new StatusSpecification(LOB_INDEPENDENT_STATUS, LOB_DEPENDENT_STATUS, userLob);
+        }
     }
 
 }

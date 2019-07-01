@@ -18,10 +18,6 @@ public class LobNormalizerConfiguration {
 
     private final LobNormalizerProperties lobNormalizerProperties;
 
-    //TODO:
-    // add additional tests for RootTermDistanceCalculator
-    // adapt HibernateSearchService
-    // does the Lazy annotation work on bean methods with type Optional?
     @Bean
     @Lazy
     public ProjectLobNormalizer projectLobNormalizer(@Qualifier("lobRootTermDistanceCalculators") Set<RootTermDistanceCalculator> distanceCalculators) {

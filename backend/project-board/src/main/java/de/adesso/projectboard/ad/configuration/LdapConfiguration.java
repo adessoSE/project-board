@@ -14,6 +14,7 @@ import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.persistence.data.UserDataRepository;
 import de.adesso.projectboard.base.user.persistence.hierarchy.HierarchyTreeNodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -52,7 +53,7 @@ public class LdapConfiguration {
     @Bean
     public RepositoryUserService repositoryUserService(UserRepository userRepository, UserDataRepository userDataRepository,
                                                        LdapAdapter ldapAdapter, HierarchyTreeNodeRepository hierarchyTreeNodeRepo,
-                                                       HibernateSearchService hibernateSearchService) {
+                                                       @Qualifier("managerSearchService") HibernateSearchService hibernateSearchService) {
         return new RepositoryUserService(userRepository, userDataRepository, ldapAdapter, hierarchyTreeNodeRepo, hibernateSearchService);
     }
 

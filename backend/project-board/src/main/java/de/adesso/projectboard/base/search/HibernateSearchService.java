@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.validation.constraints.NotNull;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,10 @@ import java.util.stream.Collectors;
 public class HibernateSearchService {
 
     private static final int MAX_CLAUSE_COUNT = 4096;
+
+    private static final String LOB_FIELD_NAME = "lob";
+
+    private static final String STATUS_FIELD_NAME = "status";
 
     /*
      * A transactional entity manager to use when searching. Required because an extended
@@ -38,48 +43,93 @@ public class HibernateSearchService {
     @PersistenceContext
     EntityManager entityManager;
 
+    /**
+     * A map to store the names of all indexed fields of a specific
+     * class.
+     */
     final Map<Class<?>, List<String>> classIndexedFieldMap;
 
-    final HibernateSimpleQueryUtils hibernateSimpleQueryUtils;
+    /**
+     * A set of the values of the status field that <b>do add</b>
+     * additional constraints to the lob field.
+     */
+    private final Set<String> statusWithLobConstraint;
 
-    public HibernateSearchService(HibernateSimpleQueryUtils hibernateSimpleQueryUtils) {
+    /**
+     * A set of the values of the status field that <b>don't add</b>
+     * additional constraints to the lob field.
+     */
+    private final Set<String> statusWithoutLobConstraint;
+
+    /**
+     *
+     * @param statusWithLobConstraint
+     *          The set of the values of the {@value STATUS_FIELD_NAME} field
+     *          <b>do add</b> additional constraints to the lob field, not
+     *          {@code null}.
+     *
+     * @param statusWithoutLobConstraint
+     *          The set of the values of the {@value STATUS_FIELD_NAME} field
+     *          <b>don't add</b> additional constraints to the lob field, not
+     *          {@code null} or empty.
+     *
+     * @throws IllegalArgumentException
+     *          When the given {@code statusWithoutLobConstraint} is empty or the
+     *          given {@code statusWithLobConstraint} and {@code statusWithoutLobConstraint}
+     *          sets are not disjoint.
+     */
+    public HibernateSearchService(@NotNull Set<String> statusWithLobConstraint, @NotNull Set<String> statusWithoutLobConstraint) {
+        if(!Collections.disjoint(statusWithLobConstraint, statusWithoutLobConstraint)) {
+            throw new IllegalArgumentException("The status sets are not disjoint");
+        }
+
         // increase the max clause count to allow searching for
         // staff members of users with more than 1024 staff members
         BooleanQuery.setMaxClauseCount(MAX_CLAUSE_COUNT);
 
         this.classIndexedFieldMap = new HashMap<>();
-        this.hibernateSimpleQueryUtils = hibernateSimpleQueryUtils;
+        this.statusWithLobConstraint = statusWithLobConstraint;
+        this.statusWithoutLobConstraint = statusWithoutLobConstraint;
     }
 
-    Query getProjectBaseQuery(@NonNull String simpleQueryString, @NonNull Set<String> status) {
-        var baseQuery = getQuerySearchingForAllIndexedFields(Project.class, simpleQueryString);
-
-        if(status.isEmpty()) {
-            return baseQuery;
-        }
-
-        var queryBuilder = getQueryBuilder(Project.class);
-        var statusQuery = queryBuilder.simpleQueryString()
-                .onField("status")
-                .matching(hibernateSimpleQueryUtils.createHibernateSearchDisjunction(status))
-                .createQuery();
-        return queryBuilder.bool()
-                .must(statusQuery)
-                .must(baseQuery)
-                .createQuery();
-    }
-
+    /**
+     *
+     * @param simpleQueryString
+     *          The query to evaluate, not {@code null}.
+     *
+     * @param lob
+     *          The lob of the projects which's status indicates a constrained to
+     *          the lob to search for, may be {@code null}.
+     *
+     * @return
+     *          A list of all found projects.
+     */
     @SuppressWarnings("unchecked")
-    public List<Project> searchProjects(@NonNull String simpleQueryString, @NonNull Set<String> status) {
-        var query = getProjectBaseQuery(simpleQueryString, status);
+    public List<Project> searchProjects(@NonNull String simpleQueryString, String lob) {
+        var query = getProjectBaseQuery(simpleQueryString, lob);
 
         return getFullTextEntityManager().createFullTextQuery(query, Project.class)
                 .getResultList();
     }
 
+    /**
+     *
+     * @param simpleQueryString
+     *          The query to evaluate, not {@code null}.
+     *
+     * @param pageable
+     *          The pageable to get the paging information from, not {@code null}.
+     *
+     * @param lob
+     *          The lob of the projects which's status indicates a constrained to
+     *          the lob to search for, may be {@code null}.
+     *
+     * @return
+     *          A page of all found projects.
+     */
     @SuppressWarnings("unchecked")
-    public Page<Project> searchProjects(@NonNull String simpleQueryString, @NonNull Set<String> status, @NonNull Pageable pageable) {
-        var query = getProjectBaseQuery(simpleQueryString, status);
+    public Page<Project> searchProjects(@NonNull String simpleQueryString, @NonNull Pageable pageable, String lob) {
+        var query = getProjectBaseQuery(simpleQueryString, lob);
 
         var firstIndex = pageable.getPageNumber() * pageable.getPageSize();
 
@@ -92,6 +142,17 @@ public class HibernateSearchService {
         return new PageImpl<>(resultContent, pageable, resultSize);
     }
 
+    /**
+     *
+     * @param users
+     *          The list of users to search the user data for, not {@code null}.
+     *
+     * @param simpleQueryString
+     *          The simple query to evaluate, not {@code null}.
+     *
+     * @return
+     *          A list of all user data instances matching the given {@code simpleQueryString}.
+     */
     @SuppressWarnings("unchecked")
     public List<UserData> searchUserData(@NonNull List<User> users, @NonNull String simpleQueryString) {
         if(users.isEmpty()) {
@@ -106,7 +167,7 @@ public class HibernateSearchService {
                 .collect(Collectors.toSet());
         var idDisjunctionQuery = queryBuilder.simpleQueryString()
                 .onField("user_id")
-                .matching(hibernateSimpleQueryUtils.createHibernateSearchDisjunction(userIds))
+                .matching(HibernateSimpleQueryUtils.createHibernateSearchDisjunction(userIds))
                 .createQuery();
 
         var boolQuery = queryBuilder.bool()
@@ -116,6 +177,72 @@ public class HibernateSearchService {
 
         return getFullTextEntityManager().createFullTextQuery(boolQuery, UserData.class)
                 .getResultList();
+    }
+
+    /**
+     *
+     * @param simpleQueryString
+     *          The simple query to evaluate, not {@code null}.
+     *
+     * @param lob
+     *          The lob to search for, may be {@code null}.
+     *
+     * @return
+     *
+     */
+    Query getProjectBaseQuery(String simpleQueryString, String lob) {
+        var baseQuery = getQuerySearchingForAllIndexedFields(Project.class, simpleQueryString);
+
+        var queryBuilder = getQueryBuilder(Project.class);
+
+        var projectsWithoutLobConstraintQuery = queryBuilder.simpleQueryString()
+                .onField(STATUS_FIELD_NAME)
+                .matching(HibernateSimpleQueryUtils.createHibernateSearchDisjunction(statusWithoutLobConstraint))
+                .createQuery();
+        var lobEqualsQuery = lobEqualsQuery(queryBuilder, lob);
+        var lobAndStatusQuery = queryBuilder.bool()
+                .minimumShouldMatchNumber(1)
+                .should(projectsWithoutLobConstraintQuery)
+                .should(lobEqualsQuery)
+                .createQuery();
+
+        return queryBuilder.bool()
+                .must(baseQuery)
+                .must(lobAndStatusQuery)
+                .createQuery();
+    }
+
+    Query lobEqualsQuery(QueryBuilder queryBuilder, String lob) {
+        if(statusWithLobConstraint.isEmpty()) {
+            return null;
+        }
+
+        var lobQuery = queryBuilder.bool()
+                .minimumShouldMatchNumber(1);
+
+        if(lob != null) {
+            var lobEqualsQuery = queryBuilder.phrase()
+                    .onField(LOB_FIELD_NAME)
+                    .sentence(lob)
+                    .createQuery();
+            lobQuery.should(lobEqualsQuery);
+        }
+
+        var lobNullQuery = queryBuilder.keyword()
+                .onField(LOB_FIELD_NAME)
+                .matching("_null_")
+                .createQuery();
+        lobQuery.should(lobNullQuery);
+
+        var projectsWithLobConstraintQuery = queryBuilder.simpleQueryString()
+                .onField(STATUS_FIELD_NAME)
+                .matching(HibernateSimpleQueryUtils.createHibernateSearchDisjunction(statusWithLobConstraint))
+                .createQuery();
+
+        return queryBuilder.bool()
+                .must(projectsWithLobConstraintQuery)
+                .must(lobQuery.createQuery())
+                .createQuery();
     }
 
     /**
@@ -142,7 +269,7 @@ public class HibernateSearchService {
             throw new IllegalArgumentException("No field of type String annotated with @Field!");
         }
 
-        var fuzzyAndPrefixQuery = hibernateSimpleQueryUtils.makeQueryPrefixAndFuzzy(simpleQueryString);
+        var fuzzyAndPrefixQuery = HibernateSimpleQueryUtils.makeQueryPrefixAndFuzzy(simpleQueryString);
 
         var queryBuilder = getQueryBuilder(entityType);
         return queryBuilder.simpleQueryString()
@@ -204,7 +331,7 @@ public class HibernateSearchService {
      *          The entity manager to create the lucene index
      *          for already existing entities with.
      */
-    void initialize(EntityManager initEntityManager) {
+    void indexExistingEntities(EntityManager initEntityManager) {
         try {
             Search.getFullTextEntityManager(initEntityManager)
                     .createIndexer()

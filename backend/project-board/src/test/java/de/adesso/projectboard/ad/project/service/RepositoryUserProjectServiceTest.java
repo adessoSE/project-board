@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -31,7 +32,10 @@ public class RepositoryUserProjectServiceTest {
     private ProjectRepository projectRepoMock;
 
     @Mock
-    private HibernateSearchService hibernateSearchServiceMock;
+    private HibernateSearchService managerHibernateSearchServiceMock;
+
+    @Mock
+    private HibernateSearchService staffHibernateSearchServiceMock;
 
     @Mock
     private User userMock;
@@ -47,11 +51,11 @@ public class RepositoryUserProjectServiceTest {
     @Before
     public void setUp() {
         this.userProjectService
-                = new RepositoryUserProjectService(projectRepoMock, userServiceMock, hibernateSearchServiceMock);
+                = new RepositoryUserProjectService(projectRepoMock, userServiceMock, managerHibernateSearchServiceMock, staffHibernateSearchServiceMock);
     }
 
     @Test
-    public void getProjectsForUser() {
+    public void getProjectsForUserReturnsLobDependentProjectsWhenUserIsNoManager() {
         // given
         var userLob = "LoB Test";
         var expectedSpecification = new StatusSpecification(RepositoryUserProjectService.LOB_INDEPENDENT_STATUS, RepositoryUserProjectService.LOB_DEPENDENT_STATUS, userLob);
@@ -70,12 +74,56 @@ public class RepositoryUserProjectServiceTest {
     }
 
     @Test
-    public void searchProjectsForUser() {
-        // TODO: implement
+    public void getProjectsForUserReturnsAllProjectsWhenUserIsManager() {
+        // given
+        var expectedSpecification = new StatusSpecification(RepositoryUserProjectService.LOB_INDEPENDENT_STATUS_MANAGER, Set.of(), null);
+        var sort = Sort.unsorted();
+        var expectedProjects = List.of(projectMock);
+
+        given(userServiceMock.userIsManager(userMock)).willReturn(true);
+        given(projectRepoMock.findAll(expectedSpecification, sort)).willReturn(expectedProjects);
+
+        // when
+        var actualProjects = userProjectService.getProjectsForUser(userMock, sort);
+
+        // then
+        assertThat(actualProjects).isEqualTo(expectedProjects);
     }
 
     @Test
-    public void getProjectsForUserPaginated() {
+    public void searchProjectsForUserSearchesInAllProjectsWhenUserIsManager() {
+        // given
+        var expectedQuery = "a cool query";
+
+        given(userServiceMock.userIsManager(userMock)).willReturn(true);
+        given(managerHibernateSearchServiceMock.searchProjects(expectedQuery, null)).willReturn(List.of(projectMock));
+
+        // when
+        var actualProjects = userProjectService.searchProjectsForUser(userMock, expectedQuery, Sort.unsorted());
+
+        // then
+        assertThat(actualProjects).containsExactly(projectMock);
+    }
+
+    @Test
+    public void searchProjectsForUserSearchesInLobDependentProjectsWhenUserIsNoManager() {
+        // given
+        var expectedQuery = "a cool query";
+        var expectedLob = "LOB Test";
+
+        given(userServiceMock.getUserData(userMock)).willReturn(userDataMock);
+        given(userDataMock.getLob()).willReturn(expectedLob);
+        given(staffHibernateSearchServiceMock.searchProjects(expectedQuery, expectedLob)).willReturn(List.of(projectMock));
+
+        // when
+        var actualProjects = userProjectService.searchProjectsForUser(userMock, expectedQuery, Sort.unsorted());
+
+        // then
+        assertThat(actualProjects).containsExactly(projectMock);
+    }
+
+    @Test
+    public void getProjectsForUserPaginatedReturnsLobDependentProjectsWhenUserIsNoManager() {
         // given
         var userLob = "LoB Test1234";
         var pageable = PageRequest.of(0, 100);
@@ -95,8 +143,57 @@ public class RepositoryUserProjectServiceTest {
     }
 
     @Test
-    public void searchProjectsForUserPaginated() {
-        //TODO: implement
+    public void getProjectsForUserPaginatedReturnsAllProjectsWhenUserIsManager() {
+        // given
+        var pageable = PageRequest.of(0, 100);
+        var expectedStatusSpecification = new StatusSpecification(RepositoryUserProjectService.LOB_INDEPENDENT_STATUS_MANAGER, Set.of(), null);
+        var expectedProjects = List.of(projectMock);
+        var expectedPage = new PageImpl<>(expectedProjects);
+
+        given(userServiceMock.userIsManager(userMock)).willReturn(true);
+        given(projectRepoMock.findAll(expectedStatusSpecification, pageable)).willReturn(expectedPage);
+
+        // when
+        var actualPage = userProjectService.getProjectsForUserPaginated(userMock, pageable);
+
+        // then
+        assertThat(actualPage).isEqualTo(expectedPage);
+    }
+
+    @Test
+    public void searchProjectsForUserPaginatedSearchesInAllProjectsWhenUserIsManager() {
+        // given
+        var expectedQuery = "a cool query";
+        var expectedPageable = PageRequest.of(1, 4);
+
+        given(userServiceMock.userIsManager(userMock)).willReturn(true);
+        given(managerHibernateSearchServiceMock.searchProjects(expectedQuery, expectedPageable, null))
+                .willReturn(new PageImpl<>(List.of(projectMock)));
+
+        // when
+        var actualProjectPage = userProjectService.searchProjectsForUserPaginated(expectedQuery, userMock, expectedPageable);
+
+        // then
+        assertThat(actualProjectPage).containsExactly(projectMock);
+    }
+
+    @Test
+    public void searchProjectsForUserPaginatedSearchesInLobDependentProjectsWhenUserIsNoManager() {
+        // given
+        var expectedQuery = "a cool query";
+        var expectedLob = "LOB Test";
+        var expectedPageable = PageRequest.of(1, 4);
+
+        given(userServiceMock.getUserData(userMock)).willReturn(userDataMock);
+        given(userDataMock.getLob()).willReturn(expectedLob);
+        given(staffHibernateSearchServiceMock.searchProjects(expectedQuery, expectedPageable, expectedLob))
+                .willReturn(new PageImpl<>(List.of(projectMock)));
+
+        // when
+        var actualProjectPage = userProjectService.searchProjectsForUserPaginated(expectedQuery, userMock, expectedPageable);
+
+        // then
+        assertThat(actualProjectPage).containsExactly(projectMock);
     }
 
 }
