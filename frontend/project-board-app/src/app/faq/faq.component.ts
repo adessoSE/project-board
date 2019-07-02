@@ -22,6 +22,10 @@ export class FaqComponent implements OnInit {
         'Dein Vorgesetzter kann die Anfragen jedoch ebenfalls im project board einsehen.'
     },
     {
+      question: 'Was passiert beim Löschen der Projektanfragen meiner Mitarbeiter?',
+      answer: 'Die Anfrage wird komplett gelöscht. Das Projekt kann erneut angefragt werden. ' //ToDo: Kommentar im Jira wird nicht entfernt
+    },
+    {
       question: 'Haben meine Mitarbeiter ein anderes FAQ?',
       answer: 'Ja, Deine Mitarbeiter sehen auf dieser Seite andere Fragen und Antworten.'
     },

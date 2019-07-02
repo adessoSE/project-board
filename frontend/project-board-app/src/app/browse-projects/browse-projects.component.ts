@@ -1,16 +1,17 @@
-import { Location } from '@angular/common';
-import { Component, HostListener, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef, MatIconRegistry } from '@angular/material';
-import { DomSanitizer } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+import {Location} from '@angular/common';
+import {Component, HostListener, OnInit} from '@angular/core';
+import {MatDialog, MatDialogRef, MatIconRegistry} from '@angular/material';
+import {DomSanitizer} from '@angular/platform-browser';
+import {ActivatedRoute} from '@angular/router';
 import * as $ from 'jquery';
-import { combineLatest, Subject } from 'rxjs';
-import { debounceTime, switchMap, takeUntil } from 'rxjs/operators';
-import { AlertService } from '../_services/alert.service';
-import { Application, EmployeeService } from '../_services/employee.service';
-import { Project, ProjectService } from '../_services/project.service';
-import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
-import { APPLICATION_TOOLTIP, BOOKMARK_TOOLTIP, SEARCH_INFO_TOOLTIP, SEARCH_INFO_TOOLTIP_HEADER } from '../tooltips';
+import {combineLatest, Subject} from 'rxjs';
+import {debounceTime, switchMap, takeUntil} from 'rxjs/operators';
+import {AlertService} from '../_services/alert.service';
+import {Application, EmployeeService} from '../_services/employee.service';
+import {Project, ProjectService} from '../_services/project.service';
+import {ProjectDialogComponent} from '../project-dialog/project-dialog.component';
+import {APPLICATION_TOOLTIP, BOOKMARK_TOOLTIP, SEARCH_INFO_TOOLTIP, SEARCH_INFO_TOOLTIP_HEADER} from '../tooltips';
+import {GoogleAnalyticsService} from '../_services/google-analytics.service';
 
 @Component({
   selector: 'app-browse-projects',
@@ -48,7 +49,8 @@ export class BrowseProjectsComponent implements OnInit {
               private alertService: AlertService,
               private route: ActivatedRoute,
               private location: Location,
-              public dialog: MatDialog
+              public dialog: MatDialog,
+              private analyticsService: GoogleAnalyticsService
   ) {}
 
   openDialog(p: Project): void {
@@ -71,7 +73,9 @@ export class BrowseProjectsComponent implements OnInit {
       .subscribe(application => this.handleApplication(application));
     this.dialogRef.afterClosed().subscribe(() => this.onDialogClosed());
 
-    this.location.replaceState(`/browse/${p.id}`);
+    const newLocation = `/browse/${p.id}`;
+    this.location.replaceState(newLocation);
+    this.analyticsService.sendPageViewEvent(newLocation);
   }
 
   @HostListener('window:resize')
