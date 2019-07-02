@@ -22,8 +22,7 @@ pipeline {
 
             steps {
                 dir(BACKEND_DIR) {
-                    sh 'gradle clean test jacocoTestReport'
-                    jacoco buildOverBuild: true, classPattern: '**/classes', deltaBranchCoverage: '5', execPattern: '**/**.exec', sourceInclusionPattern: '**/*.java', sourcePattern: '**/src/main/java'
+                    sh 'gradle clean test'
                 }
             }
 
