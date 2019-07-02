@@ -1,5 +1,6 @@
 package de.adesso.projectboard.ad.project.service;
 
+import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.persistence.ProjectRepository;
 import de.adesso.projectboard.base.project.persistence.specification.StatusSpecification;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -24,6 +26,12 @@ import static org.mockito.BDDMockito.given;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RepositoryUserProjectServiceTest {
+
+    private static final Set<String> LOB_DEPENDENT_STATUS = Set.of("open");
+
+    private static final Set<String> LOB_INDEPENDENT_STATUS = Set.of("escalated");
+
+    private static final Set<String> UNION_SET = Set.of("open", "escalated");
 
     @Mock
     private UserService userServiceMock;
@@ -46,19 +54,25 @@ public class RepositoryUserProjectServiceTest {
     @Mock
     private Project projectMock;
 
+    @Mock
+    private ProjectBoardConfigurationProperties propertiesMock;
+
     private RepositoryUserProjectService userProjectService;
 
     @Before
     public void setUp() {
-        this.userProjectService
-                = new RepositoryUserProjectService(projectRepoMock, userServiceMock, managerHibernateSearchServiceMock, staffHibernateSearchServiceMock);
+        given(propertiesMock.getLobDependentStatus()).willReturn(new ArrayList<>(LOB_DEPENDENT_STATUS));
+        given(propertiesMock.getLobIndependentStatus()).willReturn(new ArrayList<>(LOB_INDEPENDENT_STATUS));
+
+        this.userProjectService = new RepositoryUserProjectService(projectRepoMock, userServiceMock,
+                managerHibernateSearchServiceMock, staffHibernateSearchServiceMock, propertiesMock);
     }
 
     @Test
     public void getProjectsForUserReturnsLobDependentProjectsWhenUserIsNoManager() {
         // given
         var userLob = "LoB Test";
-        var expectedSpecification = new StatusSpecification(RepositoryUserProjectService.LOB_INDEPENDENT_STATUS, RepositoryUserProjectService.LOB_DEPENDENT_STATUS, userLob);
+        var expectedSpecification = new StatusSpecification(LOB_INDEPENDENT_STATUS, LOB_DEPENDENT_STATUS, userLob);
         var sort = Sort.unsorted();
         var expectedProjects = List.of(projectMock);
 
@@ -76,7 +90,7 @@ public class RepositoryUserProjectServiceTest {
     @Test
     public void getProjectsForUserReturnsAllProjectsWhenUserIsManager() {
         // given
-        var expectedSpecification = new StatusSpecification(RepositoryUserProjectService.LOB_INDEPENDENT_STATUS_MANAGER, Set.of(), null);
+        var expectedSpecification = new StatusSpecification(UNION_SET, Set.of(), null);
         var sort = Sort.unsorted();
         var expectedProjects = List.of(projectMock);
 
@@ -127,7 +141,7 @@ public class RepositoryUserProjectServiceTest {
         // given
         var userLob = "LoB Test1234";
         var pageable = PageRequest.of(0, 100);
-        var expectedStatusSpecification = new StatusSpecification(RepositoryUserProjectService.LOB_INDEPENDENT_STATUS, RepositoryUserProjectService.LOB_DEPENDENT_STATUS, userLob);
+        var expectedStatusSpecification = new StatusSpecification(LOB_INDEPENDENT_STATUS, LOB_DEPENDENT_STATUS, userLob);
         var expectedProjects = List.of(projectMock);
         var expectedPage = new PageImpl<>(expectedProjects);
 
@@ -146,7 +160,7 @@ public class RepositoryUserProjectServiceTest {
     public void getProjectsForUserPaginatedReturnsAllProjectsWhenUserIsManager() {
         // given
         var pageable = PageRequest.of(0, 100);
-        var expectedStatusSpecification = new StatusSpecification(RepositoryUserProjectService.LOB_INDEPENDENT_STATUS_MANAGER, Set.of(), null);
+        var expectedStatusSpecification = new StatusSpecification(UNION_SET, Set.of(), null);
         var expectedProjects = List.of(projectMock);
         var expectedPage = new PageImpl<>(expectedProjects);
 

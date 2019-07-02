@@ -2,6 +2,7 @@ package de.adesso.projectboard.rest.security;
 
 import de.adesso.projectboard.base.access.service.UserAccessService;
 import de.adesso.projectboard.base.application.service.ApplicationService;
+import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.user.persistence.User;
@@ -14,6 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.security.core.Authentication;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -24,6 +27,10 @@ public class UserAccessExpressionEvaluatorTest {
     private final String PROJECT_ID = "project";
 
     private final String USER_ID = "user";
+
+    private final String LOB_DEPENDENT_STATUS = "open";
+
+    private final String LOB_INDEPENDENT_STATUS = "escalated";
 
     @Mock
     private UserService userServiceMock;
@@ -49,11 +56,18 @@ public class UserAccessExpressionEvaluatorTest {
     @Mock
     private UserData userDataMock;
 
+    @Mock
+    private ProjectBoardConfigurationProperties propertiesMock;
+
     private UserAccessExpressionEvaluator evaluator;
 
     @Before
     public void setUp() {
-        this.evaluator = new UserAccessExpressionEvaluator(userServiceMock, userAccessServiceMock, projectServiceMock, applicationServiceMock);
+        given(propertiesMock.getLobDependentStatus()).willReturn(List.of(LOB_DEPENDENT_STATUS));
+        given(propertiesMock.getLobIndependentStatus()).willReturn(List.of(LOB_INDEPENDENT_STATUS));
+
+        this.evaluator = new UserAccessExpressionEvaluator(userServiceMock, userAccessServiceMock,
+                projectServiceMock, applicationServiceMock, propertiesMock);
     }
 
     @Test
@@ -94,6 +108,7 @@ public class UserAccessExpressionEvaluatorTest {
     @Test
     public void hasAccessToProjectReturnsTrueWhenProjectDoesNotExist() {
         // given
+        given(projectServiceMock.projectExists(PROJECT_ID)).willReturn(false);
 
         // when
         boolean actualHasAccess = evaluator.hasAccessToProject(authenticationMock, userMock, PROJECT_ID);
@@ -103,9 +118,47 @@ public class UserAccessExpressionEvaluatorTest {
     }
 
     @Test
-    public void hasAccessToProjectReturnsTrueWhenProjectExistsAndUserIsManager() {
+    public void hasAccessToProjectReturnsTrueWhenStatusIsLobIndependent() {
         // given
         given(projectServiceMock.projectExists(PROJECT_ID)).willReturn(true);
+        given(projectServiceMock.getProjectById(PROJECT_ID)).willReturn(projectMock);
+        given(projectMock.getStatus()).willReturn(LOB_INDEPENDENT_STATUS.toUpperCase());
+
+        // when
+        boolean actualHasAccess = evaluator.hasAccessToProject(authenticationMock, userMock, PROJECT_ID);
+
+        // then
+        assertThat(actualHasAccess).isTrue();
+    }
+
+    @Test
+    public void hasAccessToProjectReturnsTrueWhenStatusIsLobDependentAndUserHasSameLobAndHasAccess() {
+        // given
+        var lob = "LOB Prod";
+
+        given(projectServiceMock.projectExists(PROJECT_ID)).willReturn(true);
+        given(projectServiceMock.getProjectById(PROJECT_ID)).willReturn(projectMock);
+        given(projectMock.getStatus()).willReturn(LOB_DEPENDENT_STATUS.toUpperCase());
+        given(projectMock.getLob()).willReturn(lob);
+
+        given(userServiceMock.getUserData(userMock)).willReturn(userDataMock);
+        given(userDataMock.getLob()).willReturn(lob);
+
+        given(userAccessServiceMock.userHasActiveAccessInterval(userMock)).willReturn(true);
+
+        // when
+        boolean actualHasAccess = evaluator.hasAccessToProject(authenticationMock, userMock, PROJECT_ID);
+
+        // then
+        assertThat(actualHasAccess).isTrue();
+    }
+
+    @Test
+    public void hasAccessToProjectReturnsTrueWhenStatusIsLobDependentAndUserIsManager() {
+        // given
+        given(projectServiceMock.projectExists(PROJECT_ID)).willReturn(true);
+        given(projectServiceMock.getProjectById(PROJECT_ID)).willReturn(projectMock);
+        given(projectMock.getStatus()).willReturn(LOB_DEPENDENT_STATUS.toUpperCase());
 
         given(userServiceMock.userIsManager(userMock)).willReturn(true);
 
@@ -117,52 +170,17 @@ public class UserAccessExpressionEvaluatorTest {
     }
 
     @Test
-    public void hasAccessToProjectReturnsTrueWhenUserHasAccessAndSameLobAsProject() {
+    public void hasAccessToProjectReturnsTrueWhenStatusIsLobDependentAndLobIsNullAndUserHasAccess() {
         // given
-        var expectedLob = "LOB Test";
-
-        given(userServiceMock.getUserData(userMock)).willReturn(userDataMock);
-        given(userDataMock.getLob()).willReturn(expectedLob);
-
         given(projectServiceMock.projectExists(PROJECT_ID)).willReturn(true);
         given(projectServiceMock.getProjectById(PROJECT_ID)).willReturn(projectMock);
-        given(projectMock.getLob()).willReturn(expectedLob);
+        given(projectMock.getStatus()).willReturn(LOB_DEPENDENT_STATUS.toUpperCase());
+        given(projectMock.getLob()).willReturn(null);
+
+        given(userServiceMock.getUserData(userMock)).willReturn(userDataMock);
+        given(userDataMock.getLob()).willReturn("Anything");
 
         given(userAccessServiceMock.userHasActiveAccessInterval(userMock)).willReturn(true);
-
-        // when
-        var actualHasAccess = evaluator.hasAccessToProject(authenticationMock, userMock, PROJECT_ID);
-
-        // then
-        assertThat(actualHasAccess).isTrue();
-    }
-
-    @Test
-    public void hasAccessToProjectReturnsTrueWhenUserHasAccessAndBothLobsNull() {
-        // given
-        given(userServiceMock.getUserData(userMock)).willReturn(userDataMock);
-
-        given(projectServiceMock.projectExists(PROJECT_ID)).willReturn(true);
-        given(projectServiceMock.getProjectById(PROJECT_ID)).willReturn(projectMock);
-
-        given(userAccessServiceMock.userHasActiveAccessInterval(userMock)).willReturn(true);
-
-        // when
-        var actualHasAccess = evaluator.hasAccessToProject(authenticationMock, userMock, PROJECT_ID);
-
-        // then
-        assertThat(actualHasAccess).isTrue();
-    }
-
-    @Test
-    public void hasAccessToProjectReturnsTrueWhenUserHasAppliedForProject() {
-        // given
-        given(projectServiceMock.projectExists(PROJECT_ID)).willReturn(true);
-        given(projectServiceMock.getProjectById(PROJECT_ID)).willReturn(projectMock);
-
-        given(userServiceMock.getUserData(userMock)).willReturn(userDataMock);
-
-        given(applicationServiceMock.userHasAppliedForProject(userMock, projectMock)).willReturn(true);
 
         // when
         boolean actualHasAccess = evaluator.hasAccessToProject(authenticationMock, userMock, PROJECT_ID);
@@ -172,12 +190,59 @@ public class UserAccessExpressionEvaluatorTest {
     }
 
     @Test
-    public void hasAccessToProjectReturnsFalseWhenProjectExistsAndNoManagerAndNoAccessAndNotApplied() {
+    public void hasAccessToProjectReturnsFalseWhenStatusIsLobDependentAndUserHasDifferentLobAndHasAccess() {
+        // given
+        var userLob = "LOB Test";
+        var projectLob = "LOB Prod";
+
+        given(projectServiceMock.projectExists(PROJECT_ID)).willReturn(true);
+        given(projectServiceMock.getProjectById(PROJECT_ID)).willReturn(projectMock);
+        given(projectMock.getStatus()).willReturn(LOB_DEPENDENT_STATUS);
+        given(projectMock.getLob()).willReturn(projectLob);
+
+        given(userServiceMock.getUserData(userMock)).willReturn(userDataMock);
+        given(userDataMock.getLob()).willReturn(userLob);
+
+        given(userAccessServiceMock.userHasActiveAccessInterval(userMock)).willReturn(true);
+
+        // when
+        boolean actualHasAccess = evaluator.hasAccessToProject(authenticationMock, userMock, PROJECT_ID);
+
+        // then
+        assertThat(actualHasAccess).isFalse();
+    }
+
+    @Test
+    public void hasAccessToProjectReturnsTrueWhenUserHasDifferentLobAndAppliedForProjectAndHasAccess() {
+        // given
+        var userLob = "LOB Test";
+        var projectLob = "LOB Prod";
+
+        given(projectServiceMock.projectExists(PROJECT_ID)).willReturn(true);
+        given(projectServiceMock.getProjectById(PROJECT_ID)).willReturn(projectMock);
+        given(projectMock.getStatus()).willReturn(LOB_DEPENDENT_STATUS.toUpperCase());
+        given(projectMock.getLob()).willReturn(projectLob);
+
+        given(userServiceMock.getUserData(userMock)).willReturn(userDataMock);
+        given(userDataMock.getLob()).willReturn(userLob);
+
+        given(applicationServiceMock.userHasAppliedForProject(userMock, projectMock)).willReturn(true);
+
+        given(userAccessServiceMock.userHasActiveAccessInterval(userMock)).willReturn(true);
+
+        // when
+        boolean actualHasAccess = evaluator.hasAccessToProject(authenticationMock, userMock, PROJECT_ID);
+
+        // then
+        assertThat(actualHasAccess).isTrue();
+    }
+
+    @Test
+    public void hasAccessToProjectReturnsTrueWhenUserHasNotAppliedForProjectAndHasNoAccess() {
         // given
         given(projectServiceMock.projectExists(PROJECT_ID)).willReturn(true);
         given(projectServiceMock.getProjectById(PROJECT_ID)).willReturn(projectMock);
-
-        given(userServiceMock.getUserData(userMock)).willReturn(userDataMock);
+        given(projectMock.getStatus()).willReturn(LOB_DEPENDENT_STATUS.toUpperCase());
 
         // when
         boolean actualHasAccess = evaluator.hasAccessToProject(authenticationMock, userMock, PROJECT_ID);

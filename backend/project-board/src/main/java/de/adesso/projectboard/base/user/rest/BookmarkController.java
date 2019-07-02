@@ -46,7 +46,7 @@ public class BookmarkController {
         bookmarkService.removeBookmarkOfUser(user, project);
     }
 
-    @PreAuthorize("(hasPermissionToAccessUser(#userId) && hasAccessToProjects()) || hasRole('admin')")
+    @PreAuthorize("(hasPermissionToAccessUser(#userId) && hasAccessToProject(#payload.getProjectId())) || hasRole('admin')")
     @PostMapping(value = "/{userId}/bookmarks")
     public ResponseEntity<?> createBookmarkForUser(@Valid @RequestBody BookmarkPayload payload, @PathVariable("userId") String userId) {
         var user = userService.getUserById(userId);

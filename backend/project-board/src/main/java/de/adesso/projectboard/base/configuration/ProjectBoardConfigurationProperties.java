@@ -6,6 +6,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 @ConfigurationProperties(prefix = "projectboard")
 @Data
@@ -31,5 +32,22 @@ public class ProjectBoardConfigurationProperties {
      */
     @NotEmpty
     private String url = "http://localhost:4200/";
+
+    /**
+     * The list of all status of a project that require the user to be
+     * in the same lob or be a manager.
+     *
+     * Defaults to {@code offen} and {@code open}.
+     */
+    private List<String> lobDependentStatus = List.of("offen", "open");
+
+    /**
+     * The list of of all status of a project that don't require the
+     * user to be in the same LoB or be a manager. Cannot be empty!
+     *
+     * Defaults to {@code eskaliert} and {@code escalated}.
+     */
+    @NotEmpty
+    private List<String> lobIndependentStatus = List.of("eskaliert", "escalated");
 
 }

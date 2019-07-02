@@ -1,6 +1,5 @@
 package de.adesso.projectboard.base.project.persistence.specification;
 
-import de.adesso.projectboard.ad.project.service.RepositoryUserProjectService;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.persistence.ProjectRepository;
 import org.junit.Test;
@@ -22,9 +21,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @TestPropertySource("classpath:application-persistence-test.properties")
 public class StatusSpecificationIntegrationTest {
 
-    private static final Set<String> LOB_INDEPENDENT_STATUS = RepositoryUserProjectService.LOB_INDEPENDENT_STATUS;
+    private static final Set<String> LOB_INDEPENDENT_STATUS = Set.of("eskaliert", "escalated");
 
-    private static final Set<String> LOB_DEPENDENT_STATUS = RepositoryUserProjectService.LOB_DEPENDENT_STATUS;
+    private static final Set<String> LOB_DEPENDENT_STATUS = Set.of("offen", "open");
 
     @Autowired
     private ProjectRepository projectRepository;

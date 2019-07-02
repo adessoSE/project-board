@@ -2,6 +2,7 @@ package de.adesso.projectboard.rest.security;
 
 import de.adesso.projectboard.base.access.service.UserAccessService;
 import de.adesso.projectboard.base.application.service.ApplicationService;
+import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.security.ExpressionEvaluator;
@@ -28,15 +29,19 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
 
     private final ApplicationService applicationService;
 
+    private final ProjectBoardConfigurationProperties properties;
+
     @Autowired
     public UserAccessExpressionEvaluator(UserService userService,
                                          UserAccessService userAccessService,
                                          ProjectService projectService,
-                                         ApplicationService applicationService) {
+                                         ApplicationService applicationService,
+                                         ProjectBoardConfigurationProperties properties) {
         this.userService = userService;
         this.userAccessService = userAccessService;
         this.projectService = projectService;
         this.applicationService = applicationService;
+        this.properties = properties;
     }
 
     /**
@@ -75,39 +80,62 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *
      *          <ul>
      *              <li>
-     *                  The user has access to projects.
-     *                  ({@link #hasAccessToProjects(Authentication, User)} returns {@code true})
+     *                  No project with the given {@code projectId} exists.
      *              </li>
      *
      *              <li>
-     *                  No {@link Project} with the given {@code projectId} exists.
-     *                  ({@link ProjectService#projectExists(String)} returns {@code false})
+     *                  The status of the project is LoB independent.
      *              </li>
      *
      *              <li>
-     *                  The user has applied for the {@link Project} with the given {@code projectId}.
-     *                  ({@link ApplicationService#userHasAppliedForProject(User, Project)} returns {@code true})
+     *                  The status is LoB dependent and the user is a manager.
      *              </li>
+     *
+     *              <li>
+     *                  The status is LoB dependent and the LoB of the project is {@code null} or
+     *                  the LoB is the same as the user's LoB.
+     *              </li>
+     *
+     *              <li>
+     *                  The user has applied for the project.
+     *              </li>
+     *
      *          </ul>
      */
     @Override
     public boolean hasAccessToProject(Authentication authentication, User user, String projectId) {
-        var projectExists = projectService.projectExists(projectId);
-
-        if(!projectExists || userService.userIsManager(user)) {
+        if(!projectService.projectExists(projectId)) {
             return true;
-        } else {
-            var project = projectService.getProjectById(projectId);
-            var projectLob = project.getLob();
-            var userLob = userService.getUserData(user).getLob();
-            var lobNullOrEquals = (projectLob == null && userLob == null) || userLob.equalsIgnoreCase(projectLob);
+        }
 
-            if(lobNullOrEquals && hasAccessToProjects(authentication, user)) {
+        var lobDependentStatus = properties.getLobDependentStatus();
+        var lobIndependentStatus = properties.getLobIndependentStatus();
+
+        var project = projectService.getProjectById(projectId);
+        var projectStatus = project.getStatus() == null ? null : project.getStatus().toLowerCase();
+        if(lobIndependentStatus.contains(projectStatus)) {
+            return true;
+        }
+
+        if(lobDependentStatus.contains(projectStatus)) {
+            if(userService.userIsManager(user)) {
                 return true;
             }
 
-            return applicationService.userHasAppliedForProject(user, project);
+            if(!userAccessService.userHasActiveAccessInterval(user)) {
+                return applicationService.userHasAppliedForProject(user, project);
+            }
+
+            var projectLob = project.getLob();
+            var userLob = userService.getUserData(user).getLob();
+            var projectLobNullOrEqual = projectLob == null || projectLob.equalsIgnoreCase(userLob);
+
+            if(projectLobNullOrEqual) {
+                return true;
+            }
         }
+
+        return applicationService.userHasAppliedForProject(user, project);
     }
 
     /**
