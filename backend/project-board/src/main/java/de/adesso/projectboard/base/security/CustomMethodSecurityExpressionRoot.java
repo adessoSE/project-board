@@ -114,17 +114,20 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot i
 
     /**
      *
+     * @param projectId
+     *          The ID of the project
+     *
      * @return
-     *          The result of {@link ExpressionEvaluator#hasPermissionToApply(Authentication, User)}
+     *          The result of {@link ExpressionEvaluator#hasPermissionToApplyToProject(Authentication, User, String)}
      *          when the user is authenticated (a {@link User} object is present), {@code false} otherwise.
      *
-     * @see ExpressionEvaluator#hasPermissionToApply(Authentication, User)
+     * @see ExpressionEvaluator#hasPermissionToApplyToProject(Authentication, User, String)
      * @see UserController
      */
-    public boolean hasPermissionToApply() {
+    public boolean hasPermissionToApplyToProject(String projectId) {
         // check if the user has a corresponding User object
         if(currentUserExists()) {
-            return evaluator.hasPermissionToApply(getAuthentication(), userAuthService.getAuthenticatedUser());
+            return evaluator.hasPermissionToApplyToProject(getAuthentication(), userAuthService.getAuthenticatedUser(), projectId);
         }
 
         return false;

@@ -56,11 +56,15 @@ public class AllowAccessExpressionEvaluator implements ExpressionEvaluator {
      * @param user
      *          The {@link User} object of the currently authenticated user.
      *
+     * @param projectId
+     *          The ID of the project the given {@code user} want to apply
+     *          to, not {@code null}.
+     *
      * @return
      *          {@code true}
      */
     @Override
-    public boolean hasPermissionToApply(Authentication authentication, User user) {
+    public boolean hasPermissionToApplyToProject(Authentication authentication, User user, String projectId) {
         return true;
     }
 

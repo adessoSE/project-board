@@ -60,13 +60,17 @@ public interface ExpressionEvaluator {
      * @param user
      *          The {@link User} object of the currently authenticated user.
      *
-     * @return
-     *          {@code true}, if the user is permitted to apply
-     *          for projects, {@code false} otherwise.
+     * @param projectId
+     *          The ID of the project the given {@code user} want to apply
+     *          to, not {@code null}.
      *
-     * @see CustomMethodSecurityExpressionRoot#hasPermissionToApply()
+     * @return
+     *          A boolean indicating whether or not the given {@code user}
+     *          is allowed to apply to the project with the given {@code projectId}.
+     *
+     * @see CustomMethodSecurityExpressionRoot#hasPermissionToApplyToProject(String)
      */
-    boolean hasPermissionToApply(Authentication authentication, User user);
+    boolean hasPermissionToApplyToProject(Authentication authentication, User user, String projectId);
 
     /**
      *

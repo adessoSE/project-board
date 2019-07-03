@@ -7,10 +7,14 @@ import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.security.ExpressionEvaluator;
 import de.adesso.projectboard.base.user.persistence.User;
+import de.adesso.projectboard.base.user.service.BookmarkService;
 import de.adesso.projectboard.base.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A {@link ExpressionEvaluator} implementation that is used to authorize access
@@ -29,19 +33,27 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
 
     private final ApplicationService applicationService;
 
-    private final ProjectBoardConfigurationProperties properties;
+    private final BookmarkService bookmarkService;
+
+    private final Set<String> lobDependentStatus;
+
+    private final Set<String> lobIndependentStatus;
 
     @Autowired
     public UserAccessExpressionEvaluator(UserService userService,
                                          UserAccessService userAccessService,
                                          ProjectService projectService,
                                          ApplicationService applicationService,
+                                         BookmarkService bookmarkService,
                                          ProjectBoardConfigurationProperties properties) {
         this.userService = userService;
         this.userAccessService = userAccessService;
         this.projectService = projectService;
         this.applicationService = applicationService;
-        this.properties = properties;
+        this.bookmarkService = bookmarkService;
+
+        this.lobDependentStatus = new HashSet<>(properties.getLobDependentStatus());
+        this.lobIndependentStatus = new HashSet<>(properties.getLobIndependentStatus());
     }
 
     /**
@@ -84,6 +96,10 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *              </li>
      *
      *              <li>
+     *                  The user has bookmarked the project.
+     *              </li>
+     *
+     *              <li>
      *                  The status of the project is LoB independent.
      *              </li>
      *
@@ -108,22 +124,21 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
             return true;
         }
 
-        var lobDependentStatus = properties.getLobDependentStatus();
-        var lobIndependentStatus = properties.getLobIndependentStatus();
-
         var project = projectService.getProjectById(projectId);
+
         var projectStatus = project.getStatus() == null ? null : project.getStatus().toLowerCase();
-        if(lobIndependentStatus.contains(projectStatus)) {
+        if(this.lobIndependentStatus.contains(projectStatus)) {
             return true;
         }
 
-        if(lobDependentStatus.contains(projectStatus)) {
+        if(this.lobDependentStatus.contains(projectStatus)) {
             if(userService.userIsManager(user)) {
                 return true;
             }
 
             if(!userAccessService.userHasActiveAccessInterval(user)) {
-                return applicationService.userHasAppliedForProject(user, project);
+                return applicationService.userHasAppliedForProject(user, project) ||
+                        bookmarkService.userHasBookmark(user, project);
             }
 
             var projectLob = project.getLob();
@@ -135,7 +150,8 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
             }
         }
 
-        return applicationService.userHasAppliedForProject(user, project);
+        return applicationService.userHasAppliedForProject(user, project) ||
+                bookmarkService.userHasBookmark(user, project);
     }
 
     /**
@@ -146,14 +162,16 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      * @param user
      *          The {@link User} object of the currently authenticated user.
      *
-     * @return
-     *          The result of {@link #hasAccessToProjects(Authentication, User)}
+     * @param projectId
+     *          The ID of the project the given {@code user} want to apply
+     *          to, not {@code null}.
      *
-     * @see #hasAccessToProjects(Authentication, User)
+     * @return
+     *          The result of {@link #hasAccessToProject(Authentication, User, String)}
      */
     @Override
-    public boolean hasPermissionToApply(Authentication authentication, User user) {
-        return hasAccessToProjects(authentication, user);
+    public boolean hasPermissionToApplyToProject(Authentication authentication, User user, String projectId) {
+        return hasAccessToProject(authentication, user, projectId);
     }
 
     /**
