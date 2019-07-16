@@ -38,7 +38,8 @@ public class UserAccessController {
         var user = userService.getUserById(userId);
         var updatedUser = userAccessService.giveUserAccessUntil(user, payload.getAccessEnd().atTime(LocalTime.MAX));
 
-        return ResponseEntity.ok(projectionFactory.createProjection(updatedUser, DefaultUserProjection.class));
+        var projection = projectionFactory.createProjection(updatedUser, DefaultUserProjection.class);
+        return ResponseEntity.ok(projection);
     }
 
     @PreAuthorize("hasElevatedAccessToUser(#userId) || hasRole('admin')")
@@ -47,7 +48,8 @@ public class UserAccessController {
         var user = userService.getUserById(userId);
         var updatedUser = userAccessService.removeAccessFromUser(user);
 
-        return ResponseEntity.ok(projectionFactory.createProjection(updatedUser, DefaultUserProjection.class));
+        var projection = projectionFactory.createProjection(updatedUser, DefaultUserProjection.class);
+        return ResponseEntity.ok(projection);
     }
 
 }
