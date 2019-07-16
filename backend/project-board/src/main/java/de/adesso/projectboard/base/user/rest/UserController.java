@@ -31,7 +31,8 @@ public class UserController {
     public ResponseEntity<?> getUserById(@PathVariable("userId") String userId, @ProjectionType(UserProjectionSource.class) Class<?> projectionType) {
         var user = userService.getUserById(userId);
 
-        return ResponseEntity.ok(userProjectionFactory.createProjection(user, projectionType));
+        var projection = userProjectionFactory.createProjection(user, projectionType);
+        return ResponseEntity.ok(projection);
     }
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
@@ -40,7 +41,8 @@ public class UserController {
         var user = userService.getUserById(userId);
         var staffData = userService.getStaffMemberUserDataOfUser(user, sort);
 
-        return ResponseEntity.ok(userProjectionFactory.createProjections(staffData, projectionType));
+        var projections = userProjectionFactory.createProjections(staffData, projectionType);
+        return ResponseEntity.ok(projections);
     }
 
     @PreAuthorize("hasPermissionToAccessUser(#userId) || hasRole('admin')")
@@ -53,7 +55,8 @@ public class UserController {
         } else {
             var staffMatchingQuery = userService.searchStaffMemberDataOfUser(user, query, sort);
 
-            return ResponseEntity.ok(userProjectionFactory.createProjections(staffMatchingQuery, projectionType));
+            var projections = userProjectionFactory.createProjections(staffMatchingQuery, projectionType);
+            return ResponseEntity.ok(projections);
         }
     }
 
