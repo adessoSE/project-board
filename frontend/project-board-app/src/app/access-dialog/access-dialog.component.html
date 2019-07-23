@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>Du bist nicht freigeschaltet</h2>
+<mat-dialog-content class="text">
+  <p>Project Board ist ein schwarzes Brett für Mitarbeiter, die in naher Zukunft ein neues Projekt suchen. <br>
+    Sollte dies für Dich interessant sein, sprich bitte Deine Führungskraft an.
+  </p><p>Weitere Support Hinweise sind im FAQ hinterlegt.</p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button routerLink="/faq" routerLinkActive="active-link" [mat-dialog-close]="true">FAQ</button>
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Verstanden</button>
+</mat-dialog-actions>

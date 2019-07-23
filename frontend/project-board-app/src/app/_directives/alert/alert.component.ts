@@ -3,7 +3,6 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AlertService } from '../../_services/alert.service';
 
-
 @Component({
   selector: 'app-alert',
   templateUrl: './alert.component.html',
@@ -29,4 +28,5 @@ export class AlertComponent implements OnInit {
   clearAlert(): void {
     this.alertService.clearAlert();
   }
+
 }

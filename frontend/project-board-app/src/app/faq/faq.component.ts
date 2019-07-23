@@ -43,6 +43,10 @@ export class FaqComponent implements OnInit {
 
   employeeQA: { question: string, answer: string }[] = [
     {
+      question:'Wie kann ich mich freischalten lassen?',
+      answer:'Nur Dein Vorgesetzter kann Dich für project board freischalten. '+'Wende Dich bitte an ihn, wenn Du das Tool nutzen möchtest.'
+    },
+    {
       question: 'Was passiert, wenn ich eine Projektanfrage absende?',
       answer: 'Dein Vorgesetzter bekommt eine Benachrichtigung über Dein Interesse an diesem Projekt.'
     },
@@ -60,7 +64,7 @@ export class FaqComponent implements OnInit {
     {
       question: 'Wie lange kann ich das project board nutzen?',
       answer: 'Die Dauer der Freischaltung kann Dein Vorgesetzter festlegen. ' +
-        'Dieser kann Deine Freischaltung jederzeit verlängern oder deaktivieren.'
+              'Dieser kann Deine Freischaltung jederzeit verlängern oder deaktivieren.'
     }
   ];
 
