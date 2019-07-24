@@ -1,0 +1,9 @@
+<h2 mat-dialog-title>Etwas läuft nicht so wie es sollte?</h2>
+<mat-dialog-content class="text">
+  <p>Bevor Du den Support kontaktierst guck bitte im FAQ nach, <br> ob Deine Frage oder Dein Problem dort bereits thematisiert wird. </p>
+  <p> Danke! </p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button [mat-dialog-close]="true" [title]="contactSupportTooltip" (click)="mailToSupport()" >Support</button>
+  <button mat-button routerLink="/faq" [mat-dialog-close]="true" cdkFocusInitial>FAQ</button>
+</mat-dialog-actions>
