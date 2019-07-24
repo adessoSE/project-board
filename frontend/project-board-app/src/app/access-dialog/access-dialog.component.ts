@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { MatDialogRef } from '@angular/material';
 
 @Component({
@@ -8,13 +8,18 @@ import { MatDialogRef } from '@angular/material';
 })
 
 export class AccessDialogComponent implements OnInit {
+  mobile: boolean;
 
   constructor(public dialogRef: MatDialogRef<AccessDialogComponent>,) {}
 
    ngOnInit() {
-     }
-
-   openFAQ(){
+       this.mobile = document.body.clientWidth < 992;
    }
+
+
+   @HostListener('window:resize')
+    onResize(): void {
+       this.mobile = document.body.clientWidth < 992;
+    }
 
 }

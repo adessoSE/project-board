@@ -58,7 +58,7 @@
     </ul>
     <ul class="navbar-nav mr-auto" style="position: absolute; right: 10px; top: 0;">
       <li class="nav-item">
-        <a class="nav-link" id="mail-support" href="mailto:{{supportEmail}}" [title]="contactSupportTooltip">
+        <a class="nav-link" (click)="openSupportDialog()">
           <mat-icon class="navbar-icon">contact_support</mat-icon>
           <span>Support</span>
         </a>
@@ -88,7 +88,7 @@
       <mat-icon [title]="faqTooltip" routerLink="/faq" routerLinkActive="active-mini-link">question_answer</mat-icon>
     </div>
     <div>
-      <mat-icon [title]="contactSupportTooltip" (click)="mailToSupport()">contact_support</mat-icon>
+      <mat-icon [title]="contactSupportTooltip" (click)="openSupportDialog()">contact_support</mat-icon>
       <mat-icon [title]="logoutTooltip" routerLink="/logout" (click)="logout()">logout</mat-icon>
     </div>
   </div>
@@ -140,7 +140,7 @@
           abmelden
         </div>
       </a>
-      <a (click)="snav.toggle()" href="mailto:{{supportEmail}}" title="Kontaktiere den project board Support">
+      <a (click)="snav.toggle()" (click)="openSupportDialog()" title="Kontaktiere den project board Support">
         <div id="support">
           <mat-icon class="nav-icon">contact_support</mat-icon>
           Support
