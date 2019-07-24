@@ -30,7 +30,6 @@ export class AlertService {
       });
   }
 
-
   clearAlert(): void {
     this.subject.next();
   }
@@ -61,6 +60,6 @@ export class AlertService {
   }
 
   openAccessDialog() {
-           this.dialog.open(AccessDialogComponent, { });
-         }
+    this.dialog.open(AccessDialogComponent, { });
+  }
 }

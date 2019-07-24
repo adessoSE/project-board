@@ -17,12 +17,7 @@ export class SupportDialogComponent implements OnInit {
    ngOnInit() {
     this.supportEmail = environment.supportEmail;
     this.mobile = document.body.clientWidth < 992;
-
      }
-
-  mailToSupport() {
-    window.location.href = `mailTo:${this.supportEmail}`;
-  }
 
   @HostListener('window:resize')
       onResize(): void {
