@@ -5,6 +5,7 @@ import org.springframework.data.util.Pair;
 
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -677,29 +678,29 @@ public class HibernateSimpleQueryUtilsTest {
     }
 
     @Test
-    public void createHibernateSearchDisjunctionSeparatesValuesWithOrOperator() {
+    public void createLuceneQueryStringReturnsEmptyStringWhenValuesEmpty() {
         // given
-        var values = List.of("val1", "val2", "val3");
-        var expectedDisjunction = "val1 | val2 | val3";
 
         // when
-        var actualDisjunction = HibernateSimpleQueryUtils.createHibernateSearchDisjunction(values);
+        var actualQueryString = HibernateSimpleQueryUtils.createLuceneQueryString(List.of(), "AND", Function.identity());
 
         // then
-        assertThat(actualDisjunction).isEqualTo(expectedDisjunction);
+        assertThat(actualQueryString).isEmpty();
     }
 
     @Test
-    public void createHibernateSearchDisjunctionDoesNotInsertOrOperatorWhenSingleValuePresent() {
+    public void createLuceneQueryStringReturnsExpectedQueryAndUsesFunction() {
         // given
-        var values = List.of("val1");
-        var expectedDisjunction = "val1";
+        var values = List.of("value1", "value2");
+        var operator = "OR";
+        var expectedQueryString = "-value1 | -value2";
+        Function<String, String> function = (String value) -> '-' + value;
 
         // when
-        var actualDisjunction = HibernateSimpleQueryUtils.createHibernateSearchDisjunction(values);
+        var actualQueryString = HibernateSimpleQueryUtils.createLuceneQueryString(values, operator, function);
 
         // then
-        assertThat(actualDisjunction).isEqualTo(expectedDisjunction);
+        assertThat(actualQueryString).isEqualTo(expectedQueryString);
     }
 
 }

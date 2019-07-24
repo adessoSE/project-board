@@ -50,46 +50,35 @@ public class HibernateSearchService {
     final Map<Class<?>, List<String>> classIndexedFieldMap;
 
     /**
-     * A set of the values of the status field that <b>do add</b>
+     * A set of the values of the status field that add
      * additional constraints to the lob field.
      */
     private final Set<String> statusWithLobConstraint;
 
     /**
-     * A set of the values of the status field that <b>don't add</b>
-     * additional constraints to the lob field.
+     * A set of the values of the status field of projects that should
+     * not be included.
      */
-    private final Set<String> statusWithoutLobConstraint;
+    private final Set<String> excludedStatus;
 
     /**
      *
      * @param statusWithLobConstraint
-     *          The set of the values of the {@value STATUS_FIELD_NAME} field
-     *          <b>do add</b> additional constraints to the lob field, not
-     *          {@code null}.
+     *          A collection of the values of the {@value STATUS_FIELD_NAME} field
+     *          that add additional constraints to the lob field, not {@code null}.
      *
-     * @param statusWithoutLobConstraint
-     *          The set of the values of the {@value STATUS_FIELD_NAME} field
-     *          <b>don't add</b> additional constraints to the lob field, not
-     *          {@code null} or empty.
-     *
-     * @throws IllegalArgumentException
-     *          When the given {@code statusWithoutLobConstraint} is empty or the
-     *          given {@code statusWithLobConstraint} and {@code statusWithoutLobConstraint}
-     *          sets are not disjoint.
+     * @param excludedStatus
+     *          A collection of the values of the {@value STATUS_FIELD_NAME} field
+     *          of projects that should not be included in any result.
      */
-    public HibernateSearchService(@NotNull Set<String> statusWithLobConstraint, @NotNull Set<String> statusWithoutLobConstraint) {
-        if(!Collections.disjoint(statusWithLobConstraint, statusWithoutLobConstraint)) {
-            throw new IllegalArgumentException("The status sets are not disjoint");
-        }
-
+    public HibernateSearchService(@NotNull Collection<String> statusWithLobConstraint, @NotNull Collection<String> excludedStatus) {
         // increase the max clause count to allow searching for
         // staff members of users with more than 1024 staff members
         BooleanQuery.setMaxClauseCount(MAX_CLAUSE_COUNT);
 
         this.classIndexedFieldMap = new HashMap<>();
-        this.statusWithLobConstraint = statusWithLobConstraint;
-        this.statusWithoutLobConstraint = statusWithoutLobConstraint;
+        this.statusWithLobConstraint = allToLowerCase(statusWithLobConstraint);
+        this.excludedStatus =  allToLowerCase(excludedStatus);
     }
 
     /**
@@ -167,7 +156,7 @@ public class HibernateSearchService {
                 .collect(Collectors.toSet());
         var idDisjunctionQuery = queryBuilder.simpleQueryString()
                 .onField("user_id")
-                .matching(HibernateSimpleQueryUtils.createHibernateSearchDisjunction(userIds))
+                .matching(HibernateSimpleQueryUtils.createLuceneQueryString(userIds, "|"))
                 .createQuery();
 
         var boolQuery = queryBuilder.bool()
@@ -179,70 +168,74 @@ public class HibernateSearchService {
                 .getResultList();
     }
 
-    /**
-     *
-     * @param simpleQueryString
-     *          The simple query to evaluate, not {@code null}.
-     *
-     * @param lob
-     *          The lob to search for, may be {@code null}.
-     *
-     * @return
-     *
-     */
     Query getProjectBaseQuery(String simpleQueryString, String lob) {
         var baseQuery = getQuerySearchingForAllIndexedFields(Project.class, simpleQueryString);
-
         var queryBuilder = getQueryBuilder(Project.class);
 
-        var projectsWithoutLobConstraintQuery = queryBuilder.simpleQueryString()
-                .onField(STATUS_FIELD_NAME)
-                .matching(HibernateSimpleQueryUtils.createHibernateSearchDisjunction(statusWithoutLobConstraint))
-                .createQuery();
-        var lobEqualsQuery = lobEqualsQuery(queryBuilder, lob);
-        var lobAndStatusQuery = queryBuilder.bool()
-                .minimumShouldMatchNumber(1)
-                .should(projectsWithoutLobConstraintQuery)
-                .should(lobEqualsQuery)
-                .createQuery();
+        var excludeStatusQuery = buildNotInQuery(queryBuilder, STATUS_FIELD_NAME, excludedStatus);
+        var lobIndependentOrLobNullOrEqualQuery = buildLobIndependentOrLobNullOrEqualQuery(queryBuilder, lob);
 
-        return queryBuilder.bool()
+        //TODO: fix weird behaviour when building conjunction
+        return queryBuilder
+                .bool()
                 .must(baseQuery)
-                .must(lobAndStatusQuery)
+                .must(excludeStatusQuery)
+                //.must(lobIndependentOrLobNullOrEqualQuery)
                 .createQuery();
     }
 
-    Query lobEqualsQuery(QueryBuilder queryBuilder, String lob) {
-        if(statusWithLobConstraint.isEmpty()) {
-            return null;
-        }
+    Query buildNotInQuery(QueryBuilder queryBuilder, String fieldName, Collection<String> valuesToExclude) {
+        var inQuery = buildInQuery(queryBuilder, fieldName, valuesToExclude);
 
-        var lobQuery = queryBuilder.bool()
+        return queryBuilder
+                .bool()
+                .must(inQuery).not()
+                .createQuery();
+    }
+
+    Query buildInQuery(QueryBuilder queryBuilder, String fieldName, Collection<String> wantedValues) {
+        var queryString = HibernateSimpleQueryUtils.createLuceneQueryString(wantedValues,"|");
+
+        return queryBuilder
+                .simpleQueryString()
+                .onField(fieldName)
+                .matching(queryString)
+                .createQuery();
+    }
+
+    Query buildLobIndependentOrLobNullOrEqualQuery(QueryBuilder queryBuilder, String lob) {
+        var lobIndependentOrLobNullOrEqualsQuery = queryBuilder
+                .bool()
                 .minimumShouldMatchNumber(1);
 
-        if(lob != null) {
-            var lobEqualsQuery = queryBuilder.phrase()
-                    .onField(LOB_FIELD_NAME)
-                    .sentence(lob)
-                    .createQuery();
-            lobQuery.should(lobEqualsQuery);
-        }
+        var lobIndependentQuery = buildNotInQuery(queryBuilder, STATUS_FIELD_NAME, statusWithLobConstraint);
+        lobIndependentOrLobNullOrEqualsQuery.should(lobIndependentQuery);
 
-        var lobNullQuery = queryBuilder.keyword()
+        var lobNullQuery = queryBuilder
+                .keyword()
                 .onField(LOB_FIELD_NAME)
                 .matching("_null_")
                 .createQuery();
-        lobQuery.should(lobNullQuery);
+        lobIndependentOrLobNullOrEqualsQuery.should(lobNullQuery);
 
-        var projectsWithLobConstraintQuery = queryBuilder.simpleQueryString()
-                .onField(STATUS_FIELD_NAME)
-                .matching(HibernateSimpleQueryUtils.createHibernateSearchDisjunction(statusWithLobConstraint))
-                .createQuery();
+        if(lob != null) {
+            var lowerCaseLob = lob.toLowerCase();
+            var lobDependentQuery = buildInQuery(queryBuilder, STATUS_FIELD_NAME, statusWithLobConstraint);
+            var lobEqualsQuery = queryBuilder
+                    .keyword()
+                    .onField(LOB_FIELD_NAME)
+                    .matching(lowerCaseLob)
+                    .createQuery();
 
-        return queryBuilder.bool()
-                .must(projectsWithLobConstraintQuery)
-                .must(lobQuery.createQuery())
-                .createQuery();
+            var q = queryBuilder.bool()
+                    .must(lobDependentQuery)
+                    .must(lobEqualsQuery)
+                    .createQuery();
+
+            lobIndependentOrLobNullOrEqualsQuery.should(q);
+        }
+
+        return lobIndependentOrLobNullOrEqualsQuery.createQuery();
     }
 
     /**
@@ -366,6 +359,12 @@ public class HibernateSearchService {
                 .buildQueryBuilder()
                 .forEntity(type)
                 .get();
+    }
+
+    private Set<String> allToLowerCase(Collection<String> collection) {
+        return collection.stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toSet());
     }
 
 }

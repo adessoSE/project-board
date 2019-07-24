@@ -56,7 +56,7 @@ public class HibernateSearchServiceIntegrationTest {
 
     @Before
     public void setUp() {
-        var hibernateSearchService = new HibernateSearchService(Set.of(), Set.of("offen", "open", "eskaliert", "escalated"));
+        var hibernateSearchService = new HibernateSearchService(Set.of("offen", "open"), Set.of("closed", "abgeschlossen"));
         hibernateSearchService.entityManager = entityManager;
         hibernateSearchService.indexExistingEntities(entityManager);
 
@@ -72,15 +72,11 @@ public class HibernateSearchServiceIntegrationTest {
 
     @Test
     @Sql(scripts = "classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void searchProjectsNonPaginatedFindsProjectsWithSameLobOrNoLobWhenStatusIsInConstrainedStatusSet() {
+    public void searchProjectsNonPaginatedFindsProjectsWithSameOrNoLobWithoutExcludedStatus() {
         // given
-        var hibernateSearchService = new HibernateSearchService(Set.of("offen", "open"), Set.of("eskaliert", "escalated"));
-        hibernateSearchService.entityManager = entityManager;
-        hibernateSearchService.indexExistingEntities(entityManager);
-
         var simpleQuery = "Location";
         var lob = "LOB Prod";
-        var expectedProjects = findProjectByIds("STF-1", "STF-3", "STF-4", "STF-5", "STF-7", "STF-9");
+        var expectedProjects = findProjectByIds("STF-1", "STF-3", "STF-4", "STF-5", "STF-7", "STF-9", "STF-10");
 
         // when
         var actualProjects = hibernateSearchService.searchProjects(simpleQuery, lob);

@@ -3,8 +3,10 @@ package de.adesso.projectboard.ad.application.service;
 import de.adesso.projectboard.base.application.handler.ProjectApplicationEventHandler;
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.persistence.ProjectApplicationRepository;
+import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.base.exceptions.AlreadyAppliedException;
 import de.adesso.projectboard.base.exceptions.ApplicationNotFoundException;
+import de.adesso.projectboard.base.exceptions.ProjectStatusPreventsApplicationException;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.user.persistence.User;
@@ -35,6 +37,8 @@ public class RepositoryApplicationServiceTest {
 
     private final String PROJECT_ID = "project";
 
+    private final String APPLICATION_FORBIDDEN_STATUS = "closed";
+
     @Mock
     private ProjectService projectServiceMock;
 
@@ -43,6 +47,9 @@ public class RepositoryApplicationServiceTest {
 
     @Mock
     private ProjectApplicationEventHandler applicationEventHandlerMock;
+
+    @Mock
+    private ProjectBoardConfigurationProperties propertiesMock;
 
     @Mock
     private User userMock;
@@ -56,12 +63,14 @@ public class RepositoryApplicationServiceTest {
 
     @Before
     public void setUp() {
+        given(propertiesMock.getApplicationsForbiddenStatus()).willReturn(List.of(APPLICATION_FORBIDDEN_STATUS));
+
         var instant = Instant.parse("2018-01-01T10:00:00.00Z");
         var zoneId = ZoneId.systemDefault();
 
         this.clock = Clock.fixed(instant, zoneId);
         this.applicationService = new RepositoryApplicationService(projectServiceMock, applicationRepoMock,
-                applicationEventHandlerMock, clock);
+                applicationEventHandlerMock, clock, propertiesMock);
     }
 
     @Test
@@ -120,6 +129,17 @@ public class RepositoryApplicationServiceTest {
         // when
         assertThatThrownBy(() -> applicationService.createApplicationForUser(userMock, PROJECT_ID, ""))
                 .isInstanceOf(AlreadyAppliedException.class);
+    }
+
+    @Test
+    public void createApplicationForUserThrowsExceptionWhenStatusForbidsApplications() {
+        // given
+        given(projectServiceMock.getProjectById(PROJECT_ID)).willReturn(projectMock);
+        given(projectMock.getStatus()).willReturn(APPLICATION_FORBIDDEN_STATUS);
+
+        // when
+        assertThatThrownBy(() -> applicationService.createApplicationForUser(userMock, PROJECT_ID, ""))
+                .isInstanceOf(ProjectStatusPreventsApplicationException.class);
     }
 
     @Test

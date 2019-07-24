@@ -29,9 +29,7 @@ public class RepositoryUserProjectServiceTest {
 
     private static final Set<String> LOB_DEPENDENT_STATUS = Set.of("open");
 
-    private static final Set<String> LOB_INDEPENDENT_STATUS = Set.of("escalated");
-
-    private static final Set<String> UNION_SET = Set.of("open", "escalated");
+    private static final Set<String> EXCLUDED_STATUS = Set.of("closed");
 
     @Mock
     private UserService userServiceMock;
@@ -62,7 +60,7 @@ public class RepositoryUserProjectServiceTest {
     @Before
     public void setUp() {
         given(propertiesMock.getLobDependentStatus()).willReturn(new ArrayList<>(LOB_DEPENDENT_STATUS));
-        given(propertiesMock.getLobIndependentStatus()).willReturn(new ArrayList<>(LOB_INDEPENDENT_STATUS));
+        given(propertiesMock.getStatusExcludedFromList()).willReturn(new ArrayList<>(EXCLUDED_STATUS));
 
         this.userProjectService = new RepositoryUserProjectService(projectRepoMock, userServiceMock,
                 managerHibernateSearchServiceMock, staffHibernateSearchServiceMock, propertiesMock);
@@ -72,7 +70,7 @@ public class RepositoryUserProjectServiceTest {
     public void getProjectsForUserReturnsLobDependentProjectsWhenUserIsNoManager() {
         // given
         var userLob = "LoB Test";
-        var expectedSpecification = new StatusSpecification(LOB_INDEPENDENT_STATUS, LOB_DEPENDENT_STATUS, userLob);
+        var expectedSpecification = new StatusSpecification(EXCLUDED_STATUS, LOB_DEPENDENT_STATUS, userLob);
         var sort = Sort.unsorted();
         var expectedProjects = List.of(projectMock);
 
@@ -90,7 +88,7 @@ public class RepositoryUserProjectServiceTest {
     @Test
     public void getProjectsForUserReturnsAllProjectsWhenUserIsManager() {
         // given
-        var expectedSpecification = new StatusSpecification(UNION_SET, Set.of(), null);
+        var expectedSpecification = new StatusSpecification(EXCLUDED_STATUS, Set.of(), null);
         var sort = Sort.unsorted();
         var expectedProjects = List.of(projectMock);
 
@@ -141,7 +139,7 @@ public class RepositoryUserProjectServiceTest {
         // given
         var userLob = "LoB Test1234";
         var pageable = PageRequest.of(0, 100);
-        var expectedStatusSpecification = new StatusSpecification(LOB_INDEPENDENT_STATUS, LOB_DEPENDENT_STATUS, userLob);
+        var expectedStatusSpecification = new StatusSpecification(EXCLUDED_STATUS, LOB_DEPENDENT_STATUS, userLob);
         var expectedProjects = List.of(projectMock);
         var expectedPage = new PageImpl<>(expectedProjects);
 
@@ -160,7 +158,7 @@ public class RepositoryUserProjectServiceTest {
     public void getProjectsForUserPaginatedReturnsAllProjectsWhenUserIsManager() {
         // given
         var pageable = PageRequest.of(0, 100);
-        var expectedStatusSpecification = new StatusSpecification(UNION_SET, Set.of(), null);
+        var expectedStatusSpecification = new StatusSpecification(EXCLUDED_STATUS, Set.of(), null);
         var expectedProjects = List.of(projectMock);
         var expectedPage = new PageImpl<>(expectedProjects);
 

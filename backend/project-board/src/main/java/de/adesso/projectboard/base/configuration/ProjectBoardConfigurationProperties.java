@@ -35,19 +35,28 @@ public class ProjectBoardConfigurationProperties {
 
     /**
      * The list of all status of a project that require the user to be
-     * in the same lob or be a manager.
+     * in the same lob or be a manager to access it in <b>lower case</b>. All
+     * status not contained in this list are implicitly accessible by every
+     * user.
      *
      * Defaults to {@code offen} and {@code open}.
      */
     private List<String> lobDependentStatus = List.of("offen", "open");
 
     /**
-     * The list of of all status of a project that don't require the
-     * user to be in the same LoB or be a manager. Cannot be empty!
+     * The list off all status of a project that are excluded from the list of
+     * projects seen by the users in <b>lower case</b>.
      *
-     * Defaults to {@code eskaliert} and {@code escalated}.
+     * Defaults to {@code abgeschlossen} and {@code closed}.
      */
-    @NotEmpty
-    private List<String> lobIndependentStatus = List.of("eskaliert", "escalated");
+    private List<String> statusExcludedFromList = List.of("abgeschlossen", "closed");
+
+    /**
+     * The list of all status of a project that prevent users from applying to
+     * the project in <b>lower case</b>.
+     *
+     * Defaults to {@code abgeschlossen} and {@code closed}.
+     */
+    private List<String> applicationsForbiddenStatus = List.of("abgeschlossen", "closed");
 
 }

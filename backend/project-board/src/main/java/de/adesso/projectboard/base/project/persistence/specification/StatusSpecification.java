@@ -29,19 +29,20 @@ public class StatusSpecification implements Specification<Project> {
     private static final String LOB_FIELD_NAME = "lob";
 
     /**
-     * The allowed status values for projects that do not require the
-     * LoB of the project be equal to the LoB of the user.
-     */
-    private final Set<String> lobIndependentStatus;
-
-    /**
-     * The allowed status values for projects that do require the LoB
-     * of the project to be equal to the LoB of the user.
+     * The allowed status values for projects that require the LoB
+     * of the project to be equal to the LoB of the user or the LoB of the
+     * project to be null.
      */
     private final Set<String> lobDependentStatus;
 
     /**
-     * The LoB of the user to get the projects for.
+     * The status values of projects that should not be matched by
+     * this specification.
+     */
+    private final Set<String> excludedStatus;
+
+    /**
+     * The lower case LoB of the user to get the projects for.
      */
     private final String userLob;
 
@@ -50,9 +51,9 @@ public class StatusSpecification implements Specification<Project> {
      * given {@code status} collection are transformed to lower
      * case values.
      *
-     * @param lobIndependentStatus
-     *          The allowed status values for projects that do not require the
-     *          LoB of the project be equal to the {@code userLob}, not null.
+     * @param excludedStatus
+     *          The status values of projects that should not be matched by this
+     *          specification, not {@code null}.
      *
      * @param lobDependentStatus
      *          The allowed status values for projects that do require the LoB
@@ -62,9 +63,9 @@ public class StatusSpecification implements Specification<Project> {
      *          The LoB of the user to find projects for, may be null.
      *
      */
-    public StatusSpecification(@NonNull Collection<String> lobIndependentStatus, @NonNull Collection<String> lobDependentStatus, String userLob) {
-        this.lobIndependentStatus = allToLowerCase(lobIndependentStatus);
+    public StatusSpecification(@NonNull Collection<String> excludedStatus, @NonNull Collection<String> lobDependentStatus, String userLob) {
         this.lobDependentStatus = allToLowerCase(lobDependentStatus);
+        this.excludedStatus = allToLowerCase(excludedStatus);
         this.userLob = userLob == null ? null : userLob.toLowerCase();
     }
 
@@ -80,28 +81,29 @@ public class StatusSpecification implements Specification<Project> {
      *          The {@code CriteriaBuilder} to build the query with, not null.
      *
      * @return
-     *          A {@code Predicate} that matches any project if at least one of the
-     *          following conditions is met:
+     *          A {@code Predicate} matching all projects when the {@code lobDependentStatus} and
+     *          {@code excludedStatus} are empty OR a {@code Predicate} matching projects which meet
+     *          the following conditions:
      *          <ul>
-     *              <li>the LoB of the project IS {@code null} AND the status is present in the {@code lobIndependentStatus} set</li>
-     *              <li>the LoB of the project is NOT {@code null} AND equal to the {@code userLob} AND the status
-     *              IS present in the {@code lobDependentStatus} set</li>
+     *              <li>the status of the project is not contained in the {@code excludedStatus} set</li>
+     *              <li>(the status is contained in the {@code lobDependentStatus} set AND the {@code userLob}
+     *              is equal to the project LoB) OR the project LoB is {@code null}</li>
      *          </ul>
-     *          All matching is case-insensitive.
      */
     @Override
     public Predicate toPredicate(Root<Project> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         var lowerCaseStatusExpression = criteriaBuilder.lower(root.get(STATUS_FIELD_NAME));
         var lowerCaseLobExpression = criteriaBuilder.lower(root.get(LOB_FIELD_NAME));
 
-        if(lobDependentStatus.isEmpty() && lobIndependentStatus.isEmpty()) {
-            return criteriaBuilder.or(); // a single or does not match any project
+        if(lobDependentStatus.isEmpty() && excludedStatus.isEmpty()) {
+            return criteriaBuilder.and(); // a single or matches all projects
         }
 
-        var statusMatchesPredicate = buildStatusMatchesPredicate(criteriaBuilder, lowerCaseStatusExpression, lowerCaseLobExpression);
-        var lobAndStatusMatchesPredicate = buildLobAndStatusMatchesPredicate(criteriaBuilder, lowerCaseStatusExpression, lowerCaseLobExpression);
+        var statusNotExcludedPredicate = buildStatusNotExcludedPredicate(criteriaBuilder, lowerCaseStatusExpression);
+        var lobNullOrEqualToUserLobPredicate = buildLobNullOrEqualToUserLobPredicate(criteriaBuilder,
+                lowerCaseStatusExpression, lowerCaseLobExpression);
 
-        return criteriaBuilder.or(statusMatchesPredicate, lobAndStatusMatchesPredicate);
+        return criteriaBuilder.and(statusNotExcludedPredicate, lobNullOrEqualToUserLobPredicate);
     }
 
     /**
@@ -113,17 +115,17 @@ public class StatusSpecification implements Specification<Project> {
      *          The expression to match the lob dependent status against, not {@code null}.
      *
      * @return
-     *          A predicate that matches if the project LoB is {@code null} {@code (A)} AND the status is
-     *          present in the {@code lobDependentStatus} set {@code (B)} OR the status is present in the
-     *          {@code lobIndependentStatus} set {@code (C)}. {@code ((A & B) | C) }
+     *          A predicate that matches if the project's status is not contained in the
+     *          {@code excludedStatus} set.
      */
-    private Predicate buildStatusMatchesPredicate(CriteriaBuilder criteriaBuilder, Expression<String> lowerCaseStatusExpr, Expression<String> lowerCaseLobExpr) {
-        var lobIndependentStatusPredicate = buildStatusMatchesPredicate(criteriaBuilder, lowerCaseStatusExpr, lobIndependentStatus);
-        var lobDependentStatusPredicate = buildStatusMatchesPredicate(criteriaBuilder, lowerCaseStatusExpr, lobDependentStatus);
-        var lobNullPredicate = criteriaBuilder.isNull(lowerCaseLobExpr);
-        var lobNullAndLobDependentStatusPredicate = criteriaBuilder.and(lobNullPredicate, lobDependentStatusPredicate);
+    private Predicate buildStatusNotExcludedPredicate(CriteriaBuilder criteriaBuilder, Expression<String> lowerCaseStatusExpr) {
+        if(excludedStatus.isEmpty()) {
+            // an empty "in" expression causes errors, so just return an
+            // single "and" expression matching every project
+            return criteriaBuilder.and();
+        }
 
-        return criteriaBuilder.or(lobIndependentStatusPredicate, lobNullAndLobDependentStatusPredicate);
+        return criteriaBuilder.not(lowerCaseStatusExpr.in(excludedStatus.toArray()));
     }
 
     /**
@@ -138,19 +140,29 @@ public class StatusSpecification implements Specification<Project> {
      *          The expression to match the user lob against, not {@code null}.
      *
      * @return
-     *          A predicate that matches if the lob of the project is equal to the {@code userLob}
-     *          AND the status of the project is present in the {@code lobDependentStatus} set.
-     *
+     *         A predicate that matches if the status of the project is not contained in the {@code lobDependentStatus}
+     *         set ({@code A}) OR the LoB of the project is {@code null} ({@code B}) OR the {@code userLob}
+     *         is not {@code null} ({@code C}) AND the project's LoB is equal to the {@code userLob} ({@code D})
+     *         ({@code A | B | (C & D)}).
      */
-    private Predicate buildLobAndStatusMatchesPredicate(CriteriaBuilder criteriaBuilder, Expression<String> lowerCaseStatusExpr, Expression<String> lowerCaseLobExpression) {
-        if(userLob == null) {
-           return criteriaBuilder.or(); // a single or does not matches any project
+    private Predicate buildLobNullOrEqualToUserLobPredicate(CriteriaBuilder criteriaBuilder, Expression<String> lowerCaseStatusExpr, Expression<String> lowerCaseLobExpression) {
+        if(lobDependentStatus.isEmpty()) {
+            // an empty "in" expression causes errors, so just return an
+            // single "and" expression matching every project since every project
+            // is matched either way
+            return criteriaBuilder.and();
         }
 
-        var statusMatchesPredicate = buildStatusMatchesPredicate(criteriaBuilder, lowerCaseStatusExpr, lobDependentStatus);
-        var lobMatchesPredicate = criteriaBuilder.equal(lowerCaseLobExpression, userLob);
+        var lobIndependentStatusPredicate = criteriaBuilder.not(lowerCaseStatusExpr.in(lobDependentStatus.toArray()));
 
-        return criteriaBuilder.and(lobMatchesPredicate, statusMatchesPredicate);
+        var lobNullPredicate = criteriaBuilder.isNull(lowerCaseLobExpression);
+        var lobEqualsPredicate = criteriaBuilder.or();
+
+        if(userLob != null) {
+            lobEqualsPredicate = criteriaBuilder.equal(lowerCaseLobExpression, userLob);
+        }
+
+        return criteriaBuilder.or(lobIndependentStatusPredicate, lobNullPredicate, lobEqualsPredicate);
     }
 
     /**

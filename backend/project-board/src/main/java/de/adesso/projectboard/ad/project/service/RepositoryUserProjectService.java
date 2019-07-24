@@ -20,8 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional(readOnly = true)
@@ -37,9 +35,7 @@ public class RepositoryUserProjectService implements PageableUserProjectService 
 
     private final Set<String> lobDependentStatus;
 
-    private final Set<String> lobIndependentStatus;
-
-    private final Set<String> managerStatus;
+    private final Set<String> excludedStatus;
 
     @Autowired
     public RepositoryUserProjectService(ProjectRepository projectRepo,
@@ -53,9 +49,7 @@ public class RepositoryUserProjectService implements PageableUserProjectService 
         this.staffSearchService = staffSearchService;
 
         this.lobDependentStatus = new HashSet<>(properties.getLobDependentStatus());
-        this.lobIndependentStatus = new HashSet<>(properties.getLobIndependentStatus());
-        this.managerStatus = Stream.concat(lobDependentStatus.stream(), lobIndependentStatus.stream())
-                .collect(Collectors.toSet());
+        this.excludedStatus = new HashSet<>(properties.getStatusExcludedFromList());
     }
 
     @Override
@@ -90,10 +84,10 @@ public class RepositoryUserProjectService implements PageableUserProjectService 
 
     private Specification<Project> getProjectSpecificationForUser(User user) {
         if(userService.userIsManager(user)) {
-            return new StatusSpecification(managerStatus, Set.of(), null);
+            return new StatusSpecification(excludedStatus, Set.of(), null);
         } else {
             var userLob = userService.getUserData(user).getLob();
-            return new StatusSpecification(lobIndependentStatus, lobDependentStatus, userLob);
+            return new StatusSpecification(excludedStatus, lobDependentStatus, userLob);
         }
     }
 

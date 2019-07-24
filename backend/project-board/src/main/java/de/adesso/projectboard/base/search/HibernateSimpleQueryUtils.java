@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class HibernateSimpleQueryUtils {
 
@@ -77,7 +79,7 @@ public class HibernateSimpleQueryUtils {
 
         var term = simpleQuery.substring(termStartIndex, termEndIndex + 1);
         var replaceTerm = String.format("(%s)",
-                createHibernateSearchDisjunction(List.of(term, term + "~1", term + "*")));
+                createLuceneQueryString(List.of(term, term + "~1", term + "*"), "|"));
 
         return replaceSubstring(startEndIndexPair, simpleQuery, replaceTerm);
     }
@@ -291,24 +293,59 @@ public class HibernateSimpleQueryUtils {
     /**
      *
      * @param values
-     *          The values to create the disjunction of, not null.
+     *          The values to append to each other, not {@code empty}.
+     *
+     * @param operator
+     *          The operator to use between every value.
+     *
+     * @param function
+     *          A function applied to each value of the given {@code values}
+     *          collection, not {@code null}.
      *
      * @return
-     *          A hibernate simple query representing a disjunction of all given
-     *          {@code values}.
-     *          .
+     *          The resulting query string.
      */
-    public static String createHibernateSearchDisjunction(Collection<String> values) {
-        var valueArr = values.toArray(String[]::new);
-        var fieldMatchStringBuilder = new StringBuilder(valueArr[0]);
+    public static String createLuceneQueryString(Collection<String> values, String operator,
+                                                  Function<String, String> function) {
+        if(values.isEmpty()) {
+            return "";
+        }
 
-        for(var valueIndex = 1; valueIndex < valueArr.length; valueIndex++) {
+        var mappedValues = values.stream()
+                .map(function)
+                .distinct()
+                .collect(Collectors.toList());
+        var mappedValueArr = mappedValues.toArray(String[]::new);
+        var firstValue = mappedValueArr[0];
+        var fieldMatchStringBuilder = new StringBuilder(firstValue);
+
+        for(var valueIndex = 1; valueIndex < mappedValueArr.length; valueIndex++) {
             fieldMatchStringBuilder
-                    .append(" | ")
-                    .append(valueArr[valueIndex]);
+                    .append(" ")
+                    .append(operator)
+                    .append(" ")
+                    .append(mappedValueArr[valueIndex]);
         }
 
         return fieldMatchStringBuilder.toString();
+    }
+
+    /**
+     *
+     * @param values
+     *          The values to append to each other, not {@code empty}.
+     *
+     * @param operator
+     *          The operator to use between every value.
+     *
+     * @return
+     *          The result of {@link #createLuceneQueryString(Collection, String, Function)} with
+     *          a identity function as the argument.
+     *
+     * @see #createLuceneQueryString(Collection, String, Function)
+     */
+    public static String createLuceneQueryString(Collection<String> values, String operator) {
+        return createLuceneQueryString(values, operator, Function.identity());
     }
 
 }
