@@ -682,7 +682,7 @@ public class HibernateSimpleQueryUtilsTest {
         // given
 
         // when
-        var actualQueryString = HibernateSimpleQueryUtils.createLuceneQueryString(List.of(), "AND", Function.identity());
+        var actualQueryString = HibernateSimpleQueryUtils.createLuceneQueryString(List.of(), "+", Function.identity());
 
         // then
         assertThat(actualQueryString).isEmpty();
@@ -692,7 +692,7 @@ public class HibernateSimpleQueryUtilsTest {
     public void createLuceneQueryStringReturnsExpectedQueryAndUsesFunction() {
         // given
         var values = List.of("value1", "value2");
-        var operator = "OR";
+        var operator = "|";
         var expectedQueryString = "-value1 | -value2";
         Function<String, String> function = (String value) -> '-' + value;
 

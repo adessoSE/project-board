@@ -39,6 +39,8 @@ public class RepositoryApplicationServiceTest {
 
     private final String APPLICATION_FORBIDDEN_STATUS = "closed";
 
+    private final String APPLICATION_ALOWED_STATUS = "open";
+
     @Mock
     private ProjectService projectServiceMock;
 
@@ -110,6 +112,8 @@ public class RepositoryApplicationServiceTest {
 
         given(applicationRepoMock.save(expectedApplication)).willReturn(expectedApplication);
 
+        given(projectMock.getStatus()).willReturn(APPLICATION_ALOWED_STATUS);
+
         // when
         var actualApplication = applicationService.createApplicationForUser(userMock, PROJECT_ID, expectedComment);
 
@@ -125,6 +129,8 @@ public class RepositoryApplicationServiceTest {
         // given
         given(projectServiceMock.getProjectById(PROJECT_ID)).willReturn(projectMock);
         given(applicationRepoMock.existsByUserAndProject(userMock, projectMock)).willReturn(true);
+
+        given(projectMock.getStatus()).willReturn(APPLICATION_ALOWED_STATUS);
 
         // when
         assertThatThrownBy(() -> applicationService.createApplicationForUser(userMock, PROJECT_ID, ""))

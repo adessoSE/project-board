@@ -24,18 +24,6 @@ public class HibernateSearchServiceTest {
     }
 
     @Test
-    public void constructorThrowsExceptionWhenStatusSetsNotDisjoint() {
-        // given
-        var statusWithLobConstraint = Set.of("value1");
-        var statusWithoutLobConstraint = Set.of("value1");
-
-        // when / then
-        assertThatThrownBy(() -> new HibernateSearchService(statusWithLobConstraint, statusWithoutLobConstraint))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("The status sets are not disjoint");
-    }
-
-    @Test
     @SuppressWarnings("unchecked")
     public void getNamesOfAnnotatedStringFieldsGetsNamesOfAnnotatedStringFieldsAndCachesResultWhenNotPresent() {
         // given
