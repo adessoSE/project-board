@@ -85,18 +85,16 @@ public class HibernateSearchServiceIntegrationTest {
         assertThat(actualProjects).containsExactlyInAnyOrderElementsOf(expectedProjects);
     }
 
+    //TODO: add test where lob is set to null
+
     @Test
     @Sql(scripts = "classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void searchProjectsPaginatedFindsProjectsWithSameLobOrNoLobWhenStatusIsInConstrainedStatusSet() {
+    public void searchProjectsPaginatedFindsProjectsWithSameOrNoLobWithoutExcludedStatus() {
         // given
-        var hibernateSearchService = new HibernateSearchService(Set.of("offen", "open"), Set.of("eskaliert", "escalated"));
-        hibernateSearchService.entityManager = entityManager;
-        hibernateSearchService.indexExistingEntities(entityManager);
-
-        var simpleQuery = "Location";
         var lob = "LOB Prod";
+        var expectedProjects = findProjectByIds("STF-1", "STF-3", "STF-4", "STF-5", "STF-7", "STF-9", "STF-10");
+        var simpleQuery = "Location";
         var pageable = PageRequest.of(0, 10);
-        var expectedProjects = findProjectByIds("STF-1", "STF-3", "STF-4", "STF-5", "STF-7", "STF-9");
 
         // when
         var actualProjects = hibernateSearchService.searchProjects(simpleQuery, pageable, lob);
@@ -107,13 +105,14 @@ public class HibernateSearchServiceIntegrationTest {
 
     @Test
     @Sql(scripts = "classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void searchProjectsNonPaginatedWithPhraseQueryFindsExactMatches() {
+    public void searchProjectsNonPaginatedWithPhraseQueryFindsCorrectLobsAndStatusRespectingExcludes() {
         // given
+        var lob = "LOB Prod";
         var simpleQuery = "\"extraordinary\" | \"mockito\" | \"spring\"";
-        var expectedProjects = findProjectByIds("STF-3", "STF-8", "STF-9");
+        var expectedProjects = findProjectByIds("STF-3", "STF-9");
 
         // when
-        var actualProjects = hibernateSearchService.searchProjects(simpleQuery, null);
+        var actualProjects = hibernateSearchService.searchProjects(simpleQuery, lob);
 
         // then
         assertThat(actualProjects).containsExactlyInAnyOrderElementsOf(expectedProjects);
@@ -121,13 +120,14 @@ public class HibernateSearchServiceIntegrationTest {
 
     @Test
     @Sql(scripts = "classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void searchProjectsNonPaginatedUsesFuzzyAndPrefixAsWell() {
+    public void searchProjectsNonPaginatedUsesFuzzyAndPrefixAsWellAndFindsCorrectLobsAndStatusRespectingExcludes() {
         // given
+        var lob = "LOB Test";
         var simpleQuery = "exrtaordinary | spri | jaava";
         var expectedProjects = findProjectByIds("STF-1", "STF-3", "STF-8");
 
         // when
-        var actualProjects = hibernateSearchService.searchProjects(simpleQuery, null);
+        var actualProjects = hibernateSearchService.searchProjects(simpleQuery, lob);
 
         // then
         assertThat(actualProjects).containsExactlyInAnyOrderElementsOf(expectedProjects);
@@ -135,13 +135,14 @@ public class HibernateSearchServiceIntegrationTest {
 
     @Test
     @Sql(scripts = "classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void searchProjectsNonPaginatedHasAndAsDefaultOperator() {
+    public void searchProjectsNonPaginatedHasAndAsDefaultOperatorAndFindsCorrectLobsAndStatusRespectingExcludes() {
         // given
+        var lob = "LOB Test";
         var simpleQuery = "extraordinary description";
         var expectedProjects = findProjectByIds("STF-8");
 
         // when
-        var actualProjects = hibernateSearchService.searchProjects(simpleQuery, null);
+        var actualProjects = hibernateSearchService.searchProjects(simpleQuery, lob);
 
         // then
         assertThat(actualProjects).containsExactlyInAnyOrderElementsOf(expectedProjects);
@@ -149,20 +150,21 @@ public class HibernateSearchServiceIntegrationTest {
 
     @Test
     @Sql(scripts = "classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void searchProjectsPaginatedWithPhraseQueryFindsExactMatches() {
+    public void searchProjectsPaginatedWithPhraseQueryFindsExactMatchesAndFindsCorrectLobsAndStatusRespectingExcludes() {
         // given
+        var lob = "LOB Test";
         var simpleQuery = "\"extraordinary\" | \"mockito\" | \"spring\"";
         var pageable = PageRequest.of(1, 1);
-        var expectedProjects = findProjectByIds("STF-3", "STF-8", "STF-9");
+        var expectedProjects = findProjectByIds("STF-3", "STF-8");
 
         // when
-        var actualProjectPage = hibernateSearchService.searchProjects(simpleQuery, pageable, null);
+        var actualProjectPage = hibernateSearchService.searchProjects(simpleQuery, pageable, lob);
 
         // then
         var softly = new SoftAssertions();
 
-        softly.assertThat(actualProjectPage.getTotalElements()).isEqualTo(3L);
-        softly.assertThat(actualProjectPage.getTotalPages()).isEqualTo(3L);
+        softly.assertThat(actualProjectPage.getTotalElements()).isEqualTo(2L);
+        softly.assertThat(actualProjectPage.getTotalPages()).isEqualTo(2L);
         softly.assertThat(actualProjectPage.getContent()).containsAnyElementsOf(expectedProjects);
 
         softly.assertAll();
@@ -170,14 +172,15 @@ public class HibernateSearchServiceIntegrationTest {
 
     @Test
     @Sql(scripts = "classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void searchProjectsPaginatedUsesFuzzyAndPrefixAsWell() {
+    public void searchProjectsPaginatedUsesFuzzyAndPrefixAsWellAndFindsCorrectLobsAndStatusRespectingExcludes() {
         // given
+        var lob = "LOB Test";
         var simpleQuery = "exrtaordinary | spri | javva";
         var pageable = PageRequest.of(1, 1);
         var expectedProjects = findProjectByIds("STF-1", "STF-3", "STF-8");
 
         // when
-        var actualProjectPage = hibernateSearchService.searchProjects(simpleQuery, pageable, null);
+        var actualProjectPage = hibernateSearchService.searchProjects(simpleQuery, pageable, lob);
 
         // then
         var softly = new SoftAssertions();
@@ -191,14 +194,15 @@ public class HibernateSearchServiceIntegrationTest {
 
     @Test
     @Sql(scripts = "classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void searchProjectsPaginatedHasAndAsDefaultOperator() {
+    public void searchProjectsPaginatedHasAndAsDefaultOperatorAndFindsCorrectLobsAndStatusRespectingExcludes() {
         // given
+        var lob = "LOB Test";
         var simpleQuery = "extraordinary description";
         var pageable = PageRequest.of(0, 1);
         var expectedProjects = findProjectByIds("STF-8");
 
         // when
-        var actualProjectPage = hibernateSearchService.searchProjects(simpleQuery, pageable, null);
+        var actualProjectPage = hibernateSearchService.searchProjects(simpleQuery, pageable, lob);
 
         // then
         var softly = new SoftAssertions();

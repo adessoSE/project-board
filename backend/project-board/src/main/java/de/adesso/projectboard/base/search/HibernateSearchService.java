@@ -175,12 +175,11 @@ public class HibernateSearchService {
         var excludeStatusQuery = buildNotInQuery(queryBuilder, STATUS_FIELD_NAME, excludedStatus);
         var lobIndependentOrLobNullOrEqualQuery = buildLobIndependentOrLobNullOrEqualQuery(queryBuilder, lob);
 
-        //TODO: fix weird behaviour when building conjunction
         return queryBuilder
                 .bool()
                 .must(baseQuery)
                 .must(excludeStatusQuery)
-                //.must(lobIndependentOrLobNullOrEqualQuery)
+                .must(lobIndependentOrLobNullOrEqualQuery)
                 .createQuery();
     }
 
@@ -193,6 +192,7 @@ public class HibernateSearchService {
                 .createQuery();
     }
 
+    //TODO: build query manually instead of using a simple query and compare performance
     Query buildInQuery(QueryBuilder queryBuilder, String fieldName, Collection<String> wantedValues) {
         var queryString = HibernateSimpleQueryUtils.createLuceneQueryString(wantedValues,"|");
 
@@ -222,9 +222,9 @@ public class HibernateSearchService {
             var lowerCaseLob = lob.toLowerCase();
             var lobDependentQuery = buildInQuery(queryBuilder, STATUS_FIELD_NAME, statusWithLobConstraint);
             var lobEqualsQuery = queryBuilder
-                    .keyword()
+                    .phrase()
                     .onField(LOB_FIELD_NAME)
-                    .matching(lowerCaseLob)
+                    .sentence(lowerCaseLob)
                     .createQuery();
 
             var q = queryBuilder.bool()
