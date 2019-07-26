@@ -1,7 +1,7 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { environment } from '../../environments/environment';
+import {HttpClient} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
+import {environment} from '../../environments/environment';
 
 @Injectable()
 export class ProjectService {
@@ -22,6 +22,11 @@ export class ProjectService {
 
   isBookmarked(bookmarks: Project[], projectId: string): boolean {
     return bookmarks ? bookmarks.some(p => p && p.id === projectId) : false;
+  }
+
+  isFinished(project: Project): boolean {
+    const lowerCaseStatus = project.status.toLowerCase();
+    return lowerCaseStatus === 'abgeschlossen' || lowerCaseStatus === 'closed';
   }
 }
 

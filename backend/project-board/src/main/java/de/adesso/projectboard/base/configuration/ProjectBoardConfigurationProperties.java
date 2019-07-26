@@ -47,9 +47,9 @@ public class ProjectBoardConfigurationProperties {
      * The list off all status of a project that are excluded from the list of
      * projects seen by the users in <b>lower case</b>.
      *
-     * Defaults to {@code abgeschlossen} and {@code closed}.
+     * Defaults to {@code abgeschlossen}, {@code closed}, {@code angeboten} and {@code offered}.
      */
-    private List<String> statusExcludedFromList = List.of("abgeschlossen", "closed");
+    private List<String> statusExcludedFromList = List.of("abgeschlossen", "closed", "angeboten", "offered");
 
     /**
      * The list of all status of a project that prevent users from applying to

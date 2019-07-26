@@ -37,8 +37,6 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
 
     private final Set<String> lobDependentStatus;
 
-    private final Set<String> applicationsForbiddenStatus;
-
     @Autowired
     public UserAccessExpressionEvaluator(UserService userService,
                                          UserAccessService userAccessService,
@@ -53,7 +51,6 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
         this.bookmarkService = bookmarkService;
 
         this.lobDependentStatus = new HashSet<>(properties.getLobDependentStatus());
-        this.applicationsForbiddenStatus = new HashSet<>(properties.getApplicationsForbiddenStatus());
     }
 
     /**
@@ -124,12 +121,11 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
             return true;
         }
 
-        var project = projectService.getProjectById(projectId);
-
         if(userService.userIsManager(user)) {
             return true;
         }
 
+        var project = projectService.getProjectById(projectId);
         if(!userAccessService.userHasActiveAccessInterval(user)) {
             return applicationService.userHasAppliedForProject(user, project) ||
                     bookmarkService.userHasBookmark(user, project);

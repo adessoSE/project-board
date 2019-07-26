@@ -1,18 +1,18 @@
-import { formatDate } from '@angular/common';
-import { Component, HostListener, Inject, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
-import { SafetyqueryDialogComponent } from '../safetyquery-dialog/safetyquery-dialog.component';
-import { MomentDateAdapter } from '@angular/material-moment-adapter';
-import { NavigationStart, Router } from '@angular/router';
-import { Moment } from 'moment';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { Application, Employee, EmployeeService } from '../_services/employee.service';
-import { Project } from '../_services/project.service';
-import { DatepickerHeaderComponent } from '../datepicker-header/datepicker-header.component';
-import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
-import { CLOSE_DIALOG_TOOLTIP } from '../tooltips';
+import {formatDate} from '@angular/common';
+import {Component, HostListener, Inject, OnInit} from '@angular/core';
+import {FormControl} from '@angular/forms';
+import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material';
+import {SafetyqueryDialogComponent} from '../safetyquery-dialog/safetyquery-dialog.component';
+import {MomentDateAdapter} from '@angular/material-moment-adapter';
+import {NavigationStart, Router} from '@angular/router';
+import {Moment} from 'moment';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
+import {Application, Employee, EmployeeService} from '../_services/employee.service';
+import {Project} from '../_services/project.service';
+import {DatepickerHeaderComponent} from '../datepicker-header/datepicker-header.component';
+import {ProjectDialogComponent} from '../project-dialog/project-dialog.component';
+import {CLOSE_DIALOG_TOOLTIP} from '../tooltips';
 
 export interface EmployeeDialogData {
   employee: Employee;
@@ -167,6 +167,7 @@ export class EmployeeDialogComponent implements OnInit {
       data: {
         project: p,
         applicable: false,
+        projectFinished: false,
         bookmarked: false,
         isUserBoss: true
       }
