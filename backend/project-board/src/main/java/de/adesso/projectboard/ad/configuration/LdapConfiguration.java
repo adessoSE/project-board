@@ -7,19 +7,25 @@ import de.adesso.projectboard.ad.updater.UserUpdater;
 import de.adesso.projectboard.ad.user.RepositoryUserService;
 import de.adesso.projectboard.base.access.handler.UserAccessEventHandler;
 import de.adesso.projectboard.base.access.persistence.AccessIntervalRepository;
+import de.adesso.projectboard.base.normalizer.Normalizer;
 import de.adesso.projectboard.base.search.HibernateSearchService;
 import de.adesso.projectboard.base.user.persistence.UserRepository;
+import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.persistence.data.UserDataRepository;
 import de.adesso.projectboard.base.user.persistence.hierarchy.HierarchyTreeNodeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.LdapTemplate;
 
 import java.time.Clock;
+import java.util.List;
+import java.util.Optional;
 
 @ConditionalOnProperty(
         prefix = "projectboard.ldap",
@@ -47,7 +53,7 @@ public class LdapConfiguration {
     @Bean
     public RepositoryUserService repositoryUserService(UserRepository userRepository, UserDataRepository userDataRepository,
                                                        LdapAdapter ldapAdapter, HierarchyTreeNodeRepository hierarchyTreeNodeRepo,
-                                                       HibernateSearchService hibernateSearchService) {
+                                                       @Qualifier("managerSearchService") HibernateSearchService hibernateSearchService) {
         return new RepositoryUserService(userRepository, userDataRepository, ldapAdapter, hierarchyTreeNodeRepo, hibernateSearchService);
     }
 
@@ -61,8 +67,8 @@ public class LdapConfiguration {
     @Autowired
     @Bean
     public UserUpdater userUpdater(HierarchyTreeNodeRepository hierarchyTreeNodeRepo, RepositoryUserService repositoryUserService,
-                                   UserDataRepository userDataRepo, LdapAdapter ldapAdapter) {
-        return new UserUpdater(hierarchyTreeNodeRepo, repositoryUserService, userDataRepo, ldapAdapter);
+                                   UserDataRepository userDataRepo, LdapAdapter ldapAdapter, @Lazy Optional<List<Normalizer<UserData>>> normalizers) {
+        return new UserUpdater(hierarchyTreeNodeRepo, repositoryUserService, userDataRepo, ldapAdapter, normalizers.orElse(List.of()));
     }
 
     @Autowired

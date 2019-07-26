@@ -3,6 +3,7 @@ package de.adesso.projectboard.ad.updater;
 import de.adesso.projectboard.ad.service.LdapAdapter;
 import de.adesso.projectboard.ad.service.node.LdapUserNode;
 import de.adesso.projectboard.ad.user.RepositoryUserService;
+import de.adesso.projectboard.base.normalizer.Normalizer;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
 import de.adesso.projectboard.base.user.persistence.data.UserDataRepository;
@@ -41,6 +42,9 @@ public class UserUpdaterTest {
     @Mock
     private UserDataRepository userDataRepoMock;
 
+    @Mock
+    private Normalizer<UserData> normalizerMock;
+
     @Captor
     private ArgumentCaptor<Collection<UserData>> userDataCaptor;
 
@@ -48,7 +52,7 @@ public class UserUpdaterTest {
 
     @Before
     public void setUp() {
-        this.userUpdater = new UserUpdater(hierarchyTreeNodeRepoMock, repoUserServiceMock, userDataRepoMock, ldapAdapterMock);
+        this.userUpdater = new UserUpdater(hierarchyTreeNodeRepoMock, repoUserServiceMock, userDataRepoMock, ldapAdapterMock, List.of(normalizerMock));
     }
 
     @Test
@@ -96,6 +100,8 @@ public class UserUpdaterTest {
         given(repoUserServiceMock.getOrCreateUserById(firstUserId)).willReturn(firstUser);
         given(repoUserServiceMock.getOrCreateUserById(secondUserId)).willReturn(secondUser);
 
+        given(normalizerMock.normalize(List.of(firstExpected, secondExpected))).willReturn(List.of(firstExpected, secondExpected));
+
         // when
         userUpdater.updateUserData(List.of(firstNode, secondNode));
 
@@ -103,6 +109,7 @@ public class UserUpdaterTest {
         verify(userDataRepoMock).deleteAll();
         verify(userDataRepoMock).flush();
         verify(userDataRepoMock).saveAll(userDataCaptor.capture());
+        verify(normalizerMock).normalize(List.of(firstExpected, secondExpected));
 
         assertThat(userDataCaptor.getValue()).containsExactlyInAnyOrder(firstExpected, secondExpected);
     }

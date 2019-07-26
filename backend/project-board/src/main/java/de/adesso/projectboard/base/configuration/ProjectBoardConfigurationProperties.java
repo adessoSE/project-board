@@ -6,6 +6,7 @@ import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
 
 @ConfigurationProperties(prefix = "projectboard")
 @Data
@@ -31,5 +32,31 @@ public class ProjectBoardConfigurationProperties {
      */
     @NotEmpty
     private String url = "http://localhost:4200/";
+
+    /**
+     * The list of all status of a project that require the user to be
+     * in the same lob or be a manager to access it in <b>lower case</b>. All
+     * status not contained in this list are implicitly accessible by every
+     * user.
+     *
+     * Defaults to {@code offen} and {@code open}.
+     */
+    private List<String> lobDependentStatus = List.of("offen", "open");
+
+    /**
+     * The list off all status of a project that are excluded from the list of
+     * projects seen by the users in <b>lower case</b>.
+     *
+     * Defaults to {@code abgeschlossen}, {@code closed}, {@code angeboten} and {@code offered}.
+     */
+    private List<String> statusExcludedFromList = List.of("abgeschlossen", "closed", "angeboten", "offered");
+
+    /**
+     * The list of all status of a project that prevent users from applying to
+     * the project in <b>lower case</b>.
+     *
+     * Defaults to {@code abgeschlossen} and {@code closed}.
+     */
+    private List<String> applicationsForbiddenStatus = List.of("abgeschlossen", "closed");
 
 }

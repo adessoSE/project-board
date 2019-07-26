@@ -30,6 +30,11 @@ export class FaqComponent implements OnInit {
       answer: 'Ja, Deine Mitarbeiter sehen auf dieser Seite andere Fragen und Antworten.'
     },
     {
+      question: 'Sehen meine Mitarbeiter die gleichen Projekte wie ich?',
+      answer: 'Du kannst alle offenen und eskalierten Projekte sehen, egal welcher LoB diese zugeordnet sind. Deine Mitarbeiter ' +
+          'können offene Projekte nur sehen, wenn diese der selben LoB zugeordnet sind.'
+    },
+    {
       question: 'Haben meine Mitarbeiter die gleichen Informationen über die Projekte wie ich?',
       answer: 'Nein. Sie können die Felder "Externe", "Reisekosten vergütet" und "Tagessatz" nicht sehen.'
     },

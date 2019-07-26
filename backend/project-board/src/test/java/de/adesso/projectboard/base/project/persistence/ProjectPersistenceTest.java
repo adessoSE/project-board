@@ -1,21 +1,15 @@
 package de.adesso.projectboard.base.project.persistence;
 
-import de.adesso.projectboard.base.project.persistence.specification.StatusSpecification;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -151,56 +145,6 @@ public class ProjectPersistenceTest {
 
         // then
         assertThat(persistedProject.getId()).isEqualTo(expectedProjectId);
-    }
-
-    @Test
-    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void findAllReturnsAllProjectsWhenSpecificationEmptyNonPaginated() {
-        // given / when / then
-        allMatchingAndSizeEquals(Set.of(), 10, false);
-    }
-
-    @Test
-    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void findAllReturnsAllProjectsWhenSpecificationEmptyPaginated() {
-        // given / when / then
-        allMatchingAndSizeEquals(Set.of(), 10, true);
-    }
-
-    @Test
-    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void findAllReturnsProjectsExpectedStatusNonPaginated() {
-        // given / when / then
-        allMatchingAndSizeEquals(Set.of("offen", "open"), 4, false);
-    }
-
-    @Test
-    @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
-    public void findAllReturnsProjectsExpectedStatusPaginated() {
-        // given / when / then
-        allMatchingAndSizeEquals(Set.of("offen", "open"), 4, true);
-    }
-
-    void allMatchingAndSizeEquals(Set<String> status, int expectedSize, boolean paginated) {
-        // when
-        List<Project> projects;
-        if(paginated) {
-            projects = projectRepository.findAll(new StatusSpecification(status), PageRequest.of(0, 1000))
-                            .getContent();
-        } else {
-            projects = projectRepository.findAll(new StatusSpecification(status), Sort.unsorted());
-        }
-
-        // then
-        var allMatchingStatus = status.isEmpty() || projects.stream()
-                .allMatch(project -> status.contains(project.status.toLowerCase()));
-
-        var softly = new SoftAssertions();
-
-        softly.assertThat(projects).hasSize(expectedSize);
-        softly.assertThat(allMatchingStatus).isTrue();
-
-        softly.assertAll();
     }
 
 }

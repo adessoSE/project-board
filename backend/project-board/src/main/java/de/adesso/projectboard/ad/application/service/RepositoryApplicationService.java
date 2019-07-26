@@ -4,8 +4,10 @@ import de.adesso.projectboard.base.application.handler.ProjectApplicationEventHa
 import de.adesso.projectboard.base.application.persistence.ProjectApplication;
 import de.adesso.projectboard.base.application.persistence.ProjectApplicationRepository;
 import de.adesso.projectboard.base.application.service.ApplicationService;
+import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.base.exceptions.AlreadyAppliedException;
 import de.adesso.projectboard.base.exceptions.ApplicationNotFoundException;
+import de.adesso.projectboard.base.exceptions.ProjectStatusPreventsApplicationException;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.user.persistence.User;
@@ -18,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * {@link ApplicationService} implementation that persists {@link ProjectApplication}s
@@ -37,15 +41,20 @@ public class RepositoryApplicationService implements ApplicationService {
 
     private final Clock clock;
 
+    private final Set<String> applicationsForbiddenStatus;
+
     @Autowired
     public RepositoryApplicationService(ProjectService projectService,
                                         ProjectApplicationRepository applicationRepo,
                                         ProjectApplicationEventHandler applicationEventHandler,
-                                        Clock clock) {
+                                        Clock clock,
+                                        ProjectBoardConfigurationProperties properties) {
         this.projectService = projectService;
         this.applicationRepo = applicationRepo;
         this.applicationEventHandler = applicationEventHandler;
         this.clock = clock;
+
+        this.applicationsForbiddenStatus = new HashSet<>(properties.getApplicationsForbiddenStatus());
     }
 
     @Override
@@ -55,16 +64,21 @@ public class RepositoryApplicationService implements ApplicationService {
 
     @Override
     @Transactional
-    public ProjectApplication createApplicationForUser(User user, String projectId, String comment) throws AlreadyAppliedException {
-        Project project = projectService.getProjectById(projectId);
+    public ProjectApplication createApplicationForUser(User user, String projectId, String comment) {
+        var project = projectService.getProjectById(projectId);
+        var projectStatus = project.getStatus().toLowerCase();
 
         if(userHasAppliedForProject(user, project)) {
             throw new AlreadyAppliedException();
         }
 
+        if(applicationsForbiddenStatus.contains(projectStatus)) {
+            throw new ProjectStatusPreventsApplicationException();
+        }
+
         // use a clock for testing
-        LocalDateTime applicationDate = LocalDateTime.now(clock);
-        ProjectApplication application = new ProjectApplication(project, comment, user, applicationDate);
+        var applicationDate = LocalDateTime.now(clock);
+        var application = new ProjectApplication(project, comment, user, applicationDate);
 
         var savedApplication = applicationRepo.save(application);
         applicationEventHandler.onApplicationReceived(savedApplication);

@@ -60,6 +60,7 @@ export class BrowseProjectsComponent implements OnInit {
       data: {
         project: p,
         applicable: this.isProjectApplicable(p.id),
+        projectFinished: this.isProjectFinished(p),
         bookmarked: this.isProjectBookmarked(p.id),
         isUserBoss: this.isUserBoss,
         hasAccess:  true
@@ -182,6 +183,10 @@ export class BrowseProjectsComponent implements OnInit {
 
   isProjectBookmarked(projectId: string): boolean {
     return this.projectsService.isBookmarked(this.bookmarks, projectId);
+  }
+
+  isProjectFinished(project: Project): boolean {
+    return this.projectsService.isFinished(project);
   }
 
   handleBookmark(project: Project): void {

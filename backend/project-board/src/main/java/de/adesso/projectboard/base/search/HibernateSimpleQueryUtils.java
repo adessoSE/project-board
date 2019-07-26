@@ -2,19 +2,19 @@ package de.adesso.projectboard.base.search;
 
 import lombok.NonNull;
 import org.springframework.data.util.Pair;
-import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
-@Component
 public class HibernateSimpleQueryUtils {
 
-    private final Set<Character> TERM_DELIMITER = Set.of('(', ')', '|', ' ', '&', '-');
+    private static final Set<Character> TERM_DELIMITER = Set.of('(', ')', '|', ' ', '&', '-');
 
-    private final Set<Character> SPECIAL_CHARACTERS = Set.of('~', '*');
+    private static final Set<Character> SPECIAL_CHARACTERS = Set.of('~', '*');
 
     /**
      * Replaces all simple terms in a given Hibernate search simple query. A simple
@@ -34,7 +34,7 @@ public class HibernateSimpleQueryUtils {
      * @return
      *          A trimmed simple query with all simple terms replaced.
      */
-    public String makeQueryPrefixAndFuzzy(@NonNull String simpleQuery) {
+    public static String makeQueryPrefixAndFuzzy(@NonNull String simpleQuery) {
         var trimmedSimpleQuery = simpleQuery.trim();
         var replaceableTermIndexPairs = getReplaceableTermsOfQuery(trimmedSimpleQuery);
 
@@ -73,13 +73,13 @@ public class HibernateSimpleQueryUtils {
      *          the original term, a fuzzy term with a maximum editing distance of {@code 1}
      *          and a prefix term.
      */
-    String replaceTermWithFuzzyAndPrefixDisjunction(Pair<Integer, Integer> startEndIndexPair, String simpleQuery) {
+    static String replaceTermWithFuzzyAndPrefixDisjunction(Pair<Integer, Integer> startEndIndexPair, String simpleQuery) {
         var termStartIndex = startEndIndexPair.getFirst();
         var termEndIndex = startEndIndexPair.getSecond();
 
         var term = simpleQuery.substring(termStartIndex, termEndIndex + 1);
         var replaceTerm = String.format("(%s)",
-                createHibernateSearchDisjunction(List.of(term, term + "~1", term + "*")));
+                createLuceneQueryString(List.of(term, term + "~1", term + "*"), "|"));
 
         return replaceSubstring(startEndIndexPair, simpleQuery, replaceTerm);
     }
@@ -98,7 +98,7 @@ public class HibernateSimpleQueryUtils {
      * @return
      *          The string the substring is replaced in.
      */
-    String replaceSubstring(Pair<Integer, Integer> startEndIndexPair, String stringToReplaceIn, String replacement) {
+    static String replaceSubstring(Pair<Integer, Integer> startEndIndexPair, String stringToReplaceIn, String replacement) {
         var startIndex = startEndIndexPair.getFirst();
         var endIndex = startEndIndexPair.getSecond();
 
@@ -125,7 +125,7 @@ public class HibernateSimpleQueryUtils {
      *          equal to the given {@code startIndex} or {@code -1} if no character was not found
      *          or it's the last character of the string.
      */
-    int getIndexAfterFirstAppearanceOfAny(int startIndex, Set<Character> characters, String searchedString) {
+    static int getIndexAfterFirstAppearanceOfAny(int startIndex, Set<Character> characters, String searchedString) {
         var queryCharCount = searchedString.length();
 
         if(startIndex >= queryCharCount) {
@@ -158,7 +158,7 @@ public class HibernateSimpleQueryUtils {
      *          equal to the given {@code startIndex} or {@code -1} if the character was not found
      *          or it's the last character of the string.
      */
-    int getIndexAfterFirstAppearanceOf(int startIndex, char character, String searchedString) {
+    static int getIndexAfterFirstAppearanceOf(int startIndex, char character, String searchedString) {
         var queryCharCount = searchedString.length();
 
         if(startIndex >= queryCharCount) {
@@ -190,7 +190,7 @@ public class HibernateSimpleQueryUtils {
      *          {@code characters} set that is greater than or equal to the given {@code startIndex}
      *          or {@code -1} if no character was found.
      */
-    int getIndexOfFirstAppearanceOfAny(int startIndex, Set<Character> characters, String searchedString) {
+    static int getIndexOfFirstAppearanceOfAny(int startIndex, Set<Character> characters, String searchedString) {
         var queryCharCount = searchedString.length();
 
         if(startIndex >= queryCharCount) {
@@ -220,7 +220,7 @@ public class HibernateSimpleQueryUtils {
      *          The index following the phrase term or {@code -1} if it's there is
      *          no index after the phrase term.
      */
-    int getIndexAfterPhraseTerm(int startIndex, String simpleQuery) {
+    static int getIndexAfterPhraseTerm(int startIndex, String simpleQuery) {
         var queryCharCount = simpleQuery.length();
 
         if(startIndex >= queryCharCount) {
@@ -245,7 +245,7 @@ public class HibernateSimpleQueryUtils {
      *          A list of {@code [startindex, endindex]} pairs of
      *          each replaceable term of the query ordered in ascending order.
      */
-    List<Pair<Integer, Integer>> getReplaceableTermsOfQuery(String simpleQuery) {
+    static List<Pair<Integer, Integer>> getReplaceableTermsOfQuery(String simpleQuery) {
         var termIndexPairs = new ArrayList<Pair<Integer, Integer>>();
         var queryCharCount = simpleQuery.length();
 
@@ -293,24 +293,59 @@ public class HibernateSimpleQueryUtils {
     /**
      *
      * @param values
-     *          The values to create the disjunction of, not null.
+     *          The values to append to each other, not {@code empty}.
+     *
+     * @param operator
+     *          The operator to use between every value.
+     *
+     * @param function
+     *          A function applied to each value of the given {@code values}
+     *          collection, not {@code null}.
      *
      * @return
-     *          A hibernate simple query representing a disjunction of all given
-     *          {@code values}.
-     *          .
+     *          The resulting query string.
      */
-    public String createHibernateSearchDisjunction(Collection<String> values) {
-        var valueArr = values.toArray(String[]::new);
-        var fieldMatchStringBuilder = new StringBuilder(valueArr[0]);
+    public static String createLuceneQueryString(Collection<String> values, String operator,
+                                                  Function<String, String> function) {
+        if(values.isEmpty()) {
+            return "";
+        }
 
-        for(var valueIndex = 1; valueIndex < valueArr.length; valueIndex++) {
+        var mappedValues = values.stream()
+                .map(function)
+                .distinct()
+                .collect(Collectors.toList());
+        var mappedValueArr = mappedValues.toArray(String[]::new);
+        var firstValue = mappedValueArr[0];
+        var fieldMatchStringBuilder = new StringBuilder(firstValue);
+
+        for(var valueIndex = 1; valueIndex < mappedValueArr.length; valueIndex++) {
             fieldMatchStringBuilder
-                    .append(" | ")
-                    .append(valueArr[valueIndex]);
+                    .append(" ")
+                    .append(operator)
+                    .append(" ")
+                    .append(mappedValueArr[valueIndex]);
         }
 
         return fieldMatchStringBuilder.toString();
+    }
+
+    /**
+     *
+     * @param values
+     *          The values to append to each other, not {@code empty}.
+     *
+     * @param operator
+     *          The operator to use between every value.
+     *
+     * @return
+     *          The result of {@link #createLuceneQueryString(Collection, String, Function)} with
+     *          a identity function as the argument.
+     *
+     * @see #createLuceneQueryString(Collection, String, Function)
+     */
+    public static String createLuceneQueryString(Collection<String> values, String operator) {
+        return createLuceneQueryString(values, operator, Function.identity());
     }
 
 }

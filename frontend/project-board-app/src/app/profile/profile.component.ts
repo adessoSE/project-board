@@ -1,17 +1,16 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material';
-import { ActivatedRoute } from '@angular/router';
+import {Component, Input, OnInit} from '@angular/core';
+import {MatDialog, MatDialogRef, TooltipPosition} from '@angular/material';
+import {ActivatedRoute} from '@angular/router';
 import * as $ from 'jquery';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { AuthenticationService } from '../_services/authentication.service';
-import { Application, Employee, EmployeeService } from '../_services/employee.service';
-import { Project, ProjectService } from '../_services/project.service';
-import { EmployeeDialogComponent } from '../employee-dialog/employee-dialog.component';
-import { ProjectDialogComponent } from '../project-dialog/project-dialog.component';
-import { SafetyqueryDialogComponent } from '../safetyquery-dialog/safetyquery-dialog.component';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
+import {AuthenticationService} from '../_services/authentication.service';
+import {Application, Employee, EmployeeService} from '../_services/employee.service';
+import {Project, ProjectService} from '../_services/project.service';
+import {EmployeeDialogComponent} from '../employee-dialog/employee-dialog.component';
+import {ProjectDialogComponent} from '../project-dialog/project-dialog.component';
+import {SafetyqueryDialogComponent} from '../safetyquery-dialog/safetyquery-dialog.component';
 import {FormControl} from '@angular/forms';
-import {TooltipPosition} from '@angular/material';
 
 @Component({
   selector: 'app-profile',
@@ -74,6 +73,10 @@ export class ProfileComponent implements OnInit {
     return this.projectService.isBookmarked(this.bookmarks, projectId);
   }
 
+  isProjectFinished(project: Project): boolean {
+    return this.projectService.isFinished(project);
+  }
+
   /* Tested Methods End */
 
   handleBookmark(project: Project): void {
@@ -100,6 +103,7 @@ export class ProfileComponent implements OnInit {
         data: {
           project: p,
           applicable: this.isProjectApplicable(p.id),
+          projectFinished: this.isProjectFinished(p),
           bookmarked: this.isProjectBookmarked(p.id),
           isUserBoss: this.user.boss,
           hasAccess:  this.user.accessInfo.hasAccess

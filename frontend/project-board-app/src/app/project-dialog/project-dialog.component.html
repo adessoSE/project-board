@@ -124,6 +124,9 @@
   <div style="margin: 0 auto;" *ngIf="!data.hasAccess && !data.isUserBoss">
     <small>Du bist nicht freigeschaltet.</small>
   </div>
+  <div style="margin: 0 auto" *ngIf="!data.isUserBoss && data.projectFinished">
+    <small>Dieses Projekt kann aktuell nicht angefragt werden.</small>
+  </div>
   <div style="width: 100%; text-align: left" *ngIf="showBox" id="requestArea">
     <div class="comment">
       <span><label class="comment-label" for="comment">Projektanfrage</label></span><span id="chars-left"> (noch {{1000-comment.length}} Zeichen frei)</span>
@@ -138,12 +141,12 @@
       <mat-icon>send</mat-icon>
       Absenden
     </button>
-    <span *ngIf="!showBox && data.applicable && !data.isUserBoss && data.hasAccess" id="ask-project"
+    <span *ngIf="!showBox && data.applicable && !data.projectFinished && !data.isUserBoss && data.hasAccess" id="ask-project"
   matTooltip="Du bist an diesem Projekt interessiert? Dann benachrichtige deine Führungskraft darüber, indem du hier eine Anfrage erstellst."
   [matTooltipPosition]="position.value">
     <mat-icon class="apply-info-icon">info</mat-icon>
   </span>
-    <button *ngIf="!showBox && data.applicable && data.hasAccess" class="btn btn-primary" (click)="toggleRequestArea()" [title]="startRequestTooltip">
+    <button *ngIf="!showBox && data.applicable && !data.projectFinished && data.hasAccess" class="btn btn-primary" (click)="toggleRequestArea()" [title]="startRequestTooltip">
       <mat-icon>create</mat-icon>
       Anfrage erstellen
     </button>

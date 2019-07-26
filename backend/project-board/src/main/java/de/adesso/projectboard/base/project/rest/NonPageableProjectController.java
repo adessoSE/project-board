@@ -51,7 +51,7 @@ public class NonPageableProjectController extends BaseProjectController {
         this.projectionFactory = projectionFactory;
     }
 
-    @PreAuthorize("hasAccessToProjects() || hasRole('admin')")
+    @PreAuthorize("hasAccessToProject(#projectId) || hasRole('admin')")
     @GetMapping("/{projectId}")
     @Override
     public ResponseEntity<?> getById(@PathVariable String projectId) {

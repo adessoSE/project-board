@@ -1,12 +1,12 @@
-import { Component, EventEmitter, HostListener, Inject, OnInit, Output } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { NavigationStart, Router } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { AuthenticationService } from '../_services/authentication.service';
-import { Application, EmployeeService } from '../_services/employee.service';
-import { Project } from '../_services/project.service';
-import { AlertService } from '../_services/alert.service';
+import {Component, EventEmitter, HostListener, Inject, OnInit, Output} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef, TooltipPosition} from '@angular/material';
+import {NavigationStart, Router} from '@angular/router';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
+import {AuthenticationService} from '../_services/authentication.service';
+import {Application, EmployeeService} from '../_services/employee.service';
+import {Project} from '../_services/project.service';
+import {AlertService} from '../_services/alert.service';
 import {
   ABORT_REQUEST_TOOLTIP,
   ADD_BOOKMARK_TOOLTIP,
@@ -19,13 +19,13 @@ import {
 } from '../tooltips';
 
 import {FormControl} from '@angular/forms';
-import {TooltipPosition} from '@angular/material';
 
 export interface ProjectDialogData {
   project: Project;
   isUserBoss: boolean;
   bookmarked: boolean;
   applicable: boolean;
+  projectFinished: boolean;
   hasAccess: boolean;
 }
 

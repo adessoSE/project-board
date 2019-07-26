@@ -2,14 +2,19 @@ package de.adesso.projectboard.rest.security;
 
 import de.adesso.projectboard.base.access.service.UserAccessService;
 import de.adesso.projectboard.base.application.service.ApplicationService;
+import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.service.ProjectService;
 import de.adesso.projectboard.base.security.ExpressionEvaluator;
 import de.adesso.projectboard.base.user.persistence.User;
+import de.adesso.projectboard.base.user.service.BookmarkService;
 import de.adesso.projectboard.base.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A {@link ExpressionEvaluator} implementation that is used to authorize access
@@ -28,15 +33,24 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
 
     private final ApplicationService applicationService;
 
+    private final BookmarkService bookmarkService;
+
+    private final Set<String> lobDependentStatus;
+
     @Autowired
     public UserAccessExpressionEvaluator(UserService userService,
                                          UserAccessService userAccessService,
                                          ProjectService projectService,
-                                         ApplicationService applicationService) {
+                                         ApplicationService applicationService,
+                                         BookmarkService bookmarkService,
+                                         ProjectBoardConfigurationProperties properties) {
         this.userService = userService;
         this.userAccessService = userAccessService;
         this.projectService = projectService;
         this.applicationService = applicationService;
+        this.bookmarkService = bookmarkService;
+
+        this.lobDependentStatus = new HashSet<>(properties.getLobDependentStatus());
     }
 
     /**
@@ -75,26 +89,58 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      *
      *          <ul>
      *              <li>
-     *                  The user has access to projects.
-     *                  ({@link #hasAccessToProjects(Authentication, User)} returns {@code true})
+     *                  No project with the given {@code projectId} exists.
      *              </li>
      *
      *              <li>
-     *                  No {@link Project} with the given {@code projectId} exists.
-     *                  ({@link ProjectService#projectExists(String)} returns {@code false})
+     *                  The user has bookmarked the project.
      *              </li>
      *
      *              <li>
-     *                  The user has applied for the {@link Project} with the given {@code projectId}.
-     *                  ({@link ApplicationService#userHasAppliedForProject(User, Project)} returns {@code true})
+     *                  The status of the project is LoB independent.
      *              </li>
+     *
+     *              <li>
+     *                  The status is LoB dependent and the user is a manager.
+     *              </li>
+     *
+     *              <li>
+     *                  The status is LoB dependent and the LoB of the project is {@code null} or
+     *                  the LoB is the same as the user's LoB.
+     *              </li>
+     *
+     *              <li>
+     *                  The user has applied for the project.
+     *              </li>
+     *
      *          </ul>
      */
     @Override
     public boolean hasAccessToProject(Authentication authentication, User user, String projectId) {
-        return hasAccessToProjects(authentication, user) ||
-                !projectService.projectExists(projectId) ||
-                applicationService.userHasAppliedForProject(user, projectService.getProjectById(projectId));
+        if(projectDoesNotExistOrHasLobIndependentStatus(projectId)) {
+            return true;
+        }
+
+        if(userService.userIsManager(user)) {
+            return true;
+        }
+
+        var project = projectService.getProjectById(projectId);
+        if(!userAccessService.userHasActiveAccessInterval(user)) {
+            return applicationService.userHasAppliedForProject(user, project) ||
+                    bookmarkService.userHasBookmark(user, project);
+        }
+
+        var projectLob = project.getLob();
+        var userLob = userService.getUserData(user).getLob();
+        var projectLobNullOrEqual = projectLob == null || projectLob.equalsIgnoreCase(userLob);
+
+        if(projectLobNullOrEqual) {
+            return true;
+        }
+
+        return applicationService.userHasAppliedForProject(user, project) ||
+                bookmarkService.userHasBookmark(user, project);
     }
 
     /**
@@ -105,14 +151,49 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
      * @param user
      *          The {@link User} object of the currently authenticated user.
      *
-     * @return
-     *          The result of {@link #hasAccessToProjects(Authentication, User)}
+     * @param projectId
+     *          The ID of the project the given {@code user} want to apply
+     *          to, not {@code null}.
      *
-     * @see #hasAccessToProjects(Authentication, User)
+     * @return
+     *          {@code true}, iff at least one of the following conditions is met:
+     *          <ul>
+     *              <li>the project with the given {@code projectId} does not exist</li>
+     *              <li>the status of the project is {@code null}</li>
+     *              <li>the status is contained in the set of lob independent status</li>
+     *              <li>the user already applied for the project</li>
+     *              <li>the status is <b>not</b> contained in the set of status that prohibit applications</li>
+     *              <li>the status is contained in the set of lob dependent status and one of the following conditions is met:</li>
+     *              <ul>
+     *                  <li>the user is a manager</li>
+     *                  <li>the user has an active access interval and the user's lob is equal to the projects's lob
+     *                  or the lob of the project is {@code null} or the user has bookmarked the project</li>
+     *              </ul>
+     *          </ul>
      */
     @Override
-    public boolean hasPermissionToApply(Authentication authentication, User user) {
-        return hasAccessToProjects(authentication, user);
+    public boolean hasPermissionToApplyToProject(Authentication authentication, User user, String projectId) {
+        if(projectDoesNotExistOrHasLobIndependentStatus(projectId)) {
+            return true;
+        }
+
+        var project = projectService.getProjectById(projectId);
+
+        if(applicationService.userHasAppliedForProject(user, project)) {
+            return true;
+        }
+
+        if(userService.userIsManager(user)) {
+            return true;
+        }
+
+        if(!userAccessService.userHasActiveAccessInterval(user)) {
+            return false;
+        }
+
+        var projectLob = project.getLob();
+        var userLob = userService.getUserData(user).getLob();
+        return projectLob == null || projectLob.equalsIgnoreCase(userLob) || bookmarkService.userHasBookmark(user, project);
     }
 
     /**
@@ -159,6 +240,29 @@ public class UserAccessExpressionEvaluator implements ExpressionEvaluator {
         }
 
         return true;
+    }
+
+    /**
+     *
+     * @param projectId
+     *          The ID of the project, not {@code null}.
+     *
+     * @return
+     *          {@code true}, iff one of the following conditions is met:
+     *          <ul>
+     *              <li>no project with the given {@code projectId} exists</li>
+     *              <li>the status is contained in the set of lob independent status</li>
+     *          </ul>
+     */
+    boolean projectDoesNotExistOrHasLobIndependentStatus(String projectId) {
+        if(!projectService.projectExists(projectId)) {
+            return true;
+        }
+
+        var project = projectService.getProjectById(projectId);
+
+        var projectStatus = project.getStatus().toLowerCase();
+        return !this.lobDependentStatus.contains(projectStatus);
     }
 
 }

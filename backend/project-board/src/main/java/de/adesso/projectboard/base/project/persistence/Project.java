@@ -79,7 +79,7 @@ public class Project {
     @Column(length = 8192)
     String description;
 
-    @Field
+    @Field(indexNullAs = Field.DEFAULT_NULL_TOKEN)
     @Column(name = "LOB")
     @JsonDeserialize(using = ObjectValueDeserializer.class)
     @JsonAlias("customfield_10292")

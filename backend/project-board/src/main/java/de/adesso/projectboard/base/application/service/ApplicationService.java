@@ -24,14 +24,14 @@ public interface ApplicationService {
      *          The {@link Project}.
      *
      * @return
-     *          {@code true}, iff the user's {@link User#applications applications}
+     *          {@code true}, iff the user's {@link User#getApplications() applications}
      *          contain an application that refers to the project.
      */
     boolean userHasAppliedForProject(User user, Project project);
 
     /**
      * Creates a new {@link ProjectApplication} and add it
-     * to the user's {@link User#applications applications}.
+     * to the user's {@link User#getApplications() applications}.
      *
      * @param user
      *          The {@link User} to create an application for.
