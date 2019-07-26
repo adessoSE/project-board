@@ -168,45 +168,47 @@ public class HibernateSearchService {
                 .getResultList();
     }
 
-    Query getProjectBaseQuery(String simpleQueryString, String lob) {
-        var baseQuery = getQuerySearchingForAllIndexedFields(Project.class, simpleQueryString);
+    private Query getProjectBaseQuery(String simpleQueryString, String lob) {
         var queryBuilder = getQueryBuilder(Project.class);
 
+        var baseQuery = getQuerySearchingForAllIndexedFields(Project.class, simpleQueryString);
         var excludeStatusQuery = buildNotInQuery(queryBuilder, STATUS_FIELD_NAME, excludedStatus);
         var lobIndependentOrLobNullOrEqualQuery = buildLobIndependentOrLobNullOrEqualQuery(queryBuilder, lob);
 
-        return queryBuilder
-                .bool()
+        return queryBuilder.bool()
                 .must(baseQuery)
                 .must(excludeStatusQuery)
                 .must(lobIndependentOrLobNullOrEqualQuery)
                 .createQuery();
     }
 
-    Query buildNotInQuery(QueryBuilder queryBuilder, String fieldName, Collection<String> valuesToExclude) {
-        var inQuery = buildInQuery(queryBuilder, fieldName, valuesToExclude);
+    /**
+     * Builds a query that matches all projects
+     * <ul>
+     *     <li>whose status is not included in the {@code excludedStatus} set</li>
+     *     <li>whose status is not included in the {@code statusWithLobConstraint} set</li>
+     *     <li>whose LoB is {@code null}</li>
+     *     <li>whose status is included in the {@code statusWithLobConstraint} and whose LoB is equal
+     *     to the given {@code lob}</li>
+     * </ul>
+     *
+     * @param queryBuilder
+     *          The query builder to use.
+     *
+     * @param lob
+     *          The lob of the projects to include in the result as described above.
+     *
+     * @return
+     *          A query as described above, or {@code null} in case the
+     *          {@code statusWithLobConstrained} set is empty.
+     */
+    private Query buildLobIndependentOrLobNullOrEqualQuery(QueryBuilder queryBuilder, String lob) {
+        if(statusWithLobConstraint.isEmpty()) {
+            return null;
+        }
 
-        return queryBuilder
-                .bool()
-                .must(inQuery).not()
-                .createQuery();
-    }
-
-    //TODO: build query manually instead of using a simple query and compare performance
-    Query buildInQuery(QueryBuilder queryBuilder, String fieldName, Collection<String> wantedValues) {
-        var queryString = HibernateSimpleQueryUtils.createLuceneQueryString(wantedValues,"|");
-
-        return queryBuilder
-                .simpleQueryString()
-                .onField(fieldName)
-                .matching(queryString)
-                .createQuery();
-    }
-
-    Query buildLobIndependentOrLobNullOrEqualQuery(QueryBuilder queryBuilder, String lob) {
         var lobIndependentOrLobNullOrEqualsQuery = queryBuilder
-                .bool()
-                .minimumShouldMatchNumber(1);
+                .bool();
 
         var lobIndependentQuery = buildNotInQuery(queryBuilder, STATUS_FIELD_NAME, statusWithLobConstraint);
         lobIndependentOrLobNullOrEqualsQuery.should(lobIndependentQuery);
@@ -236,6 +238,79 @@ public class HibernateSearchService {
         }
 
         return lobIndependentOrLobNullOrEqualsQuery.createQuery();
+    }
+
+    /**
+     *
+     * @param queryBuilder
+     *          The query builder to use.
+     *
+     * @param fieldName
+     *          The field name to use.
+     *
+     * @param unwantedValues
+     *          A collection of all unwanted values, may be empty.
+     *
+     * @return
+     *      A query matching all entities whose value of the field specified by the given {@code fieldName}
+     *      is not included in the given {@code unwantedValues} collection, or {@code null} in case
+     *      the given {@code unwantedValues} collection is empty.
+     */
+    private Query buildNotInQuery(QueryBuilder queryBuilder, String fieldName, Collection<String> unwantedValues) {
+        if(unwantedValues.isEmpty()) {
+            return null;
+        }
+
+        var inQuery = buildInQuery(queryBuilder, fieldName, unwantedValues);
+
+        return queryBuilder
+                .bool()
+                .must(inQuery).not()
+                .createQuery();
+    }
+
+    /**
+     *
+     * @param queryBuilder
+     *          The query builder to use.
+     *
+     * @param fieldName
+     *          The field name to use.
+     *
+     * @param wantedValues
+     *          A collection of all wanted values, may be empty.
+     *
+     * @return
+     *      A query matching all entities whose value of the field specified by the given {@code fieldName}
+     *      is included in the given {@code unwantedValues} collection, or {@code null} in case
+     *      the given {@code unwantedValues} collection is empty.
+     */
+    private Query buildInQuery(QueryBuilder queryBuilder, String fieldName, Collection<String> wantedValues) {
+        if(wantedValues.isEmpty()) {
+            return null;
+        }
+
+        var inQuery = queryBuilder.bool();
+
+        wantedValues.stream()
+                .map(wantedValue -> buildFieldValueEqualsQuery(queryBuilder, fieldName, wantedValue))
+                .forEach(inQuery::should);
+
+        return inQuery.createQuery();
+    }
+
+    private Query buildFieldValueEqualsQuery(QueryBuilder queryBuilder, String fieldName, String value) {
+        if(value.contains(" ")) {
+            return queryBuilder.phrase()
+                    .onField(fieldName)
+                    .sentence(value)
+                    .createQuery();
+        } else {
+            return queryBuilder.keyword()
+                    .onField(fieldName)
+                    .matching(value)
+                    .createQuery();
+        }
     }
 
     /**

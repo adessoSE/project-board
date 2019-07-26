@@ -3,7 +3,7 @@ package de.adesso.projectboard.ad.project.service;
 import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.persistence.ProjectRepository;
-import de.adesso.projectboard.base.project.persistence.specification.StatusSpecification;
+import de.adesso.projectboard.base.project.persistence.specification.ProjectSpecification;
 import de.adesso.projectboard.base.search.HibernateSearchService;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.persistence.data.UserData;
@@ -70,7 +70,7 @@ public class RepositoryUserProjectServiceTest {
     public void getProjectsForUserReturnsLobDependentProjectsWhenUserIsNoManager() {
         // given
         var userLob = "LoB Test";
-        var expectedSpecification = new StatusSpecification(EXCLUDED_STATUS, LOB_DEPENDENT_STATUS, userLob);
+        var expectedSpecification = new ProjectSpecification(EXCLUDED_STATUS, LOB_DEPENDENT_STATUS, userLob);
         var sort = Sort.unsorted();
         var expectedProjects = List.of(projectMock);
 
@@ -88,7 +88,7 @@ public class RepositoryUserProjectServiceTest {
     @Test
     public void getProjectsForUserReturnsAllProjectsWhenUserIsManager() {
         // given
-        var expectedSpecification = new StatusSpecification(EXCLUDED_STATUS, Set.of(), null);
+        var expectedSpecification = new ProjectSpecification(EXCLUDED_STATUS, Set.of(), null);
         var sort = Sort.unsorted();
         var expectedProjects = List.of(projectMock);
 
@@ -139,7 +139,7 @@ public class RepositoryUserProjectServiceTest {
         // given
         var userLob = "LoB Test1234";
         var pageable = PageRequest.of(0, 100);
-        var expectedStatusSpecification = new StatusSpecification(EXCLUDED_STATUS, LOB_DEPENDENT_STATUS, userLob);
+        var expectedStatusSpecification = new ProjectSpecification(EXCLUDED_STATUS, LOB_DEPENDENT_STATUS, userLob);
         var expectedProjects = List.of(projectMock);
         var expectedPage = new PageImpl<>(expectedProjects);
 
@@ -158,7 +158,7 @@ public class RepositoryUserProjectServiceTest {
     public void getProjectsForUserPaginatedReturnsAllProjectsWhenUserIsManager() {
         // given
         var pageable = PageRequest.of(0, 100);
-        var expectedStatusSpecification = new StatusSpecification(EXCLUDED_STATUS, Set.of(), null);
+        var expectedStatusSpecification = new ProjectSpecification(EXCLUDED_STATUS, Set.of(), null);
         var expectedProjects = List.of(projectMock);
         var expectedPage = new PageImpl<>(expectedProjects);
 

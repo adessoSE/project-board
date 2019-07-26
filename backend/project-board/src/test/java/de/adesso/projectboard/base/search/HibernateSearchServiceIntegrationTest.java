@@ -33,6 +33,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SuppressWarnings("JpaQlInspection")
 @RunWith(SpringRunner.class)
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 @SqlConfig(transactionMode = SqlConfig.TransactionMode.ISOLATED)
@@ -72,6 +73,113 @@ public class HibernateSearchServiceIntegrationTest {
 
     @Test
     @Sql(scripts = "classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void searchProjectsNonPaginatedRespectsPageSizeOfRequest() {
+        // given
+        var hibernateSearchService = new HibernateSearchService(Set.of(), Set.of());
+        hibernateSearchService.entityManager = entityManager;
+        hibernateSearchService.indexExistingEntities(entityManager);
+
+        var simpleQuery = "Location";
+        var pageable = PageRequest.of(0, 5);
+
+        // when
+        var actualProjectsPage = hibernateSearchService.searchProjects(simpleQuery, pageable, null);
+
+        // then
+        var softly = new SoftAssertions();
+
+        softly.assertThat(actualProjectsPage.getTotalPages()).isEqualTo(2L);
+        softly.assertThat(actualProjectsPage.getTotalElements()).isEqualTo(10L);
+
+        softly.assertAll();
+    }
+
+    @Test
+    @Sql(scripts = "classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void searchProjectsNonPaginatedFindsAllProjectsWhenNoExclusionsAndLobConstraintsSet() {
+        // given
+        var hibernateSearchService = new HibernateSearchService(Set.of(), Set.of());
+        hibernateSearchService.entityManager = entityManager;
+        hibernateSearchService.indexExistingEntities(entityManager);
+
+        var simpleQuery = "Location";
+        var expectedProjects = findProjectByIds("STF-1", "STF-2", "STF-3", "STF-4", "STF-5", "STF-6",
+                "STF-7", "STF-8", "STF-9", "STF-10");
+
+        // when
+        var actualProjects = hibernateSearchService.searchProjects(simpleQuery, null);
+
+        // then
+        assertThat(actualProjects).containsExactlyInAnyOrderElementsOf(expectedProjects);
+    }
+
+    @Test
+    @Sql(scripts = "classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void searchProjectsPaginatedFindsAllProjectsWhenNoExclusionsAndLobConstraintsSet() {
+        // given
+        var hibernateSearchService = new HibernateSearchService(Set.of(), Set.of());
+        hibernateSearchService.entityManager = entityManager;
+        hibernateSearchService.indexExistingEntities(entityManager);
+
+        var simpleQuery = "Location";
+        var expectedProjects = findProjectByIds("STF-1", "STF-2", "STF-3", "STF-4", "STF-5", "STF-6",
+                "STF-7", "STF-8", "STF-9", "STF-10");
+
+        var pageable = PageRequest.of(0, 10);
+
+        // when
+        var actualProjects = hibernateSearchService.searchProjects(simpleQuery, pageable, null);
+
+        // then
+        assertThat(actualProjects).containsExactlyInAnyOrderElementsOf(expectedProjects);
+    }
+
+    @Test
+    @Sql(scripts = "classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void searchProjectsNonPaginatedFindsProjectsFromNoLobWhenGivenLobNull() {
+        // given
+        var excludedStatus = Set.of("eskaliert", "escalated", "abgeschlossen");
+        var lobConstraintsStatus = Set.of("offen", "open");
+
+        var hibernateSearchService = new HibernateSearchService(lobConstraintsStatus, excludedStatus);
+        hibernateSearchService.entityManager = entityManager;
+        hibernateSearchService.indexExistingEntities(entityManager);
+
+        var simpleQuery = "Location";
+        var expectedProjects = findProjectByIds("STF-4", "STF-7");
+
+        // when
+        var actualProjects = hibernateSearchService.searchProjects(simpleQuery, null);
+
+        // then
+        assertThat(actualProjects).containsExactlyInAnyOrderElementsOf(expectedProjects);
+    }
+
+    @Test
+    @Sql(scripts = "classpath:de/adesso/projectboard/persistence/Projects.sql")
+    public void searchProjectsPaginatedFindsProjectsFromNoLobWhenGivenLobNull() {
+        // given
+        var excludedStatus = Set.of("eskaliert", "escalated", "abgeschlossen");
+        var lobConstraintsStatus = Set.of("offen", "open");
+
+        var hibernateSearchService = new HibernateSearchService(lobConstraintsStatus, excludedStatus);
+        hibernateSearchService.entityManager = entityManager;
+        hibernateSearchService.indexExistingEntities(entityManager);
+
+        var simpleQuery = "Location";
+        var expectedProjects = findProjectByIds("STF-4", "STF-7");
+
+        var pageable = PageRequest.of(0, 2);
+
+        // when
+        var actualProjects = hibernateSearchService.searchProjects(simpleQuery, pageable, null);
+
+        // then
+        assertThat(actualProjects).containsExactlyInAnyOrderElementsOf(expectedProjects);
+    }
+
+    @Test
+    @Sql(scripts = "classpath:de/adesso/projectboard/persistence/Projects.sql")
     public void searchProjectsNonPaginatedFindsProjectsWithSameOrNoLobWithoutExcludedStatus() {
         // given
         var simpleQuery = "Location";
@@ -84,8 +192,6 @@ public class HibernateSearchServiceIntegrationTest {
         // then
         assertThat(actualProjects).containsExactlyInAnyOrderElementsOf(expectedProjects);
     }
-
-    //TODO: add test where lob is set to null
 
     @Test
     @Sql(scripts = "classpath:de/adesso/projectboard/persistence/Projects.sql")

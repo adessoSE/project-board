@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 @DataJpaTest
 @TestPropertySource("classpath:application-persistence-test.properties")
-public class StatusSpecificationIntegrationTest {
+public class ProjectSpecificationIntegrationTest {
 
     private static final Set<String> EXCLUDED_STATUS = Set.of("abgeschlossen", "closed");
 
@@ -32,7 +32,7 @@ public class StatusSpecificationIntegrationTest {
     @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
     public void statusSpecificationReturnsAllProjectsWhenNoLobDependentAndExcludedStatusGiven() {
         // given
-        var specification = new StatusSpecification(Set.of(), Set.of(), null);
+        var specification = new ProjectSpecification(Set.of(), Set.of(), null);
 
         var expectedProjectIds = List.of("STF-1", "STF-2", "STF-3", "STF-4", "STF-5", "STF-6",
                 "STF-7", "STF-8", "STF-9", "STF-10");
@@ -46,7 +46,7 @@ public class StatusSpecificationIntegrationTest {
     public void statusSpecificationReturnsNoProjectsWithExcludedStatus() {
         // given
         var userLob = "LOB Test";
-        var specification = new StatusSpecification(EXCLUDED_STATUS, Set.of(), userLob);
+        var specification = new ProjectSpecification(EXCLUDED_STATUS, Set.of(), userLob);
 
         var expectedProjectIds = List.of("STF-1", "STF-3", "STF-4", "STF-5", "STF-7", "STF-8", "STF-9", "STF-10");
 
@@ -59,7 +59,7 @@ public class StatusSpecificationIntegrationTest {
     public void statusSpecificationReturnsProjectsOnlyWithLobNullOrLobEqualsWhenStatusIsLobDependent() {
         // given
         var userLob = "LOB Test";
-        var specification = new StatusSpecification(Set.of(), LOB_DEPENDENT_STATUS, userLob);
+        var specification = new ProjectSpecification(Set.of(), LOB_DEPENDENT_STATUS, userLob);
 
         var expectedProjectIds = List.of("STF-1", "STF-2", "STF-3", "STF-4", "STF-5", "STF-6", "STF-7", "STF-8");
 
@@ -72,7 +72,7 @@ public class StatusSpecificationIntegrationTest {
     public void statusSpecificationReturnsProjectsOnlyWithLobNullOrLobEqualsWhenStatusIsLobDependentWithoutExcludedStatus() {
         // given
         var userLob = "LOB Prod";
-        var specification = new StatusSpecification(EXCLUDED_STATUS, LOB_DEPENDENT_STATUS, userLob);
+        var specification = new ProjectSpecification(EXCLUDED_STATUS, LOB_DEPENDENT_STATUS, userLob);
 
         var expectedProjectIds = List.of("STF-1", "STF-3", "STF-4", "STF-5", "STF-7", "STF-9", "STF-10");
 
@@ -84,7 +84,7 @@ public class StatusSpecificationIntegrationTest {
     @Sql("classpath:de/adesso/projectboard/persistence/Projects.sql")
     public void statusSpecificationReturnsProjectsOnlyWithLobNullWhenStatusIsLobDependentAndUserLobNullWithoutExcludedStatus() {
         // given
-        var specification = new StatusSpecification(EXCLUDED_STATUS, LOB_DEPENDENT_STATUS, null);
+        var specification = new ProjectSpecification(EXCLUDED_STATUS, LOB_DEPENDENT_STATUS, null);
 
         var expectedProjectIds = List.of("STF-1", "STF-3", "STF-4", "STF-5", "STF-7");
 

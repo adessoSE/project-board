@@ -3,7 +3,7 @@ package de.adesso.projectboard.ad.project.service;
 import de.adesso.projectboard.base.configuration.ProjectBoardConfigurationProperties;
 import de.adesso.projectboard.base.project.persistence.Project;
 import de.adesso.projectboard.base.project.persistence.ProjectRepository;
-import de.adesso.projectboard.base.project.persistence.specification.StatusSpecification;
+import de.adesso.projectboard.base.project.persistence.specification.ProjectSpecification;
 import de.adesso.projectboard.base.search.HibernateSearchService;
 import de.adesso.projectboard.base.user.persistence.User;
 import de.adesso.projectboard.base.user.service.PageableUserProjectService;
@@ -84,10 +84,10 @@ public class RepositoryUserProjectService implements PageableUserProjectService 
 
     private Specification<Project> getProjectSpecificationForUser(User user) {
         if(userService.userIsManager(user)) {
-            return new StatusSpecification(excludedStatus, Set.of(), null);
+            return new ProjectSpecification(excludedStatus, Set.of(), null);
         } else {
             var userLob = userService.getUserData(user).getLob();
-            return new StatusSpecification(excludedStatus, lobDependentStatus, userLob);
+            return new ProjectSpecification(excludedStatus, lobDependentStatus, userLob);
         }
     }
 

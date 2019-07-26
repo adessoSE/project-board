@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * at {@link #toPredicate(Root, CriteriaQuery, CriteriaBuilder)}.
  */
 @EqualsAndHashCode
-public class StatusSpecification implements Specification<Project> {
+public class ProjectSpecification implements Specification<Project> {
 
     /**
      * The name of the field to match the status against.
@@ -63,7 +63,7 @@ public class StatusSpecification implements Specification<Project> {
      *          The LoB of the user to find projects for, may be null.
      *
      */
-    public StatusSpecification(@NonNull Collection<String> excludedStatus, @NonNull Collection<String> lobDependentStatus, String userLob) {
+    public ProjectSpecification(@NonNull Collection<String> excludedStatus, @NonNull Collection<String> lobDependentStatus, String userLob) {
         this.lobDependentStatus = allToLowerCase(lobDependentStatus);
         this.excludedStatus = allToLowerCase(excludedStatus);
         this.userLob = userLob == null ? null : userLob.toLowerCase();
