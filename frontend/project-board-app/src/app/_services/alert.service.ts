@@ -60,6 +60,6 @@ export class AlertService {
   }
 
   openAccessDialog() {
-    this.dialog.open(AccessDialogComponent, { });
+    this.dialog.open(AccessDialogComponent, { disableClose: true });
   }
 }

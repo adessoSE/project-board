@@ -6,20 +6,18 @@ import { MatDialogRef } from '@angular/material';
   templateUrl: './access-dialog.component.html',
   styleUrls: ['./access-dialog.component.scss']
 })
-
 export class AccessDialogComponent implements OnInit {
   mobile: boolean;
 
-  constructor(public dialogRef: MatDialogRef<AccessDialogComponent>,) {}
+  constructor(public dialogRef: MatDialogRef<AccessDialogComponent>) {}
 
-   ngOnInit() {
-       this.mobile = document.body.clientWidth < 992;
-   }
+  ngOnInit() {
+    this.mobile = document.body.clientWidth < 992;
+  }
 
-
-   @HostListener('window:resize')
-    onResize(): void {
-       this.mobile = document.body.clientWidth < 992;
-    }
+  @HostListener('window:resize')
+  onResize(): void {
+    this.mobile = document.body.clientWidth < 992;
+  }
 
 }
