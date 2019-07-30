@@ -32,6 +32,8 @@ import {FaqComponent} from './faq/faq.component';
 import {SafetyqueryDialogComponent} from './safetyquery-dialog/safetyquery-dialog.component';
 import {GoogleAnalyticsService} from './_services/google-analytics.service';
 import {eagerLoad, EagerProviderLoaderModule} from 'ngx-inject';
+import {AccessDialogComponent} from './access-dialog/access-dialog.component';
+import {SupportDialogComponent} from './support-dialog/support-dialog.component';
 
 declare var Hammer: any;
 
@@ -60,7 +62,9 @@ registerLocaleData(localeDe, 'de');
     DatepickerHeaderComponent,
     SearchComponent,
     FaqComponent,
-    SafetyqueryDialogComponent
+    SafetyqueryDialogComponent,
+    AccessDialogComponent,
+    SupportDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -79,7 +83,9 @@ registerLocaleData(localeDe, 'de');
     ProjectDialogComponent,
     EmployeeDialogComponent,
     DatepickerHeaderComponent,
-    SafetyqueryDialogComponent
+    SafetyqueryDialogComponent,
+    AccessDialogComponent,
+    SupportDialogComponent
   ],
   providers: [
     {provide: LOCALE_ID, useValue: 'de'},

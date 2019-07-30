@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { NavigationStart, Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { MatDialog } from '@angular/material';
+import { AccessDialogComponent} from 'src/app/access-dialog/access-dialog.component';
 
 @Injectable()
 export class AlertService {
@@ -10,7 +12,8 @@ export class AlertService {
 
   destroy$ = new Subject<void>();
 
-  constructor(private router: Router) {
+  constructor(private router: Router, public dialog:MatDialog
+) {
     // clear alert message on route change
     router.events
       .pipe(takeUntil(this.destroy$))
@@ -37,12 +40,12 @@ export class AlertService {
     setTimeout(() => {this.clearAlert();}, 3000);
   }
 
-  error(message: string, keepAfterNavigationChange = false): void {
+  error( message: string, keepAfterNavigationChange = false): void {
     this.keepAfterNavigationChange = keepAfterNavigationChange;
     this.subject.next({type: 'error', text: message});
   }
 
-  info(message: string, keepAfterNavigationChange = false): void {
+  info( message: string, keepAfterNavigationChange = false): void {
     this.keepAfterNavigationChange = keepAfterNavigationChange;
     this.subject.next({type: 'info', text: message});
   }
@@ -54,5 +57,9 @@ export class AlertService {
 
   getMessage(): Observable<any> {
     return this.subject.asObservable();
+  }
+
+  openAccessDialog() {
+    this.dialog.open(AccessDialogComponent, { disableClose: true });
   }
 }

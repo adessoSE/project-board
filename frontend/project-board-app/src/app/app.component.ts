@@ -9,6 +9,9 @@ import {takeUntil} from 'rxjs/operators';
 import {environment} from '../environments/environment';
 import {AuthenticationService} from './_services/authentication.service';
 import {EmployeeService} from './_services/employee.service';
+import { MatDialog } from '@angular/material';
+import { SupportDialogComponent} from 'src/app/support-dialog/support-dialog.component';
+
 import {
   CONTACT_SUPPORT_TOOLTIP,
   EMPLOYEES_TOOLTIP,
@@ -50,12 +53,15 @@ export class AppComponent implements OnInit, DoCheck {
               private router: Router,
               private ngZone: NgZone,
               private renderer: Renderer,
+              public dialog:MatDialog,
   ) {
     router.events.subscribe((event: RouterEvent) => {
       this._navigationInterceptor(event)
     });
     this.configureWithNewConfigApi(); 
   }
+
+
 
    // Shows and hides the loading spinner during RouterEvent changes
    private _navigationInterceptor(event: RouterEvent): void {
@@ -244,9 +250,10 @@ export class AppComponent implements OnInit, DoCheck {
     document.documentElement.scrollTop = 0;
   }
 
-  mailToSupport() {
-    window.location.href = `mailTo:${this.supportEmail}`;
+   openSupportDialog() {
+    this.dialog.open(SupportDialogComponent, { });
   }
+
 }
 
 export const authConfig: AuthConfig = {

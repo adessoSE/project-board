@@ -62,11 +62,11 @@ export class ProjectDialogComponent implements OnInit {
     private employeeService: EmployeeService,
     private router: Router,
     private alertService: AlertService) {
-    router.events.subscribe(event => {
-      if (event instanceof NavigationStart) {
-        this.dialogRef.close();
-      }
-    });
+      router.events.subscribe(event => {
+        if (event instanceof NavigationStart) {
+          this.dialogRef.close();
+        }
+      });
   }
 
   ngOnInit(): void {
