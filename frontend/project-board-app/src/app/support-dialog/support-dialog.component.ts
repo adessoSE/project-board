@@ -1,6 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { MatDialogRef } from '@angular/material';
 import { environment} from 'src/environments/environment';
+import { CONTACT_SUPPORT_TOOLTIP } from '../tooltips';
 
 @Component({
   selector: 'app-support-dialog',
@@ -11,6 +12,7 @@ import { environment} from 'src/environments/environment';
 export class SupportDialogComponent implements OnInit {
   supportEmail: string;
   mobile: boolean;
+  contactSupportTooltip = CONTACT_SUPPORT_TOOLTIP;
 
   constructor(public dialogRef: MatDialogRef<SupportDialogComponent>) {}
 
